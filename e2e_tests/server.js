@@ -1,0 +1,268 @@
+const express = require('express')
+const cors = require('cors');
+const enableWs = require('express-ws')
+const process = require('process');
+
+const port = 4582
+
+const app = express()
+app.use(cors())
+app.options('*', cors())
+
+let server = null;
+if (process.argv.includes("--secure")) {
+  console.log("HTTPS mode");
+  var https = require('https');
+  var fs = require("fs");
+  var httpsOptions = {
+    cert: fs.readFileSync("localhost.pem"),
+    key: fs.readFileSync("localhost-key.pem"),
+  }
+  server = https.createServer(httpsOptions, app);
+  enableWs(app, server);
+} else {
+  enableWs(app);
+}
+
+app.ws('/ws', (req, res) => {
+
+})
+
+example_user1 = {
+  uuid: "example-user-1-uuid",
+  handle: "example-user-1",
+  full_name: null,
+  karma: 0
+}
+
+example_user2 = {
+  uuid: "example-user-2-uuid",
+  handle: "example-user-2",
+  full_name: null,
+  karma: 2791
+}
+
+example_site = {
+  description: "讨论互联网产品的设计和体验",
+  uuid: "3noQmrdUbubY9ojPerYA",
+  name: "互联网产品",
+  subdomain: "internet-things",
+  public_readable: true,
+  public_writable_question: true,
+  public_writable_answer: true,
+  public_writable_comment: true,
+  create_question_coin_deduction: 2,
+  addable_member: true,
+  topics: [],
+  moderator: example_user2,
+  permission_type: "public"
+}
+
+example_question_preview  = {
+  "uuid": "6gpPVpfHJnEh4NfbZ4VY",
+  "title": "Twitter, Facebook 类型的社交网络在未来会不会变成政府依靠税收运营的公共基础设施？",
+  "description": null,
+  "site": example_site,
+  "is_placed_at_site_top": false,
+  "is_placed_at_home": false,
+  "created_at": "2021-02-02T20:02:56.170487+00:00",
+  "answers_count": 11
+}
+
+example_answer1_preview = {
+  "uuid": "3b4TBWxFUnBe4aRrKq4X",
+  "author": example_user1,
+  "question": example_question_preview,
+  "body": "我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收...",
+  "upvotes_count": 2,
+  "is_hidden_by_moderator": false,
+  "is_placed_at_question_top": false
+}
+
+example_activity = {
+  "id": 1393,
+  "site_uuid": null,
+  "created_at": "2021-02-06T20:31:09.965902+00:00",
+  "verb": "answer_question",
+  "content": null,
+  "event": {
+      "created_at": "2021-02-06T20:31:09.965902+00:00",
+      "content": {
+          "verb": "answer_question",
+          "subject": example_user1,
+          "answer": example_answer1_preview,
+      }
+  }
+}
+
+example_activity2_to_combine = {
+  "id": 1394,
+  "site_uuid": null,
+  "created_at": "2021-02-06T20:31:09.965902+00:00",
+  "verb": "upvote_question",
+  "content": null,
+  "event": {
+      "created_at": "2021-02-06T20:31:09.965902+00:00",
+      "content": {
+          "verb": "upvote_question",
+          "subject": example_user1,
+          "question": example_question_preview,
+      }
+  }
+}
+
+
+example_activity3_to_combine = {
+  "id": 1395,
+  "site_uuid": null,
+  "created_at": "2021-02-06T20:31:09.965902+00:00",
+  "verb": "upvote_question",
+  "content": null,
+  "event": {
+      "created_at": "2021-02-06T20:31:09.965902+00:00",
+      "content": {
+          "verb": "upvote_question",
+          "subject": example_user2,
+          "question": example_question_preview,
+      }
+  }
+}
+
+
+app.post("/api/v1/ws/token", (req, res) => {
+  res.json({
+    msg: "example-ws-token",
+  })
+})
+
+app.post("/api/v1/login/access-token", (req, res) => {
+  res.json({
+    access_token: 'access-token'
+  })
+})
+
+app.get("/api/v1/me/moderated-sites/", (req, res) => {
+  res.json([]);
+})
+
+const userProfile = {
+  id: 1,
+  uuid: "example-uuid",
+  email: "test@cha.fan",
+  is_active: true,
+  is_superuser: false,
+  handle: "test",
+  moderated_sites: [],
+  subscribed_topics: [],
+  residency_topics: [],
+  profession_topic: {
+    uuid: "topic1",
+    name: "Topic 1",
+  },
+  remaining_coins: 12,
+  view_times: 10,
+  enable_deliver_unread_notifications: true,
+}
+
+app.get("/api/v1/me", (req, res) => {
+  res.json(userProfile);
+})
+
+
+app.put("/api/v1/me", (req, res) => {
+  res.json(userProfile);
+})
+
+app.get("/api/v1/me/site-profiles/", (req, res) => {
+  res.json([]);
+})
+
+example_answer1 = {
+  "uuid": "3b4TBWxFUnBe4aRrKq4X",
+  "updated_at": "2021-02-06T20:37:28.104656+00:00",
+  "body": "我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收运营对社交网路有两点影响。\n\n- 对公司决策产生制约\n- 对这些公司全球化有负面效应\n\n因此只有当大公司开始有衰退迹象并且做不好全球化的时候才会让政府当冤大头。未来一段时间还看不到这个现象。\n",
+  "is_published": true,
+  "draft_saved_at": null,
+  "editor": "wysiwyg",
+  "math_enabled": false,
+  "source_format": "markdown",
+  "upvotes_count": 2,
+  "is_hidden_by_moderator": false,
+  "is_placed_at_question_top": false,
+  "comments": [],
+  "author": example_user1,
+  "question": example_question_preview,
+  "site": example_site,
+  "upvoted": true,
+  "comment_writable": true,
+  "bookmark_count": 0,
+  "bookmarked": false,
+  "view_times": 4
+}
+
+app.get("/api/v1/me/article-columns/", (req, res) => {
+  res.json([]);
+})
+
+app.get("/api/v1/submissions/", (req, res) => {
+  res.json([]);
+})
+
+app.get("/api/v1/me/pending-questions/", (req, res) => {
+  res.json([]);
+})
+
+app.get("/api/v1/answers/3b4TBWxFUnBe4aRrKq4X", (req, res) => {
+  res.json(example_answer1)
+});
+
+app.get("/api/v1/reactions/answer/3b4TBWxFUnBe4aRrKq4X", (req, res) => {
+  res.json({
+    counters: {},
+    my_reactions: [],
+  })
+});
+
+app.post("/api/v1/answers/3b4TBWxFUnBe4aRrKq4X/views/", (req, res) => {
+
+});
+
+app.get("/api/v1/activities/", (req, res) => {
+  if(req.query.before_activity_id === undefined) {
+    res.json([
+      example_activity,
+      example_activity2_to_combine,
+      example_activity3_to_combine
+    ]);
+  } else {
+    res.json([]);
+  }
+})
+
+
+app.get("/api/v1/notifications/unread/", (req, res) => {
+  res.json([]);
+})
+
+app.get("/api/v1/home/questions/", (req, res) => {
+  res.json([]);
+})
+
+app.get("/api/v1/me/follows/example-user-1-uuid", (req, res) => {
+  res.json({
+    user_uuid: 'example-user-1-uuid',
+    followers_count: 0,
+    followed_count: 0,
+    followed_by_me: false,
+  })
+})
+
+if (server) {
+  server.listen(port, () => {
+    console.log(`Example app listening at https://localhost:${port}`);
+  })
+} else {
+  app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`);
+  });
+}
