@@ -27,16 +27,30 @@ npm run serve
 npm run build
 ```
 
+### API server mock
+
+The API server is mocked by a express server at `e2e_tests/server.js`.
+To test the frontend, please run it locally: `node e2e_tests/server.js`.
+
+Some APIs are missing from mock server for now. You can add code
+for mock server along with the frontend code change if needed.
+
 ### Run production build locally
 
+Prepare:
+
 ```bash
-# brew install mkcert
-# mkcert -install
-# mkcert localhost
+brew install mkcert
+mkcert -install
+mkcert localhost
+npm install -g serve
+```
+
+Build and serve locally through https:
+
+```bash
 VUE_APP_ENV=staging npm run build
-# npm install -g serve
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
-# make dev-run-secure in the backend or
 node e2e_tests/server.js --secure
 ```
 
