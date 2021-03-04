@@ -8,7 +8,7 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 
 ## Setup
 
-To get started, [README.md] contains instructions about how to work on this codebase locally.
+To get started, [README.md](README.md) contains instructions about how to work on this codebase locally.
 
 ## Pull Request Process
 
@@ -17,7 +17,7 @@ Please simply fork this repo and open a PR with description of the changes again
 ## Claim issue
 
 If you want to work on an existing issue, please claim it explicitly in the issue before working on it.
-If you didn't move on with the issue, we will assume you are busy and release the claim after two weeks as well.
+If you didn't move on with the issue, we will assume you are busy and the claim will be automatically released after two weeks.
 
 ## Misc
 
