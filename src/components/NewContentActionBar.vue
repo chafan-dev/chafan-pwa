@@ -1,11 +1,16 @@
 <template>
-    <div class="d-flex">
-        <v-btn small class="mr-2 slim-btn" @click="showAskActionDialog = true">{{$t('提问')}}</v-btn>
-        <v-dialog max-width="500" v-model="showAskActionDialog">
-            <CreateQuestionForm :showTitle="true" />
-        </v-dialog>
+    <div class="d-flex d-none">
+      <div>
+        <v-btn depressed class="primary darken-2 mr-1" @click="showAskActionDialog = true">
+          {{$t('提问')}}
+        </v-btn>
 
-        <v-btn small class="mr-2 slim-btn" @click="showArticleActionDialog = true">{{$t('写文章')}}</v-btn>
+        <v-dialog max-width="500" v-model="showAskActionDialog">
+          <CreateQuestionForm :showTitle="true" />
+        </v-dialog>
+      </div>
+
+        <v-btn depressed class="mr-1" @click="showArticleActionDialog = true">{{$t('写文章')}}</v-btn>
         <v-dialog max-width="500" v-model="showArticleActionDialog">
             <v-card>
                 <v-card-title primary-title>
@@ -25,7 +30,7 @@
             </v-card>
         </v-dialog>
 
-        <v-btn small class="mr-2 slim-btn" @click="showAnswerActionDialog = true">{{$t('回答')}}</v-btn>
+        <v-btn depressed class="mr-1" @click="showAnswerActionDialog = true">{{$t('回答')}}</v-btn>
         <v-dialog max-width="500" v-model="showAnswerActionDialog">
             <v-card>
                 <v-card-title primary-title>
@@ -41,7 +46,7 @@
             </v-card>
         </v-dialog>
 
-        <v-btn small class="slim-btn" @click="showSubmissionActionDialog = true">{{$t('Share')}}</v-btn>
+        <v-btn depressed class="mr-1" @click="showSubmissionActionDialog = true">{{$t('Share')}}</v-btn>
         <v-dialog max-width="500" v-model="showSubmissionActionDialog">
             <CreateSubmissionForm :showTitle="true" />
         </v-dialog>

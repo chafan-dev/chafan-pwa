@@ -1,27 +1,27 @@
 <template>
-    <v-card :class="{'pa-2': $vuetify.breakpoint.mdAndUp, 'pa-1': $vuetify.breakpoint.smAndDown }">
+    <v-card flat :class="{'pa-2': $vuetify.breakpoint.mdAndUp, 'pa-1': $vuetify.breakpoint.smAndDown }">
         <div class="title" style="word-break: normal">
-            <a class="text-decoration-none" :href="'/submissions/' + submission.uuid">
+            <RouterLink class="text-decoration-none" :to="'/submissions/' + submission.uuid">
                 {{ submission.title }}
-            </a>
+            </RouterLink>
         </div>
         <div class="d-flex align-center">
-            <a class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
-               :href="'/submissions/' + submission.uuid">
+            <RouterLink class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
+               :to="'/submissions/' + submission.uuid">
                 <UpvoteIcon :color="submission.upvoted ? 'primary' : undefined" small />
                 {{ submission.upvotes_count }}
-            </a>
-            <a class="d-flex align-center black--text text-caption text-decoration-none"
-               :href="'/submissions/' + submission.uuid">
+            </RouterLink>
+            <RouterLink class="d-flex align-center black--text text-caption text-decoration-none"
+               :to="'/submissions/' + submission.uuid">
                 <CommentsIcon small class="mr-1 mt-1" />
                 {{ submission.comments.length }}
-            </a>
+            </RouterLink>
             <v-spacer />
             <div v-if="submission.url">
                 <LinkIcon small />
-                <a class="text-decoration-none text-caption" :href="submission.url" target="_blank">
+                <RouterLink class="text-decoration-none text-caption" :to="submission.url" target="_blank">
                     {{ shortUrl(submission.url) }}
-                </a>
+                </RouterLink>
             </div>
         </div>
         <div class="grey--text subtitle-2" v-if="submission.description">
