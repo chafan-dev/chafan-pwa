@@ -1,5 +1,5 @@
 <template>
-    <v-card class="pa-2"
+    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded"
             :max-width="hoverMode ? 400 : undefined">
         <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
             <v-avatar size="100" tile class="avatarDiv">
@@ -139,6 +139,7 @@ export default class UserCard extends Vue {
     @Prop() public readonly userPublic: IUserPublic | undefined;
     @Prop({ default: false }) public readonly compactMode!: boolean;
     @Prop({ default: false }) public readonly hoverMode!: boolean;
+    @Prop({default: false}) private readonly embedded!: false;
 
     private loading = true;
     private follows: IUserFollows | null = null;
@@ -209,5 +210,15 @@ export default class UserCard extends Vue {
 <style scoped>
 .compact-row {
     margin-top: 0 !important;
+}
+</style>
+
+<style scoped>
+/* FIXME: code duplicate: Home.vue */
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
 }
 </style>

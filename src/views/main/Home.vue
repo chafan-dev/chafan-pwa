@@ -178,10 +178,10 @@
                           <!-- Row for content preview if any -->
                           <div>
                             <div v-if="activity.verb === 'follow_user' || activity.verb === 'follow_user_combined'">
-                              <UserCard :userPreview="activity.event.content.user" :compactMode="true" />
+                              <UserCard :embedded="true" :userPreview="activity.event.content.user" :compactMode="true" />
                             </div>
                             <div v-if="activity.verb === 'follow_article_column'">
-                              <ArticleColumnCard :compactMode="true" :articleColumn="activity.event.content.article_column" />
+                              <ArticleColumnCard :embedded="true" :compactMode="true" :articleColumn="activity.event.content.article_column" />
                             </div>
                             <div v-if="activity.verb === 'upvote_answer' || activity.verb === 'upvote_answer_combined'">
                               <Answer :embedded="true" :answerPreview="activity.event.content.answer" :showAuthor="true" />
@@ -190,7 +190,7 @@
                               <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'upvote_submission' || activity.verb === 'upvote_submission_combined'">
-                              <SubmissionCard :submission="activity.event.content.submission" />
+                              <SubmissionCard :embedded="true" :submission="activity.event.content.submission" />
                             </div>
                             <div v-else-if="activity.verb === 'comment_question'">
                               <CommentCard :comment="activity.event.content.comment" :questionPreview="activity.event.content.question" />
