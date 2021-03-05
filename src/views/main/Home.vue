@@ -471,6 +471,9 @@ export default class Home extends Vue {
 }
 
 .c-card {
-  box-shadow: 0 3px 10px -10px rgba(85,85,85,.08),0 2px 20px 0 rgba(85,85,85,.06),0 1px 30px 0 rgba(85,85,85,.03) !important;
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
 }
 </style>
