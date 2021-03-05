@@ -244,7 +244,7 @@
 
                 <!-- Answers -->
                 <Answer v-for="answer in loadedFullAnswers" :key="answer.uuid"
-                        class="ma-2"
+                        class="mb-4"
                         :answerPreview="answer"
                         :answerProp="answer"
                         :showAuthor="true"
@@ -253,7 +253,7 @@
                         @delete-answer="deleteHandler"
                         :loadFull="true" />
                 <Answer v-for="answerPreview in answerPreviews" :key="answerPreview.uuid"
-                        class="ma-2"
+                        class="mb-4"
                         :answerPreview="answerPreview"
                         :showAuthor="true"
                         :showQuestionInCard="false"

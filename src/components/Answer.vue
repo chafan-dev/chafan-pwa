@@ -1,5 +1,5 @@
 <template>
-    <v-card flat
+    <v-card class="pa-2 c-card" elevation="1"
             :loading="loading" v-if="!showEditor && !loading">
         <div v-if="isHiddenByMod">
             <v-card-text>{{$t('内容已被管理员隐藏')}}</v-card-text>
@@ -547,4 +547,14 @@ export default class Answer extends Vue {
 
 .vditor-preview
     padding: 0px 1px
+</style>
+
+<style scoped>
+/* FIXME: code duplicate: Home.vue */
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
+}
 </style>
