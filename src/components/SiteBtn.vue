@@ -1,7 +1,7 @@
 <template>
     <v-menu :open-on-hover="!$vuetify.breakpoint.mobile" bottom right offset-y open-delay="400">
         <template v-slot:activator="{ on, attrs }">
-            <v-btn class="mr-1 mt-1" depressed :to="'/sites/' + site.subdomain" :color="color" v-bind="attrs" v-on="on">
+            <v-btn class="mr-1 mt-1" small depressed :to="'/sites/' + site.subdomain" :color="color" v-bind="attrs" v-on="on">
                 {{ site.name }}
                 <PrivateSiteIcon class="ml-1" v-if="site.permission_type === 'private'" />
             </v-btn>
