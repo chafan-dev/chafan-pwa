@@ -19,15 +19,15 @@
         <v-row justify="center">
             <!-- Feed column -->
             <v-col :class="isNarrowFeedUI ? 'fixed-narrow-col' : undefined" fluid>
-                <v-toolbar flat dense class="home-toolbar">
-                    <NewContentActionBar />
-                    <v-spacer />
-                    <SharingIcon class="mr-2" @click="toggleSharing" v-if="!showSharing" />
-                    <FeedIcon class="mr-2" @click="toggleSharing" v-else />
+                <div class="d-flex justify-space-between mb-3">
+                  <NewContentActionBar />
+                  <v-spacer />
+                  <SharingIcon class="mr-2" @click="toggleSharing" v-if="!showSharing" />
+                  <FeedIcon class="mr-2" @click="toggleSharing" v-else />
 
-                    <ExpandHorizontalIcon v-if="$vuetify.breakpoint.mdAndUp && isNarrowFeedUI" @click="narrowFeedUI = false" />
-                    <CollapseHorizontalIcon v-else-if="$vuetify.breakpoint.mdAndUp" @click="narrowFeedUI = true" />
-                </v-toolbar>
+                  <ExpandHorizontalIcon v-if="$vuetify.breakpoint.mdAndUp && isNarrowFeedUI" @click="narrowFeedUI = false" />
+                  <CollapseHorizontalIcon v-else-if="$vuetify.breakpoint.mdAndUp" @click="narrowFeedUI = true" />
+                </div>
 
                 <div v-if="showSharing">
                     <v-progress-linear v-if="loadingSubmissions" indeterminate />
@@ -71,157 +71,162 @@
                         </v-card-text>
                     </v-card>
 
-                    <div :class="{ 'pl-3 pr-3': $vuetify.breakpoint.mdAndUp, 'pt-1': true, 'pb-1': true }"
-                         v-for="activity in activities" :key="activity.id">
-                        <!-- Row for top info -->
-                        <v-row justify="space-between" class="ma-1">
+                    <v-card flat>
+                      <div
+                           v-for="(activity, key) in activities" :key="activity.id">
+                        <v-card class="px-3 py-4 my-4 c-card" elevation="1">
+                          <!-- Row for top info -->
+                          <v-row justify="space-between" no-gutters>
                             <!-- Column for subject and verb -->
                             <div v-if="activity.verb === 'follow_user'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("follows") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("follows") }}
                             </div>
                             <div v-if="activity.verb === 'follow_user_combined'">
-                                <UserLink :userPreview="activity.event.content.subjects[0]" />
-                                <a class="text-decoration-none" @click="showSubjects(activity.event.content.subjects)">
-                                    {{ $t('等x人', { n: activity.event.content.subjects.length }) }}
-                                </a>
-                                {{ $t("follows") }}
+                              <UserLink :userPreview="activity.event.content.subjects[0]" />
+                              <a class="text-decoration-none grey--text text--darken-2" @click="showSubjects(activity.event.content.subjects)">
+                                {{ $t('等x人', { n: activity.event.content.subjects.length }) }}
+                              </a>
+                              {{ $t("follows") }}
                             </div>
                             <div v-if="activity.verb === 'follow_article_column'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("followed column") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("followed column") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_answer'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("upvotes answer") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("upvotes answer") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_answer_combined'">
-                                <UserLink :userPreview="activity.event.content.subjects[0]" />
-                                <a class="text-decoration-none" @click="showSubjects(activity.event.content.subjects)">
-                                    {{ $t('等x人', { n: activity.event.content.subjects.length }) }}
-                                </a>
-                                {{ $t("upvoted answer") }}
+                              <UserLink :userPreview="activity.event.content.subjects[0]" />
+                              <a class="text-decoration-none grey--text text--darken-2" @click="showSubjects(activity.event.content.subjects)">
+                                {{ $t('等x人', { n: activity.event.content.subjects.length }) }}
+                              </a>
+                              {{ $t("upvoted answer") }}
                             </div>
                             <div v-else-if="activity.verb === 'comment_question'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("commented question") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("commented question") }}
                             </div>
                             <div v-else-if="activity.verb === 'comment_submission'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("commented submission") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("commented submission") }}
                             </div>
                             <div v-else-if="activity.verb === 'comment_article'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("commented article") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("commented article") }}
                             </div>
                             <div v-else-if="activity.verb === 'comment_answer'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("commented answer") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("commented answer") }}
                             </div>
                             <div v-else-if="activity.verb === 'reply_comment'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("replyed comment") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("replyed comment") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_question'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("found a good question") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("found a good question") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_submission'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("upvoted submission") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("upvoted submission") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_question_combined'">
-                                <UserLink :userPreview="activity.event.content.subjects[0]" />
-                                <a class="text-decoration-none" @click="showSubjects(activity.event.content.subjects)">
-                                    {{ $t('等x人', {n: activity.event.content.subjects.length}) }}
-                                </a>
-                                {{ $t("found a good question") }}
+                              <UserLink :userPreview="activity.event.content.subjects[0]" />
+                              <a class="text-decoration-none grey--text text--darken-2" @click="showSubjects(activity.event.content.subjects)">
+                                {{ $t('等x人', {n: activity.event.content.subjects.length}) }}
+                              </a>
+                              {{ $t("found a good question") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_submission_combined'">
-                                <UserLink :userPreview="activity.event.content.subjects[0]" />
-                                <a class="text-decoration-none" @click="showSubjects(activity.event.content.subjects)">
-                                    {{ $t('等x人', {n: activity.event.content.subjects.length}) }}
-                                </a>
-                                {{ $t("upvoted submission") }}
+                              <UserLink :userPreview="activity.event.content.subjects[0]" />
+                              <a class="text-decoration-none grey--text text--darken-2" @click="showSubjects(activity.event.content.subjects)">
+                                {{ $t('等x人', {n: activity.event.content.subjects.length}) }}
+                              </a>
+                              {{ $t("upvoted submission") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_article'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("upvoted article") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("upvoted article") }}
                             </div>
                             <div v-else-if="activity.verb === 'upvote_article_combined'">
-                                <UserLink :userPreview="activity.event.content.subjects[0]" />
-                                <a class="text-decoration-none" @click="showSubjects(activity.event.content.subjects)">
-                                    {{ $t('等x人', { n: activity.event.content.subjects.length}) }}
-                                </a>
-                                {{ $t("upvoted article") }}
+                              <UserLink :userPreview="activity.event.content.subjects[0]" />
+                              <a class="text-decoration-none grey--text text--darken-2" @click="showSubjects(activity.event.content.subjects)">
+                                {{ $t('等x人', { n: activity.event.content.subjects.length}) }}
+                              </a>
+                              {{ $t("upvoted article") }}
                             </div>
                             <div v-else-if="activity.verb === 'create_article'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("created article") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("created article") }}
                             </div>
                             <div v-else-if="activity.verb === 'answer_question'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("answered question") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("answered question") }}
                             </div>
                             <div v-else-if="activity.verb === 'create_question'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("creates question") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("creates question") }}
                             </div>
                             <div v-else-if="activity.verb === 'create_submission'">
-                                <UserLink :userPreview="activity.event.content.subject" />
-                                {{ $t("created submission") }}
+                              <UserLink :userPreview="activity.event.content.subject" />
+                              {{ $t("created submission") }}
                             </div>
                             <span class="text-caption grey--text mr-3">{{ $dayjs.utc(activity.created_at).local().fromNow() }}</span>
-                        </v-row>
-                        <!-- Row for content preview if any -->
-                        <div class="ma-1">
+                          </v-row>
+                          <!-- Row for content preview if any -->
+                          <div>
                             <div v-if="activity.verb === 'follow_user' || activity.verb === 'follow_user_combined'">
-                                <UserCard :userPreview="activity.event.content.user" :compactMode="true" />
+                              <UserCard :userPreview="activity.event.content.user" :compactMode="true" />
                             </div>
                             <div v-if="activity.verb === 'follow_article_column'">
-                                <ArticleColumnCard :compactMode="true" :articleColumn="activity.event.content.article_column" />
+                              <ArticleColumnCard :compactMode="true" :articleColumn="activity.event.content.article_column" />
                             </div>
                             <div v-if="activity.verb === 'upvote_answer' || activity.verb === 'upvote_answer_combined'">
-                                <Answer :answerPreview="activity.event.content.answer" :showAuthor="true" />
+                              <Answer :answerPreview="activity.event.content.answer" :showAuthor="true" />
                             </div>
                             <div v-if="activity.verb === 'upvote_question' || activity.verb === 'upvote_question_combined'">
-                                <QuestionPreview :questionPreview="activity.event.content.question" />
+                              <QuestionPreview :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'upvote_submission' || activity.verb === 'upvote_submission_combined'">
-                                <SubmissionCard :submission="activity.event.content.submission" />
+                              <SubmissionCard :submission="activity.event.content.submission" />
                             </div>
                             <div v-else-if="activity.verb === 'comment_question'">
-                                <CommentCard :comment="activity.event.content.comment" :questionPreview="activity.event.content.question" />
+                              <CommentCard :comment="activity.event.content.comment" :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'comment_submission'">
-                                <CommentCard :comment="activity.event.content.comment" :submission="activity.event.content.submission" />
+                              <CommentCard :comment="activity.event.content.comment" :submission="activity.event.content.submission" />
                             </div>
                             <div v-else-if="activity.verb === 'comment_article'">
-                                <CommentCard :comment="activity.event.content.comment" :articlePreview="activity.event.content.article" />
+                              <CommentCard :comment="activity.event.content.comment" :articlePreview="activity.event.content.article" />
                             </div>
                             <div v-else-if="activity.verb === 'comment_answer'">
-                                <CommentCard :comment="activity.event.content.comment" :answerPreview="activity.event.content.answer" />
+                              <CommentCard :comment="activity.event.content.comment" :answerPreview="activity.event.content.answer" />
                             </div>
                             <div v-else-if="activity.verb === 'reply_comment'">
-                                <CommentCard :comment="activity.event.content.reply" :parentComment="activity.event.content.parent_comment" />
+                              <CommentCard :comment="activity.event.content.reply" :parentComment="activity.event.content.parent_comment" />
                             </div>
                             <div v-else-if="activity.verb === 'upvote_article' || activity.verb === 'upvote_article_combined'">
-                                <ArticlePreview :articlePreview="activity.event.content.article" />
+                              <ArticlePreview :articlePreview="activity.event.content.article" />
                             </div>
                             <div v-else-if="activity.verb === 'create_article'">
-                                <ArticlePreview :articlePreview="activity.event.content.article" />
+                              <ArticlePreview :articlePreview="activity.event.content.article" />
                             </div>
                             <div v-else-if="activity.verb === 'answer_question'">
-                                <Answer :answerPreview="activity.event.content.answer" :showAuthor="false" />
+                              <Answer :answerPreview="activity.event.content.answer" :showAuthor="false" />
                             </div>
                             <div v-else-if="activity.verb === 'create_question'">
-                                <QuestionPreview :questionPreview="activity.event.content.question" />
+                              <QuestionPreview :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'create_submission'">
-                                <SubmissionCard :submission="activity.event.content.submission" />
+                              <SubmissionCard :submission="activity.event.content.submission" />
                             </div>
-                        </div>
-                    </div>
+                          </div>
+                        </v-card>
+                      </div>
+                    </v-card>
+
                     <div class="text-center">
                         <v-progress-circular indeterminate color="primary" v-if="preloadMoreActivitiesIntermediate" />
                         <span v-if="noMoreNewActivities">{{$t('No more new activities.')}}</span>
@@ -278,6 +283,7 @@ import { setAppLocale } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { dispatchUpdateUserProfileQuiet } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
+import CreateQuestionForm from "@/components/CreateQuestionForm.vue";
 
 function getDefaultNarrowFeedUI() {
     try {
@@ -289,6 +295,7 @@ function getDefaultNarrowFeedUI() {
 
 @Component({
     components: {
+      CreateQuestionForm,
         UserLink, Answer, QuestionPreview, SiteBtn, ExploreCard, ArticlePreview,
         QuestionLink, ExploreIcon, UserCard, ArticleColumnCard, CommentCard,
         ExpandHorizontalIcon, CollapseHorizontalIcon, NewContentActionBar, SharingIcon,
@@ -328,6 +335,8 @@ export default class Home extends Vue {
     private readonly FAB_FLAG = 'webfront-fab-clicked';
 
     private showSubjectDialog = false;
+    private showAskActionDialog = false;
+
     private subjectsInDialog: IUserPreview[] = [];
 
     private submissions: ISubmission[] | null = null;
@@ -459,5 +468,9 @@ export default class Home extends Vue {
 
 .fixed-narrow-sidecol {
     max-width: 400px;
+}
+
+.c-card {
+  box-shadow: 0 3px 10px -10px rgba(85,85,85,.08),0 2px 20px 0 rgba(85,85,85,.06),0 1px 30px 0 rgba(85,85,85,.03)!important;
 }
 </style>

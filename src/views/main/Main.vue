@@ -148,7 +148,7 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }">
                 <Avatar :userPreview="userProfile" v-if="userProfile && userProfile.avatar_url" />
-                <MenuIcon v-else />
+                <AccountIcon v-else />
               </v-btn>
             </template>
 
@@ -207,6 +207,8 @@ import { INotification, IUserProfile, IWsUserMsg } from '@/interfaces';
 import { api } from '@/api';
 import { api2 } from '@/api2';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import AccountIcon from '@/components/icons/AccountIcon.vue';
+import CreateQuestionForm from "@/components/CreateQuestionForm.vue";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
@@ -219,6 +221,8 @@ const routeGuardMain = async (to, from, next) => {
 
 @Component({
   components: {
+    CreateQuestionForm,
+    AccountIcon,
     LangPicker, SearchBox, Event, Avatar, EditIcon, PasswordIcon, EmailIcon,
     ProfileIcon, MenuIcon, MuteNotificationIcon, NotificationIcon, LogoutIcon, DashboardIcon, HomeIcon,
   },
@@ -255,6 +259,8 @@ export default class Main extends Vue {
   private isModerator = false;
 
   private userMode = true;
+
+  private showAskActionDialog = false;
 
   private showLoginPrompt() {
     commitSetShowLoginPrompt(this.$store, true);

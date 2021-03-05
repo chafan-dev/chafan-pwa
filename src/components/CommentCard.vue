@@ -1,10 +1,10 @@
 <template>
-    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': $vuetify.breakpoint.smAndDown }">
+    <v-card flat >
         <div class="d-flex mb-2">
             {{ comment.body }}
-            <a class="ml-2 text-decoration-none" :href="comment.root_route + `/comments/${comment.uuid}`">
-                <OpenInNewIcon />
-            </a>
+          <RouterLink :to="comment.root_route + `/comments/${comment.uuid}`">
+            <OpenInNewIcon />
+          </RouterLink>
         </div>
         <QuestionPreview v-if="questionPreview" :questionPreview="questionPreview" />
         <Answer v-if="answerPreview" :answerPreview="answerPreview" />

@@ -117,9 +117,12 @@
                             <ReactionBlock objectType="article" class="ml-1" :objectId="article.uuid"/>
                         </div>
 
+
+
                         <!-- Comments -->
                         <v-expand-transition>
                             <CommentBlock
+                                class="mt-6"
                                 v-show="showComments"
                                 :commentSubmitIntermediate="commentSubmitIntermediate"
                                 commentLabel="评论文章"
