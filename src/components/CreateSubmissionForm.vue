@@ -16,7 +16,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer />
-                <v-btn color="primary" @click="handleSubmit(postNewSubmission)"
+                <v-btn small color="primary" @click="handleSubmit(postNewSubmission)"
                     :disabled="postNewSubmissionIntermediate">
                     {{$t('提交')}}
                     <v-progress-circular size="20" intermediate v-if="postNewSubmissionIntermediate" />

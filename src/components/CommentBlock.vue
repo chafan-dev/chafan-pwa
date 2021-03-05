@@ -11,7 +11,7 @@
             <SimpleEditor ref="simpleEditor" class="ma-1" :placeholder="$t('评论')" />
             <div class="d-flex">
                 <v-spacer />
-                <v-btn @click="submitNewComment" color="primary" :disabled="commentSubmitIntermediate">
+                <v-btn small @click="submitNewComment" color="primary" :disabled="commentSubmitIntermediate">
                     {{ $t('提交评论') }}
                     <v-progress-circular :size="20" v-show="commentSubmitIntermediate" indeterminate />
                 </v-btn>
