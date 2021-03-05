@@ -1,6 +1,6 @@
 <template>
     <!-- TODO: c-card -->
-    <v-card class="pa-2">
+    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <div class="title" style="word-break: normal">
             <RouterLink class="text-decoration-none" :to="'/submissions/' + submission.uuid">
                 {{ submission.title }}
@@ -43,6 +43,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
     components: { SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
 export default class submission extends Vue {
+    @Prop({default: true}) private readonly embedded!: false;
     @Prop() private readonly submission!: ISubmission;
 
     private shortDesc(d: string) {
@@ -67,3 +68,13 @@ export default class submission extends Vue {
     }
 }
 </script>
+
+<style scoped>
+/* FIXME: code duplicate: Home.vue */
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
+}
+</style>

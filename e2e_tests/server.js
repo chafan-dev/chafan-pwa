@@ -93,6 +93,42 @@ const example_user2_comment1 = {
   "upvoted": false
 }
 
+const example_user1_submission1 = {
+  "uuid": EXAMPLE_USER1_SUBMISSION1_UUID,
+  "title": "知乎提交赴美 IPO 申请",
+  "description": "\n",
+  "url": "https://readhub.cn/topic/84nlE5nwJaO",
+  "created_at": "2021-03-05T19:30:54.694708+00:00",
+  "updated_at": "2021-03-05T19:30:57.482069+00:00",
+  "topics": [],
+  "upvotes_count": 0,
+  "author": example_user1,
+  "comments": [example_user2_comment1],
+  "site": {
+    "description": "讨论互联网产品的设计和体验",
+    "uuid": "3noQmrdUbubY9ojPerYA",
+    "name": "互联网产品",
+    "subdomain": "internet-things",
+    "public_readable": true,
+    "public_writable_question": true,
+    "public_writable_answer": true,
+    "public_writable_comment": true,
+    "create_question_coin_deduction": 2,
+    "addable_member": true,
+    "topics": [],
+    "auto_approval": true,
+    "min_karma_for_application": null,
+    "email_domain_suffix_for_application": "",
+    "moderator": example_user1,
+    "permission_type": "public",
+    "questions_count": 6,
+    "submissions_count": 4,
+    "members_count": 7
+  },
+  "upvoted": false,
+  "view_times": 2
+};
+
 const example_comment_submission_activity = {
   "id": 2649,
   "site_uuid": null,
@@ -105,47 +141,29 @@ const example_comment_submission_activity = {
       "verb": "comment_submission",
       "subject": example_user2,
       "comment": example_user2_comment1,
-      "submission": {
-        "uuid": EXAMPLE_USER1_SUBMISSION1_UUID,
-        "title": "知乎提交赴美 IPO 申请",
-        "description": "\n",
-        "url": "https://readhub.cn/topic/84nlE5nwJaO",
-        "created_at": "2021-03-05T19:30:54.694708+00:00",
-        "updated_at": "2021-03-05T19:30:57.482069+00:00",
-        "topics": [],
-        "upvotes_count": 0,
-        "author": example_user1,
-        "comments": [example_user2_comment1],
-        "site": {
-          "description": "讨论互联网产品的设计和体验",
-          "uuid": "3noQmrdUbubY9ojPerYA",
-          "name": "互联网产品",
-          "subdomain": "internet-things",
-          "public_readable": true,
-          "public_writable_question": true,
-          "public_writable_answer": true,
-          "public_writable_comment": true,
-          "create_question_coin_deduction": 2,
-          "addable_member": true,
-          "topics": [],
-          "auto_approval": true,
-          "min_karma_for_application": null,
-          "email_domain_suffix_for_application": "",
-          "moderator": example_user1,
-          "permission_type": "public",
-          "questions_count": 6,
-          "submissions_count": 4,
-          "members_count": 7
-        },
-        "upvoted": false,
-        "view_times": 2
-      }
+      "submission": example_user1_submission1,
     }
   }
 }
 
 
-example_activity = {
+const exmaple_create_submission_activity = {
+  "id": 2650,
+  "site_uuid": null,
+  "created_at": "2021-03-05T20:19:07.513861+00:00",
+  "verb": "create_submission",
+  "content": null,
+  "event": {
+    "created_at": "2021-03-05T20:19:07.513861+00:00",
+    "content": {
+      "verb": "create_submission",
+      "subject": example_user1,
+      "submission": example_user1_submission1
+    }
+  }
+};
+
+const example_activity = {
   "id": 1393,
   "site_uuid": null,
   "created_at": "2021-02-06T20:31:09.965902+00:00",
@@ -161,7 +179,7 @@ example_activity = {
   }
 }
 
-example_activity2_to_combine = {
+const example_activity_upvote_question1 = {
   "id": 1394,
   "site_uuid": null,
   "created_at": "2021-02-06T20:31:09.965902+00:00",
@@ -178,7 +196,7 @@ example_activity2_to_combine = {
 }
 
 
-example_activity3_to_combine = {
+const example_activity_upvote_question2 = {
   "id": 1395,
   "site_uuid": null,
   "created_at": "2021-02-06T20:31:09.965902+00:00",
@@ -298,9 +316,10 @@ app.get("/api/v1/activities/", (req, res) => {
   if(req.query.before_activity_id === undefined) {
     res.json([
       example_activity,
-      example_activity2_to_combine,
-      example_activity3_to_combine,
+      example_activity_upvote_question1,
+      example_activity_upvote_question2,
       example_comment_submission_activity,
+      exmaple_create_submission_activity,
     ]);
   } else {
     res.json([]);
