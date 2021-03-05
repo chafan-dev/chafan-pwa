@@ -1,5 +1,5 @@
 <template>
-    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': $vuetify.breakpoint.smAndDown }"
+    <v-card flat
             :max-width="hoverMode ? 400 : undefined">
         <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
             <v-avatar size="100" tile class="avatarDiv">
@@ -14,14 +14,14 @@
             </v-col>
             <v-col align-self="center">
                 <div class="mb-1 mt-1" :class="{'headline': !compactMode, 'text-center': !compactMode}">
-                    <a :href="'/users/' + userPreview.handle" class="text-decoration-none">
+                    <RouterLink :to="'/users/' + userPreview.handle" class="text-decoration-none">
                         <span v-if="userPreview.full_name">
                             {{userPreview.full_name}}
                         </span>
                         <span v-else>
                             @{{userPreview.handle}}
                         </span>
-                    </a>
+                    </RouterLink>
 
                     <span v-if="userPreview.full_name" class="grey--text">
                         (@{{userPreview.handle}})
@@ -38,18 +38,18 @@
                 <template v-if="follows">
                     <v-row v-if="compactMode">
                         <v-col>
-                            <a class="text-decoration-none mr-2 text-caption"
-                            :href="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                            <RouterLink class="text-decoration-none mr-2 text-caption"
+                            :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
-                            </a>
+                            </RouterLink>
                             <span v-else>
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </span>
 
-                            <a class="text-decoration-none text-caption"
-                            :href="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                            <RouterLink class="text-decoration-none text-caption"
+                            :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
-                            </a>
+                            </RouterLink>
                             <span v-else>
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </span>
@@ -57,19 +57,19 @@
                     </v-row>
                     <v-row v-else class="mt-3">
                         <v-col class="text-center">
-                            <a class="text-decoration-none"
-                            :href="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                            <RouterLink class="text-decoration-none"
+                            :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
-                            </a>
+                            </RouterLink>
                             <span v-else>
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </span>
                         </v-col>
                         <v-col class="text-center">
-                            <a class="text-decoration-none"
-                            :href="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                            <RouterLink class="text-decoration-none"
+                            :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
-                            </a>
+                            </RouterLink>
                             <span v-else>
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </span>
@@ -83,17 +83,17 @@
 
                     <v-row class="compact-row">
                         <v-col v-if="currentUserId != userPreview.uuid" :class="{'text-center': !compactMode}">
-                            <v-btn @click="cancelFollow" v-if="follows.followed_by_me" small
+                            <v-btn depressed @click="cancelFollow" v-if="follows.followed_by_me" small
                                    :disabled="cancelFollowIntermediate">
                                 {{$t('取消关注')}}
                                 <v-progress-circular :size="20" indeterminate v-show="cancelFollowIntermediate" />
                             </v-btn>
-                            <v-btn @click="follow" :disabled="followIntermediate" color="primary" small v-else>
+                            <v-btn depressed @click="follow" :disabled="followIntermediate" color="primary" small v-else>
                                 {{$t('关注')}}
                                 <v-progress-circular :size="20" indeterminate color="primary" v-show="followIntermediate" />
                             </v-btn>
 
-                            <v-btn small class="ml-2"
+                            <v-btn depressed small class="ml-2"
                                    @click="privateMessage" :disabled="privateMessageIntermediate">
                                 {{$t('私信')}}
                             </v-btn>

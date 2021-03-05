@@ -1,5 +1,5 @@
 <template>
-    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': $vuetify.breakpoint.smAndDown }">
+    <v-card >
         <v-card-title>Response:
             <a :href="`/forms/${formResponse.form.uuid}`">
                 {{ formResponse.form.title }}
