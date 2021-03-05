@@ -55,6 +55,7 @@ Build and serve locally through https:
 VUE_APP_ENV=staging npm run build
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
 node e2e_tests/server.js --secure
+# Open https://localhost:8080
 ```
 
 ### Analyze production build
