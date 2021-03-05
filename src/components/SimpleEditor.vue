@@ -19,10 +19,13 @@ export default class SimpleEditor extends Vue {
     private mounted() {
         this.vditor = new Vditor(this.$refs.editor as HTMLElement, {
             debugger: env === 'development',
-            toolbar: [],
             cdn: vditorCDN,
             placeholder: this.placeholder ? this.placeholder : '',
             value: this.initialValue,
+            mode: 'wysiwyg',
+            toolbarConfig: {
+                hide: true,
+            },
             cache: {
                 enable: false,
             },
