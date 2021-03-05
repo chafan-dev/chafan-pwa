@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="d-flex mt-1" v-if="!notMember">
+        <div class="d-flex mt-1 mb-1" v-if="!notMember">
             <Invite :site="site" />
             <NewInviteLinkBtn :site="site" class="ml-2" />
             <v-menu offset-y>
