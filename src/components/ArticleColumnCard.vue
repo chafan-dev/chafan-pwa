@@ -1,5 +1,5 @@
 <template>
-    <v-card class="pa-2"> <!-- TODO: c-card -->
+    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <v-row justify="center">
             <v-col align-self="center">
                 <div :class="{ 'mb-6': currentUserId === articleColumn.owner.uuid, 'mb-2': currentUserId !== articleColumn.owner.uuid }">
@@ -59,6 +59,7 @@ export default class ArticleColumnCard extends Vue {
         return this.$store.state.main.userProfile.uuid;
     }
 
+    @Prop({default: false}) private readonly embedded!: false;
     @Prop() public readonly articleColumn!: IArticleColumn;
     @Prop({ default: false }) public readonly compactMode!: boolean;
 
@@ -120,3 +121,14 @@ export default class ArticleColumnCard extends Vue {
     }
 }
 </script>
+
+
+<style scoped>
+/* FIXME: code duplicate: Home.vue */
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
+}
+</style>
