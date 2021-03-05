@@ -26,6 +26,10 @@ export default class SimpleEditor extends Vue {
             toolbarConfig: {
                 hide: true,
             },
+            toolbar: [
+                'bold', 'italic', 'link', 'list', 'line', 'strike',
+                'undo', 'redo',
+            ],
             cache: {
                 enable: false,
             },
