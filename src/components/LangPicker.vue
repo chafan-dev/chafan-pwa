@@ -7,7 +7,7 @@
             </v-btn>
         </template>
 
-        <v-list>
+        <v-list dense>
              <v-list-item-group
                     color="indigo"
                     active-class="border"
