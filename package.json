@@ -10,7 +10,7 @@
     "analyze": "source-map-explorer 'dist/js/*.js' --no-border-checks"
   },
   "dependencies": {
-    "@chafan/vditor": "3.8.1-chafan.4",
+    "@chafan/vditor": "3.8.2-chafan.2",
     "@sentry/tracing": "^5.30.0",
     "@sentry/vue": "^5.30.0",
     "axios": "^0.21.1",
