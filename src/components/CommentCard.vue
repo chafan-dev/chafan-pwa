@@ -1,5 +1,5 @@
 <template>
-    <v-card flat >
+    <v-card class="pa-2"> <!-- TODO: c-card -->
         <div class="d-flex mb-2">
             {{ comment.body }}
           <RouterLink :to="comment.root_route + `/comments/${comment.uuid}`">

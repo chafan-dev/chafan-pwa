@@ -1,5 +1,5 @@
 <template>
-    <v-card flat >
+    <v-card class="pa-2"> <!-- TODO: c-card -->
         <div class="title" style="word-break: normal">
             <RouterLink class="text-decoration-none" :to="'/articles/' + articlePreview.uuid">
             {{ articlePreview.title }}
