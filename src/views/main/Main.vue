@@ -271,8 +271,6 @@ export default class Main extends Vue {
 
   private userMode = true;
 
-  private showAskActionDialog = false;
-
   private showLoginPrompt() {
     commitSetShowLoginPrompt(this.$store, true);
   }
