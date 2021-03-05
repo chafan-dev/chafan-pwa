@@ -1,5 +1,6 @@
 <template>
-    <v-card flat >
+    <!-- TODO: c-card -->
+    <v-card class="pa-2">
         <div class="title" style="word-break: normal">
             <RouterLink class="text-decoration-none" :to="'/questions/' + questionPreview.uuid">
             {{ questionPreview.title }}
