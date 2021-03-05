@@ -220,7 +220,7 @@
                               <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'create_submission'">
-                              <SubmissionCard :submission="activity.event.content.submission" />
+                              <SubmissionCard :embedded="true" :submission="activity.event.content.submission" />
                             </div>
                           </div>
                         </v-card>
