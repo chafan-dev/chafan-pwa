@@ -1,5 +1,5 @@
 <template>
-    <v-card flat
+    <v-card class="pa-2"
             :max-width="hoverMode ? 400 : undefined">
         <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
             <v-avatar size="100" tile class="avatarDiv">

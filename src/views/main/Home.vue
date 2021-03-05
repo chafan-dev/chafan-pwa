@@ -335,7 +335,6 @@ export default class Home extends Vue {
     private readonly FAB_FLAG = 'webfront-fab-clicked';
 
     private showSubjectDialog = false;
-    private showAskActionDialog = false;
 
     private subjectsInDialog: IUserPreview[] = [];
 
