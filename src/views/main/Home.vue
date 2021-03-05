@@ -184,10 +184,10 @@
                               <ArticleColumnCard :compactMode="true" :articleColumn="activity.event.content.article_column" />
                             </div>
                             <div v-if="activity.verb === 'upvote_answer' || activity.verb === 'upvote_answer_combined'">
-                              <Answer :answerPreview="activity.event.content.answer" :showAuthor="true" />
+                              <Answer :embedded="true" :answerPreview="activity.event.content.answer" :showAuthor="true" />
                             </div>
                             <div v-if="activity.verb === 'upvote_question' || activity.verb === 'upvote_question_combined'">
-                              <QuestionPreview :questionPreview="activity.event.content.question" />
+                              <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'upvote_submission' || activity.verb === 'upvote_submission_combined'">
                               <SubmissionCard :submission="activity.event.content.submission" />
@@ -214,10 +214,10 @@
                               <ArticlePreview :articlePreview="activity.event.content.article" />
                             </div>
                             <div v-else-if="activity.verb === 'answer_question'">
-                              <Answer :answerPreview="activity.event.content.answer" :showAuthor="false" />
+                              <Answer :embedded="true" :answerPreview="activity.event.content.answer" :showAuthor="false" />
                             </div>
                             <div v-else-if="activity.verb === 'create_question'">
-                              <QuestionPreview :questionPreview="activity.event.content.question" />
+                              <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
                             </div>
                             <div v-else-if="activity.verb === 'create_submission'">
                               <SubmissionCard :submission="activity.event.content.submission" />
