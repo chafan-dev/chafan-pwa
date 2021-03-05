@@ -1,5 +1,6 @@
 <template>
-    <v-card flat :class="{'pa-2': $vuetify.breakpoint.mdAndUp, 'pa-1': $vuetify.breakpoint.smAndDown }">
+    <!-- TODO: c-card -->
+    <v-card class="pa-2">
         <div class="title" style="word-break: normal">
             <RouterLink class="text-decoration-none" :to="'/submissions/' + submission.uuid">
                 {{ submission.title }}
