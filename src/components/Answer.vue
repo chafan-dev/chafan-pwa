@@ -51,93 +51,96 @@
 
                                 <v-card-actions>
                                     <v-spacer />
-                                    <v-btn outlined @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
-                                    <v-btn color="error" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>{{$t('Yes')}}</v-btn>
+                                    <v-btn small outlined @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
+                                    <v-btn small color="error" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>{{$t('Yes')}}</v-btn>
                                 </v-card-actions>
                                 </v-card>
                             </v-dialog>
 
-                          <div class="d-flex">
-                            <v-btn depressed @click="showCancelUpvoteDialog = true"  color="primary lighten-2" v-if="upvotes && upvotes.upvoted">
-                              {{$t('已赞')}} ({{ upvotes.count }})
-                            </v-btn>
-                            <v-btn depressed class="slim-btn ma-1" color="primary"
-                                   @click="upvote" v-else :disabled="currentUserIsAuthor || upvoteIntermediate">
-                              {{$t('赞')}} ({{ upvotes.count }})
-                            </v-btn>
+                            <div class="d-flex mt-2">
+                                <v-btn small depressed @click="showCancelUpvoteDialog = true"  color="primary lighten-2" v-if="upvotes && upvotes.upvoted">
+                                    {{$t('已赞')}} ({{ upvotes.count }})
+                                </v-btn>
+                                <v-btn small depressed class="slim-btn mx-1" color="primary"
+                                    @click="upvote" v-else :disabled="currentUserIsAuthor || upvoteIntermediate">
+                                    {{$t('赞')}} ({{ upvotes.count }})
+                                </v-btn>
 
-                            <v-btn depressed class="mx-1" @click="toggleShowComments">
-                              {{answer.comments.length == 0 ? $t('评论') : $t('查看n条评论', {amount: answer.comments.length})}}
-                            </v-btn>
+                                <v-btn small depressed class="mx-1" @click="toggleShowComments">
+                                    {{answer.comments.length == 0 ? $t('评论') : $t('查看n条评论', {amount: answer.comments.length})}}
+                                </v-btn>
 
-                            <template v-if="userProfile">
-                              <v-btn small class="slim-btn ma-1" @click="loadEditor" v-show="currentUserIsAuthor">
-                                {{$t(editButtonText)}}
-                              </v-btn>
+                                <template v-if="userProfile">
+                                <v-btn small class="slim-btn mx-1" @click="loadEditor" v-show="currentUserIsAuthor">
+                                    {{$t(editButtonText)}}
+                                </v-btn>
 
-                              <v-menu offset-y v-if="currentUserIsAuthor">
-                                <template v-slot:activator="{ on, attrs }">
-                                  <v-btn v-bind="attrs" v-on="on" class="slim-btn ma-1" small >{{$t('设置')}}</v-btn>
+                                <v-menu offset-y v-if="currentUserIsAuthor">
+                                    <template v-slot:activator="{ on, attrs }">
+                                    <v-btn v-bind="attrs" v-on="on" class="slim-btn mx-1" small>{{$t('设置')}}</v-btn>
+                                    </template>
+                                    <v-list>
+                                    <v-list-item @click="confirmDeleteDialog = true">
+                                        <v-list-item-icon>
+                                        <DeleteIcon />
+                                        </v-list-item-icon>
+                                        <v-list-item-content>{{$t('永久删除')}}</v-list-item-content>
+                                    </v-list-item>
+                                    </v-list>
+                                </v-menu>
+
+                                <v-dialog max-width="300" v-model="confirmDeleteDialog">
+                                    <v-card>
+                                    <v-card-title primary-title>
+                                        <div class="headline primary--text">{{$t('确定永久删除答案及其所有历史版本？')}}</div>
+                                    </v-card-title>
+                                    <v-card-actions>
+                                        <v-spacer />
+                                        <v-btn small ="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
+                                        <v-btn small color="warning" @click="deleteAnswer" :disabled='deleteAnswerIntermediate'>
+                                        {{$t('Yes')}}
+                                        </v-btn>
+                                    </v-card-actions>
+                                    </v-card>
+                                </v-dialog>
+
+                                <BookmarkedIcon @click="unbookmark"
+                                                :disabled="unbookmarkIntermediate"
+                                                v-show="userBookmark.bookmarked_by_me && (!currentUserIsAuthor)"/>
+                                <ToBookmarkIcon @click="bookmark"
+                                                v-show="(!userBookmark.bookmarked_by_me) && (!currentUserIsAuthor)"
+                                                :disabled="bookmarkIntermediate" />
                                 </template>
-                                <v-list>
-                                  <v-list-item @click="confirmDeleteDialog = true">
-                                    <v-list-item-icon>
-                                      <DeleteIcon />
-                                    </v-list-item-icon>
-                                    <v-list-item-content>{{$t('永久删除')}}</v-list-item-content>
-                                  </v-list-item>
-                                </v-list>
-                              </v-menu>
 
-                              <v-dialog max-width="300" v-model="confirmDeleteDialog">
-                                <v-card>
-                                  <v-card-title primary-title>
-                                    <div class="headline primary--text">{{$t('确定永久删除答案及其所有历史版本？')}}</div>
-                                  </v-card-title>
-                                  <v-card-actions>
-                                    <v-spacer />
-                                    <v-btn small ="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
-                                    <v-btn small color="warning" @click="deleteAnswer" :disabled='deleteAnswerIntermediate'>
-                                      {{$t('Yes')}}
-                                    </v-btn>
-                                  </v-card-actions>
-                                </v-card>
-                              </v-dialog>
+                                <CollapseUpIcon @click="preview = true" class="pl-1 pr-1" />
 
-                              <BookmarkedIcon @click="unbookmark"
-                                              :disabled="unbookmarkIntermediate"
-                                              v-show="userBookmark.bookmarked_by_me && (!currentUserIsAuthor)"/>
-                              <ToBookmarkIcon @click="bookmark"
-                                              v-show="(!userBookmark.bookmarked_by_me) && (!currentUserIsAuthor)"
-                                              :disabled="bookmarkIntermediate" />
-                            </template>
-
-                            <CollapseUpIcon @click="preview = true" class="pl-1 pr-1" />
-
-                            <v-tooltip bottom>
-                              <template v-slot:activator="{ on, attrs }">
-                                <div v-bind="attrs" v-on="on" class="mt-1">
-                                  <RouterLink :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
-                                              class="text-decoration-none">
-                                    <LinkIcon class="pl-1 pr-1" />
-                                  </RouterLink>
-                                </div>
-                              </template>
-                              <span>{{$t('Link')}}</span>
-                            </v-tooltip>
-                          </div>
+                                <v-tooltip bottom>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <div v-bind="attrs" v-on="on" class="mt-1">
+                                    <RouterLink :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                                                class="text-decoration-none">
+                                        <LinkIcon class="pl-1 pr-1" />
+                                    </RouterLink>
+                                    </div>
+                                </template>
+                                <span>{{$t('Link')}}</span>
+                                </v-tooltip>
+                            </div>
                         </v-col>
 
                         <!-- Column of variable width -->
                         <v-col md="auto" v-if="$vuetify.breakpoint.mdAndUp & !preview && userProfile">
                             <span class="text-caption grey--text ma-2">{{$t('已被阅读n次', { times: answer.view_times })}}</span>
-
-                          <div class="d-flex justify-end mt-1">
-                            <ReactionBlock objectType="answer" class="ml-1" :objectId="answer.uuid"/>
-                          </div>
                         </v-col>
                     </v-row>
 
+                    <!--
+                        NOTE: Layout of this part is tricky since it can be quite wide when there are six emojis.
+                        Let's fix them later.
+                     -->
+                    <div class="d-flex justify-end mt-1">
+                        <ReactionBlock objectType="answer" class="ml-1" :objectId="answer.uuid"/>
+                    </div>
 
 
                     <!-- Comments -->
