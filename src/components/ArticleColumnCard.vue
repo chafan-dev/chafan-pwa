@@ -1,5 +1,5 @@
 <template>
-    <v-card flat >
+    <v-card class="pa-2"> <!-- TODO: c-card -->
         <v-row justify="center">
             <v-col align-self="center">
                 <div :class="{ 'mb-6': currentUserId === articleColumn.owner.uuid, 'mb-2': currentUserId !== articleColumn.owner.uuid }">
