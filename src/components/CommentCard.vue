@@ -1,5 +1,5 @@
 <template>
-    <v-card class="pa-2"> <!-- TODO: c-card -->
+    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <div class="d-flex mb-2">
             {{ comment.body }}
           <RouterLink :to="comment.root_route + `/comments/${comment.uuid}`">
@@ -29,6 +29,7 @@ import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
     components: { QuestionPreview, ArticlePreview, Answer, OpenInNewIcon, SubmissionCard },
 })
 export default class CommentCard extends Vue {
+    @Prop({default: true}) private readonly embedded!: false;
     @Prop() public readonly comment!: IComment;
     @Prop() public readonly submission: ISubmission | undefined;
     @Prop() public readonly questionPreview: IQuestionPreview | undefined;
@@ -37,3 +38,13 @@ export default class CommentCard extends Vue {
     @Prop() public readonly parentComment: IComment | undefined;
 }
 </script>
+
+<style scoped>
+/* FIXME: code duplicate: Home.vue */
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
+}
+</style>
