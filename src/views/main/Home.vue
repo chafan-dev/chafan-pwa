@@ -208,10 +208,10 @@
                               <CommentCard :comment="activity.event.content.reply" :parentComment="activity.event.content.parent_comment" />
                             </div>
                             <div v-else-if="activity.verb === 'upvote_article' || activity.verb === 'upvote_article_combined'">
-                              <ArticlePreview :articlePreview="activity.event.content.article" />
+                              <ArticlePreview :embedded="true" :articlePreview="activity.event.content.article" />
                             </div>
                             <div v-else-if="activity.verb === 'create_article'">
-                              <ArticlePreview :articlePreview="activity.event.content.article" />
+                              <ArticlePreview :embedded="true" :articlePreview="activity.event.content.article" />
                             </div>
                             <div v-else-if="activity.verb === 'answer_question'">
                               <Answer :embedded="true" :answerPreview="activity.event.content.answer" :showAuthor="false" />
