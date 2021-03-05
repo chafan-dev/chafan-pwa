@@ -1,5 +1,6 @@
 <template>
-    <v-menu bottom left>
+    <v-menu offset-y
+            transition="slide-x-transition" left>
         <template v-slot:activator="{ on, attrs }">
             <v-btn dark icon v-bind="attrs" v-on="on" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }">
                 <I18nIcon />

@@ -283,7 +283,7 @@ import { setAppLocale } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { dispatchUpdateUserProfileQuiet } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
-import CreateQuestionForm from "@/components/CreateQuestionForm.vue";
+import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 
 function getDefaultNarrowFeedUI() {
     try {
@@ -471,6 +471,6 @@ export default class Home extends Vue {
 }
 
 .c-card {
-  box-shadow: 0 3px 10px -10px rgba(85,85,85,.08),0 2px 20px 0 rgba(85,85,85,.06),0 1px 30px 0 rgba(85,85,85,.03)!important;
+  box-shadow: 0 3px 10px -10px rgba(85,85,85,.08),0 2px 20px 0 rgba(85,85,85,.06),0 1px 30px 0 rgba(85,85,85,.03) !important;
 }
 </style>
