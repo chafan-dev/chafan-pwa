@@ -105,20 +105,20 @@
             </template>
 
             <v-card>
+              <v-sheet
+                  class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-4"
+              >
+                <v-subheader class="font-weight-bold">
+                  {{$t('未读通知')}}
+                </v-subheader>
+
+                <div class="mr-1">
+                  <v-btn depressed small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
+                </div>
+              </v-sheet>
+
               <div style="max-height: 300px; overflow: auto">
                 <v-list>
-                  <v-sheet
-                      class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-4"
-                  >
-                    <v-subheader class="font-weight-bold">
-                      {{$t('未读通知')}}
-                    </v-subheader>
-
-                    <div class="mr-1">
-                      <v-btn depressed small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
-                    </div>
-                  </v-sheet>
-
                   <template v-for="notif in unreadNotifications">
                     <v-divider :key="'divider-' + notif.id" class="ma-1" />
 
