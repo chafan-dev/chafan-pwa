@@ -1,6 +1,6 @@
 <template>
     <!-- TODO: c-card -->
-    <v-card class="pa-2">
+    <v-card class="pa-2" :flat="embedded">
         <div class="title" style="word-break: normal">
             <RouterLink class="text-decoration-none" :to="'/questions/' + questionPreview.uuid">
             {{ questionPreview.title }}
@@ -39,6 +39,7 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 })
 export default class QuestionPreview extends Vue {
     @Prop() public readonly questionPreview!: IQuestionPreview;
+    @Prop({default: false}) private readonly embedded!: false;
 
     public shortDesc(d: string) {
         if (d.length > 60) {

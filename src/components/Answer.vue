@@ -1,5 +1,5 @@
 <template>
-    <v-card class="pa-2 c-card" elevation="1"
+    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded"
             :loading="loading" v-if="!showEditor && !loading">
         <div v-if="isHiddenByMod">
             <v-card-text>{{$t('内容已被管理员隐藏')}}</v-card-text>
@@ -220,6 +220,7 @@ export default class Answer extends Vue {
     }
 
     get token() { return this.$store.state.main.token; }
+    @Prop({default: false}) private readonly embedded!: false;
     @Prop() private readonly answerPreview!: IAnswerPreview;
     @Prop() private readonly answerProp: IAnswer | undefined;
     @Prop({default: false}) private readonly loadFull!: boolean;
