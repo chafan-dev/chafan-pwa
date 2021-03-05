@@ -1,5 +1,5 @@
 <template>
-    <div class="pa-3">
+    <div>
         <div class="mb-2">
             <div class="d-flex align-center justify-space-between  mb-4">
               <div class="headline">
