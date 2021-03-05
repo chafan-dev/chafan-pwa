@@ -1,17 +1,17 @@
 <template>
-    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': $vuetify.breakpoint.smAndDown }">
+    <v-card flat >
         <div class="title" style="word-break: normal">
-            <a class="text-decoration-none" :href="'/articles/' + articlePreview.uuid">
+            <RouterLink class="text-decoration-none" :to="'/articles/' + articlePreview.uuid">
             {{ articlePreview.title }}
-            </a>
+            </RouterLink>
         </div>
         <div class="d-flex">
             <span class="grey--text">
                 {{ $t('发表于专栏：') }}
-                <a class="text-decoration-none"
-                   :href="`/article-columns/${articlePreview.article_column.uuid}`">
+                <RouterLink class="text-decoration-none"
+                   :to="`/article-columns/${articlePreview.article_column.uuid}`">
                    {{ articlePreview.article_column.name }}
-                </a>
+                </RouterLink>
             </span>
         </div>
     </v-card>

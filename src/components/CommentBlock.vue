@@ -1,16 +1,17 @@
 <template>
-    <div v-if="comments.length > 0 || loggedIn" class="ml-4 mr-4">
+    <div v-if="comments.length > 0 || loggedIn" class="mt-4">
+      <v-divider class="mb-4" />
         <v-list-item v-for="comment in comments" :key="comment.uuid" class="comment-item">
-            <v-list-item-content class="pl-2">
+            <v-list-item-content>
                 <Comment :comment='comment' :writable="writable" :siteId="siteId"
                          :enableUpvotes="enableUpvotes" />
             </v-list-item-content>
         </v-list-item>
         <div v-if="writable">
             <SimpleEditor ref="simpleEditor" class="ma-1" :placeholder="$t('评论')" />
-            <div class="d-flex mr-1">
+            <div class="d-flex">
                 <v-spacer />
-                <v-btn small @click="submitNewComment" color="primary" :disabled="commentSubmitIntermediate">
+                <v-btn @click="submitNewComment" color="primary" :disabled="commentSubmitIntermediate">
                     {{ $t('提交评论') }}
                     <v-progress-circular :size="20" v-show="commentSubmitIntermediate" indeterminate />
                 </v-btn>

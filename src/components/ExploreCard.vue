@@ -1,7 +1,23 @@
 <template>
     <div class="pa-3">
-        <div class="mb-1">
-            <div class="headline primary--text">{{ $t('My Circles') }}</div>
+        <div class="mb-2">
+            <div class="d-flex align-center justify-space-between  mb-4">
+              <div class="headline">
+                <RouterLink to="/sites" class="text-decoration-none">
+                  {{ $t('My Circles') }}
+                </RouterLink>
+              </div>
+
+              <v-skeleton-loader type="paragraph" v-if="loadingSites" />
+              <div class="d-flex mt-1" v-else>
+                <v-btn class="primary" depressed @click="showCreateSiteDialog = true">{{ $t('创建圈子') }}</v-btn>
+
+                <v-dialog max-width="500" v-model="showCreateSiteDialog">
+                  <CreateSiteCard />
+                </v-dialog>
+              </div>
+            </div>
+
             <!-- TODO: rank/compute recently used sites. -->
             <div v-if="$vuetify.breakpoint.mdAndUp">
                 <SiteBtn :site="profile.site" v-for="profile in siteProfiles" :key="profile.site.uuid" />
@@ -11,29 +27,21 @@
                     <SiteBtn :site="profile.site" />
                 </v-slide-item>
             </v-slide-group>
-
-            <v-skeleton-loader type="paragraph" v-if="loadingSites" />
-            <div class="d-flex mt-2" v-else>
-                <v-btn small color="primary" class="ml-1" to="/sites">{{$t('查看所有圈子')}}</v-btn>
-                <v-btn small class="ml-2" @click="showCreateSiteDialog = true">{{ $t('创建圈子') }}</v-btn>
-
-                <v-dialog max-width="500" v-model="showCreateSiteDialog">
-                    <CreateSiteCard />
-                </v-dialog>
-            </div>
         </div>
 
-        <div class="mb-3 mt-3">
-            <div class="headline primary--text">{{ $t('Pinned questions') }}</div>
+        <v-divider />
+        <div class="my-3">
+            <div class="headline">{{ $t('Pinned questions') }}</div>
             <v-skeleton-loader type="paragraph" v-if="questions === null" />
-            <ul v-else>
+            <ul v-else class="my-3">
                 <li v-for="question in questions" :key="question.uuid">
                     <QuestionLink :questionPreview="question" />
                 </li>
             </ul>
         </div>
-        <v-divider />
-        <div class="mt-6">
+
+      <v-divider />
+        <div class="py-3">
             <div><a class="text-decoration-none" href="https://about.cha.fan" target="_blank">关于 Chafan</a></div>
             <div><a class="text-decoration-none" href="https://about.cha.fan/docs/code-of-conduct" target="_blank">社区行为守则 (Code of Conduct)</a></div>
             <div><a class="text-decoration-none" href="https://about.cha.fan/docs/report" target="_blank">如何举报不符合规范的内容</a></div>

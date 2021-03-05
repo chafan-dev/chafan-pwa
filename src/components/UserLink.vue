@@ -1,11 +1,11 @@
 <template>
     <v-menu :open-on-hover="!$vuetify.breakpoint.mobile" bottom right offset-y v-if="clickable" open-delay="400">
         <template v-slot:activator="{ on, attrs }">
-            <a class="text-decoration-none" v-if="userPreview"
-               :href="'/users/' + userPreview.handle" v-bind="attrs" v-on="on">
+            <RouterLink class="text-decoration-none grey--text text--darken-2" v-if="userPreview"
+               :to="'/users/' + userPreview.handle" v-bind="attrs" v-on="on">
                 <Avatar :userPreview="userPreview" v-if="showAvatar" />
                 {{ name }}
-            </a>
+            </RouterLink>
         </template>
         <v-lazy>
             <UserCard :userPreview="userPreview" :compactMode="true" :hoverMode="true" />
