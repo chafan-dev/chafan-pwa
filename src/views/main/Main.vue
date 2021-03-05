@@ -115,7 +115,7 @@
                     </v-subheader>
 
                     <div class="mr-1">
-                      <v-btn small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
+                      <v-btn depressed small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
                     </div>
                   </v-sheet>
 
