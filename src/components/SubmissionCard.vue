@@ -43,7 +43,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
     components: { SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
 export default class submission extends Vue {
-    @Prop({default: true}) private readonly embedded!: false;
+    @Prop({default: false}) private readonly embedded!: false;
     @Prop() private readonly submission!: ISubmission;
 
     private shortDesc(d: string) {
