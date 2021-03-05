@@ -1,9 +1,9 @@
 <template>
-    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': $vuetify.breakpoint.smAndDown }">
+    <v-card flat >
         <div class="title" style="word-break: normal">
-            <a class="text-decoration-none" :href="'/questions/' + questionPreview.uuid">
+            <RouterLink class="text-decoration-none" :to="'/questions/' + questionPreview.uuid">
             {{ questionPreview.title }}
-            </a>
+            </RouterLink>
         </div>
         <div class="grey--text subtitle-2" v-if="questionPreview.description">
             {{ shortDesc(questionPreview.description) }}

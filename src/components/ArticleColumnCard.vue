@@ -1,12 +1,12 @@
 <template>
-    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': $vuetify.breakpoint.smAndDown }">
+    <v-card flat >
         <v-row justify="center">
             <v-col align-self="center">
                 <div :class="{ 'mb-6': currentUserId === articleColumn.owner.uuid, 'mb-2': currentUserId !== articleColumn.owner.uuid }">
                     <div class="mb-1" :class="{'headline': !compactMode, 'text-center': !compactMode}">
-                        <a :href="'/article-columns/' + articleColumn.uuid" class="text-decoration-none" v-if="!showColumnEditor">
+                        <RouterLink :to="'/article-columns/' + articleColumn.uuid" class="text-decoration-none" v-if="!showColumnEditor">
                             {{name}}
-                        </a>
+                        </RouterLink>
                         <span class="grey--text" v-if="compactMode && desc && !showColumnEditor">
                             : {{ desc }}
                         </span>
