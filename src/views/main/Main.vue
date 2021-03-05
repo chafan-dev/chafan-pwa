@@ -76,9 +76,10 @@
           <div v-if="$vuetify.breakpoint.mdAndUp">
             <router-link class="white--text title text-decoration-none" to="/">{{appName}}</router-link>
           </div>
-          <router-link v-else class="white--text title text-decoration-none" to="/">
-            <HomeIcon class="thin-btn" />
-          </router-link>
+
+          <v-btn icon v-else to="/" active-class="opacity-none">
+            <HomeIcon/>
+          </v-btn>
         </div>
 
         <div class="d-flex align-center search-box" v-if="userProfile">
@@ -89,9 +90,11 @@
           <LangPicker />
 
           <!-- Notifications -->
-          <v-menu :close-on-content-click="false" bottom left
-                  :max-width="Math.min($vuetify.breakpoint.width * 0.9, 500)"
-                  :min-width="Math.min($vuetify.breakpoint.width * 0.9, 500)" v-if="userProfile">
+          <v-menu :close-on-content-click="false" left
+                  :max-width="Math.min($vuetify.breakpoint.width * 0.9, 400)"
+                  :min-width="Math.min($vuetify.breakpoint.width * 0.9, 400)" v-if="userProfile"
+                  offset-y
+                  transition="slide-x-transition">
             <template v-slot:activator="{ on, attrs }">
                 <v-btn dark icon v-bind="attrs" v-on="on" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }">
                   <v-badge color="green" :content="unreadNotifications.length" v-if="unreadNotifications.length > 0">
@@ -102,13 +105,20 @@
             </template>
 
             <v-card>
-              <v-card-title class="headline primary--text">
-                {{$t('未读通知')}}
-                <v-spacer />
-                <v-btn small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
-              </v-card-title>
               <div style="max-height: 300px; overflow: auto">
                 <v-list>
+                  <v-sheet
+                      class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-4"
+                  >
+                    <v-subheader class="font-weight-bold">
+                      {{$t('未读通知')}}
+                    </v-subheader>
+
+                    <div class="mr-1">
+                      <v-btn small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
+                    </div>
+                  </v-sheet>
+
                   <template v-for="notif in unreadNotifications">
                     <v-divider :key="'divider-' + notif.id" class="ma-1" />
 
@@ -119,7 +129,7 @@
                     </v-list-item>
                   </template>
                   <div class="text-center mt-2">
-                    <v-btn small :disabled="readNotificationsIntermediate" @click="expandReadNotifications">
+                    <v-btn small depressed :disabled="readNotificationsIntermediate" @click="expandReadNotifications">
                       {{ $t('已读通知') }}
                     </v-btn>
                   </div>
@@ -144,7 +154,8 @@
           </v-btn>
 
           <!-- ... menu -->
-          <v-menu left bottom v-if="userProfile">
+          <v-menu left v-if="userProfile" offset-y
+                  transition="slide-x-transition">
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }">
                 <Avatar :userPreview="userProfile" v-if="userProfile && userProfile.avatar_url" />
@@ -152,17 +163,17 @@
               </v-btn>
             </template>
 
-            <v-list>
+            <v-list dense>
               <v-list-item to="/dashboard">
                 <v-list-item-title><DashboardIcon /> {{$t('Dashboard')}}</v-list-item-title>
               </v-list-item>
               <v-list-item :href="`/users/${userProfile.handle}`">
                 <v-list-item-title><ProfileIcon /> {{$t('我的个人页面')}}</v-list-item-title>
               </v-list-item>
-              <v-list-item>
-                <a class="text-decoration-none secondary--text" href="mailto:contact@cha.fan">
+              <v-list-item href="mailto:contact@cha.fan">
+                <v-list-item-title>
                   <EmailIcon /> {{ $t('联系我们') }}
-                </a>
+                </v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
                 <v-list-item-title><LogoutIcon /> {{$t('Logout')}}</v-list-item-title>
@@ -208,7 +219,7 @@ import { api } from '@/api';
 import { api2 } from '@/api2';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
-import CreateQuestionForm from "@/components/CreateQuestionForm.vue";
+import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
@@ -384,5 +395,9 @@ export default class Main extends Vue {
 }
 .app-bar-inner {
   width: 100%;
+}
+
+.opacity-none:before {
+  opacity: 0 !important;
 }
 </style>
