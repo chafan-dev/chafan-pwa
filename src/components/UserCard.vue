@@ -1,5 +1,6 @@
 <template>
-    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded"
+    <v-card class="pa-3"
+            :class="{'c-card': !embedded && !hoverMode }" :flat="embedded"
             :max-width="hoverMode ? 400 : undefined">
         <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
             <v-avatar size="100" tile class="avatarDiv">
