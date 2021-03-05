@@ -9,6 +9,7 @@ check-no-pending-change:
 staging-pr: check-no-pending-change
 	git checkout master
 	git fetch origin
+	git pull origin master
 	git rebase origin/stag
 	git push -f origin master
 	gh pr create --base stag --title "Update stag from master" --fill
