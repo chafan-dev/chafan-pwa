@@ -53,6 +53,8 @@
                     </v-card-actions>
                     </v-card>
                 </v-dialog>
+
+                <v-divider vertical />
             </template>
 
             <v-tooltip bottom v-if="childComments && childComments.length > 0">
@@ -67,7 +69,7 @@
             </v-tooltip>
 
             <template v-if="enableUpvotes && upvotes && !isDeleted && !showEditor">
-                <span v-if="currentUserIsAuthor">
+                <span class="text-caption d-flex align-center mr-2" v-if="currentUserIsAuthor">
                     <UpvoteIcon /> {{ upvotes.count }}
                 </span>
                 <span v-else @click="toggleUpvote" style="cursor: pointer"
