@@ -1,13 +1,19 @@
 <template>
-    <div class="vditor-viewer simple-viewer" />
+    <div ref="vditorViewer" class="simple-viewer">
+        <div class="vditor-viewer" />
+        <LightboxGroup ref="lightbox" />
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
+import LightboxGroup from '@/components/LightboxGroup.vue';
 import { vditorCDN } from '@/common';
 
-@Component
+@Component({
+    components: { LightboxGroup }
+})
 export default class Viewer extends Vue {
     @Prop() public readonly body!: string;
 
@@ -18,7 +24,10 @@ export default class Viewer extends Vue {
             {
                 mode: 'light',
                 cdn: vditorCDN,
-
+                after: () => {
+                    const lightbox = this.$refs.lightbox as LightboxGroup;
+                    lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+                }
             },
         );
     }
