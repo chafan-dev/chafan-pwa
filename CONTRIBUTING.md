@@ -1,6 +1,6 @@
 # Contributing
 
-如果你打算长期贡献代码，请先了解[Chafan 的开发产品策略](https://github.com/chafan-dev/roadmap/blob/main/docs/development_strategy.md)
+如果你打算长期贡献代码，请先了解[Chafan 的产品开发策略](https://github.com/chafan-dev/roadmap/blob/main/docs/development_strategy.md)
 
 When contributing to this repository, **please first discuss the change you wish to make** via
 [issues](https://github.com/chafan-dev/frontend/issues)/[discussions](https://github.com/chafan-dev/frontend/discussions),
