@@ -88,6 +88,7 @@ export interface IAnswer {
     upvotes_count: number;
     comment_writable: boolean;
     bookmark_count: number;
+    archives_count: number;
     bookmarked: boolean;
 }
 

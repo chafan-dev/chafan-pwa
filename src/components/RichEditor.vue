@@ -57,12 +57,13 @@
                         <v-spacer />
                         <span class="text-caption grey--text">{{$t('点击展开')}}</span>
                     </v-card-title>
+
                     <v-expansion-panels v-if="archives">
                         <v-expansion-panel v-for="archive in archives" :key="archive.id">
                             <v-expansion-panel-header>
                                 <v-btn small max-width="100px" class="mr-4"
                                        @click="loadArchive(archive)">{{ $t('加载该版本') }}</v-btn>
-                                {{ $dayjs.utc(archive.created_at).local().fromNow() }}
+                                    {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                                 <v-spacer />
                             </v-expansion-panel-header>
                             <v-expansion-panel-content>
@@ -70,12 +71,13 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
                     </v-expansion-panels>
+
                     <v-expansion-panels v-if="articleArchives">
                         <v-expansion-panel v-for="archive in articleArchives" :key="archive.id">
                             <v-expansion-panel-header>
                                 <v-btn small max-width="100px" class="mr-4"
                                        @click="loadArticleArchive(archive)">{{ $t('加载该版本') }}</v-btn>
-                                {{ $dayjs.utc(archive.created_at).local().fromNow() }}
+                                    {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                                 <v-spacer />
                             </v-expansion-panel-header>
                             <v-expansion-panel-content>
@@ -86,6 +88,8 @@
                             </v-expansion-panel-content>
                         </v-expansion-panel>
                     </v-expansion-panels>
+
+                    <v-pagination v-model="archivePage" :length="archivePagesLength" @input="changeArchivePage" />
                 </v-card>
             </v-dialog>
         </div>
@@ -120,16 +124,17 @@ import { apiUrl, env } from '@/env';
 
 import Vditor from '@chafan/vditor';
 import { vditorCDN } from '@/common';
+import { dispatchCaptureApiError } from '@/store/main/actions';
 
 @Component({
     components: { HistoryIcon, DeleteIcon },
 })
 export default class RichEditor extends Vue {
-
     get token() { return this.$store.state.main.token; }
     @Prop({default: false}) private readonly focusMode!: boolean;
     @Prop() private readonly answerIdProp: string | undefined;
     @Prop() private readonly articleIdProp: string | undefined;
+    @Prop() private readonly archivesCount: number | undefined;
     @Prop({default: false}) private readonly hasTitle!: boolean;
     @Prop({default: 'Publish'}) private readonly publishText!: string;
 
@@ -142,6 +147,10 @@ export default class RichEditor extends Vue {
     private articleId: string | null = null;
     private overlay = false;
     private articleTitle: string | null = null;
+
+    private archivePage = 1;
+    private archivePagesLength = 1;
+    private readonly archivePageLimit = 2;
 
     // prevent double-posting
     private writingSessionUUID = uuidv4();
@@ -220,6 +229,10 @@ export default class RichEditor extends Vue {
             this.isPublished = true;
             this.initEditor('', readUserProfile(this.$store)!.default_editor_mode);
         }
+
+        if (this.archivesCount !== undefined) {
+            this.archivePagesLength = Math.ceil(this.archivesCount / this.archivePageLimit)
+        }
     }
 
     private getEditorMode(): 'wysiwyg' | 'markdown_splitview' | 'markdown_realtime_rendering' {
@@ -292,7 +305,6 @@ export default class RichEditor extends Vue {
         this.vditor = new Vditor('vditor', {
             minHeight: 300,
             toolbar: toolBar,
-            typewriterMode: true,
             debugger: env === 'development',
             cdn: vditorCDN,
             preview: {
@@ -388,28 +400,30 @@ export default class RichEditor extends Vue {
     }
 
     private async showHistoryDialog() {
-        if (this.answerId) {
-            this.archives = (await apiAnswer.getAnswerArchives(this.token, this.answerId)).data;
-            if (this.archives.length > 0) {
-                this.historyDialog = true;
-            } else {
-                commitAddNotification(this.$store, {
-                    content: this.$t('尚无历史发表存档').toString(),
-                    color: 'info',
-                });
+        await dispatchCaptureApiError(this.$store, async () => {
+            if (this.answerId) {
+                this.archives = (await apiAnswer.getAnswerArchives(this.token, this.answerId, 0, this.archivePageLimit)).data;
+                if (this.archives.length > 0) {
+                    this.historyDialog = true;
+                } else {
+                    commitAddNotification(this.$store, {
+                        content: this.$t('尚无历史发表存档').toString(),
+                        color: 'info',
+                    });
+                }
             }
-        }
-        if (this.articleId) {
-            this.articleArchives = (await apiArticle.getArticleArchives(this.token, this.articleId)).data;
-            if (this.articleArchives.length > 0) {
-                this.historyDialog = true;
-            } else {
-                commitAddNotification(this.$store, {
-                    content: this.$t('尚无历史发表存档').toString(),
-                    color: 'info',
-                });
+            if (this.articleId) {
+                this.articleArchives = (await apiArticle.getArticleArchives(this.token, this.articleId, 0, this.archivePageLimit)).data;
+                if (this.articleArchives.length > 0) {
+                    this.historyDialog = true;
+                } else {
+                    commitAddNotification(this.$store, {
+                        content: this.$t('尚无历史发表存档').toString(),
+                        color: 'info',
+                    });
+                }
             }
-        }
+        });
     }
 
     private loadArchive(archive: IArchive) {
@@ -425,6 +439,15 @@ export default class RichEditor extends Vue {
     @Emit('delete-draft')
     private deleteDraft() {
         this.showDraftDialog = false;
+    }
+
+    private async changeArchivePage() {
+        await dispatchCaptureApiError(this.$store, async () => {
+            if (this.answerId) {
+                this.archives = (await apiAnswer.getAnswerArchives(
+                    this.token, this.answerId, (this.archivePage - 1) * this.archivePageLimit, this.archivePageLimit)).data;
+            }
+        });
     }
 }
 </script>
