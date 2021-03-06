@@ -3,7 +3,7 @@
         outlined
         dense
         filled
-        :loading="loading"
+        :loading="loadingSubmissions || loadingQuestions || loadingAnswers || loadingUsers"
         :items="items"
         item-value="handle"
         :item-text="getItemText"
