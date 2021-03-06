@@ -1,5 +1,5 @@
 <template>
-    <span>
+    <span class="event-span body-2">
         <i18n :path="'verb.' + event.content.verb">
             <UserLink place="who" v-if="event.content.subject && event.content.subject.uuid != currentUserId" :userPreview="event.content.subject" />
             <span place="who" v-if="event.content.subject && event.content.subject.uuid == currentUserId">{{$t('I')}}</span>
@@ -47,6 +47,10 @@
 
             <a place="answer" v-if="event.content.answer"
                :href="`/questions/${event.content.answer.question.uuid}/answers/${event.content.answer.uuid}`">{{ event.content.answer.body }}</a>
+
+            <a place="channel_message" v-if="event.content.channel" :href="`/channels/${event.content.channel.id}`">
+               {{ $t('私信') }}
+            </a>
         </i18n>
         ({{ $dayjs.utc(event.created_at).local().fromNow() }})
     </span>
@@ -70,3 +74,9 @@ export default class Event extends Vue {
     }
 }
 </script>
+
+<style scoped>
+.event-span a {
+    text-decoration: none;
+}
+</style>
