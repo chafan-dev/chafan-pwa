@@ -91,8 +91,8 @@
 
           <!-- Notifications -->
           <v-menu :close-on-content-click="false" left
-                  :max-width="Math.min($vuetify.breakpoint.width * 0.9, 400)"
-                  :min-width="Math.min($vuetify.breakpoint.width * 0.9, 400)" v-if="userProfile"
+                  :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
+                  :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)" v-if="userProfile"
                   offset-y
                   transition="slide-x-transition">
             <template v-slot:activator="{ on, attrs }">
@@ -105,9 +105,7 @@
             </template>
 
             <v-card>
-              <v-sheet
-                  class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-4"
-              >
+              <v-sheet class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1">
                 <v-subheader class="font-weight-bold">
                   {{$t('未读通知')}}
                 </v-subheader>
@@ -119,8 +117,8 @@
 
               <div style="max-height: 300px; overflow: auto">
                 <v-list>
-                  <template v-for="notif in unreadNotifications">
-                    <v-divider :key="'divider-' + notif.id" class="ma-1" />
+                  <template v-for="(notif, idx) in unreadNotifications">
+                    <v-divider :key="'divider-' + notif.id" class="ma-1" v-if="idx" />
 
                     <v-list-item :key="notif.id" >
                       <Event :event="notif.event" v-if="notif.event" />
