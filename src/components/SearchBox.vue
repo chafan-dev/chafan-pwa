@@ -3,7 +3,7 @@
         outlined
         dense
         filled
-        :loading="loadingQuestions && loadingUsers && loadingAnswers"
+        :loading="loading"
         :items="items"
         item-value="handle"
         :item-text="getItemText"
@@ -32,6 +32,7 @@ export default {
     components: { SearchIcon },
     data () {
         return {
+            loadingSubmissions: false,
             loadingQuestions: false,
             loadingAnswers: false,
             loadingUsers: false,
@@ -63,6 +64,10 @@ export default {
         querySelections(v) {
             this.items = [];
             this.loadingUsers = true;
+            this.loadingQuestions = true;
+            this.loadingSubmissions = true;
+            this.loadingAnswers = true;
+
             apiSearch.searchUsers(this.token, v).then((response) => {
                 response.data.forEach(user => {
                     this.items.push({
@@ -72,7 +77,6 @@ export default {
                 });
                 this.loadingUsers = false;
             });
-            this.loadingQuestions = true;
             apiSearch.searchQuestions(this.token, v).then((response) => {
                 response.data.forEach((question) => {
                     this.items.push({
@@ -82,7 +86,17 @@ export default {
                 });
                 this.loadingQuestions = false;
             });
-            this.loadingAnswers = true;
+
+            apiSearch.searchSubmissions(this.token, v).then((response) => {
+                response.data.forEach((submission) => {
+                    this.items.push({
+                        'type': 'submission',
+                        'data': submission,
+                    });
+                });
+                this.loadingSubmissions = false;
+            });
+
             apiSearch.searchAnswers(this.token, v).then((response) => {
                 response.data.forEach((answer) => {
                     this.items.push({
@@ -104,6 +118,9 @@ export default {
             if (item.type === 'question') {
                 return item.data.title;
             }
+            if (item.type === 'submission') {
+                return item.data.title;
+            }
             if (item.type === 'answer') {
                 return item.data.body;
             }
@@ -114,6 +131,9 @@ export default {
             }
             if (item.type === 'question') {
                 return `/questions/${item.data.uuid}`;
+            }
+            if (item.type === 'submission') {
+                return `/submissions/${item.data.uuid}`;
             }
             if (item.type === 'answer') {
                 return `/questions/${item.data.question.uuid}/answers/${item.data.uuid}`;
