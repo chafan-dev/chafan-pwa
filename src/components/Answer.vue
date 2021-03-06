@@ -179,6 +179,7 @@
                 :formatProp="answer.source_format"
                 :answerIdProp="answer.uuid"
                 publishText="发表答案"
+                :archivesCount="answer.archives_count"
                 @submit-edit="newEditHandler"
                 @cancel-edit="onCancelEdit"
                 @delete-draft="deleteDraft" />

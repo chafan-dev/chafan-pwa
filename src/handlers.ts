@@ -35,7 +35,17 @@ class AnswerEditHandler {
             if (!payload.edit.rendered_body_text || payload.edit.rendered_body_text.length < 5) {
                 if (!payload.isAutosaved) {
                     commitAddNotification(this.vueInstance.$store, {
-                        content: this.vueInstance.$t('Answer is too short: minimum length 5 characters.').toString(),
+                        content: this.vueInstance.$t('Answer is too short').toString(),
+                        color: 'error',
+                    });
+                }
+                this.handlingNewEdit = false;
+                return;
+            }
+            if (!payload.edit.body || payload.edit.body.length < 5) {
+                if (!payload.isAutosaved) {
+                    commitAddNotification(this.vueInstance.$store, {
+                        content: this.vueInstance.$t('Answer is too short').toString(),
                         color: 'error',
                     });
                 }
