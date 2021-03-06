@@ -6,8 +6,7 @@
                 <div class="headline primary--text">{{ $t('My Circles') }}</div>
               </div>
 
-              <v-skeleton-loader type="paragraph" v-if="loadingSites" />
-              <div class="d-flex mt-1" v-else>
+              <div class="d-flex mt-1">
                 <!-- NOTE: /sites is a list of all circles, is not same as my circles for now -->
                 <v-btn small depressed class="primary mr-1" to="/sites">
                   {{$t('查看所有圈子')}}
@@ -20,15 +19,18 @@
               </div>
             </div>
 
-            <!-- TODO: rank/compute recently used sites. -->
-            <div v-if="$vuetify.breakpoint.mdAndUp">
-                <SiteBtn :site="profile.site" v-for="profile in siteProfiles" :key="profile.site.uuid" />
-            </div>
-            <v-slide-group v-else>
-                <v-slide-item v-for="profile in siteProfiles" :key="profile.site.uuid">
-                    <SiteBtn :site="profile.site" />
-                </v-slide-item>
-            </v-slide-group>
+            <v-skeleton-loader type="paragraph" v-if="loadingSites" />
+            <template v-else>
+                <!-- TODO: rank/compute recently used sites. -->
+                <div v-if="$vuetify.breakpoint.mdAndUp">
+                    <SiteBtn :site="profile.site" v-for="profile in siteProfiles" :key="profile.site.uuid" />
+                </div>
+                <v-slide-group v-else>
+                    <v-slide-item v-for="profile in siteProfiles" :key="profile.site.uuid">
+                        <SiteBtn :site="profile.site" />
+                    </v-slide-item>
+                </v-slide-group>
+            </template>
         </div>
 
         <v-divider />
