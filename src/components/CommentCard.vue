@@ -1,8 +1,8 @@
 <template>
     <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <div class="d-flex mb-2">
-            {{ comment.body }}
-          <RouterLink :to="comment.root_route + `/comments/${comment.uuid}`">
+          <SimpleViewer :body="comment.body" />
+          <RouterLink class="ml-1" :to="comment.root_route + `/comments/${comment.uuid}`">
             <OpenInNewIcon />
           </RouterLink>
         </div>
@@ -22,11 +22,15 @@ import SubmissionCard from '@/components/SubmissionCard.vue';
 import QuestionPreview from '@/components/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
+import SimpleViewer from '@/components/SimpleViewer.vue';
 import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
 
 @Component({
     name: 'CommentCard',
-    components: { QuestionPreview, ArticlePreview, Answer, OpenInNewIcon, SubmissionCard },
+    components: {
+      QuestionPreview, ArticlePreview, Answer, OpenInNewIcon,
+      SubmissionCard, SimpleViewer
+    },
 })
 export default class CommentCard extends Vue {
     @Prop({default: true}) private readonly embedded!: false;
