@@ -157,8 +157,6 @@
                         <ReactionBlock objectType="submission" :objectId="submission.uuid"/>
                     </div>
 
-                    <v-divider class="mt-3 mb-2" />
-
                     <!-- Comments -->
                     <CommentBlock :siteId="submission.site ? submission.site.uuid : undefined"
                                   commentLabel="评论"
