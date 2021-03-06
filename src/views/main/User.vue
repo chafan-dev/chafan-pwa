@@ -134,34 +134,44 @@
                     </div>
 
                     <div v-if="currentTabItem === 'answers'">
-                        <p v-if="authoredAnswers.length === 0">{{$t('暂无')}}</p>
-                        <Answer v-for="answer in authoredAnswers" :key="answer.uuid"
-                                class="ma-2"
-                                :answerPreview="answer" />
+                        <template v-if="authoredAnswers !== null">
+                            <p v-if="authoredAnswers.length === 0">{{$t('暂无')}}</p>
+                            <Answer v-for="answer in authoredAnswers" :key="answer.uuid"
+                                    class="ma-2" :answerPreview="answer" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'questions'">
-                        <p v-if="askedQuestions.length === 0">{{$t('暂无')}}</p>
-                        <QuestionPreview :questionPreview="question" class="ma-2"
+                        <template v-if="askedQuestions !== null">
+                            <p v-if="askedQuestions.length === 0">{{$t('暂无')}}</p>
+                            <QuestionPreview :questionPreview="question" class="ma-2"
                                             v-for="question in askedQuestions" :key="question.uuid" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'submissions'">
-                        <p v-if="submissions.length === 0">{{$t('暂无')}}</p>
-                        <SubmissionCard :submission="submission" class="ma-2"
+                        <template v-if="submissions !== null">
+                            <p v-if="submissions.length === 0">{{$t('暂无')}}</p>
+                            <SubmissionCard :submission="submission" class="ma-2"
                                             v-for="submission in submissions" :key="submission.uuid" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'articles'">
-                        <p v-if="articles.length === 0">{{$t('暂无')}}</p>
-                        <template v-for="article in articles">
-                            <ArticlePreview :articlePreview="article" :key="article.uuid" class="mb-2" />
-                        </template>
+                        <template v-if="articles !== null">
+                            <p v-if="articles.length === 0">{{$t('暂无')}}</p>
+                            <ArticlePreview :articlePreview="article" class="mb-2"
+                                            :key="article.uuid" v-for="article in articles" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'followers'">
-                        <p v-if="followers.length === 0">{{$t('暂无')}}</p>
-                        <UserGrid :users="followers" />
+                        <template v-if="followers !== null">
+                            <p v-if="followers.length === 0">{{$t('暂无')}}</p>
+                            <UserGrid :users="followers" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'followed'">
-                        <p v-if="followed.length === 0">{{$t('暂无')}}</p>
-                        <UserGrid :users="followed" />
+                        <template v-if="followed !== null">
+                            <p v-if="followed.length === 0">{{$t('暂无')}}</p>
+                            <UserGrid :users="followed" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                 </v-tabs-items>
             </template>
@@ -234,12 +244,12 @@ export default class User extends Vue {
     private userPublic: IUserPublic | null = null;
     private userPublicForVisitor: IUserPublicForVisitor | null = null;
 
-    private askedQuestions: IQuestionPreview[] = [];
-    private submissions: ISubmission[] = [];
-    private articles: IArticlePreview[] = [];
-    private authoredAnswers: IAnswerPreview[] = [];
-    private followers: IUserPreview[] = [];
-    private followed: IUserPreview[] = [];
+    private askedQuestions: IQuestionPreview[] | null = null;
+    private submissions: ISubmission[] | null = null;
+    private articles: IArticlePreview[] | null = null;
+    private authoredAnswers: IAnswerPreview[] | null = null;
+    private followers: IUserPreview[] | null = null;
+    private followed: IUserPreview[] | null = null;
 
     private tabItems = [
         {
