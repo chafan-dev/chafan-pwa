@@ -243,7 +243,7 @@
                 </v-expand-transition>
 
                 <!-- Answers -->
-                <div v-show="loadingFullAnswer" class="text-center">
+                <div v-if="answerPreviews && answerPreviews.length && loadingFullAnswer" class="text-center">
                     <v-progress-circular size="30" indeterminate />
                 </div>
                 <Answer v-for="answer in loadedFullAnswers" :key="answer.uuid"
