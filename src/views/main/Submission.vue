@@ -34,17 +34,11 @@
                                         :label="$t('Title')" v-model="newSubmissionTitle" v-else />
                         </div>
 
-                        <!-- Submission URL display/editor -->
-                        <div v-if="!showSubmissionEditor && submission.url">
+                        <!-- Submission URL display -->
+                        <div v-if="submission.url">
                             <LinkIcon /> {{ $t('源链接') }}: <a class="text-decoration-none" :href="submission.url" target="_blank">
                                 {{submission.url}}
                             </a>
-                        </div>
-                        <div v-if="showSubmissionEditor">
-                            <ValidationProvider name="URL" rules="url" v-slot="{ errors }">
-                                <v-text-field label="URL" v-model="newSubmissionUrl" />
-                                <span class="error--text">{{ errors[0] }}</span>
-                            </ValidationProvider>
                         </div>
 
                         <!-- Submission description display/editor -->
