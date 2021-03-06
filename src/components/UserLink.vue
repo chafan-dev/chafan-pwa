@@ -1,5 +1,5 @@
 <template>
-    <v-menu :open-on-hover="!$vuetify.breakpoint.mobile || true"
+    <v-menu :open-on-hover="!$vuetify.breakpoint.mobile"
             bottom right offset-y v-if="clickable" open-delay="400">
         <template v-slot:activator="{ on, attrs }">
             <span v-bind="attrs" v-on="on">
