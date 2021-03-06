@@ -417,6 +417,7 @@ export default class Answer extends Vue {
     }
 
     private updateStateWithLoadedAnswer(answer: IAnswer) {
+        this.$emit('load');
         this.answer = answer;
         setTimeout(this.updatePreview, 200);
         if (this.userProfile) {

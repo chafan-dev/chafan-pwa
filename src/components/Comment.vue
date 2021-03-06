@@ -66,11 +66,17 @@
                 <span>{{$t('查看回复')}}</span>
             </v-tooltip>
 
-            <template v-if="!isDeleted && !currentUserIsAuthor && !showEditor">
-                <span v-if="enableUpvotes && upvotes" @click="toggleUpvote" style="cursor: pointer"
-                        class="text-caption d-flex align-center mr-2">
+            <template v-if="enableUpvotes && upvotes && !isDeleted && !showEditor">
+                <span v-if="currentUserIsAuthor">
+                    <UpvoteIcon /> {{ upvotes.count }}
+                </span>
+                <span v-else @click="toggleUpvote" style="cursor: pointer"
+                      class="text-caption d-flex align-center mr-2">
                     <UpvoteIcon :color="upvotes.upvoted ? 'primary' : undefined" /> {{ upvotes.count }}
                 </span>
+            </template>
+
+            <template v-if="!isDeleted && !currentUserIsAuthor && !showEditor">
                 <span @click="showEditor = true" style="cursor: pointer" v-if="writable"
                         class="text-caption d-flex align-center">
                     <ReplyIcon /> {{$t('回复')}}

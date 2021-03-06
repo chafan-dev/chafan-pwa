@@ -243,6 +243,9 @@
                 </v-expand-transition>
 
                 <!-- Answers -->
+                <div v-show="loadingFullAnswer" class="text-center">
+                    <v-progress-circular size="30" indeterminate />
+                </div>
                 <Answer v-for="answer in loadedFullAnswers" :key="answer.uuid"
                         class="mb-4"
                         :answerPreview="answer"
@@ -254,6 +257,7 @@
                         :loadFull="true" />
                 <Answer v-for="answerPreview in answerPreviews" :key="answerPreview.uuid"
                         class="mb-4"
+                        @load="loadingFullAnswer = false"
                         :answerPreview="answerPreview"
                         :showAuthor="true"
                         :showQuestionInCard="false"
@@ -357,6 +361,7 @@ export default class Question extends Vue {
     }
 
     get token() { return this.$store.state.main.token; }
+
     private question: IQuestion | null = null;
     private showEditor: boolean = false;
     private newQuestionTitle: string = '';
@@ -370,11 +375,12 @@ export default class Question extends Vue {
     private hintTopicNames: string[] = []; // TODO
     private answerWritable = false;
     private commentWritable = false;
-    private answerPreviews: IAnswerPreview[] = [];
+    private answerPreviews: IAnswerPreview[] | null = null;
     private loadedFullAnswers: IAnswer[] = [];
     private editable = false;
     private canHide = false;
     private showConfirmHideQuestionDialog = false;
+    private loadingFullAnswer = true;
 
     private loadingProgress = 0;
     private loading = true;
@@ -417,9 +423,7 @@ export default class Question extends Vue {
                 this.showQuestionEditor = true;
                 localStorage.removeItem('new-question');
             }
-        } catch (e) {
-
-        }
+        } catch (e) { } // FIXME: is there a better way than just ignoring disabled localStorage?
 
         try {
             const response = await api.getQuestion(this.token, this.id);
@@ -537,6 +541,7 @@ export default class Question extends Vue {
             }
         });
     }
+
     // FIXME: how to combine it with the logic in newEditHandler?
     private async newEditHandler(payload: INewEditEvent) {
         if (this.handlingNewEdit) {
@@ -732,13 +737,15 @@ export default class Question extends Vue {
     }
 
     private removeAnswer(answerUUID: string) {
-        let idx = this.loadedFullAnswers.findIndex((answer) => answer.uuid === answerUUID);
-        if (idx !== -1) {
-            this.loadedFullAnswers.splice(idx, 1);
-        }
-        idx = this.answerPreviews.findIndex((answer) => answer.uuid === answerUUID);
-        if (idx !== -1) {
-            this.answerPreviews.splice(idx, 1);
+        if (this.answerPreviews) {
+            let idx = this.loadedFullAnswers.findIndex((answer) => answer.uuid === answerUUID);
+            if (idx !== -1) {
+                this.loadedFullAnswers.splice(idx, 1);
+            }
+            idx = this.answerPreviews.findIndex((answer) => answer.uuid === answerUUID);
+            if (idx !== -1) {
+                this.answerPreviews.splice(idx, 1);
+            }
         }
     }
 
