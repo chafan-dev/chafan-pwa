@@ -24,10 +24,10 @@ export default class Viewer extends Vue {
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 @import '~vuetify/src/styles/styles.sass'
 
-img
+.vditor-viewer img
     max-height: 500px
 
 .vditor-viewer
