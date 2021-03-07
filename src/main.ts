@@ -487,8 +487,10 @@ const i18n = new VueI18n({
       'n条评论': '{n} comments',
       'Answers': 'Answers',
       '加载该版本': 'Load this',
+      'Circles': 'Circles',
     },
     zh: {
+      'Circles': '圈子',
       '加载该版本': '加载该版本',
       'Description': '描述',
       'Answers': '回答',

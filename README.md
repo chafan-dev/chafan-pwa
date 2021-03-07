@@ -38,6 +38,8 @@ To test the frontend, please run it locally: `node e2e_tests/server.js`.
 Some APIs are missing from mock server for now. You can add code
 for mock server along with the frontend code change if needed.
 
+NOTE: you can leave username/password blank to "log in" the mock server.
+
 ### Run production build locally
 
 Prepare:

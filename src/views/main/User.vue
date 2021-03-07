@@ -22,36 +22,6 @@
 
                 <v-tabs-items v-model="currentTabItem" class="pa-2">
                     <div v-if="currentTabItem === 'profile'">
-                        <template v-if="sites !== null">
-                            <div v-if="sites.length > 0">
-                                <div v-if="$vuetify.breakpoint.mdAndUp" class="subheading secondary--text text--lighten-3">
-                                    {{$t('Joined Circles')}}:
-                                    <span>
-                                        <SiteBtn v-for="site in sites" :site="site" :key="site.uuid" />
-                                    </span>
-                                </div>
-                                <div v-else>
-                                    <span class="subheading secondary--text text--lighten-3">{{$t('Joined Circles')}}:</span>
-                                    <v-slide-group>
-                                        <v-slide-item v-for="site in sites" :key="site.uuid">
-                                            <SiteBtn :site="site" />
-                                        </v-slide-item>
-                                    </v-slide-group>
-                                </div>
-                            </div>
-                        </template>
-                        <v-skeleton-loader type="text" v-else />
-
-                        <template v-if="userPublic">
-                            <div class="my-3" v-if="userPublic.subscribed_topics.length > 0">
-                                <div class="subheading secondary--text text--lighten-3">{{$t('关注的话题')}}</div>
-                                <v-chip-group :column="!$vuetify.breakpoint.mobile">
-                                    <v-chip :to="'/topics/' + topic.uuid" v-for="topic in userPublic.subscribed_topics" :key="topic.uuid">{{ topic.name }}</v-chip>
-                                </v-chip-group>
-                            </div>
-                        </template>
-                        <v-skeleton-loader type="text" v-else />
-
                         <template v-if="userPublic">
                             <div class="my-3" v-if="userPublic.homepage_url || userPublic.github_username || userPublic.twitter_username || userPublic.linkedin_url">
                                 <span class="subheading secondary--text text--lighten-3">{{$t('Links')}}: </span>
@@ -119,6 +89,31 @@
                                     {{ workExp.company_topic.name }}
                                     </a>
                                 </div>
+                            </div>
+                        </template>
+                        <v-skeleton-loader type="text" v-else />
+
+
+                        <template v-if="sites !== null">
+                            <div v-if="sites.length > 0">
+                                <div v-if="$vuetify.breakpoint.mdAndUp" class="subheading secondary--text text--lighten-3">
+                                    {{$t('Circles')}}:
+                                    <span>
+                                        <SiteBtn v-for="site in sites" :site="site" :key="site.uuid" />
+                                    </span>
+                                </div>
+                                <div v-else>
+                                    <span class="subheading secondary--text text--lighten-3 mr-2">{{$t('Circles')}}:</span>
+                                    <SiteBtn :site="site" v-for="site in sites" :key="site.uuid" />
+                                </div>
+                            </div>
+                        </template>
+                        <v-skeleton-loader type="text" v-else />
+
+                        <template v-if="userPublic">
+                            <div class="my-3" v-if="userPublic.subscribed_topics.length > 0">
+                                <div class="subheading secondary--text text--lighten-3">{{$t('关注的话题')}}</div>
+                                <v-chip :to="'/topics/' + topic.uuid" v-for="topic in userPublic.subscribed_topics" :key="topic.uuid">{{ topic.name }}</v-chip>
                             </div>
                         </template>
                         <v-skeleton-loader type="text" v-else />
