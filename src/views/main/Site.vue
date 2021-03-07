@@ -117,7 +117,7 @@ export default class Site extends Vue {
     private userProfile: IUserProfile | null = null;
     private siteProfile: IUserSiteProfile | null = null;
     private siteProfiles: IUserSiteProfile[] | null = null;
-    private submissions: ISubmission[] = [];
+    private submissions: ISubmission[] | null = [];
     private showQuestionEditor = false;
     private showSubmissionEditor = false;
 
