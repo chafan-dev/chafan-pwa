@@ -20,17 +20,21 @@
             </div>
 
             <v-skeleton-loader type="paragraph" v-if="loadingSites" />
-            <template v-else>
+            <div v-else>
                 <!-- TODO: rank/compute recently used sites. -->
-                <div v-if="$vuetify.breakpoint.mdAndUp">
-                    <SiteBtn :site="profile.site" v-for="profile in siteProfiles" :key="profile.site.uuid" />
-                </div>
-                <v-slide-group v-else>
-                    <v-slide-item v-for="profile in siteProfiles" :key="profile.site.uuid">
-                        <SiteBtn :site="profile.site" />
-                    </v-slide-item>
-                </v-slide-group>
-            </template>
+                <SiteBtn :site="profile.site" v-for="profile in visibleSiteProfiles" :key="profile.site.uuid" />
+                <v-btn small color="info" depressed class="mt-1" v-if="showAllSiteProfilesDialogButton" @click="showAllSiteProfilesDialog = true">
+                    <MoreIcon class="mr-1" />{{$t('More')}}
+                </v-btn>
+                <v-dialog v-model="showAllSiteProfilesDialog">
+                    <v-card>
+                        <v-card-title>{{$t('My Circles')}}</v-card-title>
+                        <v-card-text>
+                            <SiteBtn :site="profile.site" v-for="profile in siteProfiles" :key="profile.site.uuid" />
+                        </v-card-text>
+                    </v-card>
+                </v-dialog>
+            </div>
         </div>
 
         <v-divider />
@@ -65,11 +69,16 @@ import { api2 } from '@/api2';
 import { apiMe } from '@/api/me';
 import { readIsLoggedIn } from '@/store/main/getters';
 
+import MoreIcon from '@/components/icons/MoreIcon.vue';
+
 @Component({
-    components: { SiteBtn, QuestionLink, CreateSiteCard },
+    components: { SiteBtn, QuestionLink, CreateSiteCard, MoreIcon },
 })
 export default class ExploreCard extends Vue {
     private siteProfiles: IUserSiteProfile[] = [];
+    private visibleSiteProfiles: IUserSiteProfile[] = [];
+    private showAllSiteProfilesDialog = false;
+    private showAllSiteProfilesDialogButton = false;
     private questions: IQuestionPreview[] | null = null;
     private loadingSites = true;
 
@@ -84,6 +93,14 @@ export default class ExploreCard extends Vue {
             this.questions = (await api2.getQuestionsAtHome()).data;
             if (this.$store.state.main.token) {
                 this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;
+                if (!this.$vuetify.breakpoint.mdAndUp) {
+                    this.visibleSiteProfiles = this.siteProfiles.slice(0, 9);
+                    if (this.visibleSiteProfiles.length < this.siteProfiles.length) {
+                        this.showAllSiteProfilesDialogButton = true;
+                    }
+                } else {
+                    this.visibleSiteProfiles = this.siteProfiles;
+                }
             }
             this.loadingSites = false;
         });
