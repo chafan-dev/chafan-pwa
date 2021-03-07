@@ -8,7 +8,7 @@
                 <div class="ma-2">{{$t('提问者：')}} <UserLink :userPreview="question.author"></UserLink></div>
                 <div class="ma-2" v-if="questionSubscription">{{$t('关注人数：')}} {{ questionSubscription.subscription_count }}</div>
                 <v-row class="ma-2" v-if="myToken">
-                    <v-btn small color="primary" @click="showInviteToAnswerDialog = true">{{$t('邀请回答')}}</v-btn>
+                    <v-btn depressed small color="primary" @click="showInviteToAnswerDialog = true">{{$t('邀请回答')}}</v-btn>
 
                     <v-dialog max-width="500" v-model="showInviteToAnswerDialog">
                         <v-card>
@@ -28,7 +28,7 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer />
-                            <v-btn small @click="inviteAnswer" color="primary">{{$t('提交')}}</v-btn>
+                            <v-btn depressed small @click="inviteAnswer" color="primary">{{$t('提交')}}</v-btn>
                         </v-card-actions>
                         </v-card>
                     </v-dialog>

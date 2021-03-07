@@ -44,16 +44,15 @@
                 <!-- Question control -->
                 <v-row justify="space-between">
                     <v-col class="d-flex" v-if="!showQuestionEditor">
-                        <v-btn small class="ma-1 slim-btn" @click="goToCurrentUserAnswer"
+                        <v-btn depressed small class="ma-1 slim-btn" @click="goToCurrentUserAnswer"
                                 v-if="currentUserAnswerUUID">
                                 {{$t('我的回答')}}
                         </v-btn>
-                        <v-btn small color="primary" class="ma-1 slim-btn" @click="showEditor = !showEditor"
+                        <v-btn depressed small color="primary" class="ma-1 slim-btn" @click="showEditor = !showEditor"
                                 v-else-if="answerWritable">{{$t('写回答')}}</v-btn>
                         <v-tooltip bottom v-else>
                             <template v-slot:activator="{ on, attrs }">
-                                <v-btn small
-                                        class="ma-1 slim-btn grey--text" v-bind="attrs" v-on="on"
+                                <v-btn depressed small class="ma-1 slim-btn grey--text" v-bind="attrs" v-on="on"
                                         elevation="0" plain :ripple="false">
                                     {{$t('写回答')}}
                                 </v-btn>
@@ -61,7 +60,7 @@
                             <span>{{$t('该圈子仅会员可以写回答')}}</span>
                         </v-tooltip>
 
-                        <v-btn small class="ma-1 slim-btn" @click="toggleShowComments">
+                        <v-btn depressed small class="ma-1 slim-btn" @click="toggleShowComments">
                             <CommentsIcon class="mr-1" small />
                             <span v-if="$vuetify.breakpoint.mdAndUp">
                                 {{question.comments.length === 0 ? $t('评论') : $t('查看n条评论', {amount: question.comments.length})}}
@@ -76,21 +75,21 @@
                                 </v-card-title>
                             <v-card-actions>
                                 <v-spacer />
-                                <v-btn @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
-                                <v-btn color="warning" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>
+                                <v-btn depressed @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
+                                <v-btn depressed color="warning" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>
                                     {{$t('Yes')}}
                                 </v-btn>
                             </v-card-actions>
                             </v-card>
                         </v-dialog>
-                        <v-btn @click="showCancelUpvoteDialog = true"
+                        <v-btn depressed @click="showCancelUpvoteDialog = true"
                                 small class="slim-btn ma-1"
                                 color="primary lighten-2" v-if="upvotes && upvotes.upvoted">
                             <UpvoteIcon />
                             <span v-if="$vuetify.breakpoint.mdAndUp">{{$t('好问题')}}</span>
                             ({{ upvotes.count }})
                         </v-btn>
-                        <v-btn small class="slim-btn ma-1"
+                        <v-btn depressed small class="slim-btn ma-1"
                                 color="primary" @click="upvote" v-else-if="upvotes"
                                 :disabled="userProfile.uuid === question.author.uuid || upvoteIntermediate">
                             <UpvoteIcon />
@@ -122,12 +121,12 @@
                     </v-col>
 
                     <v-col v-if="showQuestionEditor && userProfile" class="d-flex">
-                        <v-btn small class="ma-1 slim-btn" @click="commitQuestionEdit" color="primary" v-show="editable"
+                        <v-btn depressed small class="ma-1 slim-btn" @click="commitQuestionEdit" color="primary" v-show="editable"
                             :disabled="commitQuestionEditIntermediate">{{$t('更新问题描述')}}</v-btn>
-                        <v-btn small class="ma-1 slim-btn" @click="showQuestionEditor = false"
+                        <v-btn depressed small class="ma-1 slim-btn" @click="showQuestionEditor = false"
                                 color="warning" v-show="editable">{{$t('取消更新')}}</v-btn>
                         <v-spacer />
-                        <v-btn v-if="showQuestionEditor" @click="prepareShowMoveQuestionDialog">
+                        <v-btn small depressed v-if="showQuestionEditor" @click="prepareShowMoveQuestionDialog">
                             {{$t('转移问题')}}
                         </v-btn>
                         <v-dialog max-width="600" v-model="showMoveQuestionDialog">
@@ -143,12 +142,12 @@
                                 <v-card-actions>
                                     <span>{{ $t('没有权限？联系管理员帮助转移') }}</span>
                                     <v-spacer />
-                                    <v-btn color="warning" @click="confirmMoveQuestion">{{ $t('确认转移') }}</v-btn>
+                                    <v-btn small depressed color="warning" @click="confirmMoveQuestion">{{ $t('确认转移') }}</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
 
-                        <v-btn v-if="showQuestionEditor & canHide" color="warning" class="ml-2"
+                        <v-btn small depressed v-if="showQuestionEditor & canHide" color="warning" class="ml-2"
                                @click="showConfirmHideQuestionDialog = true">
                             {{$t('隐藏问题')}}
                         </v-btn>
@@ -162,7 +161,7 @@
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-spacer />
-                                    <v-btn color="warning" @click="confirmHideQuestion">{{ $t('确认隐藏') }}</v-btn>
+                                    <v-btn small depressed color="warning" @click="confirmHideQuestion">{{ $t('确认隐藏') }}</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
@@ -202,10 +201,10 @@
                         <v-col md="auto">
                             {{$t('管理：')}}
                             <!-- Moderator -->
-                            <v-btn class="slim-btn ma-1" @click="toggleTopQuestoinInSite"
+                            <v-btn small depressed class="slim-btn ma-1" @click="toggleTopQuestoinInSite"
                                    color="warning" :disabled="toggleTopQuestoinInSiteIntermediate"
                                    v-if="isTopQuestionInSite">{{$t('取消圈子置顶')}}</v-btn>
-                            <v-btn class="slim-btn ma-1" @click="toggleTopQuestoinInSite"
+                            <v-btn small depressed class="slim-btn ma-1" @click="toggleTopQuestoinInSite"
                                    color="warning" :disabled="toggleTopQuestoinInSiteIntermediate"
                                    v-else>{{$t('圈子置顶')}}</v-btn>
                         </v-col>
