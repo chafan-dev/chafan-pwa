@@ -3,10 +3,13 @@
         <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />
         </v-overlay>
-        <div id="vditor" />
+        <div id="vditor" class="mb-2" />
         <div class="d-flex align-center">
-            <v-btn small color="slim-btn primary" @click="submitEdit">
-                {{ isPublished ? $t(publishText) : $t('Save draft') }}
+            <v-btn small color="slim-btn primary" @click="submitEdit(true)">
+                {{ $t(publishText) }}
+            </v-btn>
+            <v-btn small color="slim-btn info ml-2" @click="submitEdit(false)">
+                {{ $t('Save draft') }}
             </v-btn>
             <v-btn small class="slim-btn ml-2" @click="$emit('cancel-edit')">{{$t('Cancel')}}</v-btn>
             <v-btn small class="slim-btn ml-2" @click="showHelp = !showHelp">{{$t('Help')}}</v-btn>
@@ -14,8 +17,6 @@
             <span class="mr-2 text-caption grey--text" v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp">
                 {{$t('自动保存于')}} {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
             </span>
-            <v-switch small v-model="isPublished"
-                      :label="isPublished ? $t(publishText) : $t('Save draft only')" />
 
             <v-tooltip bottom v-if="answerId || articleId">
                 <template v-slot:activator="{ on, attrs }">
@@ -117,7 +118,7 @@ import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readUserProfile, readWorkingDraft } from '@/store/main/getters';
 import { uuidv4 } from '@/utils';
-import { IAnswer, IArchive, IArticle, IArticleArchive, INewEditEvent } from '@/interfaces';
+import { IAnswer, IArchive, IArticle, IArticleArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { apiArticle } from '@/api/article';
 import { apiUrl, env } from '@/env';
@@ -138,7 +139,6 @@ export default class RichEditor extends Vue {
     @Prop({default: false}) private readonly hasTitle!: boolean;
     @Prop({default: 'Publish'}) private readonly publishText!: string;
 
-    private isPublished = true;
     private format: 'markdown' = 'markdown';
     private mathEnabled = false;
     private showHelp = false;
@@ -219,14 +219,12 @@ export default class RichEditor extends Vue {
         this.articleId = this.articleIdProp ? this.articleIdProp : null;
         const workingDraft = readWorkingDraft(this.$store);
         if (workingDraft) {
-            this.isPublished = !workingDraft.is_draft;
             this.format = workingDraft.source_format;
             this.mathEnabled = workingDraft.math_enabled;
             this.articleTitle = workingDraft.title;
             this.initEditor(workingDraft.body, workingDraft.editor);
             this.lastSaveLength = workingDraft.body.length;
         } else {
-            this.isPublished = true;
             this.initEditor('', readUserProfile(this.$store)!.default_editor_mode);
         }
 
@@ -257,7 +255,7 @@ export default class RichEditor extends Vue {
         return text;
     }
 
-    private readState(isPublished: boolean) {
+    private readState(isPublished: boolean): IRichEditorState {
         return {
             title: this.articleTitle,
             body: this.getContent(),
@@ -367,10 +365,10 @@ export default class RichEditor extends Vue {
     }
 
     @Emit('submit-edit')
-    private submitEdit(): INewEditEvent {
+    private submitEdit(isPublished: boolean): INewEditEvent {
         return {
             isAutosaved: false,
-            edit: this.readState(this.isPublished),
+            edit: this.readState(isPublished),
             answerId: this.answerId ? this.answerId : undefined,
             articleId: this.articleId ? this.articleId : undefined,
             writingSessionUUID: this.writingSessionUUID,
