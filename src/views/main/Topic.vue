@@ -3,8 +3,7 @@
     <v-progress-linear
         v-if="loading"
         v-model="loadingProgress"
-        :indeterminate="loadingProgress == 0"
-    ></v-progress-linear>
+        :indeterminate="loadingProgress == 0" />
     <v-row class="mb-12" v-else>
         <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
             <v-card class="ma-3 pa-3">
@@ -20,14 +19,14 @@
         </v-col>
 
         <v-col class="col-4" v-if="$vuetify.breakpoint.mdAndUp">
-            <TopicCard :topic="topic"></TopicCard>
+            <TopicCard :topic="topic" />
         </v-col>
         <v-bottom-sheet v-else>
             <template v-slot:activator="{ on, attrs }">
                 <v-btn fab fixed right bottom v-bind="attrs" v-on="on"><InfoIcon /></v-btn>
             </template>
-            <v-sheet>
-                <TopicCard :topic="topic"></TopicCard>
+            <v-sheet class="pa-2">
+                <TopicCard :topic="topic" />
             </v-sheet>
         </v-bottom-sheet>
     </v-row>

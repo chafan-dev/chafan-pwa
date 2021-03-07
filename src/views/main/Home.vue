@@ -245,7 +245,7 @@
                         <ExploreIcon />
                     </v-btn>
                 </template>
-                <v-sheet>
+                <v-sheet class="pa-2">
                     <ExploreCard />
                 </v-sheet>
             </v-bottom-sheet>

@@ -25,7 +25,7 @@
                     <ChannelIcon />
                 </v-btn>
             </template>
-            <v-sheet>
+            <v-sheet class="pa-2">
                 <ChannelCard :channel="channel" />
             </v-sheet>
         </v-bottom-sheet>
