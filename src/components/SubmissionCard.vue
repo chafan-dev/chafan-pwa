@@ -8,21 +8,21 @@
         </div>
         <div class="d-flex align-center">
             <RouterLink class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
-               :to="'/submissions/' + submission.uuid">
+                        :to="'/submissions/' + submission.uuid">
                 <UpvoteIcon :color="submission.upvoted ? 'primary' : undefined" small />
                 {{ submission.upvotes_count }}
             </RouterLink>
             <RouterLink class="d-flex align-center black--text text-caption text-decoration-none"
-               :to="'/submissions/' + submission.uuid">
+                        :to="'/submissions/' + submission.uuid">
                 <CommentsIcon small class="mr-1 mt-1" />
                 {{ submission.comments.length }}
             </RouterLink>
             <v-spacer />
             <div v-if="submission.url">
                 <LinkIcon small />
-                <RouterLink class="text-decoration-none text-caption" :to="submission.url" target="_blank">
+                <a class="text-decoration-none text-caption" :href="submission.url" target="_blank">
                     {{ shortUrl(submission.url) }}
-                </RouterLink>
+                </a>
             </div>
         </div>
         <div class="grey--text subtitle-2" v-if="submission.description">
