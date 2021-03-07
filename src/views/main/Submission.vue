@@ -60,19 +60,18 @@
                                     </v-card-title>
                                 <v-card-actions>
                                     <v-spacer />
-                                    <v-btn @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
-                                    <v-btn color="warning" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>{{$t('Yes')}}</v-btn>
+                                    <v-btn small depressed @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
+                                    <v-btn small depressed color="warning" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>{{$t('Yes')}}</v-btn>
                                 </v-card-actions>
                                 </v-card>
                             </v-dialog>
-                            <v-btn @click="showCancelUpvoteDialog = true" small class="slim-btn ma-1"
-                                color="primary lighten-2" v-if="upvotes && upvotes.upvoted">
+                            <v-btn small depressed ="showCancelUpvoteDialog = true" class="mr-1"
+                                   color="primary lighten-2" v-if="upvotes && upvotes.upvoted">
                                 <UpvoteIcon /> <span v-if="$vuetify.breakpoint.mdAndUp">{{$t('赞')}}</span>
                                 ({{ upvotes.count }})
                             </v-btn>
-                            <v-btn small class="slim-btn ma-1"
-                                color="primary" @click="upvote" v-else-if="upvotes"
-                                :disabled="!userProfile || userProfile.uuid === submission.author.uuid || upvoteIntermediate">
+                            <v-btn small depressed class="mr-1" color="primary" @click="upvote" v-else-if="upvotes"
+                                   :disabled="!userProfile || userProfile.uuid === submission.author.uuid || upvoteIntermediate">
                                 <UpvoteIcon /> <span v-if="$vuetify.breakpoint.mdAndUp">{{$t('赞')}}</span> ({{ upvotes.count }})
                             </v-btn>
 
@@ -92,16 +91,15 @@
                             <HistoryIcon @click="showHistoryDialog" v-if="editable" />
                         </v-col>
                         <v-col v-if="showSubmissionEditor" class="d-flex">
-                            <v-btn :small="!$vuetify.breakpoint.mdAndUp"
-                                class="ma-1 slim-btn" @click="handleSubmit(commitSubmissionEdit)" color="primary" v-show="editable"
-                                :disabled="commitSubmissionEditIntermediate">{{$t('更新分享')}}</v-btn>
-                            <v-btn :small="!$vuetify.breakpoint.mdAndUp"
-                                    class="ma-1 slim-btn" @click="cancelSubmissionUpdate"
-                                    color="warning" v-show="editable">{{$t('取消更新')}}</v-btn>
+                            <v-btn small depressed
+                                   class="mr-1" @click="handleSubmit(commitSubmissionEdit)" color="primary" v-show="editable"
+                                   :disabled="commitSubmissionEditIntermediate">{{$t('更新分享')}}</v-btn>
+                            <v-btn small depressed class="mr-1" @click="cancelSubmissionUpdate"
+                                   color="warning" v-show="editable">{{$t('取消更新')}}</v-btn>
                             <v-spacer />
 
-                            <v-btn v-if="showSubmissionEditor & canHide" color="warning" class="ml-2"
-                                @click="showConfirmHideSubmissionDialog = true">
+                            <v-btn small depressed v-if="showSubmissionEditor & canHide" color="warning" class="ml-2"
+                                   @click="showConfirmHideSubmissionDialog = true">
                                 {{$t('隐藏分享')}}
                             </v-btn>
                             <v-dialog max-width="600" v-model="showConfirmHideSubmissionDialog">
@@ -114,7 +112,7 @@
                                     </v-card-text>
                                     <v-card-actions>
                                         <v-spacer />
-                                        <v-btn color="warning" @click="confirmHideSubmission">{{ $t('确认隐藏') }}</v-btn>
+                                        <v-btn small mr-1 color="warning" @click="confirmHideSubmission">{{ $t('确认隐藏') }}</v-btn>
                                     </v-card-actions>
                                 </v-card>
                             </v-dialog>
@@ -430,10 +428,6 @@ export default class Submission extends Vue {
 </script>
 
 <style scoped>
-.slim-btn {
-    padding: 0 4px !important;
-}
-
 .small-padding-col {
     padding-top: 0 !important;
 }
