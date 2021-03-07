@@ -3,6 +3,10 @@ const cors = require('cors');
 const enableWs = require('express-ws')
 const process = require('process');
 
+function randomString() {
+  return Math.random().toString(36).substring(7);
+}
+
 const port = 4582
 
 const app = express()
@@ -28,25 +32,34 @@ app.ws('/ws', (req, res) => {
 
 })
 
-example_user1 = {
-  uuid: "example-user-1-uuid",
-  handle: "example-user-1",
-  full_name: null,
+const EXAMPLE_USER1_UUID = "example-user-1-uuid";
+const EXAMPLE_USER1_HANDLE = "example-user-1";
+const EXAMPLE_USER1_FULL_NAME = 'Example User 1';
+
+const example_user1_preview = {
+  uuid: EXAMPLE_USER1_UUID,
+  handle: EXAMPLE_USER1_HANDLE,
+  full_name: EXAMPLE_USER1_FULL_NAME,
   karma: 0
 }
 
-example_user2 = {
-  uuid: "example-user-2-uuid",
-  handle: "example-user-2",
+const EXAMPLE_USER2_UUID = 'example-user-2-uuid';
+const EXAMPLE_USER2_HANDLE = 'example-user-2';
+
+const example_user2_preview = {
+  uuid: EXAMPLE_USER2_UUID,
+  handle: EXAMPLE_USER2_HANDLE,
   full_name: null,
   karma: 2791
 }
 
-example_site = {
+const EXAMPLE_SITE1_SUBDOMAIN = "internet-things";
+
+const example_site1 = {
   description: "讨论互联网产品的设计和体验",
   uuid: "3noQmrdUbubY9ojPerYA",
   name: "互联网产品",
-  subdomain: "internet-things",
+  subdomain: EXAMPLE_SITE1_SUBDOMAIN,
   public_readable: true,
   public_writable_question: true,
   public_writable_answer: true,
@@ -54,24 +67,44 @@ example_site = {
   create_question_coin_deduction: 2,
   addable_member: true,
   topics: [],
-  moderator: example_user2,
+  moderator: example_user2_preview,
   permission_type: "public"
 }
 
-example_question_preview  = {
+const randomSites = []
+for (var i = 0; i < 20; i++) {
+  const uuid = randomString();
+  randomSites.push({
+    description: `Random site ${uuid} description`,
+    uuid: uuid + "-site-uuid",
+    name: `Random site ${uuid}`,
+    subdomain: uuid,
+    public_readable: true,
+    public_writable_question: true,
+    public_writable_answer: true,
+    public_writable_comment: true,
+    create_question_coin_deduction: 2,
+    addable_member: true,
+    topics: [],
+    moderator: example_user2_preview,
+    permission_type: "public"
+  })
+}
+
+const example_question_preview = {
   "uuid": "6gpPVpfHJnEh4NfbZ4VY",
   "title": "Twitter, Facebook 类型的社交网络在未来会不会变成政府依靠税收运营的公共基础设施？",
   "description": null,
-  "site": example_site,
+  "site": example_site1,
   "is_placed_at_site_top": false,
   "is_placed_at_home": false,
   "created_at": "2021-02-02T20:02:56.170487+00:00",
   "answers_count": 11
 }
 
-example_answer1_preview = {
+const example_answer1_preview = {
   "uuid": "3b4TBWxFUnBe4aRrKq4X",
-  "author": example_user1,
+  "author": example_user1_preview,
   "question": example_question_preview,
   "body": "我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收...",
   "upvotes_count": 2,
@@ -88,7 +121,7 @@ const example_user2_comment1 = {
   "shared_to_timeline": true,
   "is_deleted": false,
   "upvotes_count": 1,
-  "author": example_user2,
+  "author": example_user2_preview,
   "root_route": `/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`,
   "upvoted": false
 }
@@ -102,7 +135,7 @@ const example_user1_submission1 = {
   "updated_at": "2021-03-05T19:30:57.482069+00:00",
   "topics": [],
   "upvotes_count": 0,
-  "author": example_user1,
+  "author": example_user1_preview,
   "comments": [example_user2_comment1],
   "site": {
     "description": "讨论互联网产品的设计和体验",
@@ -119,7 +152,7 @@ const example_user1_submission1 = {
     "auto_approval": true,
     "min_karma_for_application": null,
     "email_domain_suffix_for_application": "",
-    "moderator": example_user1,
+    "moderator": example_user1_preview,
     "permission_type": "public",
     "questions_count": 6,
     "submissions_count": 4,
@@ -139,7 +172,7 @@ const example_comment_submission_activity = {
     "created_at": "2021-03-05T20:17:40.139503+00:00",
     "content": {
       "verb": "comment_submission",
-      "subject": example_user2,
+      "subject": example_user2_preview,
       "comment": example_user2_comment1,
       "submission": example_user1_submission1,
     }
@@ -157,7 +190,7 @@ const exmaple_create_submission_activity = {
     "created_at": "2021-03-05T20:19:07.513861+00:00",
     "content": {
       "verb": "create_submission",
-      "subject": example_user1,
+      "subject": example_user1_preview,
       "submission": example_user1_submission1
     }
   }
@@ -173,7 +206,7 @@ const example_activity = {
       "created_at": "2021-02-06T20:31:09.965902+00:00",
       "content": {
           "verb": "answer_question",
-          "subject": example_user1,
+          "subject": example_user1_preview,
           "answer": example_answer1_preview,
       }
   }
@@ -189,7 +222,7 @@ const example_activity_upvote_question1 = {
       "created_at": "2021-02-06T20:31:09.965902+00:00",
       "content": {
           "verb": "upvote_question",
-          "subject": example_user1,
+          "subject": example_user1_preview,
           "question": example_question_preview,
       }
   }
@@ -206,7 +239,7 @@ const example_activity_upvote_question2 = {
       "created_at": "2021-02-06T20:31:09.965902+00:00",
       "content": {
           "verb": "upvote_question",
-          "subject": example_user2,
+          "subject": example_user2_preview,
           "question": example_question_preview,
       }
   }
@@ -227,6 +260,13 @@ app.post("/api/v1/login/access-token", (req, res) => {
 
 app.get("/api/v1/me/moderated-sites/", (req, res) => {
   res.json([]);
+})
+
+app.get("/api/v1/sitemaps/", (req, res) => {
+  res.json({
+    site_maps: [],
+    sites_without_topics: [],
+  })
 })
 
 const userProfile = {
@@ -274,9 +314,9 @@ example_answer1 = {
   "is_hidden_by_moderator": false,
   "is_placed_at_question_top": false,
   "comments": [],
-  "author": example_user1,
+  "author": example_user1_preview,
   "question": example_question_preview,
-  "site": example_site,
+  "site": example_site1,
   "upvoted": true,
   "comment_writable": true,
   "bookmark_count": 0,
@@ -295,6 +335,102 @@ app.get("/api/v1/submissions/", (req, res) => {
 
 app.get("/api/v1/me/pending-questions/", (req, res) => {
   res.json([]);
+})
+
+app.get(`/api/v1/people/${EXAMPLE_USER1_HANDLE}`, (req, res) => {
+  res.json({
+    "uuid": EXAMPLE_USER1_UUID,
+    "handle": EXAMPLE_USER1_HANDLE,
+    "full_name": EXAMPLE_USER1_FULL_NAME,
+    "avatar_url": "https://d1z8mw8ytlamc2.cloudfront.net/76d28de05095ca51226adf2e1a8e3a6c197aa452df29d2b492cb0e9aa4f52acc",
+    "personal_introduction": "Hahaha",
+    "karma": 19,
+    "gif_avatar_url": null,
+    "answers_count": 1,
+    "submissions_count": 2,
+    "questions_count": 2,
+    "articles_count": 0,
+    "profiles": randomSites.map((ransomSite) => {
+        return {
+            "karma": 19,
+            "owner": example_user1_preview,
+            "site": ransomSite
+        }
+    }),
+    "profile_view_times": 0,
+    "residency_topics": [
+        {
+            "name": "history",
+            "uuid": "5yzVWVpeBcSn22Eck8T4",
+            "parent_topic_uuid": null
+        }
+    ],
+    "profession_topic": {
+        "name": "china",
+        "uuid": "6XHSzcdDhaiyAwBd7V3N",
+        "parent_topic_uuid": null
+    },
+    "github_username": null,
+    "twitter_username": null,
+    "linkedin_url": null,
+    "homepage_url": null,
+    "subscribed_topics": []
+  })
+})
+
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/articles/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/answers/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followers/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => { res.json([]) })
+
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/edu-exps/`, (req, res) => {
+  res.json([
+    {
+        "school_topic": {
+            "name": "china",
+            "uuid": "6XHSzcdDhaiyAwBd7V3N",
+            "parent_topic_uuid": null
+        },
+        "level": "bachelor"
+    }
+  ]);
+})
+
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/work-exps/`, (req, res) => {
+  res.json([
+      {
+          "company_topic": {
+              "name": "history",
+              "uuid": "5yzVWVpeBcSn22Eck8T4",
+              "parent_topic_uuid": null
+          },
+          "position_topic": {
+              "name": "china",
+              "uuid": "6XHSzcdDhaiyAwBd7V3N",
+              "parent_topic_uuid": null
+          }
+      }
+  ]);
+});
+
+app.get(`/api/v1/me/follows/${EXAMPLE_USER1_UUID}`, (req, res) => {
+  res.json({
+    user_uuid: EXAMPLE_USER1_UUID,
+    followers_count: 3,
+    followed_count: 4,
+    followed_by_me: true,
+  })
+})
+
+app.get(`/api/v1/me/follows/${EXAMPLE_USER2_UUID}`, (req, res) => {
+  res.json({
+    user_uuid: EXAMPLE_USER2_UUID,
+    followers_count: 1,
+    followed_count: 2,
+    followed_by_me: false,
+  })
 })
 
 app.get("/api/v1/answers/3b4TBWxFUnBe4aRrKq4X", (req, res) => {
@@ -326,6 +462,15 @@ app.get("/api/v1/activities/", (req, res) => {
   }
 })
 
+app.get(`/api/v1/sites/${EXAMPLE_SITE1_SUBDOMAIN}`, (req, res) => {
+  res.json(example_site1)
+})
+
+for (const site of randomSites) {
+  app.get(`/api/v1/sites/${site.subdomain}`, (req, res) => {
+    res.json(site)
+  })
+}
 
 app.get("/api/v1/notifications/unread/", (req, res) => {
   res.json([]);
@@ -333,15 +478,6 @@ app.get("/api/v1/notifications/unread/", (req, res) => {
 
 app.get("/api/v1/home/questions/", (req, res) => {
   res.json([]);
-})
-
-app.get("/api/v1/me/follows/example-user-1-uuid", (req, res) => {
-  res.json({
-    user_uuid: 'example-user-1-uuid',
-    followers_count: 0,
-    followed_count: 0,
-    followed_by_me: false,
-  })
 })
 
 if (server) {
