@@ -26,6 +26,9 @@ export const mutations = {
     setWorkingDraft(state: MainState, payload: IRichEditorState) {
         state.workingDraft = payload;
     },
+    setNarrowUI(state: MainState, payload: boolean) {
+        state.narrowUI = payload;
+    },
     setModeratedSites(state: MainState, payload: ISite[]) {
         state.moderated_sites = payload;
     },
@@ -61,3 +64,4 @@ export const commitSetModeratedSites = commit(mutations.setModeratedSites);
 export const commitAddNotification = commit(mutations.addNotification);
 export const commitRemoveNotification = commit(mutations.removeNotification);
 export const commitSetWorkingDraft = commit(mutations.setWorkingDraft);
+export const commitSetNarrowUI = commit(mutations.setNarrowUI);

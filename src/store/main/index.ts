@@ -16,6 +16,7 @@ const defaultState: MainState = {
   workingDraft: null,
   topBanner: null,
   showLoginPrompt: false,
+  narrowUI: true,
 };
 
 export const mainModule = {
