@@ -115,15 +115,15 @@
                                 <CollapseUpIcon @click="preview = true" class="pl-1 pr-1" />
 
                                 <v-tooltip bottom>
-                                <template v-slot:activator="{ on, attrs }">
-                                    <div v-bind="attrs" v-on="on" class="mt-1">
-                                    <RouterLink :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
-                                                class="text-decoration-none">
-                                        <LinkIcon class="pl-1 pr-1" />
-                                    </RouterLink>
-                                    </div>
-                                </template>
-                                <span>{{$t('Link')}}</span>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <div v-bind="attrs" v-on="on">
+                                            <RouterLink :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                                                        class="text-decoration-none">
+                                                <LinkIcon class="pl-1 pr-1" />
+                                            </RouterLink>
+                                        </div>
+                                    </template>
+                                    <span>{{$t('Link')}}</span>
                                 </v-tooltip>
                             </div>
                         </v-col>
