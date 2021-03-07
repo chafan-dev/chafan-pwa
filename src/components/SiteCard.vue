@@ -1,5 +1,5 @@
 <template>
-    <div class="pa-3" v-if="site">
+    <div v-if="site">
         <div class="headline primary--text">{{site.name}}</div>
         <div v-if="site !== null">
             <div v-if="site.description">

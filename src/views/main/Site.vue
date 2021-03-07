@@ -79,7 +79,7 @@
             <template v-slot:activator="{ on, attrs }">
                 <v-btn fab fixed right bottom v-bind="attrs" v-on="on"><InfoIcon /></v-btn>
             </template>
-            <v-sheet>
+            <v-sheet class="pa-2">
                 <SiteCard :site="site"
                           :isMember="siteProfile !== null"
                           :showQuestionEditor="showQuestionEditor"

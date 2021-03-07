@@ -1,5 +1,5 @@
 <template>
-    <div class="ma-3 pa-3">
+    <div>
         <div class="headline primary--text">
             <!-- FIXME: deprecate this -->
             {{$t('私信')}}

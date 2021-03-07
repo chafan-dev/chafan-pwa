@@ -276,7 +276,7 @@
                         <InfoIcon />
                     </v-btn>
                 </template>
-                <v-sheet>
+                <v-sheet class="pa-2">
                     <QuestionCard :questionSubscription="questionSubscription"
                                   :question="question"
                                   :site="questionSite" />
