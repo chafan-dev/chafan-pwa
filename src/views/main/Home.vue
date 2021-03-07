@@ -18,15 +18,14 @@
         </v-overlay>
         <v-row justify="center" class="pa-3">
             <!-- Feed column -->
-            <v-col :class="isNarrowFeedUI ? 'fixed-narrow-col' : undefined" fluid>
+            <v-col :class="{'fixed-narrow-col': isNarrowFeedUI }" fluid>
                 <div class="d-flex justify-space-between mb-3">
                   <NewContentActionBar />
                   <v-spacer />
                   <SharingIcon class="mr-2" @click="toggleSharing" v-if="!showSharing" />
                   <FeedIcon class="mr-2" @click="toggleSharing" v-else />
 
-                  <ExpandHorizontalIcon v-if="$vuetify.breakpoint.mdAndUp && isNarrowFeedUI" @click="narrowFeedUI = false" />
-                  <CollapseHorizontalIcon v-else-if="$vuetify.breakpoint.mdAndUp" @click="narrowFeedUI = true" />
+                  <UIStyleControllers />
                 </div>
 
                 <div v-if="showSharing">
@@ -274,48 +273,27 @@ import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SharingIcon from '@/components/icons/SharingIcon.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
-import ExpandHorizontalIcon from '@/components/icons/ExpandHorizontalIcon.vue';
-import CollapseHorizontalIcon from '@/components/icons/CollapseHorizontalIcon.vue';
 import QuestionPreview from '@/components/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import UserGrid from '@/components/UserGrid.vue';
-import { readUserProfile } from '@/store/main/getters';
+import { readNarrowUI, readUserProfile } from '@/store/main/getters';
 import { setAppLocale } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { dispatchUpdateUserProfileQuiet } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
-
-function getDefaultNarrowFeedUI() {
-    try {
-        return localStorage.getItem('narrowFeedUI') === 'true';
-    } catch (e) {
-        return false;
-    }
-}
+import UIStyleControllers from '@/components/UIStyleControllers.vue';
 
 @Component({
     components: {
-      CreateQuestionForm,
+        CreateQuestionForm, UIStyleControllers,
         UserLink, Answer, QuestionPreview, SiteBtn, ExploreCard, ArticlePreview,
         QuestionLink, ExploreIcon, UserCard, ArticleColumnCard, CommentCard,
-        ExpandHorizontalIcon, CollapseHorizontalIcon, NewContentActionBar, SharingIcon,
+        NewContentActionBar, SharingIcon,
         SubmissionCard, FeedIcon, UserGrid, ExploreSitesGrid, CloseIcon,
     },
 })
 export default class Home extends Vue {
-
-    get narrowFeedUI() {
-        return this.isNarrowFeedUI;
-    }
-
-    set narrowFeedUI(value: boolean) {
-        this.isNarrowFeedUI = value;
-        try {
-            localStorage.removeItem('narrowFeedUI');
-            localStorage.setItem('narrowFeedUI', value.toString());
-        } catch (e) {}
-    }
     private activities: IActivity[] = [];
     private loadingActivities = true;
     private loadingSubmissions = false;
@@ -331,7 +309,6 @@ export default class Home extends Vue {
 
     private noMoreNewActivities = false;
     private preloadMoreActivitiesIntermediate = false;
-    private isNarrowFeedUI = getDefaultNarrowFeedUI();
 
     private readonly FAB_FLAG = 'webfront-fab-clicked';
 
@@ -340,6 +317,10 @@ export default class Home extends Vue {
     private subjectsInDialog: IUserPreview[] = [];
 
     private submissions: ISubmission[] | null = null;
+
+    get isNarrowFeedUI() {
+      return readNarrowUI(this.$store);
+    }
 
     private async mounted() {
         this.userProfile = readUserProfile(this.$store);

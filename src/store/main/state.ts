@@ -19,4 +19,5 @@ export interface MainState {
     workingDraft: IRichEditorState | null;
     topBanner: ITopBanner | null;
     showLoginPrompt: boolean;
+    narrowUI: boolean;
 }

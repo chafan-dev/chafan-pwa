@@ -8,12 +8,8 @@
         </template>
 
         <v-list dense>
-             <v-list-item-group
-                    color="indigo"
-                    active-class="border"
-                    v-model="selectedLangIdx"
-                    mandatory
-                    @change="onChange">
+             <v-list-item-group color="indigo" active-class="border" v-model="selectedLangIdx"
+                                mandatory @change="onChange">
                 <v-list-item v-for="item in langs" :key="item.code">
                     <v-list-item-title>{{ item.translated }}</v-list-item-title>
                 </v-list-item>
@@ -35,19 +31,23 @@ import { dispatchUpdateUserProfile } from '@/store/main/actions';
 export default class LangPicker extends Vue {
     private selectedLang: string = getBrowserLocale();
     private selectedLangIdx: number = 0;
-    get langs() { return availableLocales.map((l) => {
-        let translated = l;
-        if (l === 'en') {
-            translated = 'English';
-        } else if (l === 'zh') {
-            translated = '简体中文';
-        }
-        return {
-            code: l,
-            translated,
-        };
-    }); }
-    public async mounted() {
+
+    get langs() {
+        return availableLocales.map((l) => {
+            let translated = l;
+            if (l === 'en') {
+                translated = 'English';
+            } else if (l === 'zh') {
+                translated = '简体中文';
+            }
+            return {
+                code: l,
+                translated,
+            };
+        });
+    }
+
+    private async mounted() {
         if (readIsLoggedIn(this.$store)) {
             const pref = readLocalePreference(this.$store);
             if (pref) {
@@ -59,7 +59,8 @@ export default class LangPicker extends Vue {
             }
         }
     }
-    public async onChange() {
+
+    private async onChange() {
         this.selectedLang = availableLocales[this.selectedLangIdx];
         setAppLocale(this, this.selectedLang);
         if (readIsLoggedIn(this.$store)) {

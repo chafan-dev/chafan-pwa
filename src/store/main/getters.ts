@@ -21,6 +21,7 @@ export const getters = {
     showLoginPrompt: (state: MainState) => state.showLoginPrompt,
     firstNotification: (state: MainState) => state.notifications.length > 0 && state.notifications[0],
     workingDraft: (state: MainState) => state.workingDraft,
+    narrowUI: (state: MainState) => state.narrowUI,
 };
 
 const {read} = getStoreAccessors<MainState, State>('');
@@ -39,3 +40,4 @@ export const readModeratedSites = read(getters.moderatedSites);
 export const readFirstNotification = read(getters.firstNotification);
 export const readLocalePreference = read(getters.localePreference);
 export const readWorkingDraft = read(getters.workingDraft);
+export const readNarrowUI = read(getters.narrowUI);

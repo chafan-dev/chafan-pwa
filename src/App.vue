@@ -34,7 +34,18 @@ import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { setAppLocale } from '@/utils'; // FIXME: store locale in main.store
 import { prodStateJsonURL } from './env';
 import axios from 'axios';
-import { commitSetShowLoginPrompt, commitSetTopBanner } from './store/main/mutations';
+import { commitSetNarrowUI, commitSetShowLoginPrompt, commitSetTopBanner } from './store/main/mutations';
+
+
+function getDefaultNarrowFeedUI() {
+    try {
+        const value = localStorage.getItem('narrowFeedUI');
+        return value === null || value === 'true';
+    } catch (e) {
+        return false;
+    }
+}
+
 
 @Component({
   components: {
@@ -87,6 +98,7 @@ export default class App extends Vue {
     if (pref) {
       setAppLocale(this, pref);
     }
+    commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }
 
   private refreshApp() {

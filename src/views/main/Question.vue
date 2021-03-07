@@ -4,8 +4,8 @@
             v-if="loading"
             v-model="loadingProgress"
             :indeterminate="loadingProgress === 0" />
-        <v-row v-else>
-            <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp,
+        <v-row justify="center" class="pa-3" v-else>
+            <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI,
                             'less-left-right-padding': !$vuetify.breakpoint.mdAndUp }"  class="mb-12" fluid>
                 <!-- Question info/editor -->
                 <div>
@@ -265,7 +265,7 @@
                         :loadFull="answerPreviews.indexOf(answerPreview) <= 2" />
             </v-col>
 
-            <v-col class="col-4" v-if="$vuetify.breakpoint.mdAndUp">
+            <v-col :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'" v-if="$vuetify.breakpoint.mdAndUp">
                 <QuestionCard :questionSubscription="questionSubscription"
                               :question="question"
                               :site="questionSite" />
@@ -307,7 +307,7 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
 import { apiAnswer } from '@/api/answer';
-import { readIsLoggedIn, readUserMode, readUserProfile } from '@/store/main/getters';
+import { readIsLoggedIn, readNarrowUI, readUserMode, readUserProfile } from '@/store/main/getters';
 import { IAnswer, IQuestion, IUserQuestionSubscription,
 ISite, IUserSiteProfile, IAnswerPreview, IQuestionUpvotes,
 IUserProfile, IQuestionArchive, INewEditEvent } from '@/interfaces';
@@ -330,6 +330,9 @@ import { apiComment } from '@/api/comment';
 export default class Question extends Vue {
     get isUserMode() {
         return readUserMode(this.$store);
+    }
+    get isNarrowFeedUI() {
+      return readNarrowUI(this.$store);
     }
     get id() {
         return this.$router.currentRoute.params.id;
@@ -828,5 +831,16 @@ export default class Question extends Vue {
 .less-left-right-padding {
     padding-left: 6px !important;
     padding-right: 6px !important;
+}
+
+/* FIXME: Potential code duplication with Home.vue */
+.fixed-narrow-col {
+    max-width: 800px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.fixed-narrow-sidecol {
+    max-width: 400px;
 }
 </style>
