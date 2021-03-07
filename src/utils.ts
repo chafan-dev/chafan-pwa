@@ -1,6 +1,8 @@
+const CHAFAN_TOKEN = 'chafan:token'
+
 export const getLocalToken = () => {
     try {
-        return localStorage.getItem('token');
+        return localStorage.getItem(CHAFAN_TOKEN);
     } catch (e) {
         return null;
     }
@@ -8,7 +10,7 @@ export const getLocalToken = () => {
 
 export const saveLocalToken = (token: string) => {
     try {
-        localStorage.setItem('token', token);
+        localStorage.setItem(CHAFAN_TOKEN, token);
     } catch (e) {
         // do nothing
     }
@@ -16,7 +18,7 @@ export const saveLocalToken = (token: string) => {
 
 export const removeLocalToken = () => {
     try {
-        localStorage.removeItem('token');
+        localStorage.removeItem(CHAFAN_TOKEN);
     } catch (e) {
         // do nothing
     }
