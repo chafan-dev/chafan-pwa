@@ -253,6 +253,17 @@ const example_activity_upvote_question2 = {
   }
 }
 
+const example_topic1 = {
+  "name": "china",
+  "uuid": "6XHSzcdDhaiyAwBd7V3N",
+  "parent_topic_uuid": null
+};
+
+const example_topic2 = {
+  "name": "history",
+  "uuid": "5yzVWVpeBcSn22Eck8T4",
+  "parent_topic_uuid": null
+};
 
 app.post("/api/v1/ws/token", (req, res) => {
   res.json({
@@ -360,23 +371,15 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_HANDLE}`, (req, res) => {
     "articles_count": 0,
     "profiles": randomSiteProfiles,
     "profile_view_times": 0,
-    "residency_topics": [
-        {
-            "name": "history",
-            "uuid": "5yzVWVpeBcSn22Eck8T4",
-            "parent_topic_uuid": null
-        }
-    ],
-    "profession_topic": {
-        "name": "china",
-        "uuid": "6XHSzcdDhaiyAwBd7V3N",
-        "parent_topic_uuid": null
-    },
+    "residency_topics": [ example_topic2 ],
+    "profession_topic": example_topic1,
     "github_username": null,
     "twitter_username": null,
     "linkedin_url": null,
     "homepage_url": null,
-    "subscribed_topics": []
+    "subscribed_topics": [
+      example_topic1, example_topic2
+    ]
   })
 })
 
@@ -390,11 +393,7 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => { res
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/edu-exps/`, (req, res) => {
   res.json([
     {
-        "school_topic": {
-            "name": "china",
-            "uuid": "6XHSzcdDhaiyAwBd7V3N",
-            "parent_topic_uuid": null
-        },
+        "school_topic": example_topic1,
         "level": "bachelor"
     }
   ]);
@@ -403,16 +402,8 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/edu-exps/`, (req, res) => {
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/work-exps/`, (req, res) => {
   res.json([
       {
-          "company_topic": {
-              "name": "history",
-              "uuid": "5yzVWVpeBcSn22Eck8T4",
-              "parent_topic_uuid": null
-          },
-          "position_topic": {
-              "name": "china",
-              "uuid": "6XHSzcdDhaiyAwBd7V3N",
-              "parent_topic_uuid": null
-          }
+          "company_topic": example_topic1,
+          "position_topic": example_topic2
       }
   ]);
 });

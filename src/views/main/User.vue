@@ -6,11 +6,12 @@
             <UserCard :userPreview="userPublic ? userPublic : userPublicForVisitor"
                       :userPublic="userPublic ? userPublic : userPublicForVisitor"
                       v-if="userPublic || userPublicForVisitor"
-                      class="mb-4 ml-7 mr-7 pb-7" />
+                      class="mb-4 mx-7 pb-7" />
             <v-skeleton-loader type="card" v-else />
 
             <template v-if="loggedIn">
-                <v-tabs v-model="currentTabItem" show-arrows>
+                <v-tabs v-model="currentTabItem" show-arrows class="mx-7"
+                        :class="{'fixed-tabs': $vuetify.breakpoint.mdAndUp }">
                     <v-tabs-slider />
                     <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
                         {{ $t(item.text) }}
@@ -20,7 +21,7 @@
                     </v-tab>
                 </v-tabs>
 
-                <v-tabs-items v-model="currentTabItem" class="pa-2">
+                <v-tabs-items v-model="currentTabItem" class="mx-7">
                     <div v-if="currentTabItem === 'profile'">
                         <template v-if="userPublic">
                             <div class="my-3" v-if="userPublic.homepage_url || userPublic.github_username || userPublic.twitter_username || userPublic.linkedin_url">
@@ -113,7 +114,8 @@
                         <template v-if="userPublic">
                             <div class="my-3" v-if="userPublic.subscribed_topics.length > 0">
                                 <div class="subheading secondary--text text--lighten-3">{{$t('关注的话题')}}</div>
-                                <v-chip :to="'/topics/' + topic.uuid" v-for="topic in userPublic.subscribed_topics" :key="topic.uuid">{{ topic.name }}</v-chip>
+                                <v-chip small class="mr-1 mb-1" :to="'/topics/' + topic.uuid"
+                                        v-for="topic in userPublic.subscribed_topics" :key="topic.uuid">{{ topic.name }}</v-chip>
                             </div>
                         </template>
                         <v-skeleton-loader type="text" v-else />
