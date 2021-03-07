@@ -73,7 +73,9 @@
 
                     <v-card flat>
                       <div v-for="activity in activities" :key="activity.id">
-                        <v-card class="my-4 c-card" :class="{'px-3': $vuetify.breakpoint.mdAndUp, 'py-4': $vuetify.breakpoint.mdAndUp }" elevation="1">
+                        <v-card class="my-4 c-card" elevation="1"
+                                :class="{'px-3': $vuetify.breakpoint.mdAndUp, 'py-4': $vuetify.breakpoint.mdAndUp,
+                                         'px-1': !$vuetify.breakpoint.mdAndUp, 'py-2': !$vuetify.breakpoint.mdAndUp }">
                           <!-- Row for top info -->
                           <v-row justify="space-between" no-gutters>
                             <!-- Column for subject and verb -->
