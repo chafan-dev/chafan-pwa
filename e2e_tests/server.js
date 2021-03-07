@@ -91,6 +91,14 @@ for (var i = 0; i < 20; i++) {
   })
 }
 
+const randomSiteProfiles = randomSites.map((ransomSite) => {
+  return {
+      "karma": 19,
+      "owner": example_user1_preview,
+      "site": ransomSite
+  }
+})
+
 const example_question_preview = {
   "uuid": "6gpPVpfHJnEh4NfbZ4VY",
   "title": "Twitter, Facebook 类型的社交网络在未来会不会变成政府依靠税收运营的公共基础设施？",
@@ -298,7 +306,7 @@ app.put("/api/v1/me", (req, res) => {
 })
 
 app.get("/api/v1/me/site-profiles/", (req, res) => {
-  res.json([]);
+  res.json(randomSiteProfiles);
 })
 
 example_answer1 = {
@@ -350,13 +358,7 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_HANDLE}`, (req, res) => {
     "submissions_count": 2,
     "questions_count": 2,
     "articles_count": 0,
-    "profiles": randomSites.map((ransomSite) => {
-        return {
-            "karma": 19,
-            "owner": example_user1_preview,
-            "site": ransomSite
-        }
-    }),
+    "profiles": randomSiteProfiles,
     "profile_view_times": 0,
     "residency_topics": [
         {
