@@ -16,7 +16,10 @@ export default class SimpleEditor extends Vue {
 
     private vditor: Vditor | null = null;
 
-    private mounted() {
+    private initVditor() {
+        if (this.vditor !== null) {
+            this.vditor.destroy();
+        }
         this.vditor = new Vditor(this.$refs.editor as HTMLElement, {
             debugger: env === 'development',
             cdn: vditorCDN,
@@ -39,6 +42,10 @@ export default class SimpleEditor extends Vue {
         });
     }
 
+    private mounted() {
+        this.initVditor();
+    }
+
     get content() {
         return this.vditor?.getValue() || '';
     }
@@ -47,6 +54,10 @@ export default class SimpleEditor extends Vue {
         if (this.vditor) {
             this.vditor.setValue(value);
         }
+    }
+
+    public reset() {
+        this.initVditor();
     }
 }
 </script>
