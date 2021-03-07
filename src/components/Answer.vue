@@ -71,13 +71,13 @@
                                 </v-btn>
 
                                 <template v-if="userProfile">
-                                <v-btn small class="slim-btn mx-1" @click="loadEditor" v-show="currentUserIsAuthor">
+                                <v-btn small depressed class="slim-btn mx-1" @click="loadEditor" v-show="currentUserIsAuthor">
                                     {{$t(editButtonText)}}
                                 </v-btn>
 
                                 <v-menu offset-y v-if="currentUserIsAuthor">
                                     <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-bind="attrs" v-on="on" class="slim-btn mx-1" small>{{$t('设置')}}</v-btn>
+                                    <v-btn depressed v-bind="attrs" v-on="on" class="slim-btn mx-1" small>{{$t('设置')}}</v-btn>
                                     </template>
                                     <v-list>
                                     <v-list-item @click="confirmDeleteDialog = true">
@@ -96,8 +96,8 @@
                                     </v-card-title>
                                     <v-card-actions>
                                         <v-spacer />
-                                        <v-btn small ="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
-                                        <v-btn small color="warning" @click="deleteAnswer" :disabled='deleteAnswerIntermediate'>
+                                        <v-btn depressed small ="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
+                                        <v-btn depressed small color="warning" @click="deleteAnswer" :disabled='deleteAnswerIntermediate'>
                                         {{$t('Yes')}}
                                         </v-btn>
                                     </v-card-actions>
@@ -162,15 +162,15 @@
                 <v-col md="auto">
                     {{$t('管理：')}}
                     <!-- Moderator -->
-                    <v-btn class="slim-btn ma-1" @click="toggleHideAnswer" color="warning" :disabled="toggleHideAnswerIntermediate"
-                           v-if="isHiddenByMod">{{$t('取消隐藏')}}</v-btn>
-                    <v-btn class="slim-btn ma-1" @click="toggleHideAnswer" color="warning" :disabled="toggleHideAnswerIntermediate"
-                           v-else>{{$t('隐藏')}}</v-btn>
+                    <v-btn small depressed class="slim-btn ma-1" @click="toggleHideAnswer"
+                           color="warning" :disabled="toggleHideAnswerIntermediate" v-if="isHiddenByMod">{{$t('取消隐藏')}}</v-btn>
+                    <v-btn small depressed class="slim-btn ma-1" @click="toggleHideAnswer"
+                           color="warning" :disabled="toggleHideAnswerIntermediate" v-else>{{$t('隐藏')}}</v-btn>
 
-                    <v-btn class="slim-btn ma-1" @click="toggleTopAnswer" color="warning" :disabled="toggleTopAnswerIntermediate"
-                           v-if="isPlacedAtQuestionTop">{{$t('取消问题中置顶')}}</v-btn>
-                    <v-btn class="slim-btn ma-1" @click="toggleTopAnswer" color="warning" :disabled="toggleTopAnswerIntermediate"
-                           v-else>{{$t('问题中置顶')}}</v-btn>
+                    <v-btn small depressed class="slim-btn ma-1" @click="toggleTopAnswer"
+                           color="warning" :disabled="toggleTopAnswerIntermediate" v-if="isPlacedAtQuestionTop">{{$t('取消问题中置顶')}}</v-btn>
+                    <v-btn small depressed class="slim-btn ma-1" @click="toggleTopAnswer"
+                           color="warning" :disabled="toggleTopAnswerIntermediate" v-else>{{$t('问题中置顶')}}</v-btn>
                 </v-col>
             </v-row>
         </div>
