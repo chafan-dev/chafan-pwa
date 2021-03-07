@@ -12,7 +12,7 @@ staging-pr: check-no-pending-change
 	git pull origin master
 	git rebase origin/stag
 	git push -f origin master
-	gh pr create --base stag --title "Update stag from master" --fill
+	gh pr create --base origin/stag --title "Update stag from master" --fill
 	git checkout -
 
 prod-pr: check-no-pending-change
@@ -21,5 +21,5 @@ prod-pr: check-no-pending-change
 	git pull origin master
 	git rebase origin/prod
 	git push -f origin master
-	gh pr create --base prod --title "Update prod from master" --fill
+	gh pr create --base origin/prod --title "Update prod from master" --fill
 	git checkout -
