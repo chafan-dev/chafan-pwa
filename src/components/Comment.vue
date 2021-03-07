@@ -273,7 +273,7 @@ export default class Comment extends Vue {
                 this.childComments = [];
             }
             this.childComments.unshift(comment);
-            editor.content = '';
+            editor.reset();
             this.childCommentsExpanded = true;
             this.showEditor = false;
             this.submitIntermediate = false;
@@ -316,6 +316,7 @@ export default class Comment extends Vue {
             shared_to_timeline: true,
         })).data.shared_to_timeline;
     }
+
     private async deleteComment() {
         await apiComment.deleteComment(this.token, this.comment.uuid);
         commitAddNotification(this.$store, {
@@ -325,6 +326,7 @@ export default class Comment extends Vue {
         this.showDeleteConfirm = false;
         this.isDeleted = true;
     }
+
     private async upvote() {
         this.upvoteIntermediate = true;
         await dispatchCaptureApiError(this.$store, async () => {

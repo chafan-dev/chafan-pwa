@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid >
+    <v-container fluid>
         <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-card elevation="2" rounded v-show="showUserAgreement" color="white">
                 <v-card-title class="primary--text">{{$t('使用前必读')}}</v-card-title>
