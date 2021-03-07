@@ -1,6 +1,6 @@
 <template>
-    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded"
-            :loading="loading" v-if="!showEditor && !loading">
+    <v-card :class="{'pa-3': $vuetify.breakpoint.mdAndUp, 'pa-2': !$vuetify.breakpoint.mdAndUp, 'c-card': !embedded }"
+            :flat="embedded" :loading="loading" v-if="!showEditor && !loading">
         <div v-if="isHiddenByMod">
             <v-card-text>{{$t('内容已被管理员隐藏')}}</v-card-text>
         </div>
