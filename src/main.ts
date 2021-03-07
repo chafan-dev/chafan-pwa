@@ -888,7 +888,7 @@ const i18n = new VueI18n({
       'verb.upvote_article': '{who}赞了文章「{article}」',
       'verb.upvote_question': '{who}认为「{question}」是好问题',
       'verb.invite_new_user': '{who}邀请了新用户加入',
-      'verb.invite_join_site': '{who}邀请了 {invited_user} 加入 {site}',
+      'verb.invite_join_site': '{who}邀请了{user}加入「{site}」',
       'verb.answer_question': '{who}添加了新回答「{answer}」（所属问题：「{question}」）',
       'verb.comment_question': '{who}添加了新评论「{comment}」（所属问题：「{question}」）',
       'verb.edit_question': '{who}编辑了问题「{question}」',
