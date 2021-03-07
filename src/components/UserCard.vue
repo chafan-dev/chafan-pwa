@@ -40,7 +40,7 @@
                     <v-row v-if="compactMode">
                         <v-col>
                             <RouterLink class="text-decoration-none mr-2 text-caption"
-                            :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                                        :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </RouterLink>
                             <span v-else>
@@ -48,7 +48,7 @@
                             </span>
 
                             <RouterLink class="text-decoration-none text-caption"
-                            :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                                        :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </RouterLink>
                             <span v-else>
@@ -59,7 +59,7 @@
                     <v-row v-else class="mt-3">
                         <v-col class="text-center">
                             <RouterLink class="text-decoration-none"
-                            :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                                        :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </RouterLink>
                             <span v-else>
@@ -68,7 +68,7 @@
                         </v-col>
                         <v-col class="text-center">
                             <RouterLink class="text-decoration-none"
-                            :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                                        :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </RouterLink>
                             <span v-else>
