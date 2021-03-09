@@ -13,7 +13,6 @@
                 <v-tabs v-model="currentTabItem" show-arrows
                         :align-with-title="$vuetify.breakpoint.mdAndUp"
                         :fixed-tabs="$vuetify.breakpoint.mdAndUp">
-                    <v-tabs-slider />
                     <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
                         {{ $t(item.text) }}
                         <span v-if="item.tabExtraCount && userPublic" class="ml-1">
@@ -21,7 +20,7 @@
                         </span>
                     </v-tab>
 
-                    <v-tab-item value="profile">
+                    <v-tab-item value="profile" class="pt-2">
                         <template v-if="userPublic">
                             <div class="my-3" v-if="userPublic.homepage_url || userPublic.github_username || userPublic.twitter_username || userPublic.linkedin_url">
                                 <span class="subheading secondary--text text--lighten-3">{{$t('Links')}}: </span>
