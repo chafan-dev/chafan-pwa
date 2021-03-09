@@ -2,9 +2,9 @@
     <!-- TODO: c-card -->
     <v-card class="pa-2" :flat="embedded">
         <div class="title" style="word-break: normal">
-            <RouterLink class="text-decoration-none" :to="'/questions/' + questionPreview.uuid">
-            {{ questionPreview.title }}
-            </RouterLink>
+            <a class="text-decoration-none" :href="'/questions/' + questionPreview.uuid">
+                {{ questionPreview.title }}
+            </a>
         </div>
         <div class="grey--text subtitle-2" v-if="questionPreview.description">
             {{ shortDesc(questionPreview.description) }}

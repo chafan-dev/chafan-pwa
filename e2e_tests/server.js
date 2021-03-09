@@ -99,6 +99,17 @@ const randomSiteProfiles = randomSites.map((ransomSite) => {
   }
 })
 
+const randomUserPreviews = []
+for (var i = 0; i < 20; i++) {
+  const uuid = randomString();
+  randomUserPreviews.push({
+    uuid: uuid,
+    handle: uuid + "_handle",
+    full_name: uuid + " (FN)",
+    karma: 0
+  })
+}
+
 const example_question_preview = {
   "uuid": "6gpPVpfHJnEh4NfbZ4VY",
   "title": "Twitter, Facebook 类型的社交网络在未来会不会变成政府依靠税收运营的公共基础设施？",
@@ -385,7 +396,9 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_HANDLE}`, (req, res) => {
 
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/articles/`, (req, res) => { res.json([]) })
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/answers/`, (req, res) => { res.json([]) })
-app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followers/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followers/`, (req, res) => {
+  res.json(randomUserPreviews)
+})
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => { res.json([]) })
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => { res.json([]) })
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => { res.json([]) })
@@ -416,6 +429,17 @@ app.get(`/api/v1/me/follows/${EXAMPLE_USER1_UUID}`, (req, res) => {
     followed_by_me: true,
   })
 })
+
+for (const userPrview of randomUserPreviews) {
+  app.get(`/api/v1/me/follows/${userPrview.uuid}`, (req, res) => {
+    res.json({
+      user_uuid: userPrview.uuid,
+      followers_count: 3,
+      followed_count: 4,
+      followed_by_me: true,
+    })
+  })
+}
 
 app.get(`/api/v1/me/follows/${EXAMPLE_USER2_UUID}`, (req, res) => {
   res.json({

@@ -25,9 +25,9 @@
                     <!-- Question title display/editor -->
                     <div>
                         <div class="headline primary--text" v-if="!showQuestionEditor">
-                            <RouterLink class="text-decoration-none" :to="`/questions/${this.question.uuid}`">
+                            <a class="text-decoration-none" :href="`/questions/${this.question.uuid}`">
                                 {{ question.title }}
-                            </RouterLink>
+                            </a>
                         </div>
                         <v-textarea auto-grow dense rows="1"
                                     :label="$t('Title')" v-model="newQuestionTitle" v-else />

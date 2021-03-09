@@ -15,14 +15,14 @@
             </v-col>
             <v-col align-self="center">
                 <div class="mb-1 mt-1" :class="{'headline': !compactMode, 'text-center': !compactMode}">
-                    <RouterLink :to="'/users/' + userPreview.handle" class="text-decoration-none">
+                    <a :href="'/users/' + userPreview.handle" class="text-decoration-none">
                         <span v-if="userPreview.full_name">
                             {{userPreview.full_name}}
                         </span>
                         <span v-else>
                             @{{userPreview.handle}}
                         </span>
-                    </RouterLink>
+                    </a>
 
                     <span v-if="userPreview.full_name" class="grey--text">
                         (@{{userPreview.handle}})
@@ -39,18 +39,18 @@
                 <template v-if="follows">
                     <v-row v-if="compactMode">
                         <v-col>
-                            <RouterLink class="text-decoration-none mr-2 text-caption"
-                                        :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                            <a class="text-decoration-none mr-2 text-caption"
+                                        :href="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
-                            </RouterLink>
+                            </a>
                             <span v-else>
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </span>
 
-                            <RouterLink class="text-decoration-none text-caption"
-                                        :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                            <a class="text-decoration-none text-caption"
+                                        :href="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
-                            </RouterLink>
+                            </a>
                             <span v-else>
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </span>
@@ -58,19 +58,19 @@
                     </v-row>
                     <v-row v-else class="mt-3">
                         <v-col class="text-center">
-                            <RouterLink class="text-decoration-none"
-                                        :to="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                            <a class="text-decoration-none"
+                                        :href="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
-                            </RouterLink>
+                            </a>
                             <span v-else>
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </span>
                         </v-col>
                         <v-col class="text-center">
-                            <RouterLink class="text-decoration-none"
-                                        :to="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                            <a class="text-decoration-none"
+                                        :href="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
-                            </RouterLink>
+                            </a>
                             <span v-else>
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </span>
@@ -83,9 +83,10 @@
                     </v-row>
 
                     <v-row class="compact-row">
-                        <v-col v-if="currentUserId != userPreview.uuid" :class="{'text-center': !compactMode}">
+                        <v-col v-if="currentUserId != userPreview.uuid"
+                               :class="{'text-center': !compactMode, 'compact-col': compactMode }">
                             <v-btn depressed @click="cancelFollow" v-if="follows.followed_by_me" small
-                                   :disabled="cancelFollowIntermediate">
+                                   :disabled="cancelFollowIntermediate" class="mt-1">
                                 {{$t('取消关注')}}
                                 <v-progress-circular :size="20" indeterminate v-show="cancelFollowIntermediate" />
                             </v-btn>
@@ -94,7 +95,7 @@
                                 <v-progress-circular :size="20" indeterminate color="primary" v-show="followIntermediate" />
                             </v-btn>
 
-                            <v-btn depressed small class="ml-2"
+                            <v-btn depressed small class="ml-1 mt-1"
                                    @click="privateMessage" :disabled="privateMessageIntermediate">
                                 {{$t('私信')}}
                             </v-btn>
@@ -211,6 +212,10 @@ export default class UserCard extends Vue {
 <style scoped>
 .compact-row {
     margin-top: 0 !important;
+}
+
+.compact-col {
+    padding-top: 0 !important;
 }
 </style>
 

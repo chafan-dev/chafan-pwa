@@ -4,9 +4,9 @@
             <v-col align-self="center">
                 <div :class="{ 'mb-6': currentUserId === articleColumn.owner.uuid, 'mb-2': currentUserId !== articleColumn.owner.uuid }">
                     <div class="mb-1" :class="{'headline': !compactMode, 'text-center': !compactMode}">
-                        <RouterLink :to="'/article-columns/' + articleColumn.uuid" class="text-decoration-none" v-if="!showColumnEditor">
+                        <a :href="'/article-columns/' + articleColumn.uuid" class="text-decoration-none" v-if="!showColumnEditor">
                             {{name}}
-                        </RouterLink>
+                        </a>
                         <span class="grey--text" v-if="compactMode && desc && !showColumnEditor">
                             : {{ desc }}
                         </span>

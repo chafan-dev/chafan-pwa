@@ -1,7 +1,7 @@
 <template>
-    <RouterLink class="text-decoration-none" :to="'/questions/' + id">
+    <a class="text-decoration-none" :href="'/questions/' + id">
         {{ title }}
-    </RouterLink>
+    </a>
 </template>
 
 <script lang="ts">

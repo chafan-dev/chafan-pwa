@@ -78,6 +78,7 @@ export default new Router({
           component: () => import(/* webpackChunkName: "main-topics" */ './views/main/Topic.vue'),
         },
         {
+          name: 'user',
           path: 'users/:handle',
           component: () => import(/* webpackChunkName: "main-users" */ './views/main/User.vue'),
         },

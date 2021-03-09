@@ -2,21 +2,21 @@
     <!-- TODO: c-card -->
     <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <div class="title" style="word-break: normal">
-            <RouterLink class="text-decoration-none" :to="'/submissions/' + submission.uuid">
+            <a class="text-decoration-none" :href="'/submissions/' + submission.uuid">
                 {{ submission.title }}
-            </RouterLink>
+            </a>
         </div>
         <div class="d-flex align-center">
-            <RouterLink class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
-                        :to="'/submissions/' + submission.uuid">
+            <a class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
+                        :href="'/submissions/' + submission.uuid">
                 <UpvoteIcon :color="submission.upvoted ? 'primary' : undefined" small />
                 {{ submission.upvotes_count }}
-            </RouterLink>
-            <RouterLink class="d-flex align-center black--text text-caption text-decoration-none"
-                        :to="'/submissions/' + submission.uuid">
+            </a>
+            <a class="d-flex align-center black--text text-caption text-decoration-none"
+                        :href="'/submissions/' + submission.uuid">
                 <CommentsIcon small class="mr-1 mt-1" />
                 {{ submission.comments.length }}
-            </RouterLink>
+            </a>
             <v-spacer />
             <div v-if="submission.url">
                 <LinkIcon small />

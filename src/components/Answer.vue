@@ -117,10 +117,10 @@
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
                                         <div v-bind="attrs" v-on="on">
-                                            <RouterLink :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
-                                                        class="text-decoration-none">
+                                            <a :href="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                                               class="text-decoration-none">
                                                 <LinkIcon class="pl-1 pr-1" />
-                                            </RouterLink>
+                                            </a>
                                         </div>
                                     </template>
                                     <span>{{$t('Link')}}</span>
