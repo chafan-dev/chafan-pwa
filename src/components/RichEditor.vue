@@ -3,7 +3,7 @@
         <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />
         </v-overlay>
-        <div id="vditor" class="mb-2" />
+        <div id="vditor" class="mb-2" :class="{'mt-2': focusMode}" />
         <div class="d-flex align-center">
             <v-btn small color="slim-btn primary" @click="submitEdit(true)">
                 {{ $t(publishText) }}

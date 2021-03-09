@@ -148,7 +148,7 @@
                     <v-tab-item value="articles">
                         <template v-if="articles !== null">
                             <p v-if="articles.length === 0">{{$t('暂无')}}</p>
-                            <ArticlePreview :articlePreview="article" class="mb-2"
+                            <ArticlePreview :articlePreview="article" class="ma-2"
                                             :key="article.uuid" v-for="article in articles" />
                         </template><v-skeleton-loader type="paragraph" v-else />
                     </v-tab-item>

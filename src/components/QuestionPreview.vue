@@ -1,6 +1,5 @@
 <template>
-    <!-- TODO: c-card -->
-    <v-card class="pa-2" :flat="embedded">
+    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <div class="title" style="word-break: normal">
             <a class="text-decoration-none" :href="'/questions/' + questionPreview.uuid">
                 {{ questionPreview.title }}
@@ -50,3 +49,13 @@ export default class QuestionPreview extends Vue {
     }
 }
 </script>
+
+<style scoped>
+/* FIXME: code duplicate: Home.vue */
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85,85,85,.08),
+  0 10px 20px 0 rgba(85,85,85,.06),
+  0 15px 30px 0 rgba(85,85,85,.03)
+  !important;
+}
+</style>
