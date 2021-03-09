@@ -29,7 +29,6 @@ export interface IUserProfile {
 }
 
 export interface IUserSiteProfile {
-    introduction?: string;
     karma: number;
     site: ISite;
     owner: IUserPreview;

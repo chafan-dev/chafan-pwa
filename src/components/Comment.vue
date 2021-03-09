@@ -16,7 +16,41 @@
 
         <!-- Comment control -->
         <div class="d-flex mt-1 align-center">
+            <!-- Part I -->
+            <template v-if="enableUpvotes && upvotes && !isDeleted && !showEditor">
+                <span class="text-caption d-flex align-center mr-2" v-if="currentUserIsAuthor">
+                    <UpvoteIcon /> {{ upvotes.count }}
+                </span>
+                <span v-else @click="toggleUpvote" style="cursor: pointer"
+                      class="text-caption d-flex align-center mr-2">
+                    <UpvoteIcon :color="upvotes.upvoted ? 'primary' : undefined" /> {{ upvotes.count }}
+                </span>
+            </template>
+
+            <v-tooltip bottom v-if="childComments && childComments.length > 0">
+                <template v-slot:activator="{ on, attrs }">
+                    <div v-bind="attrs" v-on="on" class="pr-3" style="cursor: pointer"
+                            @click="childCommentsExpanded = !childCommentsExpanded">
+                        <CommentsIcon :color="childCommentsExpanded ? undefined : 'primary'" />
+                        <span class="ml-1 text-caption">{{ childComments.length }}</span>
+                    </div>
+                </template>
+                <span>{{$t('查看回复')}}</span>
+            </v-tooltip>
+
+            <template v-if="!isDeleted && !currentUserIsAuthor && !showEditor">
+                <span @click="showEditor = true" style="cursor: pointer" v-if="writable"
+                        class="text-caption d-flex align-center">
+                    <ReplyIcon /> {{$t('回复')}}
+                </span>
+                <v-spacer />
+                <ReactionBlock objectType="comment" :objectId="comment.uuid" />
+            </template>
+
+            <!-- Part II -->
             <template v-if="!isDeleted && currentUserIsAuthor && !showUpdateEditor">
+                <v-divider class="mr-2" vertical />
+
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                         <div v-bind="attrs" v-on="on">
@@ -53,38 +87,6 @@
                     </v-card-actions>
                     </v-card>
                 </v-dialog>
-
-                <v-divider vertical />
-            </template>
-
-            <v-tooltip bottom v-if="childComments && childComments.length > 0">
-                <template v-slot:activator="{ on, attrs }">
-                    <div v-bind="attrs" v-on="on" class="pr-3" style="cursor: pointer"
-                            @click="childCommentsExpanded = !childCommentsExpanded">
-                        <CommentsIcon :color="childCommentsExpanded ? undefined : 'primary'" />
-                        <span class="ml-1 text-caption">{{ childComments.length }}</span>
-                    </div>
-                </template>
-                <span>{{$t('查看回复')}}</span>
-            </v-tooltip>
-
-            <template v-if="enableUpvotes && upvotes && !isDeleted && !showEditor">
-                <span class="text-caption d-flex align-center mr-2" v-if="currentUserIsAuthor">
-                    <UpvoteIcon /> {{ upvotes.count }}
-                </span>
-                <span v-else @click="toggleUpvote" style="cursor: pointer"
-                      class="text-caption d-flex align-center mr-2">
-                    <UpvoteIcon :color="upvotes.upvoted ? 'primary' : undefined" /> {{ upvotes.count }}
-                </span>
-            </template>
-
-            <template v-if="!isDeleted && !currentUserIsAuthor && !showEditor">
-                <span @click="showEditor = true" style="cursor: pointer" v-if="writable"
-                        class="text-caption d-flex align-center">
-                    <ReplyIcon /> {{$t('回复')}}
-                </span>
-                <v-spacer />
-                <ReactionBlock objectType="comment" :objectId="comment.uuid" />
             </template>
         </div>
 
