@@ -3,9 +3,9 @@
         <div class="headline primary--text">{{site.name}}</div>
         <div v-if="site !== null">
             <div v-if="site.description">
-                <b>{{$t('简介：')}}</b>
                 <SimpleViewer :body="site.description" />
             </div>
+            <v-divider class="my-1" />
             <div v-if="site.topics.length > 0 && showTopics">
                 <b>{{$t('话题：')}}</b>
                 <v-chip-group>
