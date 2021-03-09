@@ -40,7 +40,7 @@ export default class SiteBtn extends Vue {
     @Prop({default: false}) public readonly showHotness!: boolean;
 
     get hotness() {
-        return Math.floor(Math.log2(this.site.questions_count + this.site.members_count + this.site.submissions_count + 1));
+        return Math.floor(Math.log2(this.site.questions_count + this.site.members_count / 10 + this.site.submissions_count / 2 + 1));
     }
 
     get color() {
