@@ -9,7 +9,7 @@
         <v-lazy>
             <v-card max-width="400">
                 <SiteCard :site="site" :showQuestionEditor="false" :showSubmissionEditor="false"
-                          :showTopics="false" class="pa-2" />
+                          :showTopics="false" class="px-3 py-2" />
             </v-card>
         </v-lazy>
     </v-menu>

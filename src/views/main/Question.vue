@@ -4,7 +4,7 @@
             v-if="loading"
             v-model="loadingProgress"
             :indeterminate="loadingProgress === 0" />
-        <v-row justify="center" class="pa-3" v-else>
+        <v-row justify="center" v-else>
             <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI,
                             'less-left-right-padding': !$vuetify.breakpoint.mdAndUp }"  class="mb-12" fluid>
                 <!-- Question info/editor -->

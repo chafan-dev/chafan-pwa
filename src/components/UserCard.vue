@@ -85,21 +85,24 @@
                     <v-row class="compact-row">
                         <v-col v-if="currentUserId != userPreview.uuid"
                                :class="{'text-center': !compactMode, 'compact-col': compactMode }">
-                            <v-btn depressed @click="cancelFollow" v-if="follows.followed_by_me" small
-                                   :disabled="cancelFollowIntermediate" class="mt-1">
+                            <v-btn small depressed class="mt-1 mr-1"
+                                   @click="cancelFollow" v-if="follows.followed_by_me"
+                                   :disabled="cancelFollowIntermediate">
                                 {{$t('取消关注')}}
                                 <v-progress-circular :size="20" indeterminate v-show="cancelFollowIntermediate" />
                             </v-btn>
-                            <v-btn depressed @click="follow" :disabled="followIntermediate" color="primary" small v-else>
+                            <v-btn small depressed class="mt-1 mr-1"
+                                   @click="follow" :disabled="followIntermediate" color="primary" v-else>
                                 {{$t('关注')}}
                                 <v-progress-circular :size="20" indeterminate color="primary" v-show="followIntermediate" />
                             </v-btn>
 
-                            <v-btn depressed small class="ml-1 mt-1"
+                            <v-btn small depressed class="mt-1 mr-1"
                                    @click="privateMessage" :disabled="privateMessageIntermediate">
                                 {{$t('私信')}}
                             </v-btn>
                         </v-col>
+                        <div v-else class="mb-2" />
                     </v-row>
                 </template>
                 <v-skeleton-loader type="text" v-else />

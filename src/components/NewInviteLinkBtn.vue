@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-btn small @click="showDialog = true" color="primary">{{$t('生成邀请链接')}}</v-btn>
+        <v-btn small depressed @click="showDialog = true" color="primary">{{$t('生成邀请链接')}}</v-btn>
         <v-dialog v-model="showDialog" max-width="500px">
             <v-card>
                 <v-card-title>
@@ -20,7 +20,7 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn @click="createInvitationLink" :disabled="intermediate" color="primary">
+                    <v-btn small depressed @click="createInvitationLink" :disabled="intermediate" color="primary">
                         {{$t('生成邀请链接')}}
                         <v-progress-circular size="20" v-if="intermediate" indeterminate />
                     </v-btn>
