@@ -128,7 +128,8 @@
             <div v-show="childCommentsExpanded">
                 <v-list-item v-for="childComment in childComments" :key="childComment.uuid" class="reply-item">
                     <v-list-item-content class="comment-reply mb-3 pl-3">
-                        <Comment :depth="depth + 1" :comment="childComment" :writable="writable" :siteId="siteId" />
+                        <Comment :enableUpvotes="enableUpvotes" :depth="depth + 1"
+                                 :comment="childComment" :writable="writable" :siteId="siteId" />
                     </v-list-item-content>
                 </v-list-item>
             </div>
