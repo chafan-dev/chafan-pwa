@@ -138,21 +138,19 @@ const example_question_preview = {
   "title": "Twitter, Facebook 类型的社交网络在未来会不会变成政府依靠税收运营的公共基础设施？",
   "description": null,
   "site": example_site1,
-  "is_placed_at_site_top": false,
   "is_placed_at_home": false,
   "created_at": "2021-02-02T20:02:56.170487+00:00",
   "answers_count": 11
 }
 
 const randomQuestionPreviews = []
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < 40; i++) {
   const uuid = randomString();
   randomQuestionPreviews.push({
     "uuid": uuid,
     "title": `Question ${uuid}`,
     "description": null,
     "site": example_site1,
-    "is_placed_at_site_top": false,
     "is_placed_at_home": false,
     "created_at": "2021-02-02T20:02:56.170487+00:00",
     "answers_count": 11
@@ -592,7 +590,9 @@ for (const site of randomSites) {
     }))
   })
   app.get(`/api/v1/sites/${site.uuid}/questions/`, (req, res) => {
-    res.json([example_question_preview].concat(randomQuestionPreviews))
+    const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    res.json([example_question_preview].concat(randomQuestionPreviews).slice(skip, skip + limit));
   })
   app.get(`/api/v1/sites/${site.uuid}/submissions/`, (req, res) => {
     res.json([example_user1_submission1])

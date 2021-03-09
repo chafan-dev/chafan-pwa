@@ -7,6 +7,7 @@
             <v-tabs v-model="currentTabItem" show-arrows
                     :align-with-title="$vuetify.breakpoint.mdAndUp"
                     :fixed-tabs="$vuetify.breakpoint.mdAndUp">
+
                 <v-tabs-slider />
                 <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
                     {{ item.text }}
@@ -19,6 +20,11 @@
                     <div v-if="questions !== null && questions.length > 0">
                         <QuestionPreview v-for="question in questions" :key="question.uuid"
                                          class="my-4" :questionPreview="question" />
+                        <div class="text-center">
+                            <span v-if="noMoreQuestion">{{$t('没有更多了')}}</span>
+                            <v-progress-circular v-else size="20" color="primary" indeterminate
+                                                 v-intersect="loadMoreQuestions" />
+                        </div>
                     </div>
                     <div class="my-4 text-center" v-else-if="questions !== null">
                         {{ $t('No questions for now') }}
@@ -30,6 +36,7 @@
                         {{ $t('登录后查看更多') }}
                     </div>
                 </v-tab-item>
+
                 <v-tab-item value="submissions">
                     <div v-if="submissions !== null && submissions.length > 0">
                         <SubmissionCard v-for="submission in submissions" :key="submission.uuid"
@@ -45,6 +52,7 @@
                         {{ $t('登录后查看更多') }}
                     </div>
                 </v-tab-item>
+
                 <v-tab-item value="members">
                     <div v-if="siteProfiles !== null" class="my-4">
                         <template v-for="i in Math.floor((this.siteProfiles.length - 1) / memberCols) + 1">
@@ -52,11 +60,9 @@
                                 <template v-for="j in memberCols">
                                     <v-col :key="(i - 1) * memberCols + (j - 1)">
                                         <UserCard :userPreview="siteProfiles[(i - 1) * memberCols + (j - 1)].owner"
-                                                    :compactMode="true"
-                                                    v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length" />
-                                        <!-- <div class="text-caption grey--text mt-1">
-                                            {{$t('Circle')}} Karma: {{ siteProfiles[(i - 1) * memberCols + (j - 1)].karma }}
-                                        </div> -->
+                                                   :compactMode="true"
+                                                   :siteKarmas="siteProfiles[(i - 1) * memberCols + (j - 1)].karma"
+                                                   v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length" />
                                     </v-col>
                                 </template>
                             </v-row>
@@ -114,7 +120,7 @@ export default class Site extends Vue {
     }
 
     private questions: IQuestionPreview[] | null = null;
-    private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 3 : 2;
+    private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
 
     private showComments: boolean = false;
     private site: ISite | null = null;
@@ -143,6 +149,8 @@ export default class Site extends Vue {
         },
     ];
 
+    private bottomNavValue = "";
+
     get currentTabItem() {
         return this.$route.query.tab ? this.$route.query.tab : 'questions';
     }
@@ -170,22 +178,7 @@ export default class Site extends Vue {
             }
 
             if (this.siteProfile !== null || this.site.public_readable) {
-                const response = await api.getSiteQuestions(this.token, this.site.uuid);
-                if (response) {
-                    this.questions = response.data.sort((a, b) => {
-                        if (a.is_placed_at_site_top) {
-                            return -1;
-                        }
-                        if (b.is_placed_at_site_top) {
-                            return 1;
-                        }
-                        if (this.$dayjs.utc(a.created_at) > this.$dayjs.utc(b.created_at)) {
-                            return -1;
-                        } else {
-                            return 1;
-                        }
-                    });
-                }
+                this.questions = (await api.getSiteQuestions(this.token, this.site.uuid, 0, this.questionPageLimit)).data
                 if (this.siteProfile) {
                     this.siteProfiles = (await api.getSiteProfiles(this.token, this.site.uuid)).data.sort((a, b) => {
                         if (a.karma > b.karma) {
@@ -204,6 +197,32 @@ export default class Site extends Vue {
             }
             this.loading = false;
         });
+    }
+
+    private questionPage = 1;
+    private readonly questionPageLimit = 10;
+    private noMoreQuestion = false;
+    private loadingMoreQuestions = false;
+
+    private async loadMoreQuestions() {
+        console.log("loadMoreQuestions");
+        if (this.loadingMoreQuestions) {
+            return;
+        }
+        this.loadingMoreQuestions = true;
+        await dispatchCaptureApiError(this.$store, async () => {
+            if (this.site && this.questions && !this.noMoreQuestion) {
+                this.questionPage += 1;
+                const newQuestions = (await api.getSiteQuestions(
+                    this.token, this.site.uuid, (this.questionPage - 1) * this.questionPageLimit, this.questionPageLimit)).data
+                if (newQuestions.length > 0) {
+                    this.questions.push(...newQuestions);
+                } else {
+                    this.noMoreQuestion = true;
+                }
+            }
+        });
+        this.loadingMoreQuestions = false;
     }
 }
 </script>

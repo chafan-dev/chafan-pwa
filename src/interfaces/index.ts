@@ -39,10 +39,6 @@ export interface IAnswerModUpdate {
     is_placed_at_question_top?: boolean;
 }
 
-export interface IQuestionModUpdate {
-    is_placed_at_site_top?: boolean;
-}
-
 export interface IAnswerUpvotes {
     answer_uuid: string;
     count: number;
@@ -104,7 +100,6 @@ export interface IQuestion {
     comments: IComment[];
     view_times: number;
     question: IQuestion;
-    is_placed_at_site_top: boolean;
     is_placed_at_home: boolean;
     upvoted: boolean;
     upvotes_count: number;
@@ -253,7 +248,6 @@ export interface IQuestionPreview {
     title: string;
     description?: string;
     site: ISite;
-    is_placed_at_site_top: boolean;
     is_placed_at_home: boolean;
     created_at: string;
     answers_count: number;

@@ -5,7 +5,7 @@ import { IUserProfile, IUserProfileUpdate, IUserProfileCreate, ISite, IQuestion,
   IAnswerPreview, IQuestionUpdate, ISiteUpdate, IUserSiteProfile,
   IChannel, IChannelCreate, IMessage, IMessageCreate, IUserPreview, IMsg,
   INotification, INotificationUpdate,
-  ICoinPayment, ISiteCreate, IAnswerModUpdate, IQuestionModUpdate,
+  ICoinPayment, ISiteCreate, IAnswerModUpdate,
   IArticleColumn, IVerificationCodeRequest,
   ISiteMaps, IRewardCreate, IReward, IQuestionPreview, IClaimWelcomeTestScoreMsg,
   IArticlePreview, IApplication, ISubmission, IInvitationLinkCreate, IInvitationLink, ITask, ITaskDefinition } from './interfaces';
@@ -56,8 +56,11 @@ export const api = {
   async getSite(token: string, subdomain: string) {
     return axios.get<ISite>(`${apiUrl}/api/v1/sites/${subdomain}`, authHeaders(token));
   },
-  async getSiteQuestions(token: string, siteUUID: string) {
-    return axios.get<IQuestionPreview[]>(`${apiUrl}/api/v1/sites/${siteUUID}/questions/`, authHeaders(token));
+  async getSiteQuestions(token: string, siteUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<IQuestionPreview[]>(`${apiUrl}/api/v1/sites/${siteUUID}/questions/`, authHeadersWithParams(token, params));
   },
   async getQuestion(token: string, questionUUID: string) {
     return axios.get<IQuestion>(`${apiUrl}/api/v1/questions/${questionUUID}`, authHeaders(token));
@@ -123,9 +126,6 @@ export const api = {
   },
   async updateAnswerByMod(token: string, answerUUID: string, payload: IAnswerModUpdate) {
     return axios.put<IAnswer>(`${apiUrl}/api/v1/answers/${answerUUID}/mod`, payload, authHeaders(token));
-  },
-  async updateQuestionByMod(token: string, questionUUID: string, payload: IQuestionModUpdate) {
-    return axios.put<IQuestion>(`${apiUrl}/api/v1/questions/${questionUUID}/mod`, payload, authHeaders(token));
   },
   async sendVerificationCode(payload: IVerificationCodeRequest) {
     return axios.post<IMsg>(`${apiUrl}/api/v1/send-verification-code`, payload);

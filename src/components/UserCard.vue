@@ -39,21 +39,27 @@
                 <template v-if="follows">
                     <v-row v-if="compactMode">
                         <v-col>
-                            <a class="text-decoration-none mr-2 text-caption"
-                                        :href="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn">
+                            <a class="text-decoration-none text-caption mr-2"
+                                        :href="`/users/${userPreview.handle}?tab=followers`" v-if="loggedIn && !compactMode">
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </a>
-                            <span v-else>
+                            <span class="text-caption mr-2" v-else>
                                 {{$t('有n个关注者', { count: follows.followers_count }) }}
                             </span>
 
-                            <a class="text-decoration-none text-caption"
-                                        :href="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn">
+                            <a class="text-decoration-none text-caption mr-2"
+                               :href="`/users/${userPreview.handle}?tab=followed`" v-if="loggedIn && !compactMode">
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </a>
-                            <span v-else>
+                            <span class="text-caption mr-2" v-else>
                                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
                             </span>
+
+                            <template v-if="siteKarmas !== undefined">
+                                <span class="text-caption">
+                                    {{$t('Circle')}} Karma: {{ siteKarmas }}
+                                </span>
+                            </template>
                         </v-col>
                     </v-row>
                     <v-row v-else class="mt-3">
@@ -145,6 +151,7 @@ export default class UserCard extends Vue {
     @Prop({ default: false }) public readonly compactMode!: boolean;
     @Prop({ default: false }) public readonly hoverMode!: boolean;
     @Prop({default: false}) private readonly embedded!: false;
+    @Prop() private readonly siteKarmas: number | undefined;
 
     private loading = true;
     private follows: IUserFollows | null = null;
