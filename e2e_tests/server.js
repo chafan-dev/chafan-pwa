@@ -142,10 +142,11 @@ const example_answer1_preview = {
   "is_placed_at_question_top": false
 }
 
-const EXAMPLE_USER1_SUBMISSION1_UUID = 'example-user1-submission1';
+const EXAMPLE_USER1_SUBMISSION1_UUID = 'example-user1-submission1-uuid';
+const EXAMPLE_USER2_COMMENT1_UUID = "example-comment-1-uuid";
 
 const example_user2_comment1 = {
-  "uuid": "example-comment-1-uuid",
+  "uuid": EXAMPLE_USER2_COMMENT1_UUID,
   "updated_at": "2021-03-05T20:17:40.139503+00:00",
   "body": "这是一条测试评论\n",
   "shared_to_timeline": true,
@@ -167,27 +168,7 @@ const example_user1_submission1 = {
   "upvotes_count": 0,
   "author": example_user1_preview,
   "comments": [example_user2_comment1],
-  "site": {
-    "description": "讨论互联网产品的设计和体验",
-    "uuid": "3noQmrdUbubY9ojPerYA",
-    "name": "互联网产品",
-    "subdomain": "internet-things",
-    "public_readable": true,
-    "public_writable_question": true,
-    "public_writable_answer": true,
-    "public_writable_comment": true,
-    "create_question_coin_deduction": 2,
-    "addable_member": true,
-    "topics": [],
-    "auto_approval": true,
-    "min_karma_for_application": null,
-    "email_domain_suffix_for_application": "",
-    "moderator": example_user1_preview,
-    "permission_type": "public",
-    "questions_count": 6,
-    "submissions_count": 4,
-    "members_count": 7
-  },
+  "site": example_site1,
   "upvoted": false,
   "view_times": 2
 };
@@ -310,13 +291,28 @@ app.get("/api/v1/sitemaps/", (req, res) => {
   })
 })
 
+app.get(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`, (req, res) => {
+  res.json(example_user1_submission1)
+})
+
+app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, res) => {})
+
+const EXAMPLE_USER_ME_UUID = "example-user-me-uuid";
+const EXAMPLE_USER_ME_HANDLE = "example-me";
+
+const meUserPreview = {
+  uuid: EXAMPLE_USER_ME_UUID,
+  handle: EXAMPLE_USER_ME_HANDLE,
+  karma: 0,
+}
+
 const userProfile = {
   id: 1,
-  uuid: "example-uuid",
+  uuid: EXAMPLE_USER_ME_UUID,
   email: "test@cha.fan",
   is_active: true,
   is_superuser: false,
-  handle: "test",
+  handle: EXAMPLE_USER_ME_HANDLE,
   moderated_sites: [],
   subscribed_topics: [],
   residency_topics: [],
@@ -328,6 +324,14 @@ const userProfile = {
   view_times: 10,
   enable_deliver_unread_notifications: true,
 }
+
+app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
+  res.json({
+    karma: 0,
+    site: example_site1,
+    owner: meUserPreview,
+  })
+})
 
 app.get("/api/v1/me", (req, res) => {
   res.json(userProfile);
@@ -472,6 +476,24 @@ app.get("/api/v1/reactions/answer/3b4TBWxFUnBe4aRrKq4X", (req, res) => {
     counters: {},
     my_reactions: [],
   })
+});
+
+app.get(`/api/v1/reactions/submission/${EXAMPLE_USER1_SUBMISSION1_UUID}`, (req, res) => {
+  res.json({
+    counters: {},
+    my_reactions: [],
+  })
+});
+
+app.get(`/api/v1/reactions/comment/${EXAMPLE_USER2_COMMENT1_UUID}`, (req, res) => {
+  res.json({
+    counters: {},
+    my_reactions: [],
+  })
+});
+
+app.get(`/api/v1/comments/${EXAMPLE_USER2_COMMENT1_UUID}/child-comments/`, (req, res) => {
+  res.json([])
 });
 
 app.post("/api/v1/answers/3b4TBWxFUnBe4aRrKq4X/views/", (req, res) => {
