@@ -99,10 +99,21 @@ const randomSiteProfiles = randomSites.map((ransomSite) => {
   }
 })
 
-const randomUserPreviews = []
-for (var i = 0; i < 20; i++) {
+const randomUserPreviews1 = []
+const randomUserPreviews2 = []
+for (var i = 0; i < 10; i++) {
   const uuid = randomString();
-  randomUserPreviews.push({
+  randomUserPreviews1.push({
+    uuid: uuid,
+    handle: uuid + "_handle",
+    full_name: uuid + " (FN)",
+    karma: 0
+  })
+}
+
+for (var i = 0; i < 10; i++) {
+  const uuid = randomString();
+  randomUserPreviews2.push({
     uuid: uuid,
     handle: uuid + "_handle",
     full_name: uuid + " (FN)",
@@ -397,9 +408,11 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_HANDLE}`, (req, res) => {
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/articles/`, (req, res) => { res.json([]) })
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/answers/`, (req, res) => { res.json([]) })
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followers/`, (req, res) => {
-  res.json(randomUserPreviews)
+  res.json(randomUserPreviews1)
 })
-app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => { res.json([]) })
+app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => {
+  res.json(randomUserPreviews2)
+})
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => { res.json([]) })
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => { res.json([]) })
 
@@ -430,12 +443,12 @@ app.get(`/api/v1/me/follows/${EXAMPLE_USER1_UUID}`, (req, res) => {
   })
 })
 
-for (const userPrview of randomUserPreviews) {
+for (const userPrview of randomUserPreviews1.concat(randomUserPreviews2)) {
   app.get(`/api/v1/me/follows/${userPrview.uuid}`, (req, res) => {
     res.json({
       user_uuid: userPrview.uuid,
-      followers_count: 3,
-      followed_count: 4,
+      followers_count: userPrview.uuid.length,
+      followed_count: userPrview.uuid.length + 1,
       followed_by_me: true,
     })
   })
