@@ -176,6 +176,8 @@ export default class UserCard extends Vue {
             this.avatarURL = this.userPublic.gif_avatar_url;
         } else if (this.userPreview.avatar_url) {
             this.avatarURL = this.userPreview.avatar_url;
+        } else {
+            this.avatarURL = '/img/default-avatar.png';
         }
         await dispatchCaptureApiError(this.$store, async () => {
             this.follows = (await apiMe.getUserFollows(this.$store.state.main.token, this.userPreview.uuid)).data;
