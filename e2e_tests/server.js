@@ -36,6 +36,9 @@ const EXAMPLE_USER1_UUID = "example-user-1-uuid";
 const EXAMPLE_USER1_HANDLE = "example-user-1";
 const EXAMPLE_USER1_FULL_NAME = 'Example User 1';
 
+const EXAMPLE_USER_ME_UUID = "example-user-me-uuid";
+const EXAMPLE_USER_ME_HANDLE = "example-me";
+
 const example_user1_preview = {
   uuid: EXAMPLE_USER1_UUID,
   handle: EXAMPLE_USER1_HANDLE,
@@ -45,6 +48,12 @@ const example_user1_preview = {
 
 const EXAMPLE_USER2_UUID = 'example-user-2-uuid';
 const EXAMPLE_USER2_HANDLE = 'example-user-2';
+
+const meUserPreview = {
+  uuid: EXAMPLE_USER_ME_UUID,
+  handle: EXAMPLE_USER_ME_HANDLE,
+  karma: 0,
+}
 
 const example_user2_preview = {
   uuid: EXAMPLE_USER2_UUID,
@@ -143,7 +152,8 @@ const example_answer1_preview = {
 }
 
 const EXAMPLE_USER1_SUBMISSION1_UUID = 'example-user1-submission1-uuid';
-const EXAMPLE_USER2_COMMENT1_UUID = "example-comment-1-uuid";
+const EXAMPLE_USER2_COMMENT1_UUID = "example-user1-comment-1-uuid";
+const EXAMPLE_USER_ME_COMMENT1_UUID = "example-user-me-comment-1-uuid";
 
 const example_user2_comment1 = {
   "uuid": EXAMPLE_USER2_COMMENT1_UUID,
@@ -153,6 +163,18 @@ const example_user2_comment1 = {
   "is_deleted": false,
   "upvotes_count": 1,
   "author": example_user2_preview,
+  "root_route": `/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`,
+  "upvoted": false
+}
+
+const example_user_me_comment1 = {
+  "uuid": EXAMPLE_USER_ME_COMMENT1_UUID,
+  "updated_at": "2021-03-05T20:17:40.139503+00:00",
+  "body": "这是我的一条测试评论",
+  "shared_to_timeline": false,
+  "is_deleted": false,
+  "upvotes_count": 2,
+  "author": meUserPreview,
   "root_route": `/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`,
   "upvoted": false
 }
@@ -167,7 +189,7 @@ const example_user1_submission1 = {
   "topics": [],
   "upvotes_count": 0,
   "author": example_user1_preview,
-  "comments": [example_user2_comment1],
+  "comments": [example_user2_comment1, example_user_me_comment1],
   "site": example_site1,
   "upvoted": false,
   "view_times": 2
@@ -268,6 +290,48 @@ const example_topic2 = {
   "parent_topic_uuid": null
 };
 
+const userProfile = {
+  id: 1,
+  uuid: EXAMPLE_USER_ME_UUID,
+  email: "test@cha.fan",
+  is_active: true,
+  is_superuser: false,
+  handle: EXAMPLE_USER_ME_HANDLE,
+  moderated_sites: [],
+  subscribed_topics: [],
+  residency_topics: [],
+  profession_topic: {
+    uuid: "topic1",
+    name: "Topic 1",
+  },
+  remaining_coins: 12,
+  view_times: 10,
+  enable_deliver_unread_notifications: true,
+}
+
+const example_answer1 = {
+  "uuid": "3b4TBWxFUnBe4aRrKq4X",
+  "updated_at": "2021-02-06T20:37:28.104656+00:00",
+  "body": "我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收运营对社交网路有两点影响。\n\n- 对公司决策产生制约\n- 对这些公司全球化有负面效应\n\n因此只有当大公司开始有衰退迹象并且做不好全球化的时候才会让政府当冤大头。未来一段时间还看不到这个现象。\n",
+  "is_published": true,
+  "draft_saved_at": null,
+  "editor": "wysiwyg",
+  "math_enabled": false,
+  "source_format": "markdown",
+  "upvotes_count": 2,
+  "is_hidden_by_moderator": false,
+  "is_placed_at_question_top": false,
+  "comments": [],
+  "author": example_user1_preview,
+  "question": example_question_preview,
+  "site": example_site1,
+  "upvoted": true,
+  "comment_writable": true,
+  "bookmark_count": 0,
+  "bookmarked": false,
+  "view_times": 4
+};
+
 app.post("/api/v1/ws/token", (req, res) => {
   res.json({
     msg: "example-ws-token",
@@ -297,33 +361,6 @@ app.get(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`, (req, res) => {
 
 app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, res) => {})
 
-const EXAMPLE_USER_ME_UUID = "example-user-me-uuid";
-const EXAMPLE_USER_ME_HANDLE = "example-me";
-
-const meUserPreview = {
-  uuid: EXAMPLE_USER_ME_UUID,
-  handle: EXAMPLE_USER_ME_HANDLE,
-  karma: 0,
-}
-
-const userProfile = {
-  id: 1,
-  uuid: EXAMPLE_USER_ME_UUID,
-  email: "test@cha.fan",
-  is_active: true,
-  is_superuser: false,
-  handle: EXAMPLE_USER_ME_HANDLE,
-  moderated_sites: [],
-  subscribed_topics: [],
-  residency_topics: [],
-  profession_topic: {
-    uuid: "topic1",
-    name: "Topic 1",
-  },
-  remaining_coins: 12,
-  view_times: 10,
-  enable_deliver_unread_notifications: true,
-}
 
 app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
   res.json({
@@ -345,29 +382,6 @@ app.put("/api/v1/me", (req, res) => {
 app.get("/api/v1/me/site-profiles/", (req, res) => {
   res.json(randomSiteProfiles);
 })
-
-example_answer1 = {
-  "uuid": "3b4TBWxFUnBe4aRrKq4X",
-  "updated_at": "2021-02-06T20:37:28.104656+00:00",
-  "body": "我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收运营对社交网路有两点影响。\n\n- 对公司决策产生制约\n- 对这些公司全球化有负面效应\n\n因此只有当大公司开始有衰退迹象并且做不好全球化的时候才会让政府当冤大头。未来一段时间还看不到这个现象。\n",
-  "is_published": true,
-  "draft_saved_at": null,
-  "editor": "wysiwyg",
-  "math_enabled": false,
-  "source_format": "markdown",
-  "upvotes_count": 2,
-  "is_hidden_by_moderator": false,
-  "is_placed_at_question_top": false,
-  "comments": [],
-  "author": example_user1_preview,
-  "question": example_question_preview,
-  "site": example_site1,
-  "upvoted": true,
-  "comment_writable": true,
-  "bookmark_count": 0,
-  "bookmarked": false,
-  "view_times": 4
-}
 
 
 app.get("/api/v1/me/article-columns/", (req, res) => {
@@ -493,6 +507,18 @@ app.get(`/api/v1/reactions/comment/${EXAMPLE_USER2_COMMENT1_UUID}`, (req, res) =
 });
 
 app.get(`/api/v1/comments/${EXAMPLE_USER2_COMMENT1_UUID}/child-comments/`, (req, res) => {
+  res.json([])
+});
+
+
+app.get(`/api/v1/reactions/comment/${EXAMPLE_USER_ME_COMMENT1_UUID}`, (req, res) => {
+  res.json({
+    counters: {},
+    my_reactions: [],
+  })
+});
+
+app.get(`/api/v1/comments/${EXAMPLE_USER_ME_COMMENT1_UUID}/child-comments/`, (req, res) => {
   res.json([])
 });
 
