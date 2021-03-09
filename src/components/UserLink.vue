@@ -3,11 +3,11 @@
             bottom right offset-y v-if="clickable" open-delay="400">
         <template v-slot:activator="{ on, attrs }">
             <span v-bind="attrs" v-on="on">
-                <RouterLink class="text-decoration-none grey--text text--darken-2" v-if="userPreview"
-                            :to="'/users/' + userPreview.handle">
+                <a class="text-decoration-none grey--text text--darken-2" v-if="userPreview"
+                   :href="'/users/' + userPreview.handle">
                     <Avatar :userPreview="userPreview" v-if="showAvatar" />
                     {{ name }}
-                </RouterLink>
+                </a>
             </span>
         </template>
         <v-lazy>

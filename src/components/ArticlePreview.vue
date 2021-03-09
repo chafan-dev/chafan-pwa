@@ -1,17 +1,17 @@
 <template>
     <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded"> <!-- TODO: c-card -->
         <div class="title" style="word-break: normal">
-            <RouterLink class="text-decoration-none" :to="'/articles/' + articlePreview.uuid">
+            <a class="text-decoration-none" :href="'/articles/' + articlePreview.uuid">
             {{ articlePreview.title }}
-            </RouterLink>
+            </a>
         </div>
         <div class="d-flex">
             <span class="grey--text">
                 {{ $t('发表于专栏：') }}
-                <RouterLink class="text-decoration-none"
-                   :to="`/article-columns/${articlePreview.article_column.uuid}`">
+                <a class="text-decoration-none"
+                   :href="`/article-columns/${articlePreview.article_column.uuid}`">
                    {{ articlePreview.article_column.name }}
-                </RouterLink>
+                </a>
             </span>
         </div>
     </v-card>

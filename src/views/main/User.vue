@@ -159,16 +159,16 @@
                         </template><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'followers'">
-                        <template v-if="followers !== null">
+                        <div v-if="followers !== null" class="ma-2">
                             <p v-if="followers.length === 0">{{$t('暂无')}}</p>
-                            <UserGrid :users="followers" />
-                        </template><v-skeleton-loader type="paragraph" v-else />
+                            <UserGrid :users="followers"/>
+                        </div><v-skeleton-loader type="paragraph" v-else />
                     </div>
                     <div v-else-if="currentTabItem === 'followed'">
-                        <template v-if="followed !== null">
+                        <div v-if="followed !== null" class="ma-2">
                             <p v-if="followed.length === 0">{{$t('暂无')}}</p>
-                            <UserGrid :users="followed" />
-                        </template><v-skeleton-loader type="paragraph" v-else />
+                            <UserGrid :users="followed"/>
+                        </div><v-skeleton-loader type="paragraph" v-else />
                     </div>
                 </v-tabs-items>
             </template>

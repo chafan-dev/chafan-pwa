@@ -2,9 +2,9 @@
     <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
         <div class="d-flex mb-2">
           <SimpleViewer :body="comment.body" />
-          <RouterLink class="ml-1" :to="comment.root_route + `/comments/${comment.uuid}`">
+          <a class="ml-1" :href="comment.root_route + `/comments/${comment.uuid}`">
             <OpenInNewIcon />
-          </RouterLink>
+          </a>
         </div>
         <QuestionPreview v-if="questionPreview" :questionPreview="questionPreview" />
         <Answer v-if="answerPreview" :answerPreview="answerPreview" />
