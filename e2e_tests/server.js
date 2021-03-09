@@ -4,7 +4,7 @@ const enableWs = require('express-ws')
 const process = require('process');
 
 function randomString() {
-  return Math.random().toString(36).substring(7);
+  return Math.random().toString(36).substring(2, 5 + Math.ceil(Math.random() * 3));
 }
 
 const port = 4582
@@ -86,7 +86,7 @@ for (var i = 0; i < 20; i++) {
   randomSites.push({
     description: `Random site ${uuid} description`,
     uuid: uuid + "-site-uuid",
-    name: `Random site ${uuid}`,
+    name: `${uuid}`,
     subdomain: uuid,
     public_readable: true,
     public_writable_question: true,
@@ -94,12 +94,13 @@ for (var i = 0; i < 20; i++) {
     public_writable_comment: true,
     create_question_coin_deduction: 2,
     addable_member: true,
+    min_karma_for_application: i % 3,
     topics: [],
     moderator: example_user2_preview,
     permission_type: "public",
-    questions_count: 0,
-    submissions_count: 0,
-    members_count: 0,
+    questions_count: Math.ceil(Math.random() * 10),
+    submissions_count: Math.ceil(Math.random() * 20),
+    members_count: Math.ceil(Math.random() * 30),
   })
 }
 
@@ -367,7 +368,7 @@ app.get("/api/v1/me/moderated-sites/", (req, res) => {
 app.get("/api/v1/sitemaps/", (req, res) => {
   res.json({
     site_maps: [],
-    sites_without_topics: [],
+    sites_without_topics: randomSites,
   })
 })
 
