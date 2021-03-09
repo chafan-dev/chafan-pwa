@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid>
+    <v-container :class="{'pa-1': !$vuetify.breakpoint.mdAndUp}" fluid>
         <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-card elevation="2" rounded v-show="showUserAgreement" color="white">
                 <v-card-title class="primary--text">{{$t('使用前必读')}}</v-card-title>
@@ -74,7 +74,7 @@
                       <div v-for="activity in activities" :key="activity.id">
                         <v-card class="my-4 c-card" elevation="1"
                                 :class="{'px-3': $vuetify.breakpoint.mdAndUp, 'py-4': $vuetify.breakpoint.mdAndUp,
-                                         'px-1': !$vuetify.breakpoint.mdAndUp, 'py-2': !$vuetify.breakpoint.mdAndUp }">
+                                         'px-2': !$vuetify.breakpoint.mdAndUp, 'py-3': !$vuetify.breakpoint.mdAndUp }">
                           <!-- Row for top info -->
                           <v-row justify="space-between" no-gutters>
                             <!-- Column for subject and verb -->
