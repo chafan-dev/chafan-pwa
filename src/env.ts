@@ -19,3 +19,4 @@ export const wsUrl = envWsUrl;
 export const appName = process.env.VUE_APP_NAME;
 export const sentryDSN = process.env.VUE_APP_SENTRY_DSN;
 export const prodStateJsonURL = process.env.VUE_APP_PROD_STATE_JSON_URL;
+export const adminUUID = process.env.VUE_APP_ADMIN_UUID;

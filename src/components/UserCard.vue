@@ -195,6 +195,7 @@ export default class UserCard extends Vue {
             this.followIntermediate = false;
         }
     }
+
     private async cancelFollow() {
         if (this.userPreview !== null) {
             this.cancelFollowIntermediate = true;
@@ -204,6 +205,7 @@ export default class UserCard extends Vue {
             });
         }
     }
+
     private async privateMessage() {
         if (!this.currentUserId) {
             commitSetShowLoginPrompt(this.$store, true);
