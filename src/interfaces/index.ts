@@ -36,7 +36,6 @@ export interface IUserSiteProfile {
 
 export interface IAnswerModUpdate {
     is_hidden_by_moderator?: boolean;
-    is_placed_at_question_top?: boolean;
 }
 
 export interface IAnswerUpvotes {
@@ -77,7 +76,6 @@ export interface IAnswer {
     math_enabled: boolean;
     comments: IComment[];
     is_hidden_by_moderator: boolean;
-    is_placed_at_question_top: boolean;
     view_times: number;
     upvoted: boolean;
     upvotes_count: number;
@@ -262,7 +260,6 @@ export interface IAnswerPreview {
     body: string;
     upvotes_count: number;
     is_hidden_by_moderator: boolean;
-    is_placed_at_question_top: boolean;
 }
 
 // To be deprecated

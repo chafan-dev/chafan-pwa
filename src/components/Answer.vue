@@ -166,11 +166,6 @@
                            color="warning" :disabled="toggleHideAnswerIntermediate" v-if="isHiddenByMod">{{$t('取消隐藏')}}</v-btn>
                     <v-btn small depressed class="slim-btn ma-1" @click="toggleHideAnswer"
                            color="warning" :disabled="toggleHideAnswerIntermediate" v-else>{{$t('隐藏')}}</v-btn>
-
-                    <v-btn small depressed class="slim-btn ma-1" @click="toggleTopAnswer"
-                           color="warning" :disabled="toggleTopAnswerIntermediate" v-if="isPlacedAtQuestionTop">{{$t('取消问题中置顶')}}</v-btn>
-                    <v-btn small depressed class="slim-btn ma-1" @click="toggleTopAnswer"
-                           color="warning" :disabled="toggleTopAnswerIntermediate" v-else>{{$t('问题中置顶')}}</v-btn>
                 </v-col>
             </v-row>
         </div>
@@ -236,7 +231,6 @@ export default class Answer extends Vue {
     private newAnswerCommentBody: string = '';
     private userProfile: IUserProfile | null = null;
     private isHiddenByMod: boolean = false;
-    private isPlacedAtQuestionTop: boolean = false;
     private isModerator = false;
     private commentWritable = false;
     private userSiteProfile: IUserSiteProfile | null = null;
@@ -258,7 +252,6 @@ export default class Answer extends Vue {
     private unbookmarkIntermediate = false;
 
     private toggleHideAnswerIntermediate = false;
-    private toggleTopAnswerIntermediate = false;
     private answerPreviewBody: string = this.answerPreview.body;
     private currentUserIsAuthor = false;
 
@@ -277,7 +270,6 @@ export default class Answer extends Vue {
         }
 
         this.isHiddenByMod = this.answerPreview.is_hidden_by_moderator;
-        this.isPlacedAtQuestionTop = this.answerPreview.is_placed_at_question_top;
         this.userProfile = readUserProfile(this.$store);
         if (this.userProfile) {
             const mod = this.answerPreview.question.site.moderator;
@@ -372,19 +364,6 @@ export default class Answer extends Vue {
                 });
                 this.toggleHideAnswerIntermediate = false;
                 this.isHiddenByMod = !this.isHiddenByMod;
-            }
-        });
-    }
-
-    private async toggleTopAnswer() {
-        await dispatchCaptureApiError(this.$store, async () => {
-            if (this.answerPreview) {
-                this.toggleTopAnswerIntermediate = true;
-                const response = await api.updateAnswerByMod(this.token, this.answerPreview.uuid, {
-                    is_placed_at_question_top: !this.isPlacedAtQuestionTop,
-                });
-                this.toggleTopAnswerIntermediate = false;
-                this.isPlacedAtQuestionTop = !this.isPlacedAtQuestionTop;
             }
         });
     }
