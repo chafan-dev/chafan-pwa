@@ -3,7 +3,7 @@
         <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp,
                         'less-left-right-padding': !$vuetify.breakpoint.mdAndUp }" fluid>
             <div v-if="article">
-                <div v-if="article" class="ma-4">
+                <div v-if="article" class="my-4">
                     <div class="d-flex align-center">
                         <UserLink :userPreview="article.author" :showAvatar="true" />
                         <span class="grey--text ml-2" v-if="article.author.personal_introduction && $vuetify.breakpoint.mdAndUp">
@@ -22,7 +22,7 @@
                         </span>
                     </div>
 
-                    <div class="headline mt-2 ml-2">
+                    <div class="headline mt-2">
                         {{ article.title }}
                     </div>
                     <div class="ma-2">
@@ -42,34 +42,34 @@
                                             </v-card-title>
                                         <v-card-actions>
                                             <v-spacer />
-                                            <v-btn small depressed class="mx-1" @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
+                                            <v-btn small depressed class="mr-1" @click="showCancelUpvoteDialog = false">{{$t('No')}}</v-btn>
                                             <v-btn small depressed color="warning" @click="cancelUpvote" :disabled='cancelUpvoteIntermediate'>{{$t('Yes')}}</v-btn>
                                         </v-card-actions>
                                         </v-card>
                                     </v-dialog>
 
-                                    <v-btn small depressed class="mx-1" @click="showCancelUpvoteDialog = true"
+                                    <v-btn small depressed class="mr-1" @click="showCancelUpvoteDialog = true"
                                            color="primary lighten-2" v-if="upvotes && upvotes.upvoted">
                                         {{$t('已赞')}} ({{ upvotes.count }})
                                     </v-btn>
-                                    <v-btn small depressed class="mx-1" color="primary" @click="upvote"
+                                    <v-btn small depressed class="mr-1" color="primary" @click="upvote"
                                            v-else :disabled="currentUserIsAuthor || upvoteIntermediate">
                                         {{$t('赞')}} ({{ upvotes.count }})
                                     </v-btn>
                                 </template>
 
-                                <v-btn small depressed class="mx-1"
+                                <v-btn small depressed class="mr-1"
                                        @click="toggleShowComments">
                                     {{article.comments.length == 0 ? $t('评论') : $t('查看n条评论', {amount: article.comments.length})}}
                                 </v-btn>
 
-                                <v-btn small depressed class="mx-1"
+                                <v-btn small depressed class="mr-1"
                                        :href="`/article-focus?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
                                        v-show="currentUserIsAuthor">{{$t(editButtonText)}}</v-btn>
 
                                 <v-menu offset-y v-if="currentUserIsAuthor">
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-btn v-bind="attrs" v-on="on" small depressed class="mx-1">{{$t('设置')}}</v-btn>
+                                        <v-btn v-bind="attrs" v-on="on" small depressed class="mr-1">{{$t('设置')}}</v-btn>
                                     </template>
                                     <v-list>
                                         <v-list-item @click="confirmDeleteDialog = true">
@@ -88,8 +88,8 @@
                                         </v-card-title>
                                     <v-card-actions>
                                         <v-spacer />
-                                        <v-btn small depressed class="mx-1" @click="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
-                                        <v-btn small depressed class="mx-1" color="warning" @click="deleteArticle" :disabled='deleteArticleIntermediate'>{{$t('Yes')}}</v-btn>
+                                        <v-btn small depressed class="mr-1" @click="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
+                                        <v-btn small depressed class="mr-1" color="warning" @click="deleteArticle" :disabled='deleteArticleIntermediate'>{{$t('Yes')}}</v-btn>
                                     </v-card-actions>
                                     </v-card>
                                 </v-dialog>

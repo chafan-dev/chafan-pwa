@@ -83,7 +83,7 @@
                         </v-card-title>
                     <v-card-actions>
                         <v-spacer />
-                        <v-btn color="warning" @click="deleteComment">{{$t('Yes')}}</v-btn>
+                        <v-btn small depressed color="warning" @click="deleteComment">{{$t('Yes')}}</v-btn>
                     </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -96,12 +96,12 @@
                 <SimpleEditor class="mt-2 mb-2" ref="commentUpdateEditor" :initialValue="comment.body" />
                 <div class="d-flex">
                     <v-spacer />
-                    <v-btn small class="mr-2"
+                    <v-btn small depressed class="mr-2"
                            color="primary" @click="submitUpdateCommentBody" :disabled="submitIntermediate">
                         {{ $t('提交') }}
                         <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
                     </v-btn>
-                    <v-btn small @click="showUpdateEditor = false">
+                    <v-btn small depressed @click="showUpdateEditor = false">
                         {{ $t('Cancel') }}
                     </v-btn>
                 </div>
@@ -111,12 +111,12 @@
                 <SimpleEditor class="mt-2 mb-2" ref="commentReplyEditor" :placeholder="$t('回复')" />
                 <div class="d-flex">
                     <v-spacer />
-                    <v-btn small class="mr-2"
+                    <v-btn small depressed class="mr-2"
                             color="primary" @click="submitNewReplyBody" :disabled="submitIntermediate">
                         {{ $t('发送回复') }}
                         <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
                     </v-btn>
-                    <v-btn small @click="showEditor = false">
+                    <v-btn small depressed @click="showEditor = false">
                         {{ $t('Cancel') }}
                     </v-btn>
                 </div>
