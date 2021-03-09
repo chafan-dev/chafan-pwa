@@ -46,9 +46,9 @@ export const apiAnswer = {
   async deleteAnswerDraft(token: string, answerUUID: string) {
     return axios.delete<IAnswerDraft>(`${apiUrl}/api/v1/answers/${answerUUID}/draft`, authHeaders(token));
   },
-  async getAnswerArchives(token: string, answerUUID: string, offset: number, limit: number) {
+  async getAnswerArchives(token: string, answerUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
-    params.append('offset', offset.toString());
+    params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IArchive[]>(`${apiUrl}/api/v1/answers/${answerUUID}/archives/`, authHeadersWithParams(token, params));
   },

@@ -196,21 +196,6 @@
                     </v-dialog>
                 </v-row>
 
-                <div v-show="isModerator && !isUserMode">
-                    <v-row justify="end">
-                        <v-col md="auto">
-                            {{$t('管理：')}}
-                            <!-- Moderator -->
-                            <v-btn small depressed class="slim-btn ma-1" @click="toggleTopQuestoinInSite"
-                                   color="warning" :disabled="toggleTopQuestoinInSiteIntermediate"
-                                   v-if="isTopQuestionInSite">{{$t('取消圈子置顶')}}</v-btn>
-                            <v-btn small depressed class="slim-btn ma-1" @click="toggleTopQuestoinInSite"
-                                   color="warning" :disabled="toggleTopQuestoinInSiteIntermediate"
-                                   v-else>{{$t('圈子置顶')}}</v-btn>
-                        </v-col>
-                    </v-row>
-                </div>
-
                 <div class="d-flex justify-end">
                     <ReactionBlock objectType="question" :objectId="question.uuid" />
                 </div>
@@ -388,7 +373,6 @@ export default class Question extends Vue {
     private loading = true;
 
     private isModerator = false;
-    private toggleTopQuestoinInSiteIntermediate = false;
     private toggleShowInHomeIntermediate = false;
     private isTopQuestionInSite = false;
     private isShowInHome = false;
@@ -455,7 +439,6 @@ export default class Question extends Vue {
                         this.showComments = true;
                     }
 
-                    this.isTopQuestionInSite = this.question.is_placed_at_site_top;
                     this.isShowInHome = this.question.is_placed_at_home;
 
                     document.title = this.question.title;
@@ -676,19 +659,6 @@ export default class Question extends Vue {
                 this.upvotes = (await apiQuestion.cancelUpvoteQuestion(this.token, this.question.uuid)).data;
                 this.cancelUpvoteIntermediate = false;
                 this.showCancelUpvoteDialog = false;
-            }
-        });
-    }
-
-    private async toggleTopQuestoinInSite() {
-        await dispatchCaptureApiError(this.$store, async () => {
-            if (this.question) {
-                this.toggleTopQuestoinInSiteIntermediate = true;
-                await api.updateQuestionByMod(this.token, this.question.uuid, {
-                    is_placed_at_site_top: !this.isTopQuestionInSite,
-                });
-                this.toggleTopQuestoinInSiteIntermediate = false;
-                this.isTopQuestionInSite = !this.isTopQuestionInSite;
             }
         });
     }
