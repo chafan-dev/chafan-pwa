@@ -490,12 +490,6 @@ export default class Question extends Vue {
                             this.currentUserAnswerUUID = b.uuid;
                             return 1;
                         }
-                        if (a.is_placed_at_question_top) {
-                            return -1;
-                        }
-                        if (b.is_placed_at_question_top) {
-                            return 1;
-                        }
                         if (a.upvotes_count > b.upvotes_count) {
                             return -1;
                         }

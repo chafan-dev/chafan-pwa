@@ -165,7 +165,6 @@ const example_answer1_preview = {
   "body": "我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收...",
   "upvotes_count": 2,
   "is_hidden_by_moderator": false,
-  "is_placed_at_question_top": false
 }
 
 const EXAMPLE_USER1_SUBMISSION1_UUID = 'example-user1-submission1-uuid';
@@ -337,7 +336,6 @@ const example_answer1 = {
   "source_format": "markdown",
   "upvotes_count": 2,
   "is_hidden_by_moderator": false,
-  "is_placed_at_question_top": false,
   "comments": [],
   "author": example_user1_preview,
   "question": example_question_preview,
