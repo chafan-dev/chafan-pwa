@@ -5,23 +5,24 @@
             <div v-if="site.description">
                 <SimpleViewer :body="site.description" />
             </div>
-            <v-divider class="my-1" />
-            <div v-if="site.topics.length > 0 && showTopics">
-                <b>{{$t('话题：')}}</b>
-                <v-chip-group>
-                    <v-chip :to="'/topics/' + topic.uuid" v-for="topic in site.topics" :key="topic.uuid">
-                        {{ topic.name }}
-                    </v-chip>
-                </v-chip-group>
-            </div>
-            <div v-if="site.permission_type">
-                <b>{{$t('类型：')}}</b>
-                {{$t('site.permission_type.' + site.permission_type)}}
-            </div>
-            <div>
-                <b>{{$t('管理员：')}}</b>
-                <UserLink :userPreview="site.moderator" />
-            </div>
+            <template v-if="!compactMode">
+                <div v-if="site.topics.length > 0">
+                    <b>{{$t('话题：')}}</b>
+                    <v-chip-group>
+                        <v-chip :to="'/topics/' + topic.uuid" v-for="topic in site.topics" :key="topic.uuid">
+                            {{ topic.name }}
+                        </v-chip>
+                    </v-chip-group>
+                </div>
+                <div v-if="site.permission_type">
+                    <b>{{$t('类型：')}}</b>
+                    {{$t('site.permission_type.' + site.permission_type)}}
+                </div>
+                <div>
+                    <b>{{$t('管理员：')}}</b>
+                    <UserLink :userPreview="site.moderator" />
+                </div>
+            </template>
 
             <SiteJoinConditions :site="site" />
 
@@ -114,7 +115,7 @@ export default class SiteCard extends Vue {
     @Prop() private readonly isMember: boolean | undefined;
     @Prop() private readonly showQuestionEditor!: boolean;
     @Prop() private readonly showSubmissionEditor!: boolean;
-    @Prop({default: true}) private readonly showTopics!: boolean;
+    @Prop({default: true}) private readonly compactMode!: boolean;
 
     private notMember = true;
     private siteApplied = false;

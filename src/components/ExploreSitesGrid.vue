@@ -4,7 +4,7 @@
             <v-card v-for="(block, idx) in blocks" :key="idx" class="mb-4 pa-2">
                 <h3>{{ block.topicName }}</h3>
                 <div>
-                    <SiteBtn :site="site" :key="site.uuid" v-for="site in block.sites" />
+                    <SiteBtn :showHotness="true" :site="site" :key="site.uuid" v-for="site in block.sites" />
                 </div>
             </v-card>
         </v-col>

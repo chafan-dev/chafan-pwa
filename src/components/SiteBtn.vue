@@ -4,12 +4,13 @@
             <v-btn class="mr-1 mt-1" small depressed :to="'/sites/' + site.subdomain" :color="color" v-bind="attrs" v-on="on">
                 {{ site.name }}
                 <PrivateSiteIcon class="ml-1" v-if="site.permission_type === 'private'" />
+                <span v-if="showHotness" class="ml-1">({{hotness}})</span>
             </v-btn>
         </template>
         <v-lazy>
             <v-card max-width="400">
                 <SiteCard :site="site" :showQuestionEditor="false" :showSubmissionEditor="false"
-                          :showTopics="false" class="px-3 py-2" />
+                          :compactMode="true" class="px-3 py-2" />
             </v-card>
         </v-lazy>
     </v-menu>
@@ -36,6 +37,11 @@ function hashCode(str) {
 })
 export default class SiteBtn extends Vue {
     @Prop() public readonly site!: ISite;
+    @Prop({default: false}) public readonly showHotness!: boolean;
+
+    get hotness() {
+        return Math.floor(Math.log2(this.site.questions_count + this.site.members_count + this.site.submissions_count + 1));
+    }
 
     get color() {
         const colors = ['brown', 'grey', 'yellow', 'blue', 'green', 'purple', 'indigo', 'cyan', 'teal', 'amber', 'blue-grey'];
