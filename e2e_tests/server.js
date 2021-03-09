@@ -96,7 +96,10 @@ for (var i = 0; i < 20; i++) {
     addable_member: true,
     topics: [],
     moderator: example_user2_preview,
-    permission_type: "public"
+    permission_type: "public",
+    questions_count: 0,
+    submissions_count: 0,
+    members_count: 0,
   })
 }
 
@@ -461,6 +464,15 @@ app.get(`/api/v1/me/follows/${EXAMPLE_USER1_UUID}`, (req, res) => {
   })
 })
 
+app.get(`/api/v1/me/follows/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
+  res.json({
+    user_uuid: EXAMPLE_USER_ME_UUID,
+    followers_count: 3,
+    followed_count: 4,
+    followed_by_me: false,
+  })
+})
+
 for (const userPrview of randomUserPreviews1.concat(randomUserPreviews2)) {
   app.get(`/api/v1/me/follows/${userPrview.uuid}`, (req, res) => {
     res.json({
@@ -547,6 +559,28 @@ app.get(`/api/v1/sites/${EXAMPLE_SITE1_SUBDOMAIN}`, (req, res) => {
 for (const site of randomSites) {
   app.get(`/api/v1/sites/${site.subdomain}`, (req, res) => {
     res.json(site)
+  })
+  app.get(`/api/v1/profiles/members/${site.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
+    res.json({
+      karma: 0,
+      site: site,
+      owner: meUserPreview,
+    })
+  })
+  app.get(`/api/v1/profiles/members/${site.uuid}`, (req, res) => {
+    res.json([meUserPreview, example_user1_preview, example_user2_preview].map((preview) => {
+      return {
+        karma: 0,
+        site: site,
+        owner: preview
+      }
+    }))
+  })
+  app.get(`/api/v1/sites/${site.uuid}/questions/`, (req, res) => {
+    res.json([example_question_preview])
+  })
+  app.get(`/api/v1/sites/${site.uuid}/submissions/`, (req, res) => {
+    res.json([example_user1_submission1])
   })
 }
 

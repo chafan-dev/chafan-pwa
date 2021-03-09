@@ -1,9 +1,12 @@
 <template>
   <v-container fluid>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-row justify="center" v-else >
-        <v-col :class="{'col-6': $vuetify.breakpoint.mdAndUp }" fluid>
-            <v-tabs v-model="currentTabItem" show-arrows>
+    <v-row justify="center" v-else>
+        <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI,
+                        'less-left-right-padding': !$vuetify.breakpoint.mdAndUp }"  class="mb-12" fluid>
+            <v-tabs v-model="currentTabItem" show-arrows
+                    :align-with-title="$vuetify.breakpoint.mdAndUp"
+                    :fixed-tabs="$vuetify.breakpoint.mdAndUp">
                 <v-tabs-slider />
                 <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
                     {{ item.text }}
@@ -11,65 +14,62 @@
                         ({{item.tabExtraCount(site)}})
                     </span>
                 </v-tab>
-            </v-tabs>
 
-            <v-tabs-items v-model="currentTabItem" class="pa-2">
-                <div v-if="currentTabItem === 'questions'">
+                <v-tab-item value="questions">
                     <div v-if="questions !== null && questions.length > 0">
                         <QuestionPreview v-for="question in questions" :key="question.uuid"
-                                         class="ma-2" :questionPreview="question" />
+                                         class="ma-3" :questionPreview="question" />
                     </div>
-                    <div v-else-if="questions !== null">
+                    <div class="ma-3 text-center" v-else-if="questions !== null">
                         {{ $t('No questions for now') }}
                     </div>
-                    <div v-else>
+                    <div class="ma-3 text-center" v-else>
                         {{ $t('Only site members can view its content.') }}
                     </div>
-                    <div v-if="!userProfile" class="text-center grey--text">
+                    <div class="ma-3 text-center" v-if="!userProfile">
                         {{ $t('登录后查看更多') }}
                     </div>
-                </div>
-                <div v-if="currentTabItem === 'submissions'">
+                </v-tab-item>
+                <v-tab-item value="submissions">
                     <div v-if="submissions !== null && submissions.length > 0">
                         <SubmissionCard v-for="submission in submissions" :key="submission.uuid"
-                                        class="ma-2" :submission="submission" />
+                                        class="ma-3" :submission="submission" />
                     </div>
-                    <div v-else-if="submissions !== null">
+                    <div class="ma-3 text-center" v-else-if="submissions !== null">
                         {{ $t('No submissions for now') }}
                     </div>
-                    <div v-else>
+                    <div class="ma-3 text-center" v-else>
                         {{ $t('Only site members can view its content.') }}
                     </div>
-                    <div v-if="!userProfile" class="text-center grey--text">
+                    <div class="ma-3 text-center" v-if="!userProfile">
                         {{ $t('登录后查看更多') }}
                     </div>
-                </div>
-                <div v-if="currentTabItem === 'members'">
-                    <div v-if="siteProfiles !== null">
+                </v-tab-item>
+                <v-tab-item value="members">
+                    <div v-if="siteProfiles !== null" class="ma-3">
                         <template v-for="i in Math.floor((this.siteProfiles.length - 1) / memberCols) + 1">
                             <v-row :key="i">
                                 <template v-for="j in memberCols">
                                     <v-col :key="(i - 1) * memberCols + (j - 1)">
-                                        <v-card class="pa-2" v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length">
-                                            <UserLink :userPreview="siteProfiles[(i - 1) * memberCols + (j - 1)].owner"
-                                                      :showAvatar="true" />
-                                            <div class="text-caption grey--text mt-1">
-                                                {{$t('Circle')}} Karma: {{ siteProfiles[(i - 1) * memberCols + (j - 1)].karma }}
-                                            </div>
-                                        </v-card>
+                                        <UserCard :userPreview="siteProfiles[(i - 1) * memberCols + (j - 1)].owner"
+                                                    :compactMode="true"
+                                                    v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length" />
+                                        <!-- <div class="text-caption grey--text mt-1">
+                                            {{$t('Circle')}} Karma: {{ siteProfiles[(i - 1) * memberCols + (j - 1)].karma }}
+                                        </div> -->
                                     </v-col>
                                 </template>
                             </v-row>
                         </template>
                     </div>
-                    <div v-else>
+                    <div class="ma-3 text-center" v-else>
                         {{ $t('Only site members can view its content.') }}
                     </div>
-                </div>
-            </v-tabs-items>
+                </v-tab-item>
+            </v-tabs>
         </v-col>
 
-        <v-col class="col-4" v-if="$vuetify.breakpoint.mdAndUp">
+        <v-col :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'" v-if="$vuetify.breakpoint.mdAndUp">
             <SiteCard :site="site"
                       :isMember="siteProfile !== null"
                       :showQuestionEditor="showQuestionEditor"
@@ -96,19 +96,23 @@ import { api } from '@/api';
 import { IUserProfile, ISite, IUserSiteProfile, IQuestionPreview, ISubmission } from '@/interfaces';
 
 import SiteCard from '@/components/SiteCard.vue';
-import UserLink from '@/components/UserLink.vue';
+import UserCard from '@/components/UserCard.vue';
 import QuestionPreview from '@/components/QuestionPreview.vue';
 import SubmissionCard from '@/components/SubmissionCard.vue';
 
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 
-import { readUserProfile } from '@/store/main/getters';
+import { readNarrowUI, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
 @Component({
-    components: { QuestionPreview, SiteCard, UserLink, InfoIcon, SubmissionCard },
+    components: { QuestionPreview, SiteCard, UserCard, InfoIcon, SubmissionCard },
 })
 export default class Site extends Vue {
+    get isNarrowFeedUI() {
+      return readNarrowUI(this.$store);
+    }
+
     private questions: IQuestionPreview[] | null = null;
     private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 3 : 2;
 
@@ -203,3 +207,21 @@ export default class Site extends Vue {
     }
 }
 </script>
+
+<style scoped>
+.less-left-right-padding {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+}
+
+/* FIXME: Potential code duplication with Home.vue */
+.fixed-narrow-col {
+    max-width: 800px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.fixed-narrow-sidecol {
+    max-width: 400px;
+}
+</style>

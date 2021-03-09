@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div v-if="site.min_karma_for_application !== null">
+        <div v-if="site.min_karma_for_application">
             <b>{{$t('加入最低 Karma：')}}</b><span>{{ site.min_karma_for_application }}</span>
         </div>
-        <div v-if="site.email_domain_suffix_for_application !== null">
+        <div v-if="site.email_domain_suffix_for_application">
             <b>{{$t('加入所需邮箱地址后缀：')}}</b>
             <span>
                 {{ site.email_domain_suffix_for_application }}

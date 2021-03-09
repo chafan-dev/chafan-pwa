@@ -28,8 +28,8 @@
             <div class="mt-2" v-if="notMember">
                 <v-skeleton-loader type="button" v-if="loading" />
                 <template v-else>
-                    <v-btn v-if="siteApplied" disabled>{{$t('申请审核中')}}</v-btn>
-                    <v-btn color="primary" v-else :disabled="applyToJoinIntermediate"
+                    <v-btn small depressed v-if="siteApplied" disabled>{{$t('申请审核中')}}</v-btn>
+                    <v-btn small depressed color="primary" v-else :disabled="applyToJoinIntermediate"
                            @click="applyToJoin">{{$t('加入')}}</v-btn>
                 </template>
             </div>
@@ -40,7 +40,7 @@
             <NewInviteLinkBtn :site="site" class="ml-2" />
             <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn v-bind="attrs" v-on="on" class="ml-2" small>
+                    <v-btn small depressed v-bind="attrs" v-on="on" class="ml-2">
                         <SettingsIcon small /><span class="ml-1" v-if="!$vuetify.breakpoint.mobile">{{$t('设置')}}</span>
                     </v-btn>
                 </template>
