@@ -133,14 +133,14 @@
                         <template v-if="authoredAnswers !== null">
                             <p v-if="authoredAnswers.length === 0">{{$t('暂无')}}</p>
                             <Answer v-for="answer in authoredAnswers" :key="answer.uuid"
-                                    class="ma-2" :answerPreview="answer" />
+                                    class="ma-3" :answerPreview="answer" />
                         </template><v-skeleton-loader type="paragraph" v-else />
                     </v-tab-item>
 
                     <v-tab-item value="questions">
                         <template v-if="askedQuestions !== null">
                             <p v-if="askedQuestions.length === 0">{{$t('暂无')}}</p>
-                            <QuestionPreview :questionPreview="question" class="ma-2"
+                            <QuestionPreview :questionPreview="question" class="ma-3"
                                             v-for="question in askedQuestions" :key="question.uuid" />
                         </template><v-skeleton-loader type="paragraph" v-else />
                     </v-tab-item>
@@ -148,7 +148,7 @@
                     <v-tab-item value="articles">
                         <template v-if="articles !== null">
                             <p v-if="articles.length === 0">{{$t('暂无')}}</p>
-                            <ArticlePreview :articlePreview="article" class="ma-2"
+                            <ArticlePreview :articlePreview="article" class="ma-3"
                                             :key="article.uuid" v-for="article in articles" />
                         </template><v-skeleton-loader type="paragraph" v-else />
                     </v-tab-item>
@@ -156,20 +156,20 @@
                     <v-tab-item value="submissions">
                         <template v-if="submissions !== null">
                             <p v-if="submissions.length === 0">{{$t('暂无')}}</p>
-                            <SubmissionCard :submission="submission" class="ma-2"
+                            <SubmissionCard :submission="submission" class="ma-3"
                                             v-for="submission in submissions" :key="submission.uuid" />
                         </template><v-skeleton-loader type="paragraph" v-else />
                     </v-tab-item>
 
                     <v-tab-item value="followers">
-                        <div v-if="followers !== null" class="ma-2">
+                        <div v-if="followers !== null" class="ma-3">
                             <p v-if="followers.length === 0">{{$t('暂无')}}</p>
                             <UserGrid :users="followers"/>
                         </div><v-skeleton-loader type="paragraph" v-else />
                     </v-tab-item>
 
                     <v-tab-item value="followed">
-                        <div v-if="followed !== null" class="ma-2">
+                        <div v-if="followed !== null" class="ma-3">
                             <p v-if="followed.length === 0">{{$t('暂无')}}</p>
                             <UserGrid :users="followed"/>
                         </div><v-skeleton-loader type="paragraph" v-else />
