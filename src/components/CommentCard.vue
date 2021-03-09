@@ -1,5 +1,5 @@
 <template>
-    <v-card class="pa-2" :class="{'c-card': !embedded }" :flat="embedded">
+    <v-card :class="{'c-card': !embedded }" :flat="embedded">
         <div class="d-flex mb-2">
           <SimpleViewer :body="comment.body" />
           <a class="ml-1" :href="comment.root_route + `/comments/${comment.uuid}`">

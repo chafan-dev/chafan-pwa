@@ -69,7 +69,7 @@
                       <ExploreSitesGrid class="mt-2" />
                     </v-sheet>
 
-                    <v-card flat>
+                    <v-sheet>
                       <div v-for="activity in activities" :key="activity.id">
                         <v-card class="my-4 c-card" elevation="1"
                                 :class="{'px-3': $vuetify.breakpoint.mdAndUp, 'py-4': $vuetify.breakpoint.mdAndUp,
@@ -224,7 +224,7 @@
                           </div>
                         </v-card>
                       </div>
-                    </v-card>
+                    </v-sheet>
 
                     <div class="text-center">
                         <v-progress-circular indeterminate color="primary" v-if="preloadMoreActivitiesIntermediate" />

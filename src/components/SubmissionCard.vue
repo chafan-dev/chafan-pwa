@@ -1,6 +1,6 @@
 <template>
     <!-- TODO: c-card -->
-    <v-card class="pa-2" :outlined="!embedded" :flat="embedded">
+    <v-card :class="{'pa-2': !embedded}" :outlined="!embedded" :flat="embedded">
         <div class="title" style="word-break: normal">
             <a class="text-decoration-none" :href="'/submissions/' + submission.uuid">
                 {{ submission.title }}
