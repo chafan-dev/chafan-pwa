@@ -176,6 +176,8 @@ export default class UserProfileEdit extends Vue {
     if (userProfile) {
       if (userProfile.avatar_url) {
         this.avatarURL = userProfile.avatar_url;
+      } else {
+        this.avatarURL = '/img/default-avatar.png';
       }
       if (userProfile.gif_avatar_url) {
         this.gifAvatarURL = userProfile.gif_avatar_url;
