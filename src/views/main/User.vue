@@ -9,9 +9,10 @@
                       class="mb-4 mx-7 pb-7" />
             <v-skeleton-loader type="card" v-else />
 
-            <template v-if="loggedIn">
-                <v-tabs v-model="currentTabItem" show-arrows class="mx-7"
-                        :class="{'fixed-tabs': $vuetify.breakpoint.mdAndUp }">
+            <div v-if="loggedIn" class="mx-7">
+                <v-tabs v-model="currentTabItem" show-arrows
+                        :align-with-title="$vuetify.breakpoint.mdAndUp"
+                        :fixed-tabs="$vuetify.breakpoint.mdAndUp">
                     <v-tabs-slider />
                     <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
                         {{ $t(item.text) }}
@@ -19,10 +20,8 @@
                             ({{item.tabExtraCount(userPublic)}})
                         </span>
                     </v-tab>
-                </v-tabs>
 
-                <v-tabs-items v-model="currentTabItem" class="mx-7">
-                    <div v-if="currentTabItem === 'profile'">
+                    <v-tab-item value="profile">
                         <template v-if="userPublic">
                             <div class="my-3" v-if="userPublic.homepage_url || userPublic.github_username || userPublic.twitter_username || userPublic.linkedin_url">
                                 <span class="subheading secondary--text text--lighten-3">{{$t('Links')}}: </span>
@@ -128,50 +127,55 @@
                         <div class="d-flex justify-center" v-else>
                             <v-skeleton-loader type="button" />
                         </div>
-                    </div>
+                    </v-tab-item>
 
-                    <div v-if="currentTabItem === 'answers'">
+                    <v-tab-item value="answers">
                         <template v-if="authoredAnswers !== null">
                             <p v-if="authoredAnswers.length === 0">{{$t('暂无')}}</p>
                             <Answer v-for="answer in authoredAnswers" :key="answer.uuid"
                                     class="ma-2" :answerPreview="answer" />
                         </template><v-skeleton-loader type="paragraph" v-else />
-                    </div>
-                    <div v-else-if="currentTabItem === 'questions'">
+                    </v-tab-item>
+
+                    <v-tab-item value="questions">
                         <template v-if="askedQuestions !== null">
                             <p v-if="askedQuestions.length === 0">{{$t('暂无')}}</p>
                             <QuestionPreview :questionPreview="question" class="ma-2"
                                             v-for="question in askedQuestions" :key="question.uuid" />
                         </template><v-skeleton-loader type="paragraph" v-else />
-                    </div>
-                    <div v-else-if="currentTabItem === 'submissions'">
-                        <template v-if="submissions !== null">
-                            <p v-if="submissions.length === 0">{{$t('暂无')}}</p>
-                            <SubmissionCard :submission="submission" class="ma-2"
-                                            v-for="submission in submissions" :key="submission.uuid" />
-                        </template><v-skeleton-loader type="paragraph" v-else />
-                    </div>
-                    <div v-else-if="currentTabItem === 'articles'">
+                    </v-tab-item>
+
+                    <v-tab-item value="articles">
                         <template v-if="articles !== null">
                             <p v-if="articles.length === 0">{{$t('暂无')}}</p>
                             <ArticlePreview :articlePreview="article" class="mb-2"
                                             :key="article.uuid" v-for="article in articles" />
                         </template><v-skeleton-loader type="paragraph" v-else />
-                    </div>
-                    <div v-else-if="currentTabItem === 'followers'">
+                    </v-tab-item>
+
+                    <v-tab-item value="submissions">
+                        <template v-if="submissions !== null">
+                            <p v-if="submissions.length === 0">{{$t('暂无')}}</p>
+                            <SubmissionCard :submission="submission" class="ma-2"
+                                            v-for="submission in submissions" :key="submission.uuid" />
+                        </template><v-skeleton-loader type="paragraph" v-else />
+                    </v-tab-item>
+
+                    <v-tab-item value="followers">
                         <div v-if="followers !== null" class="ma-2">
                             <p v-if="followers.length === 0">{{$t('暂无')}}</p>
                             <UserGrid :users="followers"/>
                         </div><v-skeleton-loader type="paragraph" v-else />
-                    </div>
-                    <div v-else-if="currentTabItem === 'followed'">
+                    </v-tab-item>
+
+                    <v-tab-item value="followed">
                         <div v-if="followed !== null" class="ma-2">
                             <p v-if="followed.length === 0">{{$t('暂无')}}</p>
                             <UserGrid :users="followed"/>
                         </div><v-skeleton-loader type="paragraph" v-else />
-                    </div>
-                </v-tabs-items>
-            </template>
+                    </v-tab-item>
+                </v-tabs>
+            </div>
             <div class="ml-7 mr-7" v-else>
                 <v-skeleton-loader type="paragraph" boilerplate />
                 <div class="text-center">{{ $t('登录后查看更多') }}</div>
