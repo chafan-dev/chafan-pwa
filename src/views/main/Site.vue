@@ -18,35 +18,35 @@
                 <v-tab-item value="questions">
                     <div v-if="questions !== null && questions.length > 0">
                         <QuestionPreview v-for="question in questions" :key="question.uuid"
-                                         class="ma-3" :questionPreview="question" />
+                                         class="my-4" :questionPreview="question" />
                     </div>
-                    <div class="ma-3 text-center" v-else-if="questions !== null">
+                    <div class="my-4 text-center" v-else-if="questions !== null">
                         {{ $t('No questions for now') }}
                     </div>
-                    <div class="ma-3 text-center" v-else>
+                    <div class="my-4 text-center" v-else>
                         {{ $t('Only site members can view its content.') }}
                     </div>
-                    <div class="ma-3 text-center" v-if="!userProfile">
+                    <div class="my-4 text-center" v-if="!userProfile">
                         {{ $t('登录后查看更多') }}
                     </div>
                 </v-tab-item>
                 <v-tab-item value="submissions">
                     <div v-if="submissions !== null && submissions.length > 0">
                         <SubmissionCard v-for="submission in submissions" :key="submission.uuid"
-                                        class="ma-3" :submission="submission" />
+                                        class="my-4" :submission="submission" />
                     </div>
-                    <div class="ma-3 text-center" v-else-if="submissions !== null">
+                    <div class="my-4 text-center" v-else-if="submissions !== null">
                         {{ $t('No submissions for now') }}
                     </div>
-                    <div class="ma-3 text-center" v-else>
+                    <div class="my-4 text-center" v-else>
                         {{ $t('Only site members can view its content.') }}
                     </div>
-                    <div class="ma-3 text-center" v-if="!userProfile">
+                    <div class="my-4 text-center" v-if="!userProfile">
                         {{ $t('登录后查看更多') }}
                     </div>
                 </v-tab-item>
                 <v-tab-item value="members">
-                    <div v-if="siteProfiles !== null" class="ma-3">
+                    <div v-if="siteProfiles !== null" class="my-4">
                         <template v-for="i in Math.floor((this.siteProfiles.length - 1) / memberCols) + 1">
                             <v-row :key="i">
                                 <template v-for="j in memberCols">
@@ -62,7 +62,7 @@
                             </v-row>
                         </template>
                     </div>
-                    <div class="ma-3 text-center" v-else>
+                    <div class="my-4 text-center" v-else>
                         {{ $t('Only site members can view its content.') }}
                     </div>
                 </v-tab-item>

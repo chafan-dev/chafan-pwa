@@ -144,6 +144,21 @@ const example_question_preview = {
   "answers_count": 11
 }
 
+const randomQuestionPreviews = []
+for (var i = 0; i < 20; i++) {
+  const uuid = randomString();
+  randomQuestionPreviews.push({
+    "uuid": uuid,
+    "title": `Question ${uuid}`,
+    "description": null,
+    "site": example_site1,
+    "is_placed_at_site_top": false,
+    "is_placed_at_home": false,
+    "created_at": "2021-02-02T20:02:56.170487+00:00",
+    "answers_count": 11
+  })
+}
+
 const example_answer1_preview = {
   "uuid": "3b4TBWxFUnBe4aRrKq4X",
   "author": example_user1_preview,
@@ -577,7 +592,7 @@ for (const site of randomSites) {
     }))
   })
   app.get(`/api/v1/sites/${site.uuid}/questions/`, (req, res) => {
-    res.json([example_question_preview])
+    res.json([example_question_preview].concat(randomQuestionPreviews))
   })
   app.get(`/api/v1/sites/${site.uuid}/submissions/`, (req, res) => {
     res.json([example_user1_submission1])
