@@ -50,25 +50,24 @@
                         </v-card>
                     </v-dialog>
 
-                    <div v-if="!userProfile" class="ma-4">
-                        {{$t('登录后浏览更多个性化内容！')}}
-                        <ExploreSitesGrid class="mt-2" />
+                    <div v-if="!userProfile">
+                      {{$t('登录后浏览更多个性化内容！')}}
+                      <ExploreSitesGrid class="mt-2" />
                     </div>
 
-                    <v-card class="ma-4" flat v-if="showExploreSites">
-                        <v-card-title>
-                            {{$t('刚刚加入？')}}
-                            <v-spacer />
-                            <CloseIcon @click="onCloseExploreSites" />
-                        </v-card-title>
-                        <v-card-text>
-                            <div>
-                                1. {{$t('完善')}}<a class="text-decoration-none" href="/profile/edit" target="_blank">{{$t('个人页面')}}</a>{{$t('来告诉朋友们你是谁')}}<br />
-                                2. {{$t('探索 Chafan 上的感兴趣的圈子和用户来生成自己的信息流：')}}
-                            </div>
-                            <ExploreSitesGrid class="mt-2" />
-                        </v-card-text>
-                    </v-card>
+                    <v-sheet v-if="showExploreSites">
+                      <div class="d-flex justify-space-between title">
+                        {{$t('刚刚加入？')}}
+
+                        <CloseIcon @click="onCloseExploreSites" />
+                      </div>
+
+                      <div>
+                        1. {{$t('完善')}}<a class="text-decoration-none" href="/profile/edit" target="_blank">{{$t('个人页面')}}</a>{{$t('来告诉朋友们你是谁')}}<br />
+                        2. {{$t('探索 Chafan 上的感兴趣的圈子和用户来生成自己的信息流：')}}
+                      </div>
+                      <ExploreSitesGrid class="mt-2" />
+                    </v-sheet>
 
                     <v-card flat>
                       <div v-for="activity in activities" :key="activity.id">
