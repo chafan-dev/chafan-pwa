@@ -45,7 +45,7 @@
             </v-text-field>
             </v-col>
             <v-col>
-            <v-btn color="primary" @click="sendVerificationCode" class="mt-4" :disabled="verificationCodeDisabled">
+            <v-btn small depressed color="primary" @click="sendVerificationCode" class="mt-4" :disabled="verificationCodeDisabled">
                 {{$t('Send me verification code')}}</v-btn>
             </v-col>
         </v-row>
@@ -71,13 +71,11 @@
         </a>
         </span>
         <v-spacer />
-        <v-btn color="primary" @click.prevent="submit"
+        <v-btn small depressed color="primary" @click.prevent="submit"
                :disabled="submitIntermediate || (loginMethod === 'cellphone' && !this.verificationCode)">
             {{$t('Login')}}
         <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
         </v-btn>
-        <!-- Registration is closed for now. -->
-        <!-- <v-btn to="/signup">{{$t('Sign-up')}}</v-btn> -->
     </v-card-actions>
     </v-card>
 </template>
