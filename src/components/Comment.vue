@@ -49,7 +49,7 @@
 
             <!-- Part II -->
             <template v-if="!isDeleted && currentUserIsAuthor && !showUpdateEditor">
-                <v-divider class="mr-2" vertical />
+                <v-divider class="mr-2" vertical v-if="(childComments && childComments.length > 0) || enableUpvotes" />
 
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
@@ -235,13 +235,13 @@ export default class Comment extends Vue {
         this.childCommentsExpanded = this.answerCommentId !== null || this.articleCommentId !== null ||
                                      this.submissionCommentId !== null || this.questionCommentId !== null ||
                                      this.depth >= 1;
-        this.upvotes = {
-            comment_uuid: this.comment.uuid,
-            count: this.comment.upvotes_count,
-            upvoted: this.comment.upvoted,
-        };
         const comments = (await api2.getChildComments(this.token, this.comment.uuid)).data;
         if (this.enableUpvotes) {
+            this.upvotes = {
+                comment_uuid: this.comment.uuid,
+                count: this.comment.upvotes_count,
+                upvoted: this.comment.upvoted,
+            };
             this.childComments = rankComments(this.$dayjs, comments);
         } else {
             this.childComments = comments;
