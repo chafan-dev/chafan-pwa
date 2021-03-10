@@ -74,8 +74,9 @@
         <v-btn small depressed color="primary" @click.prevent="submit"
                :disabled="submitIntermediate || (loginMethod === 'cellphone' && !this.verificationCode)">
             {{$t('Login')}}
-        <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
+            <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
         </v-btn>
+        <v-btn small depressed to="/signup">{{$t('Sign-up')}}</v-btn>
     </v-card-actions>
     </v-card>
 </template>
