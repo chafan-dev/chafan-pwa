@@ -205,7 +205,6 @@ export default class Site extends Vue {
     private loadingMoreQuestions = false;
 
     private async loadMoreQuestions() {
-        console.log("loadMoreQuestions");
         if (this.loadingMoreQuestions) {
             return;
         }

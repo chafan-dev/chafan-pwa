@@ -606,6 +606,7 @@ export interface ISiteCreate {
     name: string;
     description?: string;
     subdomain: string;
+    permission_type: 'public' | 'private';
 }
 
 export interface IChannel {
