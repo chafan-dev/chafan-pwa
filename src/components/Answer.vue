@@ -71,45 +71,49 @@
                                 </v-btn>
 
                                 <template v-if="userProfile">
-                                <v-btn small depressed class="slim-btn mx-1" @click="loadEditor" v-show="currentUserIsAuthor">
-                                    {{$t(editButtonText)}}
-                                </v-btn>
+                                    <v-btn small depressed class="slim-btn mx-1" @click="loadEditor" v-show="currentUserIsAuthor">
+                                        {{$t(editButtonText)}}
+                                    </v-btn>
 
-                                <v-menu offset-y v-if="currentUserIsAuthor">
-                                    <template v-slot:activator="{ on, attrs }">
-                                    <v-btn depressed v-bind="attrs" v-on="on" class="slim-btn mx-1" small>{{$t('设置')}}</v-btn>
-                                    </template>
-                                    <v-list>
-                                    <v-list-item @click="confirmDeleteDialog = true">
-                                        <v-list-item-icon>
-                                        <DeleteIcon />
-                                        </v-list-item-icon>
-                                        <v-list-item-content>{{$t('永久删除')}}</v-list-item-content>
-                                    </v-list-item>
-                                    </v-list>
-                                </v-menu>
+                                    <v-menu offset-y v-if="currentUserIsAuthor">
+                                        <template v-slot:activator="{ on, attrs }">
+                                        <v-btn depressed v-bind="attrs" v-on="on" class="slim-btn mx-1" small>{{$t('设置')}}</v-btn>
+                                        </template>
+                                        <v-list>
+                                        <v-list-item @click="confirmDeleteDialog = true">
+                                            <v-list-item-icon>
+                                            <DeleteIcon />
+                                            </v-list-item-icon>
+                                            <v-list-item-content>{{$t('永久删除')}}</v-list-item-content>
+                                        </v-list-item>
+                                        </v-list>
+                                    </v-menu>
 
-                                <v-dialog max-width="300" v-model="confirmDeleteDialog">
-                                    <v-card>
-                                    <v-card-title primary-title>
-                                        <div class="headline primary--text">{{$t('确定永久删除答案及其所有历史版本？')}}</div>
-                                    </v-card-title>
-                                    <v-card-actions>
-                                        <v-spacer />
-                                        <v-btn depressed small ="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
-                                        <v-btn depressed small color="warning" @click="deleteAnswer" :disabled='deleteAnswerIntermediate'>
-                                        {{$t('Yes')}}
-                                        </v-btn>
-                                    </v-card-actions>
-                                    </v-card>
-                                </v-dialog>
+                                    <v-dialog max-width="300" v-model="confirmDeleteDialog">
+                                        <v-card>
+                                        <v-card-title primary-title>
+                                            <div class="headline primary--text">{{$t('确定永久删除答案及其所有历史版本？')}}</div>
+                                        </v-card-title>
+                                        <v-card-actions>
+                                            <v-spacer />
+                                            <v-btn depressed small ="confirmDeleteDialog = false">{{$t('No')}}</v-btn>
+                                            <v-btn depressed small color="warning" @click="deleteAnswer" :disabled='deleteAnswerIntermediate'>
+                                            {{$t('Yes')}}
+                                            </v-btn>
+                                        </v-card-actions>
+                                        </v-card>
+                                    </v-dialog>
 
-                                <BookmarkedIcon @click="unbookmark"
-                                                :disabled="unbookmarkIntermediate"
-                                                v-show="userBookmark.bookmarked_by_me && (!currentUserIsAuthor)"/>
-                                <ToBookmarkIcon @click="bookmark"
-                                                v-show="(!userBookmark.bookmarked_by_me) && (!currentUserIsAuthor)"
-                                                :disabled="bookmarkIntermediate" />
+                                    <span v-if="userBookmark.bookmarked_by_me && (!currentUserIsAuthor)"
+                                          @click="unbookmark" style="cursor:pointer">
+                                        <BookmarkedIcon :disabled="unbookmarkIntermediate" />
+                                        <span class="mr-1">{{userBookmark.bookmarkers_count}}</span>
+                                    </span>
+                                    <span v-if="(!userBookmark.bookmarked_by_me) && (!currentUserIsAuthor)"
+                                          @click="bookmark" style="cursor:pointer">
+                                        <ToBookmarkIcon :disabled="bookmarkIntermediate" />
+                                        <span class="mr-1">{{userBookmark.bookmarkers_count}}</span>
+                                    </span>
                                 </template>
 
                                 <CollapseUpIcon @click="preview = true" class="pl-1 pr-1" />
