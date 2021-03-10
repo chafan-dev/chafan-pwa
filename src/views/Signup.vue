@@ -61,10 +61,10 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn color="primary" @click="sendVerificationCode"
-                                        :disabled="intermediate || verificationCodeSent">{{$t('Send me verification code')}}</v-btn>
-                    <v-btn color="primary" @click="handleSubmit(openAccount)"
-                                        :disabled="intermediate || !valid">{{$t('Verify code and open account')}}</v-btn>
+                    <v-btn small depressed color="primary" @click="sendVerificationCode"
+                           :disabled="intermediate || verificationCodeSent">{{$t('Send me verification code')}}</v-btn>
+                    <v-btn small depressed color="primary" @click="handleSubmit(openAccount)"
+                           :disabled="intermediate || !valid">{{$t('Verify code and open account')}}</v-btn>
                 </v-card-actions>
             </v-card>
             </ValidationObserver>
@@ -78,7 +78,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { api } from '@/api';
 import { appName } from '@/env';
-import { commitAddNotification } from '@/store/main/mutations';
+import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import PasswordIcon from '@/components/icons/PasswordIcon.vue';
 import HandleIcon from '@/components/icons/HandleIcon.vue';
@@ -103,6 +103,7 @@ export default class Signup extends Vue {
     private verificationCodeSent = false;
 
     private mounted() {
+        commitSetShowLoginPrompt(this.$store, false);
         if (this.$router.currentRoute.query.invitation_link_uuid) {
             this.invitationToken = this.$router.currentRoute.query.invitation_link_uuid.toString();
         }
