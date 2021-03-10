@@ -38,7 +38,7 @@ import SiteBtn from '@/components/SiteBtn.vue';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import SiteIcon from '@/components/icons/SiteIcon.vue';
 import ShieldCheckIcon from '@/components/icons/ShieldCheckIcon.vue';
-import { IInvitationLinkCreate, ISite, IUserInvite, IUserSiteProfile } from '@/interfaces';
+import { IInvitationLinkCreate, ISite, IUserSiteProfile } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 
@@ -94,7 +94,8 @@ export default class Invite extends Vue {
             payload.invited_to_site_uuid = this.invitedSiteId;
         }
         const invitationLink = (await api.createInvitationLink(this.$store.state.main.token, payload)).data;
-        this.$router.push(`/invitation-links/${invitationLink.uuid}`);
+        let routeData = this.$router.resolve({path: `/invitation-links/${invitationLink.uuid}`});
+        window.open(routeData.href, '_blank');
     }
 }
 </script>
