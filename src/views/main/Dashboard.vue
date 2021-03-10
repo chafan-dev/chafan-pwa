@@ -22,8 +22,8 @@
                   <v-spacer />
                   <NewInviteLinkBtn />
                   <!-- Extra div wrapper to align the buttons -->
-                  <div v-if="userProfile"><v-btn class="ml-2" small :to="`/users/${userProfile.handle}`">{{$t('我的个人页面')}}</v-btn></div>
-                  <div v-if="userProfile"><v-btn class="ml-2" small to="/security">{{$t('Security')}}</v-btn></div>
+                  <div v-if="userProfile"><v-btn class="ml-2" depressed small :to="`/users/${userProfile.handle}`">{{$t('我的个人页面')}}</v-btn></div>
+                  <div v-if="userProfile"><v-btn class="ml-2" depressed small to="/security">{{$t('Security')}}</v-btn></div>
                 </v-card-title>
                 <v-card-text>
                   <v-switch :label="$t('发送邮件提醒未读通知')" @change="onChangeEmailNotifications"
@@ -31,7 +31,7 @@
                   <v-select :label="$t('默认编辑器模式')" :items="editorModeItems"
                             item-text="text" item-value="value" v-model="selectedEditorMode"
                             @change="onChangeEditorMode" :disabled="changingMySettings" />
-                  <v-btn @click="showExportDialog = true">{{ $t('导出我的数据和创作内容') }}</v-btn>
+                  <v-btn depressed small @click="showExportDialog = true">{{ $t('导出我的数据和创作内容') }}</v-btn>
                   <v-progress-circular indeterminate v-if="changingMySettings" />
 
                   <v-dialog v-model="showExportDialog" max-width="500px">
@@ -84,7 +84,8 @@
                       <v-textarea v-model="newArticleColumn.description" :label="$t('专栏描述')" />
                     </v-card-text>
                     <v-card-actions>
-                      <v-btn color="blue darken-1" text @click="commitNewArticleColumn"
+                      <v-spacer />
+                      <v-btn small depressed color="primary" @click="commitNewArticleColumn"
                             :disabled="commitNewArticleColumnIntermediate">{{$t('创建')}}</v-btn>
                     </v-card-actions>
                   </v-card>
@@ -93,7 +94,7 @@
                 <v-card-title primary-title>
                   <div class="headline primary--text">{{$t('我的专栏')}}</div>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary" @click="dialogNewArticleColumn = true">{{$t('创建新专栏')}}</v-btn>
+                  <v-btn small depressed color="primary" @click="dialogNewArticleColumn = true">{{$t('创建新专栏')}}</v-btn>
                 </v-card-title>
                 <ul>
                     <li v-for="articleColumn in myArticleColumns" :key="articleColumn.uuid">
@@ -197,10 +198,10 @@
                   </span>
                 </template>
                 <template v-slot:item.action="{ item }">
-                  <v-btn small color="primary" v-if="claimable(item)" @click="claimReward(item)">
+                  <v-btn small depressed color="primary" v-if="claimable(item)" @click="claimReward(item)">
                     {{$t('Claim')}}
                   </v-btn>
-                  <v-btn small color="primary" v-if="refundable(item)" @click="refundReward(item)">
+                  <v-btn small depressed color="primary" v-if="refundable(item)" @click="refundReward(item)">
                     {{$t('Refund')}}
                   </v-btn>
                 </template>

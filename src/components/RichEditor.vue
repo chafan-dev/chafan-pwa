@@ -5,14 +5,14 @@
         </v-overlay>
         <div id="vditor" class="mb-2" :class="{'mt-2': focusMode}" />
         <div class="d-flex align-center">
-            <v-btn small color="slim-btn primary" @click="submitEdit(true)">
+            <v-btn small depressed color="slim-btn primary" @click="submitEdit(true)">
                 {{ $t(publishText) }}
             </v-btn>
-            <v-btn small color="slim-btn info ml-2" @click="submitEdit(false)">
+            <v-btn small depressed color="slim-btn info ml-2" @click="submitEdit(false)">
                 {{ $t('Save draft') }}
             </v-btn>
-            <v-btn small class="slim-btn ml-2" @click="$emit('cancel-edit')">{{$t('Cancel')}}</v-btn>
-            <v-btn small class="slim-btn ml-2" @click="showHelp = !showHelp">{{$t('Help')}}</v-btn>
+            <v-btn small depressed class="slim-btn ml-2" @click="$emit('cancel-edit')">{{$t('Cancel')}}</v-btn>
+            <v-btn small depressed class="slim-btn ml-2" @click="showHelp = !showHelp">{{$t('Help')}}</v-btn>
             <v-spacer />
             <span class="mr-2 text-caption grey--text" v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp">
                 {{$t('自动保存于')}} {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
@@ -62,7 +62,7 @@
                     <v-expansion-panels v-if="archives">
                         <v-expansion-panel v-for="archive in archives" :key="archive.id">
                             <v-expansion-panel-header>
-                                <v-btn small max-width="100px" class="mr-4"
+                                <v-btn small depressed max-width="100px" class="mr-4"
                                        @click="loadArchive(archive)">{{ $t('加载该版本') }}</v-btn>
                                     {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                                 <v-spacer />
@@ -76,7 +76,7 @@
                     <v-expansion-panels v-if="articleArchives">
                         <v-expansion-panel v-for="archive in articleArchives" :key="archive.id">
                             <v-expansion-panel-header>
-                                <v-btn small max-width="100px" class="mr-4"
+                                <v-btn small depressed max-width="100px" class="mr-4"
                                        @click="loadArticleArchive(archive)">{{ $t('加载该版本') }}</v-btn>
                                     {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                                 <v-spacer />

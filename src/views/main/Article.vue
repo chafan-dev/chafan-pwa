@@ -96,12 +96,16 @@
 
 
                                 <template v-if="token">
-                                    <BookmarkedIcon @click="unbookmark"
-                                                    :disabled="unbookmarkIntermediate"
-                                                    v-show="userBookmark.bookmarked_by_me && (!currentUserIsAuthor)"/>
-                                    <ToBookmarkIcon @click="bookmark"
-                                                    v-show="(!userBookmark.bookmarked_by_me) && (!currentUserIsAuthor)"
-                                                    :disabled="bookmarkIntermediate" />
+                                    <span v-if="userBookmark.bookmarked_by_me && (!currentUserIsAuthor)"
+                                          @click="unbookmark" style="cursor:pointer">
+                                        <BookmarkedIcon :disabled="unbookmarkIntermediate" />
+                                        <span class="mr-1">{{userBookmark.bookmarkers_count}}</span>
+                                    </span>
+                                    <span v-if="(!userBookmark.bookmarked_by_me) && (!currentUserIsAuthor)"
+                                          @click="bookmark" style="cursor:pointer">
+                                        <ToBookmarkIcon :disabled="bookmarkIntermediate" />
+                                        <span class="mr-1">{{userBookmark.bookmarkers_count}}</span>
+                                    </span>
                                 </template>
                             </v-col>
 

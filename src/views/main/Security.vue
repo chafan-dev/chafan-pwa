@@ -24,7 +24,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn small color="primary" @click="() => {handleSubmit(submit);reset()}" :disabled="intermediate">
+              <v-btn depressed small color="primary" @click="() => {handleSubmit(submit);reset()}" :disabled="intermediate">
                 {{$t('Save')}}
                 <v-progress-circular size="20" indeterminate v-if="intermediate" />
               </v-btn>
@@ -89,24 +89,24 @@
             </div>
             <v-card-actions>
               <v-spacer />
-              <v-btn small @click="editLoginMode = 'add_secondary_email'" v-show="!editLoginMode">
+              <v-btn small depressed @click="editLoginMode = 'add_secondary_email'" v-show="!editLoginMode">
                 {{$t('Add secondary email')}}
               </v-btn>
-              <v-btn small @click="editLoginMode = 'cellphone'" v-show="!editLoginMode && !phoneNumber">
+              <v-btn small depressed @click="editLoginMode = 'cellphone'" v-show="!editLoginMode && !phoneNumber">
                 {{$t('Add phone number')}}
               </v-btn>
-              <v-btn small @click="editLoginMode = null" v-show="editLoginMode">
+              <v-btn small depressed @click="editLoginMode = null" v-show="editLoginMode">
                 {{$t('Cancel')}}
               </v-btn>
 
-              <v-btn small :color="!showVerifyCodeBtn ? 'primary': undefined"
+              <v-btn small depressed :color="!showVerifyCodeBtn ? 'primary': undefined"
                      :disabled="verificationCodeDisabled || intermediate"
                      @click="handleSubmit(sendVerificationCode)" v-show="editLoginMode">
                 {{$t('Send me verification code')}}
                 <v-progress-circular size="20" indeterminate v-if="intermediate" />
               </v-btn>
 
-              <v-btn small color="primary" @click="handleSubmit(verifyCode)" :disabled="intermediate"
+              <v-btn small depressed color="primary" @click="handleSubmit(verifyCode)" :disabled="intermediate"
                      v-show="showVerifyCodeBtn && editLoginMode">
                 {{$t('Verify and save')}}
                 <v-progress-circular size="20" indeterminate v-if="intermediate" />
@@ -118,7 +118,7 @@
         <v-card class="ma-3 pa-3" :loading="!userProfile">
           <v-card-title>{{$t('Others')}}</v-card-title>
           <v-card-actions>
-            <v-btn @click="showSecurityLogs">{{$t('查看安全日志')}}</v-btn>
+            <v-btn small depressed @click="showSecurityLogs">{{$t('查看安全日志')}}</v-btn>
           </v-card-actions>
         </v-card>
         <v-dialog v-model="showSecurityLogsDialog" max-width="600">
