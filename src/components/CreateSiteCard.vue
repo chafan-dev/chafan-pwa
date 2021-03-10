@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <ValidationObserver v-slot="{ handleSubmit, reset }">
+    <ValidationObserver v-slot="{ handleSubmit, reset, valid }">
     <v-card-title primary-title>
       <div class="headline primary--text">{{$t('创建圈子')}}</div>
     </v-card-title>
@@ -8,16 +8,22 @@
       <template>
         <v-form>
           <ValidationProvider :name="$t('显示名')" rules="required" v-slot="{ errors }">
-            <v-text-field :label="$t('显示名')" v-model="siteCreate.name" />
+            <v-text-field :label="$t('显示名') + '*'" v-model="siteCreate.name" />
             <span class="error--text">{{ errors[0] }}</span>
           </ValidationProvider>
           <ValidationProvider :name="$t('Unique sub-domain name')" rules="required|subdomain" v-slot="{ errors }">
-            <v-text-field :label="$t('Unique sub-domain name')" v-model="siteCreate.subdomain" required />
+            <v-text-field :label="$t('Unique sub-domain name') + '*'" v-model="siteCreate.subdomain" required />
             <span class="error--text">{{ errors[0] }}</span>
           </ValidationProvider>
-          <v-select :label="$t('Permission type')" v-model="siteCreate.permission_type"
+          <v-select :label="$t('Permission type') + '*'" v-model="siteCreate.permission_type"
                     :items="permissionTypeItems" />
-          <v-textarea :label="$t('Description')" v-model="siteCreate.description" />
+          <div v-if="siteCreate.permission_type === 'public'">
+            {{$t('提示：公开站点一般适合话题型的圈子，内容对所有人可见，注册用户可以参与讨论，但是不能做公共编辑等操作。申请加入可以附加条件。')}}
+          </div>
+          <div v-else-if="siteCreate.permission_type === 'private'">
+            {{$t('提示：私有站点一般适合有确定的人群范围的圈子，内容仅对成员可见。申请加入可以附加条件。')}}
+          </div>
+          <v-textarea :label="$t('Description')" n-n v-model="siteCreate.description" />
         </v-form>
       </template>
     </v-card-text>
@@ -25,8 +31,14 @@
       <v-spacer />
       <v-btn small depressed @click="cancel">{{$t('Cancel')}}</v-btn>
       <v-btn small depressed @click="resetAll(reset)">{{$t('Reset')}}</v-btn>
-      <v-btn small depressed @click="handleSubmit(submit)" color="primary" :disabled="intermediate">
-        {{$t('提交')}}
+      <v-btn small depressed @click="handleSubmit(submit)"
+             color="primary" :disabled="intermediate || !valid">
+        <template v-if="canCreateSite">
+          {{$t('创建')}}
+        </template>
+        <template v-else>
+          {{$t('提交申请')}}
+        </template>
         <v-progress-circular size="20" color="primary" indeterminate v-if="intermediate" />
       </v-btn>
     </v-card-actions>
@@ -49,17 +61,21 @@ import { adminUUID } from '@/env';
   components: { UserSearch },
 })
 export default class CreateSite extends Vue {
-  private valid = false;
   private siteCreate: ISiteCreate = {
     name: '',
     subdomain: '',
+    permission_type: 'public',
   };
+
   private myToken: string | null = null;
   private readonly permissionTypeItems = ['public', 'private'];
 
   get canCreateSite() {
         const userProfile = readUserProfile(this.$store);
-        if (userProfile && userProfile.karma > 1000) {
+        if (userProfile && userProfile.karma >= 1000 && this.siteCreate.permission_type === 'public') {
+            return true;
+        }
+        if (userProfile && userProfile.karma >= 200 && this.siteCreate.permission_type === 'private') {
             return true;
         }
         return false;
@@ -69,6 +85,7 @@ export default class CreateSite extends Vue {
     this.siteCreate = {
       name: '',
       subdomain: '',
+      permission_type: 'public',
     };
     if (reset) { reset(); }
   }
