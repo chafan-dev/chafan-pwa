@@ -3,15 +3,19 @@
             :class="{'c-card': !embedded && !hoverMode }" :flat="embedded"
             :max-width="hoverMode ? 400 : undefined">
         <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
-            <v-avatar size="100" tile class="avatarDiv">
-                <v-img :src="avatarURL" alt="Avatar" />
-            </v-avatar>
-        </div>
-        <v-row justify="center">
-            <v-col v-if="compactMode && avatarURL" style="max-width: 110px" align-self="center">
+            <a :href="`/users/${userPreview.handle}`">
                 <v-avatar size="100" tile class="avatarDiv">
                     <v-img :src="avatarURL" alt="Avatar" />
                 </v-avatar>
+            </a>
+        </div>
+        <v-row justify="center">
+            <v-col v-if="compactMode && avatarURL" style="max-width: 110px" align-self="center">
+                <a :href="`/users/${userPreview.handle}`">
+                    <v-avatar size="100" tile class="avatarDiv">
+                        <v-img :src="avatarURL" alt="Avatar" />
+                    </v-avatar>
+                </a>
             </v-col>
             <v-col align-self="center">
                 <div class="mb-1 mt-1" :class="{'headline': !compactMode, 'text-center': !compactMode}">
