@@ -9,7 +9,7 @@
                 <div class="d-flex">
                     <span class="title">{{ $t('文章列表') }}</span>
                     <v-spacer />
-                    <v-btn color="primary" v-if="articleColumn && articleColumn.owner.uuid === currentUserId"
+                    <v-btn small depressed color="primary" v-if="articleColumn && articleColumn.owner.uuid === currentUserId"
                            :to="`/article-focus?articleColumnId=${articleColumn.uuid}`" class="mt-2">
                         {{ $t('写文章') }}
                     </v-btn>
