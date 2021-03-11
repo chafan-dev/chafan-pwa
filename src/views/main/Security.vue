@@ -1,22 +1,32 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <ValidationObserver v-slot="{ handleSubmit, reset }">
           <v-card class="ma-3 pa-3">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{$t('Change Password')}}</div>
+              <div class="headline primary--text">
+                {{ $t('Change Password') }}
+              </div>
             </v-card-title>
             <v-card-text>
               <template>
                 <v-form>
-                  <ValidationProvider rules="required|password|password1:@confirm" v-slot="{ errors }" name="password">
+                  <ValidationProvider
+                    rules="required|password|password1:@confirm"
+                    v-slot="{ errors }"
+                    name="password"
+                  >
                     <v-text-field :label="$t('Password')" type="password" v-model="password" />
                     <span class="error--text">{{ $t(errors[0]) }}</span>
                   </ValidationProvider>
 
                   <ValidationProvider rules="required" v-slot="{ errors }" name="confirm">
-                    <v-text-field :label="$t('Password confirmation')" type="password" v-model="confirmation" />
+                    <v-text-field
+                      :label="$t('Password confirmation')"
+                      type="password"
+                      v-model="confirmation"
+                    />
                     <span class="error--text">{{ $t(errors[0]) }}</span>
                   </ValidationProvider>
                 </v-form>
@@ -24,8 +34,19 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn depressed small color="primary" @click="() => {handleSubmit(submit);reset()}" :disabled="intermediate">
-                {{$t('Save')}}
+              <v-btn
+                depressed
+                small
+                color="primary"
+                @click="
+                  () => {
+                    handleSubmit(submit);
+                    reset();
+                  }
+                "
+                :disabled="intermediate"
+              >
+                {{ $t('Save') }}
                 <v-progress-circular size="20" indeterminate v-if="intermediate" />
               </v-btn>
             </v-card-actions>
@@ -35,80 +56,125 @@
         <ValidationObserver v-slot="{ handleSubmit }">
           <v-card class="ma-3 pa-3" :loading="!userProfile">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{$t('Manage logins')}}</div>
+              <div class="headline primary--text">
+                {{ $t('Manage logins') }}
+              </div>
             </v-card-title>
             <div class="pa-4" v-if="userProfile">
-                <div>
-                  <div v-if="phoneNumber" class="mb-2">
-                    <CellphoneIcon /> {{$t('Cellphone number')}}: {{ phoneNumber }}
-                    <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'cellphone'" />
+              <div>
+                <div v-if="phoneNumber" class="mb-2">
+                  <CellphoneIcon /> {{ $t('Cellphone number') }}:
+                  {{ phoneNumber }}
+                  <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'cellphone'" />
+                </div>
+                <div class="mb-2">
+                  <div>
+                    <EmailIcon /> {{ $t('Email') }}: {{ userProfile.email }}
+                    <v-chip small color="primary">{{ $t('primary') }}</v-chip>
+                    <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'email'" />
                   </div>
-                  <div class="mb-2">
-                    <div>
-                      <EmailIcon /> {{$t('Email')}}: {{ userProfile.email }}
-                        <v-chip small color="primary">{{$t('primary')}}</v-chip>
-                      <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'email'" />
-                    </div>
-                    <div v-for="secondaryEmail in userProfile.secondary_emails" :key="secondaryEmail" class="mt-1">
-                      <EmailIcon /> {{$t('Email')}}: {{ secondaryEmail }}
-                        <v-chip small>{{$t('secondary')}}</v-chip>
-                      <DeleteIcon v-if="!editLoginMode || !intermediate" @click="removeSecondaryEmail(secondaryEmail)" />
-                      <v-progress-circular size="20" indeterminate v-if="intermediate" />
-                    </div>
+                  <div
+                    v-for="secondaryEmail in userProfile.secondary_emails"
+                    :key="secondaryEmail"
+                    class="mt-1"
+                  >
+                    <EmailIcon /> {{ $t('Email') }}: {{ secondaryEmail }}
+                    <v-chip small>{{ $t('secondary') }}</v-chip>
+                    <DeleteIcon
+                      v-if="!editLoginMode || !intermediate"
+                      @click="removeSecondaryEmail(secondaryEmail)"
+                    />
+                    <v-progress-circular size="20" indeterminate v-if="intermediate" />
                   </div>
                 </div>
+              </div>
 
-                <v-divider v-if="editLoginMode" class="mt-3 mb-2" />
-                <v-form v-if="editLoginMode === 'cellphone'">
-                  <ValidationProvider rules="phone_number_e164" v-slot="{ errors }" name="phone-number">
-                    <v-text-field :label="$t('Phone number')" type="text" v-model="phoneNumber" >
-                      <template v-slot:prepend><CellphoneIcon /></template>
-                    </v-text-field>
-                    <span class="error--text">{{ $t(errors[0]) }}</span>
-                  </ValidationProvider>
-
-                  <v-text-field v-model="verificationCode" name="verification-code"
-                                :label="$t('验证码')" type="text" v-show="showCodeInput">
-                      <template v-slot:prepend><VerifyCodeIcon /></template>
+              <v-divider v-if="editLoginMode" class="mt-3 mb-2" />
+              <v-form v-if="editLoginMode === 'cellphone'">
+                <ValidationProvider
+                  rules="phone_number_e164"
+                  v-slot="{ errors }"
+                  name="phone-number"
+                >
+                  <v-text-field :label="$t('Phone number')" type="text" v-model="phoneNumber">
+                    <template v-slot:prepend><CellphoneIcon /></template>
                   </v-text-field>
-                </v-form>
+                  <span class="error--text">{{ $t(errors[0]) }}</span>
+                </ValidationProvider>
 
-                <v-form v-if="editLoginMode === 'email' || editLoginMode === 'add_secondary_email'">
-                  <ValidationProvider rules="email" v-slot="{ errors }" name="email">
-                    <v-text-field :label="$t('Email')" type="text" v-model="newEmail">
-                      <template v-slot:prepend><EmailIcon /></template>
-                    </v-text-field>
-                    <span class="error--text">{{ $t(errors[0]) }}</span>
-                  </ValidationProvider>
+                <v-text-field
+                  v-model="verificationCode"
+                  name="verification-code"
+                  :label="$t('验证码')"
+                  type="text"
+                  v-show="showCodeInput"
+                >
+                  <template v-slot:prepend><VerifyCodeIcon /></template>
+                </v-text-field>
+              </v-form>
 
-                  <v-text-field v-model="verificationCode" name="verification-code"
-                                :label="$t('验证码')" type="text" v-show="showCodeInput">
-                      <template v-slot:prepend><VerifyCodeIcon /></template>
+              <v-form v-if="editLoginMode === 'email' || editLoginMode === 'add_secondary_email'">
+                <ValidationProvider rules="email" v-slot="{ errors }" name="email">
+                  <v-text-field :label="$t('Email')" type="text" v-model="newEmail">
+                    <template v-slot:prepend><EmailIcon /></template>
                   </v-text-field>
-                </v-form>
+                  <span class="error--text">{{ $t(errors[0]) }}</span>
+                </ValidationProvider>
+
+                <v-text-field
+                  v-model="verificationCode"
+                  name="verification-code"
+                  :label="$t('验证码')"
+                  type="text"
+                  v-show="showCodeInput"
+                >
+                  <template v-slot:prepend><VerifyCodeIcon /></template>
+                </v-text-field>
+              </v-form>
             </div>
             <v-card-actions>
               <v-spacer />
-              <v-btn small depressed @click="editLoginMode = 'add_secondary_email'" v-show="!editLoginMode">
-                {{$t('Add secondary email')}}
+              <v-btn
+                small
+                depressed
+                @click="editLoginMode = 'add_secondary_email'"
+                v-show="!editLoginMode"
+              >
+                {{ $t('Add secondary email') }}
               </v-btn>
-              <v-btn small depressed @click="editLoginMode = 'cellphone'" v-show="!editLoginMode && !phoneNumber">
-                {{$t('Add phone number')}}
+              <v-btn
+                small
+                depressed
+                @click="editLoginMode = 'cellphone'"
+                v-show="!editLoginMode && !phoneNumber"
+              >
+                {{ $t('Add phone number') }}
               </v-btn>
               <v-btn small depressed @click="editLoginMode = null" v-show="editLoginMode">
-                {{$t('Cancel')}}
+                {{ $t('Cancel') }}
               </v-btn>
 
-              <v-btn small depressed :color="!showVerifyCodeBtn ? 'primary': undefined"
-                     :disabled="verificationCodeDisabled || intermediate"
-                     @click="handleSubmit(sendVerificationCode)" v-show="editLoginMode">
-                {{$t('Send me verification code')}}
+              <v-btn
+                small
+                depressed
+                :color="!showVerifyCodeBtn ? 'primary' : undefined"
+                :disabled="verificationCodeDisabled || intermediate"
+                @click="handleSubmit(sendVerificationCode)"
+                v-show="editLoginMode"
+              >
+                {{ $t('Send me verification code') }}
                 <v-progress-circular size="20" indeterminate v-if="intermediate" />
               </v-btn>
 
-              <v-btn small depressed color="primary" @click="handleSubmit(verifyCode)" :disabled="intermediate"
-                     v-show="showVerifyCodeBtn && editLoginMode">
-                {{$t('Verify and save')}}
+              <v-btn
+                small
+                depressed
+                color="primary"
+                @click="handleSubmit(verifyCode)"
+                :disabled="intermediate"
+                v-show="showVerifyCodeBtn && editLoginMode"
+              >
+                {{ $t('Verify and save') }}
                 <v-progress-circular size="20" indeterminate v-if="intermediate" />
               </v-btn>
             </v-card-actions>
@@ -116,21 +182,23 @@
         </ValidationObserver>
 
         <v-card class="ma-3 pa-3" :loading="!userProfile">
-          <v-card-title>{{$t('Others')}}</v-card-title>
+          <v-card-title>{{ $t('Others') }}</v-card-title>
           <v-card-actions>
-            <v-btn small depressed @click="showSecurityLogs">{{$t('查看安全日志')}}</v-btn>
+            <v-btn small depressed @click="showSecurityLogs">{{ $t('查看安全日志') }}</v-btn>
           </v-card-actions>
         </v-card>
         <v-dialog v-model="showSecurityLogsDialog" max-width="600">
           <v-card :loading="auditLogs === null">
-            <v-card-title>{{$t('安全日志')}}</v-card-title>
+            <v-card-title>{{ $t('安全日志') }}</v-card-title>
             <v-card-text v-if="auditLogs">
               <v-data-table :items="auditLogs" :headers="auditLogHeaders" :items-per-page="10">
                 <template v-slot:item.created_at="{ item }">
-                  <span v-if="item.created_at">{{ $dayjs.utc(item.created_at).local().fromNow() }}</span>
+                  <span v-if="item.created_at">{{
+                    $dayjs.utc(item.created_at).local().fromNow()
+                  }}</span>
                 </template>
                 <template v-slot:item.api="{ item }">
-                  <span v-if="item.api === '/login/access-token'">{{$t('获取登录token')}}</span>
+                  <span v-if="item.api === '/login/access-token'">{{ $t('获取登录token') }}</span>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -143,8 +211,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { IUserProfileUpdate, IUserUpdateLoginPhoneNumber, IUserUpdateSecondaryEmails,
-IUserUpdatePrimaryEmail, IVerificationCodeRequest, IAuditLog } from '@/interfaces';
+import {
+  IUserProfileUpdate,
+  IUserUpdateLoginPhoneNumber,
+  IUserUpdateSecondaryEmails,
+  IUserUpdatePrimaryEmail,
+  IVerificationCodeRequest,
+  IAuditLog,
+} from '@/interfaces';
 import { readUserProfile } from '@/store/main/getters';
 import { dispatchUpdateUserProfile } from '@/store/main/actions';
 import { dispatchCaptureApiError } from '@/store/main/actions';
@@ -158,10 +232,15 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 
 @Component({
-  components: { VerifyCodeIcon, CellphoneIcon, EmailIcon, EditIcon, DeleteIcon },
+  components: {
+    VerifyCodeIcon,
+    CellphoneIcon,
+    EmailIcon,
+    EditIcon,
+    DeleteIcon,
+  },
 })
 export default class Security extends Vue {
-
   get userProfile() {
     return readUserProfile(this.$store);
   }
@@ -186,7 +265,6 @@ export default class Security extends Vue {
     { text: this.$t('IP'), value: 'ipaddr' },
   ];
 
-
   private auditLogs: IAuditLog[] | null = null;
 
   private async sendVerificationCode() {
@@ -195,15 +273,18 @@ export default class Security extends Vue {
     }
     if (this.editLoginMode === 'cellphone' && !this.phoneNumber) {
       commitAddNotification(this.$store, {
-          content: this.$t('电话号码为空').toString(),
-          color: 'error',
+        content: this.$t('电话号码为空').toString(),
+        color: 'error',
       });
       return;
     }
-    if ((this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') && !this.newEmail) {
+    if (
+      (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') &&
+      !this.newEmail
+    ) {
       commitAddNotification(this.$store, {
-          content: this.$t('电子邮件地址为空').toString(),
-          color: 'error',
+        content: this.$t('电子邮件地址为空').toString(),
+        color: 'error',
       });
       return;
     }
@@ -212,61 +293,61 @@ export default class Security extends Vue {
     this.intermediate = true;
 
     await dispatchCaptureApiError(this.$store, async () => {
-        const payload: IVerificationCodeRequest = {};
-        if (this.editLoginMode === 'cellphone') {
-          payload.phone_number = this.phoneNumber!;
-        }
-        if (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') {
-          payload.email = this.newEmail!;
-        }
-        const response = await api.sendVerificationCode(payload);
-        if (response) {
-            commitAddNotification(this.$store, {
-                content: response.data.msg,
-                color: 'success',
-            });
-            this.showVerifyCodeBtn = true;
-            this.showCodeInput = true;
-            this.verificationCodeDisabled = true;
-        }
-        this.intermediate = false;
+      const payload: IVerificationCodeRequest = {};
+      if (this.editLoginMode === 'cellphone') {
+        payload.phone_number = this.phoneNumber!;
+      }
+      if (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') {
+        payload.email = this.newEmail!;
+      }
+      const response = await api.sendVerificationCode(payload);
+      if (response) {
+        commitAddNotification(this.$store, {
+          content: response.data.msg,
+          color: 'success',
+        });
+        this.showVerifyCodeBtn = true;
+        this.showCodeInput = true;
+        this.verificationCodeDisabled = true;
+      }
+      this.intermediate = false;
     });
   }
 
   private async verifyCode() {
     await dispatchCaptureApiError(this.$store, async () => {
-        this.intermediate = true;
-        let response;
-        if (this.editLoginMode === 'cellphone') {
-          const payload: IUserUpdateLoginPhoneNumber = {
-            verification_code: this.verificationCode,
-            phone_number: this.phoneNumber!,
-          };
-          response = await apiMe.updatePhoneNumber(this.$store.state.main.token, payload);
-        } else if (this.editLoginMode === 'email') {
-          const payload: IUserUpdatePrimaryEmail = {
-            email: this.newEmail!,
-            verification_code: this.verificationCode,
-          };
-          response = await apiMe.updatePrimaryEmail(this.$store.state.main.token, payload);
-        } else if (this.editLoginMode === 'add_secondary_email') {
-          const payload: IUserUpdateSecondaryEmails = {
-            secondary_email: this.newEmail!,
-            action: 'add',
-            verification_code: this.verificationCode,
-          };
-          response = await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload);
-        }
-        if (response) {
-            commitAddNotification(this.$store, {
-                content: this.$t('更新成功').toString(),
-                color: 'success',
-            });
-            commitSetUserProfile(this.$store, response.data);
-            this.showVerifyCodeBtn = false;
-            this.editLoginMode = null;
-        }
-        this.intermediate = false;
+      this.intermediate = true;
+      let response;
+      if (this.editLoginMode === 'cellphone') {
+        const payload: IUserUpdateLoginPhoneNumber = {
+          verification_code: this.verificationCode,
+          phone_number: this.phoneNumber!,
+        };
+        response = await apiMe.updatePhoneNumber(this.$store.state.main.token, payload);
+      } else if (this.editLoginMode === 'email') {
+        const payload: IUserUpdatePrimaryEmail = {
+          email: this.newEmail!,
+          verification_code: this.verificationCode,
+        };
+        response = await apiMe.updatePrimaryEmail(this.$store.state.main.token, payload);
+      } else if (this.editLoginMode === 'add_secondary_email') {
+        const payload: IUserUpdateSecondaryEmails = {
+          secondary_email: this.newEmail!,
+          action: 'add',
+          verification_code: this.verificationCode,
+        };
+        response = await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload);
+      }
+      if (response) {
+        commitAddNotification(this.$store, {
+          content: this.$t('更新成功').toString(),
+          color: 'success',
+        });
+        commitSetUserProfile(this.$store, response.data);
+        this.showVerifyCodeBtn = false;
+        this.editLoginMode = null;
+      }
+      this.intermediate = false;
     });
   }
 
@@ -277,10 +358,11 @@ export default class Security extends Vue {
         secondary_email: email,
         action: 'remove',
       };
-      const newProfile = (await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload)).data;
+      const newProfile = (await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload))
+        .data;
       commitAddNotification(this.$store, {
-          content: this.$t('更新成功').toString(),
-          color: 'success',
+        content: this.$t('更新成功').toString(),
+        color: 'success',
       });
       commitSetUserProfile(this.$store, newProfile);
       this.intermediate = false;

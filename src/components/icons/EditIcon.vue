@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiPencil } from '@mdi/js'
+import { mdiPencil } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiPencil
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiPencil,
+  }),
+};
 </script>

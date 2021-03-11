@@ -4,32 +4,45 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <ValidationObserver v-slot="{ handleSubmit }">
-          <v-card class="elevation-12">
-            <v-toolbar dark color="primary">
-              <v-toolbar-title>{{appName}} - {{$t('Password Recovery')}}</v-toolbar-title>
-              <v-spacer />
-              <LangPicker />
-            </v-toolbar>
-            <v-card-text>
-              <p class="subheading">{{$t('A password recovery email will be sent to the registered account')}}</p>
-                <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
+            <v-card class="elevation-12">
+              <v-toolbar dark color="primary">
+                <v-toolbar-title>{{ appName }} - {{ $t('Password Recovery') }}</v-toolbar-title>
+                <v-spacer />
+                <LangPicker />
+              </v-toolbar>
+              <v-card-text>
+                <p class="subheading">
+                  {{ $t('A password recovery email will be sent to the registered account') }}
+                </p>
+                <v-form
+                  @keyup.enter="submit"
+                  v-model="valid"
+                  ref="form"
+                  @submit.prevent=""
+                  lazy-validation
+                >
                   <ValidationProvider name="email" rules="required|email" v-slot="{ errors }">
-                    <v-text-field @keyup.enter="handleSubmit(submit)" :label="$t('Email')"
-                                  type="text" v-model="email" required>
+                    <v-text-field
+                      @keyup.enter="handleSubmit(submit)"
+                      :label="$t('Email')"
+                      type="text"
+                      v-model="email"
+                      required
+                    >
                       <template v-slot:prepend><AccountIcon /></template>
                     </v-text-field>
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn @click="cancel">{{$t('Cancel')}}</v-btn>
-              <v-btn @click.prevent="handleSubmit(submit)" :disabled="!valid" color="primary">
-                {{$t('Send')}}
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn @click="cancel">{{ $t('Cancel') }}</v-btn>
+                <v-btn @click.prevent="handleSubmit(submit)" :disabled="!valid" color="primary">
+                  {{ $t('Send') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
           </ValidationObserver>
         </v-flex>
       </v-layout>
@@ -64,5 +77,4 @@ export default class Login extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

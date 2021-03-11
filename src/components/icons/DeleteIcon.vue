@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiDeleteForever } from '@mdi/js'
+import { mdiDeleteForever } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiDeleteForever
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiDeleteForever,
+  }),
+};
 </script>

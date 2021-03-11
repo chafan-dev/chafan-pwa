@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiArrowCollapseUp } from '@mdi/js'
+import { mdiArrowCollapseUp } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiArrowCollapseUp
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiArrowCollapseUp,
+  }),
+};
 </script>

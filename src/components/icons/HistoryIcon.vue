@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiHistory } from '@mdi/js'
+import { mdiHistory } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiHistory
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiHistory,
+  }),
+};
 </script>

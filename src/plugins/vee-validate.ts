@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {ValidationProvider, ValidationObserver, extend} from 'vee-validate';
+import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 
 extend('password1', {
   params: ['target'],
@@ -15,7 +15,6 @@ extend('password', {
   },
   message: 'Password must be between 8 and 30 characters long.',
 });
-
 
 extend('url', {
   validate(value: string) {

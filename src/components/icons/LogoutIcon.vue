@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiClose } from '@mdi/js'
+import { mdiClose } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiClose
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiClose,
+  }),
+};
 </script>

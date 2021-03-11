@@ -1,8 +1,8 @@
 <template>
-    <div ref="vditorViewer" :class="{'vditor-viewer-desktop': $vuetify.breakpoint.mdAndUp}">
-        <div class="vditor-viewer" />
-        <LightboxGroup ref="lightbox" />
-    </div>
+  <div ref="vditorViewer" :class="{ 'vditor-viewer-desktop': $vuetify.breakpoint.mdAndUp }">
+    <div class="vditor-viewer" />
+    <LightboxGroup ref="lightbox" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -12,25 +12,21 @@ import LightboxGroup from '@/components/LightboxGroup.vue';
 import { vditorCDN } from '@/common';
 
 @Component({
-    components: { LightboxGroup }
+  components: { LightboxGroup },
 })
 export default class Viewer extends Vue {
-    @Prop() public readonly body!: string;
+  @Prop() public readonly body!: string;
 
-    private mounted() {
-        Vditor.preview(
-            this.$el as HTMLDivElement,
-            this.body,
-            {
-                mode: 'light',
-                cdn: vditorCDN,
-                after: () => {
-                    const lightbox = this.$refs.lightbox as LightboxGroup;
-                    lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
-                }
-            },
-        );
-    }
+  private mounted() {
+    Vditor.preview(this.$el as HTMLDivElement, this.body, {
+      mode: 'light',
+      cdn: vditorCDN,
+      after: () => {
+        const lightbox = this.$refs.lightbox as LightboxGroup;
+        lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+      },
+    });
+  }
 }
 </script>
 
@@ -47,6 +43,6 @@ export default class Viewer extends Vue {
 
 <style scoped>
 .vditor-reset a {
-    text-decoration: none !important;
+  text-decoration: none !important;
 }
 </style>
