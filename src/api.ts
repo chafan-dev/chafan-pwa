@@ -152,10 +152,13 @@ export const api = {
       authHeaders(token)
     );
   },
-  async getSiteSubmissions(token: string, uuid: string) {
+  async getSiteSubmissions(token: string, uuid: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
     return axios.get<ISubmission[]>(
       `${apiUrl}/api/v1/sites/${uuid}/submissions/`,
-      authHeaders(token)
+      authHeadersWithParams(token, params)
     );
   },
   async createSite(token: string, payload: ISiteCreate) {
