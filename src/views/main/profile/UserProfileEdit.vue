@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <ValidationObserver v-slot="{ handleSubmit, reset }">
@@ -9,7 +9,9 @@
                 {{ $t('Edit User Profile') }}
               </div>
               <v-spacer></v-spacer
-              ><v-btn :to="`/users/${userProfile.handle}`">{{ $t('我的个人页面') }}</v-btn>
+              ><v-btn depressed small :to="`/users/${userProfile.handle}`">{{
+                $t('我的个人页面')
+              }}</v-btn>
             </v-card-title>
             <div class="pa-4">
               <template>
@@ -40,7 +42,7 @@
                       />
                       <div class="text-center">
                         <span class="text-caption">{{ $t('点击更改默认头像') }}</span>
-                        <v-btn x-small @click="showGifAvatar = !showGifAvatar">{{
+                        <v-btn x-small depressed @click="showGifAvatar = !showGifAvatar">{{
                           $t('添加额外的 GIF 头像')
                         }}</v-btn>
                       </div>
@@ -113,6 +115,7 @@
                             ><v-btn
                               class="ml-2"
                               small
+                              depressed
                               color="warning"
                               @click="removeEduExp(index)"
                               >{{ $t('删除') }}</v-btn
@@ -130,10 +133,15 @@
                               :label="$t('教育水平')"
                             />
                           </v-col>
-                          <v-col
-                            ><v-btn class="ma-2" color="primary" @click="addNewEduExp">{{
-                              $t('确认添加')
-                            }}</v-btn></v-col
+                          <v-col align-self="center"
+                            ><v-btn
+                              small
+                              depressed
+                              class="ma-2"
+                              color="primary"
+                              @click="addNewEduExp"
+                              >{{ $t('确认添加') }}</v-btn
+                            ></v-col
                           >
                         </v-row>
                       </div>
@@ -147,6 +155,7 @@
                             ><v-btn
                               class="ma-2"
                               small
+                              depressed
                               color="warning"
                               @click="removeWorkExp(index)"
                               >{{ $t('删除') }}</v-btn
@@ -160,10 +169,15 @@
                           <v-col
                             ><v-text-field v-model="newWorkExpPositionName" :label="$t('职位名')"
                           /></v-col>
-                          <v-col
-                            ><v-btn class="ma-2" color="primary" @click="addNewWorkExp">{{
-                              $t('确认添加')
-                            }}</v-btn></v-col
+                          <v-col align-self="center"
+                            ><v-btn
+                              small
+                              depressed
+                              class="ma-2"
+                              color="primary"
+                              @click="addNewWorkExp"
+                              >{{ $t('确认添加') }}</v-btn
+                            ></v-col
                           >
                         </v-row>
                       </div>

@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="moderatedSites">
+  <v-container v-if="moderatedSites" fluid>
     <v-progress-linear v-if="loading" indeterminate />
     <v-tabs>
       <v-tabs-slider />
