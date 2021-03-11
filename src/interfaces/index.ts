@@ -152,6 +152,7 @@ export interface ISiteUpdate {
   auto_approval?: boolean;
   min_karma_for_application?: number;
   email_domain_suffix_for_application?: string;
+  moderator_uuid?: string;
 }
 
 export interface ISite {

@@ -194,6 +194,19 @@
               >
             </v-card-actions>
           </v-card>
+
+          <v-card class="ma-3">
+            <v-card-title>转移管理权限</v-card-title>
+            <v-card-text>
+              转移给：<UserSearch :token="myToken" v-model="transferToNewAdminUUID" />
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn small depressed color="warning" @click="submitTransferToNewAdmin"
+                >确认（不可撤销）</v-btn
+              >
+            </v-card-actions>
+          </v-card>
         </template>
         <div class="ma-2" v-else>Please select a circle.</div>
       </v-tab-item>
@@ -268,6 +281,8 @@ export default class Moderation extends Vue {
   private siteConfigUpdate: ISiteUpdate = {};
 
   private broadcastSubmissionLink = '';
+  private myToken: string | null = null;
+  private transferToNewAdminUUID: string | null = null;
 
   get token() {
     return this.$store.state.main.token;
@@ -290,6 +305,7 @@ export default class Moderation extends Vue {
       }
     }
     this.onSiteSelected();
+    this.myToken = this.$store.state.main.token;
     this.loading = false;
   }
 
@@ -399,6 +415,15 @@ export default class Moderation extends Vue {
       });
       this.broadcastSubmissionLink = '';
     });
+  }
+
+  private async submitTransferToNewAdmin() {
+    if (this.selectedSite && this.transferToNewAdminUUID) {
+      await api.updateSiteConfig(this.token, this.selectedSite.uuid, {
+        moderator_uuid: this.transferToNewAdminUUID,
+      });
+      this.$router.go(0);
+    }
   }
 }
 </script>
