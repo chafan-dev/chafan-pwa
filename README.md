@@ -77,8 +77,18 @@ yarn run test
 
 ### Lints and fixes files
 
+Checks:
+
 ```
-yarn run lint
+yarn run check:eslint
+yarn run check:prettier
+```
+
+Fixes all:
+
+```
+yarn run eslint --fix .
+yarn run prettier -w .
 ```
 
 ### Run your unit tests

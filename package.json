@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
+    "check:eslint": "eslint .",
+    "check:prettier": "prettier -c .",
     "analyze": "source-map-explorer 'dist/js/*.js' --no-border-checks"
   },
   "dependencies": {
