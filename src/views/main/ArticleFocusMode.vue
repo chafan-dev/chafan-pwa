@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="!loading">
+  <v-container v-if="!loading" fluid>
     <v-row class="mb-12" justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <RichEditor

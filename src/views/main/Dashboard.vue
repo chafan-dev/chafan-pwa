@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row justify="center">
       <v-col :class="{ 'col-10': $vuetify.breakpoint.mdAndUp }" fluid>
         <div class="ma-3 d-flex">

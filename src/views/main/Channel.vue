@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-progress-linear v-if="loading" indeterminate />
     <v-row class="mb-12" justify="center" v-else>
       <v-col :class="{ 'col-6': $vuetify.breakpoint.mdAndUp }" fluid>

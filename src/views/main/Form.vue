@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row v-if="!loading" class="mb-12" justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <div v-if="!showResponse">
