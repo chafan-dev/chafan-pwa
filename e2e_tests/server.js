@@ -596,7 +596,9 @@ for (const site of randomSites) {
     res.json([example_question_preview].concat(randomQuestionPreviews).slice(skip, skip + limit));
   });
   app.get(`/api/v1/sites/${site.uuid}/submissions/`, (req, res) => {
-    res.json([example_user1_submission1]);
+    const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    res.json([example_user1_submission1].slice(skip, skip + limit));
   });
 }
 
