@@ -26,7 +26,7 @@ export default class DynamicContentList<T> extends Vue {
   @Prop({ default: 10 }) public readonly pageLimit!: number;
   @Prop() public readonly emptyItemsText!: string;
   @Prop() public readonly nullItemsText!: string;
-  @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<T[]>;
+  @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<T[] | null>;
 
   private items: T[] | null = null;
 
@@ -55,7 +55,7 @@ export default class DynamicContentList<T> extends Vue {
 
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
-    if (newItems.length > 0) {
+    if (newItems && newItems.length > 0) {
       if (this.items) {
         this.items.push(...newItems);
       } else {

@@ -40,20 +40,14 @@
           </v-tab-item>
 
           <v-tab-item value="submissions">
-            <div v-if="submissions !== null && submissions.length > 0">
-              <SubmissionCard
-                v-for="submission in submissions"
-                :key="submission.uuid"
-                class="my-4"
-                :submission="submission"
-              />
-            </div>
-            <div class="my-4 text-center" v-else-if="submissions !== null">
-              {{ $t('No submissions for now') }}
-            </div>
-            <div class="my-4 text-center" v-else>
-              {{ $t('Only site members can view its content.') }}
-            </div>
+            <DynamicItemList
+              emptyItemsText="No submissions for now"
+              nullItemsText="Only site members can view its content."
+              :loadItems="loadSubmissions"
+              v-slot="{ item }"
+            >
+              <SubmissionCard :submission="item" />
+            </DynamicItemList>
             <div class="my-4 text-center" v-if="!userProfile">
               {{ $t('登录后查看更多') }}
             </div>
@@ -216,7 +210,6 @@ export default class Site extends Vue {
             }
           );
         }
-        this.submissions = (await api.getSiteSubmissions(this.token, this.site.uuid)).data;
       }
       if (this.siteProfile !== null || this.site.public_writable_question) {
         this.showQuestionEditor = true;
@@ -229,12 +222,26 @@ export default class Site extends Vue {
   }
 
   private async loadQuestions(skip: number, limit: number) {
-    let items: IQuestionPreview[] = [];
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.site) {
-        items = (await api.getSiteQuestions(this.token, this.site.uuid, skip, limit)).data;
-      }
-    });
+    let items: IQuestionPreview[] | null = null;
+    if (this.siteProfile !== null || (this.site && this.site.public_readable)) {
+      await dispatchCaptureApiError(this.$store, async () => {
+        if (this.site) {
+          items = (await api.getSiteQuestions(this.token, this.site.uuid, skip, limit)).data;
+        }
+      });
+    }
+    return items;
+  }
+
+  private async loadSubmissions(skip: number, limit: number) {
+    let items: ISubmission[] | null = null;
+    if (this.siteProfile !== null || (this.site && this.site.public_readable)) {
+      await dispatchCaptureApiError(this.$store, async () => {
+        if (this.site) {
+          items = (await api.getSiteSubmissions(this.token, this.site.uuid, skip, limit)).data;
+        }
+      });
+    }
     return items;
   }
 }
