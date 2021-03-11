@@ -15,31 +15,57 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
+    node: true,
   },
+
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:vue/essential',
+    '@vue/typescript/recommended',
+    // '@vue/prettier',
+    // '@vue/prettier/@typescript-eslint',
 
     // TODO: Add more recommended rules
     // 'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
-  parser: '@typescript-eslint/parser',
+
+  parser: 'vue-eslint-parser',
+
   parserOptions: {
+    parser: '@typescript-eslint/parser',
     project: 'tsconfig.json',
     sourceType: 'module',
+    ecmaVersion: 2020,
+    extraFileExtensions: ['.vue'],
   },
+
   plugins: ['@typescript-eslint'],
+
   rules: {
-    // These rules are turned off because they would block some current code from compiling.
-    // Remember to turn them back on after everything settles down.
-    '@typescript-eslint/no-unsafe-call': 0,
-    '@typescript-eslint/no-unsafe-member-access': 0,
-    '@typescript-eslint/explicit-module-boundary-types': 0,
-    '@typescript-eslint/no-empty-interface': 1,
-    '@typescript-eslint/no-explicit-any': 0,
-    '@typescript-eslint/no-non-null-assertion': 0,
-    'no-useless-escape': 1,
-    '@typescript-eslint/no-empty-function': 1,
-    'no-control-regex': 1,
+    '@typescript-eslint/no-unsafe-call': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-empty-interface': 'warn',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    'no-useless-escape': 'warn',
+    '@typescript-eslint/no-empty-function': 'warn',
+    'no-control-regex': 'warn',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    'no-empty': 'off',
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
+
+  root: true,
+
+  overrides: [
+    {
+      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };

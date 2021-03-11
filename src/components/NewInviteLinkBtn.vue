@@ -8,7 +8,7 @@
         <v-card-title>
           <span class="headline">{{ $t('生成邀请链接') }}</span>
         </v-card-title>
-        <v-card-text>
+        <v-card-text v-if="!invitationLinkHref">
           <div v-if="!site" class="mt-3">
             <v-autocomplete
               :items="sites"
@@ -23,6 +23,12 @@
           </div>
           <div v-else>{{ $t('加入圈子：') }} <SiteBtn :site="site" /></div>
         </v-card-text>
+        <div v-if="invitationLinkHref" class="body-1 mx-6">
+          <p class="black--text">{{ $t('✅ 未注册用户可直接通过以下链接进入注册界面') }}:</p>
+          <a class="text-decoration-none ml-1" :href="invitationLinkHref" target="_blank"
+            >https://cha.fan{{ invitationLinkHref }}</a
+          >
+        </div>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -31,6 +37,7 @@
             @click="createInvitationLink"
             :disabled="intermediate"
             color="primary"
+            v-if="!invitationLinkHref"
           >
             {{ $t('生成邀请链接') }}
             <v-progress-circular size="20" v-if="intermediate" indeterminate />
@@ -98,6 +105,7 @@ export default class Invite extends Vue {
     }
   }
 
+  private invitationLinkHref: string | null = null;
   private async createInvitationLink() {
     const payload: IInvitationLinkCreate = {};
     if (this.site !== undefined) {
@@ -107,10 +115,7 @@ export default class Invite extends Vue {
     }
     const invitationLink = (await api.createInvitationLink(this.$store.state.main.token, payload))
       .data;
-    let routeData = this.$router.resolve({
-      path: `/invitation-links/${invitationLink.uuid}`,
-    });
-    window.open(routeData.href, '_blank');
+    this.invitationLinkHref = `/invitation-links/${invitationLink.uuid}`;
   }
 }
 </script>
