@@ -16,13 +16,13 @@ module.exports = {
           mangle: {
             keep_fnames: true,
           },
-        },
+        }
       );
       config.plugins.push(
         new webpack.ContextReplacementPlugin(
           /highlight\.js\/lib\/languages$/,
-          new RegExp(`^./(${['javascript', 'python', 'bash'].join('|')})$`),
-        ),
+          new RegExp(`^./(${['javascript', 'python', 'bash'].join('|')})$`)
+        )
       );
       config.performance = {
         maxEntrypointSize: 512000,
@@ -32,19 +32,21 @@ module.exports = {
       config.devtool = 'source-map';
     }
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.module
       .rule('vue')
       .use('vue-loader')
       .loader('vue-loader')
-      .tap(options => Object.assign(options, {
-        transformAssetUrls: {
-          'v-img': ['src', 'lazy-src'],
-          'v-card': 'src',
-          'v-card-media': 'src',
-          'v-responsive': 'src',
-        }
-      }));
+      .tap((options) =>
+        Object.assign(options, {
+          transformAssetUrls: {
+            'v-img': ['src', 'lazy-src'],
+            'v-card': 'src',
+            'v-card-media': 'src',
+            'v-responsive': 'src',
+          },
+        })
+      );
   },
   pwa: {
     workboxPluginMode: 'GenerateSW',
@@ -54,6 +56,6 @@ module.exports = {
     },
   },
   devServer: {
-    disableHostCheck: true
-  }
-}
+    disableHostCheck: true,
+  },
+};

@@ -1,18 +1,24 @@
 <template>
   <div>
-    <v-navigation-drawer temporary :mini-variant="miniDrawer"
-                         v-model="showDrawer" fixed app v-if="userProfile">
+    <v-navigation-drawer
+      temporary
+      :mini-variant="miniDrawer"
+      v-model="showDrawer"
+      fixed
+      app
+      v-if="userProfile"
+    >
       <v-layout column fill-height>
         <v-list>
           <v-subheader>
-            {{$t('Main menu')}}
+            {{ $t('Main menu') }}
           </v-subheader>
           <v-list-item to="/">
             <v-list-item-action>
               <HomeIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{$t('Home')}}</v-list-item-title>
+              <v-list-item-title>{{ $t('Home') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/dashboard">
@@ -20,7 +26,7 @@
               <DashboardIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{$t('Dashboard')}}</v-list-item-title>
+              <v-list-item-title>{{ $t('Dashboard') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/profile/edit">
@@ -28,7 +34,7 @@
               <EditIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{$t('Edit Profile')}}</v-list-item-title>
+              <v-list-item-title>{{ $t('Edit Profile') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/security">
@@ -36,7 +42,7 @@
               <PasswordIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{$t('Security')}}</v-list-item-title>
+              <v-list-item-title>{{ $t('Security') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -63,7 +69,7 @@
               <LogoutIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{$t('Logout')}}</v-list-item-title>
+              <v-list-item-title>{{ $t('Logout') }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -72,13 +78,19 @@
     <v-app-bar dark color="primary">
       <div class="d-flex justify-space-between app-bar-inner">
         <div class="d-flex align-center">
-          <v-app-bar-nav-icon @click="switchShowDrawer" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }" v-if="userProfile" />
+          <v-app-bar-nav-icon
+            @click="switchShowDrawer"
+            :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+            v-if="userProfile"
+          />
           <div v-if="$vuetify.breakpoint.mdAndUp">
-            <router-link class="white--text title text-decoration-none" to="/">{{appName}}</router-link>
+            <router-link class="white--text title text-decoration-none" to="/">{{
+              appName
+            }}</router-link>
           </div>
 
           <v-btn icon v-else to="/" active-class="opacity-none">
-            <HomeIcon/>
+            <HomeIcon />
           </v-btn>
         </div>
 
@@ -90,28 +102,46 @@
           <LangPicker />
 
           <!-- Notifications -->
-          <v-menu :close-on-content-click="false" left
-                  :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
-                  :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)" v-if="userProfile"
-                  offset-y
-                  transition="slide-x-transition">
+          <v-menu
+            :close-on-content-click="false"
+            left
+            :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
+            :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
+            v-if="userProfile"
+            offset-y
+            transition="slide-x-transition"
+          >
             <template v-slot:activator="{ on, attrs }">
-                <v-btn dark icon v-bind="attrs" v-on="on" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }">
-                  <v-badge color="green" :content="unreadNotifications.length" v-if="unreadNotifications.length > 0">
-                    <NotificationIcon />
-                  </v-badge>
-                  <NotificationIcon v-else />
-                </v-btn>
+              <v-btn
+                dark
+                icon
+                v-bind="attrs"
+                v-on="on"
+                :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+              >
+                <v-badge
+                  color="green"
+                  :content="unreadNotifications.length"
+                  v-if="unreadNotifications.length > 0"
+                >
+                  <NotificationIcon />
+                </v-badge>
+                <NotificationIcon v-else />
+              </v-btn>
             </template>
 
             <v-card>
-              <v-sheet class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1">
+              <v-sheet
+                class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1"
+              >
                 <v-subheader class="font-weight-bold">
-                  {{$t('未读通知')}}
+                  {{ $t('未读通知') }}
                 </v-subheader>
 
                 <div class="mr-1">
-                  <v-btn depressed small @click="readAllNotifs"><MuteNotificationIcon /> {{$t('Read all')}}</v-btn>
+                  <v-btn depressed small @click="readAllNotifs"
+                    ><MuteNotificationIcon /> {{ $t('Read all') }}</v-btn
+                  >
                 </div>
               </v-sheet>
 
@@ -120,14 +150,19 @@
                   <template v-for="(notif, idx) in unreadNotifications">
                     <v-divider :key="'divider-' + notif.id" class="ma-1" v-if="idx" />
 
-                    <v-list-item :key="notif.id" >
+                    <v-list-item :key="notif.id">
                       <Event :event="notif.event" v-if="notif.event" />
                       <v-spacer />
                       <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
                     </v-list-item>
                   </template>
                   <div class="text-center mt-2">
-                    <v-btn small depressed :disabled="readNotificationsIntermediate" @click="expandReadNotifications">
+                    <v-btn
+                      small
+                      depressed
+                      :disabled="readNotificationsIntermediate"
+                      @click="expandReadNotifications"
+                    >
                       {{ $t('已读通知') }}
                     </v-btn>
                   </div>
@@ -139,23 +174,27 @@
           <v-dialog v-model="showReadNotifications">
             <v-list>
               <v-card-title primary-title>
-                <div class="headline primary--text">{{$t('已读通知')}}</div>
+                <div class="headline primary--text">{{ $t('已读通知') }}</div>
               </v-card-title>
-              <v-list-item v-for="notif in readNotifications" :key="notif.id" >
-                  <Event :event="notif.event" v-if="notif.event" />
+              <v-list-item v-for="notif in readNotifications" :key="notif.id">
+                <Event :event="notif.event" v-if="notif.event" />
               </v-list-item>
             </v-list>
           </v-dialog>
 
           <v-btn @click="showLoginPrompt" depressed outlined v-if="!userProfile">
-            {{$t('Login')}}
+            {{ $t('Login') }}
           </v-btn>
 
           <!-- ... menu -->
-          <v-menu left v-if="userProfile" offset-y
-                  transition="slide-x-transition">
+          <v-menu left v-if="userProfile" offset-y transition="slide-x-transition">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on" :class="{'thin-btn': !$vuetify.breakpoint.mdAndUp }">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+              >
                 <Avatar :userPreview="userProfile" v-if="userProfile && userProfile.avatar_url" />
                 <AccountIcon v-else />
               </v-btn>
@@ -163,18 +202,16 @@
 
             <v-list dense>
               <v-list-item to="/dashboard">
-                <v-list-item-title><DashboardIcon /> {{$t('Dashboard')}}</v-list-item-title>
+                <v-list-item-title><DashboardIcon /> {{ $t('Dashboard') }}</v-list-item-title>
               </v-list-item>
               <v-list-item :href="`/users/${userProfile.handle}`">
-                <v-list-item-title><ProfileIcon /> {{$t('我的个人页面')}}</v-list-item-title>
+                <v-list-item-title><ProfileIcon /> {{ $t('我的个人页面') }}</v-list-item-title>
               </v-list-item>
               <v-list-item href="mailto:contact@cha.fan">
-                <v-list-item-title>
-                  <EmailIcon /> {{ $t('联系我们') }}
-                </v-list-item-title>
+                <v-list-item-title> <EmailIcon /> {{ $t('联系我们') }} </v-list-item-title>
               </v-list-item>
               <v-list-item @click="logout">
-                <v-list-item-title><LogoutIcon /> {{$t('Logout')}}</v-list-item-title>
+                <v-list-item-title><LogoutIcon /> {{ $t('Logout') }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -191,10 +228,20 @@
 import { Vue, Component } from 'vue-property-decorator';
 
 import { appName, wsUrl } from '@/env';
-import { readDashboardMiniDrawer, readHasModeratedSites, readDashboardShowDrawer,
-readUserProfile, readModeratedSites, readUserMode } from '@/store/main/getters';
-import { commitSetDashboardShowDrawer, commitSetDashboardMiniDrawer,
-commitSetUserMode, commitSetShowLoginPrompt } from '@/store/main/mutations';
+import {
+  readDashboardMiniDrawer,
+  readHasModeratedSites,
+  readDashboardShowDrawer,
+  readUserProfile,
+  readModeratedSites,
+  readUserMode,
+} from '@/store/main/getters';
+import {
+  commitSetDashboardShowDrawer,
+  commitSetDashboardMiniDrawer,
+  commitSetUserMode,
+  commitSetShowLoginPrompt,
+} from '@/store/main/mutations';
 import { dispatchUserLogOut } from '@/store/main/actions';
 
 import ProfileIcon from '@/components/icons/ProfileIcon.vue';
@@ -232,12 +279,23 @@ const routeGuardMain = async (to, from, next) => {
   components: {
     CreateQuestionForm,
     AccountIcon,
-    LangPicker, SearchBox, Event, Avatar, EditIcon, PasswordIcon, EmailIcon,
-    ProfileIcon, MenuIcon, MuteNotificationIcon, NotificationIcon, LogoutIcon, DashboardIcon, HomeIcon,
+    LangPicker,
+    SearchBox,
+    Event,
+    Avatar,
+    EditIcon,
+    PasswordIcon,
+    EmailIcon,
+    ProfileIcon,
+    MenuIcon,
+    MuteNotificationIcon,
+    NotificationIcon,
+    LogoutIcon,
+    DashboardIcon,
+    HomeIcon,
   },
 })
 export default class Main extends Vue {
-
   get miniDrawer() {
     return readDashboardMiniDrawer(this.$store);
   }
@@ -279,11 +337,11 @@ export default class Main extends Vue {
     this.userMode = readUserMode(this.$store);
     if (this.userProfile) {
       const sites = readModeratedSites(this.$store);
-      this.isModerator = (sites !== null && sites.length > 0);
+      this.isModerator = sites !== null && sites.length > 0;
       await dispatchCaptureApiError(this.$store, async () => {
         const notifs = (await api.getUnreadNotifications(this.$store.state.main.token)).data;
         if (notifs) {
-            notifs.forEach((notif) => {
+          notifs.forEach((notif) => {
             if (notif !== null) {
               this.unreadNotifications.push(notif);
             }
@@ -336,7 +394,9 @@ export default class Main extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.readNotifications === null) {
         this.readNotificationsIntermediate = true;
-        this.readNotifications = (await api2.getReadNotifications(this.$store.state.main.token)).data;
+        this.readNotifications = (
+          await api2.getReadNotifications(this.$store.state.main.token)
+        ).data;
         this.readNotificationsIntermediate = false;
       }
       this.showReadNotifications = !this.showReadNotifications;
@@ -352,17 +412,11 @@ export default class Main extends Vue {
   }
 
   private switchShowDrawer() {
-    commitSetDashboardShowDrawer(
-      this.$store,
-      !readDashboardShowDrawer(this.$store),
-    );
+    commitSetDashboardShowDrawer(this.$store, !readDashboardShowDrawer(this.$store));
   }
 
   private switchMiniDrawer() {
-    commitSetDashboardMiniDrawer(
-      this.$store,
-      !readDashboardMiniDrawer(this.$store),
-    );
+    commitSetDashboardMiniDrawer(this.$store, !readDashboardMiniDrawer(this.$store));
   }
 
   private async logout() {
@@ -384,10 +438,10 @@ export default class Main extends Vue {
 }
 
 .slim-btn {
-    padding: 0 8px !important;
+  padding: 0 8px !important;
 }
 .thin-btn {
-    max-width: 35px !important;
+  max-width: 35px !important;
 }
 .app-bar-inner {
   width: 100%;

@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiLinkedin } from '@mdi/js'
+import { mdiLinkedin } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiLinkedin
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiLinkedin,
+  }),
+};
 </script>

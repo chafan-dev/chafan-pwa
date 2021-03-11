@@ -14,6 +14,10 @@ export const apiForm = {
     return axios.get<IForm>(`${apiUrl}/api/v1/forms/${uuid}`, authHeaders(token));
   },
   async submitFormRespnse(token: string, payload: IFormResponseCreate) {
-    return axios.post<IFormResponse>(`${apiUrl}/api/v1/form-responses/`, payload, authHeaders(token));
+    return axios.post<IFormResponse>(
+      `${apiUrl}/api/v1/form-responses/`,
+      payload,
+      authHeaders(token)
+    );
   },
 };

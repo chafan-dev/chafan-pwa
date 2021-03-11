@@ -1,10 +1,19 @@
 <template>
   <div id="app">
     <v-app>
-      <v-banner v-if="topBanner && topBanner.enabled" :color="topBanner.color" transition="slide-y-transition">
-        <span :style="{ 'color': topBanner.textColor ? topBanner.textColor: undefined }">{{ topBanner.text }}</span>
+      <v-banner
+        v-if="topBanner && topBanner.enabled"
+        :color="topBanner.color"
+        transition="slide-y-transition"
+      >
+        <span
+          :style="{
+            color: topBanner.textColor ? topBanner.textColor : undefined,
+          }"
+          >{{ topBanner.text }}</span
+        >
         <template v-slot:actions="{ dismiss }">
-          <v-btn small text @click="dismiss">{{$t('Dismiss')}}</v-btn>
+          <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
         </template>
       </v-banner>
       <v-overlay :value="showOverlay" :opacity="0.1">
@@ -13,9 +22,9 @@
       <router-view v-if="!showOverlay" />
       <NotificationsManager />
       <v-snackbar bottom right :value="updateExists" :timeout="-1" color="primary">
-        {{$t('App update is available')}}
+        {{ $t('App update is available') }}
         <v-btn text @click="refreshApp">
-          {{$t('Update')}}
+          {{ $t('Update') }}
         </v-btn>
       </v-snackbar>
       <v-dialog v-model="showLoginPrompt" max-width="600">
@@ -29,27 +38,35 @@
 import { Component, Vue } from 'vue-property-decorator';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/LoginCard.vue';
-import { readIsLoggedIn, readLocalePreference, readShowLoginPrompt, readTopBanner } from '@/store/main/getters';
+import {
+  readIsLoggedIn,
+  readLocalePreference,
+  readShowLoginPrompt,
+  readTopBanner,
+} from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { setAppLocale } from '@/utils'; // FIXME: store locale in main.store
 import { prodStateJsonURL } from './env';
 import axios from 'axios';
-import { commitSetNarrowUI, commitSetShowLoginPrompt, commitSetTopBanner } from './store/main/mutations';
-
+import {
+  commitSetNarrowUI,
+  commitSetShowLoginPrompt,
+  commitSetTopBanner,
+} from './store/main/mutations';
 
 function getDefaultNarrowFeedUI() {
-    try {
-        const value = localStorage.getItem('narrowFeedUI');
-        return value === null || value === 'true';
-    } catch (e) {
-        return false;
-    }
+  try {
+    const value = localStorage.getItem('narrowFeedUI');
+    return value === null || value === 'true';
+  } catch (e) {
+    return false;
+  }
 }
-
 
 @Component({
   components: {
-    NotificationsManager, LoginCard,
+    NotificationsManager,
+    LoginCard,
   },
 })
 export default class App extends Vue {
@@ -76,14 +93,20 @@ export default class App extends Vue {
   private refreshing = false;
 
   public async created() {
-    document.addEventListener('swUpdated', (event) => {
-      this.registration = (event as any).detail;
-      this.updateExists = true;
-    }, { once: true });
+    document.addEventListener(
+      'swUpdated',
+      (event) => {
+        this.registration = (event as any).detail;
+        this.updateExists = true;
+      },
+      { once: true }
+    );
 
     if (navigator.serviceWorker) {
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (this.refreshing) { return; }
+        if (this.refreshing) {
+          return;
+        }
         this.refreshing = true;
         window.location.reload();
       });
@@ -106,7 +129,7 @@ export default class App extends Vue {
     if (!this.registration || !this.registration.waiting) {
       return;
     }
-    this.registration.waiting.postMessage({ type: 'SKIP_WAITING '});
+    this.registration.waiting.postMessage({ type: 'SKIP_WAITING ' });
   }
 }
 </script>

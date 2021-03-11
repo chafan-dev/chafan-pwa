@@ -26,4 +26,4 @@ ln -s $PWD $(go env GOPATH)/src/github.com/88250/lute
 cd javascript/
 rm lute.min.js lute.min.js.map
 bash build.sh
-```bash
+```

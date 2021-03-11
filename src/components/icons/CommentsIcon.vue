@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiCommentTextMultiple } from '@mdi/js'
+import { mdiCommentTextMultiple } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiCommentTextMultiple
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiCommentTextMultiple,
+  }),
+};
 </script>

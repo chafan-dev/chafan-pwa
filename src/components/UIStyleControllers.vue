@@ -1,8 +1,14 @@
 <template>
-    <span>
-        <ExpandHorizontalIcon v-if="$vuetify.breakpoint.mdAndUp && isNarrowFeedUI" @click="setNarrowFeedUI(false)" />
-        <CollapseHorizontalIcon v-else-if="$vuetify.breakpoint.mdAndUp" @click="setNarrowFeedUI(true)" />
-    </span>
+  <span>
+    <ExpandHorizontalIcon
+      v-if="$vuetify.breakpoint.mdAndUp && isNarrowFeedUI"
+      @click="setNarrowFeedUI(false)"
+    />
+    <CollapseHorizontalIcon
+      v-else-if="$vuetify.breakpoint.mdAndUp"
+      @click="setNarrowFeedUI(true)"
+    />
+  </span>
 </template>
 
 <script lang="ts">
@@ -14,19 +20,19 @@ import { commitSetNarrowUI } from '@/store/main/mutations';
 import { readNarrowUI } from '@/store/main/getters';
 
 @Component({
-    components: { ExpandHorizontalIcon, CollapseHorizontalIcon },
+  components: { ExpandHorizontalIcon, CollapseHorizontalIcon },
 })
 export default class UIStyleControllers extends Vue {
-    get isNarrowFeedUI() {
-      return readNarrowUI(this.$store);
-    }
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
+  }
 
-    private setNarrowFeedUI(value: boolean) {
-        commitSetNarrowUI(this.$store, value);
-        try {
-            localStorage.removeItem('narrowFeedUI');
-            localStorage.setItem('narrowFeedUI', value.toString());
-        } catch (e) {}
-    }
+  private setNarrowFeedUI(value: boolean) {
+    commitSetNarrowUI(this.$store, value);
+    try {
+      localStorage.removeItem('narrowFeedUI');
+      localStorage.setItem('narrowFeedUI', value.toString());
+    } catch (e) {}
+  }
 }
 </script>

@@ -8,16 +8,26 @@ export const apiComment = {
     return axios.post<IComment>(`${apiUrl}/api/v1/comments/`, payload, authHeaders(token));
   },
   async updateComment(token: string, commentUUID: string, payload: ICommentUpdate) {
-    return axios.put<IComment>(`${apiUrl}/api/v1/comments/${commentUUID}`, payload, authHeaders(token));
+    return axios.put<IComment>(
+      `${apiUrl}/api/v1/comments/${commentUUID}`,
+      payload,
+      authHeaders(token)
+    );
   },
   async deleteComment(token: string, commentUUID: string) {
     return axios.delete<IMsg>(`${apiUrl}/api/v1/comments/${commentUUID}`, authHeaders(token));
   },
   async upvote(token: string, uuid: string) {
     return axios.post<ICommentUpvotes>(
-      `${apiUrl}/api/v1/comments/${uuid}/upvotes/`, null, authHeaders(token));
+      `${apiUrl}/api/v1/comments/${uuid}/upvotes/`,
+      null,
+      authHeaders(token)
+    );
   },
   async cancelUpvote(token: string, uuid: string) {
-    return axios.delete<ICommentUpvotes>(`${apiUrl}/api/v1/comments/${uuid}/upvotes/`, authHeaders(token));
+    return axios.delete<ICommentUpvotes>(
+      `${apiUrl}/api/v1/comments/${uuid}/upvotes/`,
+      authHeaders(token)
+    );
   },
 };

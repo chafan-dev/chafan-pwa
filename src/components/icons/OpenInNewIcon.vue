@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiOpenInNew } from '@mdi/js'
+import { mdiOpenInNew } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiOpenInNew
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiOpenInNew,
+  }),
+};
 </script>

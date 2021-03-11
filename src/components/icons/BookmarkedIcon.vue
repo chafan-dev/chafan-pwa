@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiBookmarkCheck } from '@mdi/js'
+import { mdiBookmarkCheck } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiBookmarkCheck
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiBookmarkCheck,
+  }),
+};
 </script>

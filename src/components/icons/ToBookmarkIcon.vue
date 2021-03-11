@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiBookmarkPlusOutline } from '@mdi/js'
+import { mdiBookmarkPlusOutline } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiBookmarkPlusOutline
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiBookmarkPlusOutline,
+  }),
+};
 </script>
