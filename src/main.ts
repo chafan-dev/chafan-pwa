@@ -1009,9 +1009,9 @@ if (sentryDSN) {
 
     tracesSampleRate: 0.2,
 
-    // tracingOptions: {
-    //   trackComponents: true,
-    // },
+    tracingOptions: {
+      trackComponents: true,
+    },
   });
 }
 
