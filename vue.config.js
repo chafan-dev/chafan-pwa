@@ -1,4 +1,30 @@
 const webpack = require('webpack');
+const { spawnSync } = require('child_process');
+
+// Generate git commit information
+try {
+  let [commit, commitTime] = spawnSync('git', ['show', '-s', '--format=%H%n%cI', 'HEAD'], {
+    timeout: 2000,
+  })
+    .stdout.toString('utf-8')
+    .trim()
+    .split('\n');
+
+  let branch = spawnSync('git', ['branch', '--show-current'], { timeout: 2000 })
+    .stdout.toString()
+    .trim();
+
+  process.env.VUE_APP_GIT_COMMIT = commit;
+  process.env.VUE_APP_GIT_BRANCH = branch;
+  process.env.VUE_APP_GIT_COMMIT_TIME = commitTime;
+
+  console.log('Sending these variables to frontend:');
+  console.log('Commit: ', commit);
+  console.log('Branch: ', branch);
+  console.log('Timestamp: ', commitTime);
+} catch (e) {
+  console.error('Failed to get git version info:', e);
+}
 
 module.exports = {
   // Fix Vuex-typescript in prod: https://github.com/istrib/vuex-typescript/issues/13#issuecomment-409869231
