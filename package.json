@@ -47,6 +47,8 @@
     "eslint": "^7.21.0",
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
+    "husky": "=4",
+    "lint-staged": "^10.5.4",
     "node-sass": "^5.0.0",
     "prettier": "^2.2.1",
     "sass-loader": "^10.1.1",
@@ -91,5 +93,17 @@
       "jest-serializer-vue"
     ],
     "testURL": "http://localhost/"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,vue}": [
+      "prettier --write",
+      "eslint --cache --fix"
+    ],
+    "*.{css,md}": "prettier --write"
   }
 }
