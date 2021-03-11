@@ -24,8 +24,10 @@
           <div v-else>{{ $t('加入圈子：') }} <SiteBtn :site="site" /></div>
         </v-card-text>
         <div v-if="invitationLinkHref" class="body-1 mx-6">
-          <p class="black--text">{{$t('✅ 未注册用户可直接通过以下链接进入注册界面')}}:</p>
-          <a class="text-decoration-none ml-1" :href="invitationLinkHref" target="_blank">https://cha.fan{{ invitationLinkHref }}</a>
+          <p class="black--text">{{ $t('✅ 未注册用户可直接通过以下链接进入注册界面') }}:</p>
+          <a class="text-decoration-none ml-1" :href="invitationLinkHref" target="_blank"
+            >https://cha.fan{{ invitationLinkHref }}</a
+          >
         </div>
         <v-card-actions>
           <v-spacer />
@@ -113,7 +115,7 @@ export default class Invite extends Vue {
     }
     const invitationLink = (await api.createInvitationLink(this.$store.state.main.token, payload))
       .data;
-    this.invitationLinkHref = `/invitation-links/${invitationLink.uuid}`
+    this.invitationLinkHref = `/invitation-links/${invitationLink.uuid}`;
   }
 }
 </script>
