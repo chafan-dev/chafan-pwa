@@ -104,6 +104,7 @@
         v-if="$vuetify.breakpoint.mdAndUp"
       >
         <SiteCard
+          :compactMode="false"
           :site="site"
           :isMember="siteProfile !== null"
           :showQuestionEditor="showQuestionEditor"
@@ -116,6 +117,7 @@
         </template>
         <v-sheet class="pa-2">
           <SiteCard
+            :compactMode="false"
             :site="site"
             :isMember="siteProfile !== null"
             :showQuestionEditor="showQuestionEditor"
