@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiHome } from '@mdi/js'
+import { mdiHome } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiHome
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiHome,
+  }),
+};
 </script>

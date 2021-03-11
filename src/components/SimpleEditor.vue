@@ -1,5 +1,5 @@
 <template>
-    <div ref="editor" class="simple-editor" />
+  <div ref="editor" class="simple-editor" />
 </template>
 
 <script lang="ts">
@@ -11,54 +11,51 @@ import { vditorCDN } from '@/common';
 
 @Component
 export default class SimpleEditor extends Vue {
-    @Prop({default: ''}) public readonly initialValue!: string;
-    @Prop() public readonly placeholder: string | undefined;
+  @Prop({ default: '' }) public readonly initialValue!: string;
+  @Prop() public readonly placeholder: string | undefined;
 
-    private vditor: Vditor | null = null;
+  private vditor: Vditor | null = null;
 
-    private initVditor() {
-        if (this.vditor !== null) {
-            this.vditor.destroy();
-        }
-        this.vditor = new Vditor(this.$refs.editor as HTMLElement, {
-            debugger: env === 'development',
-            cdn: vditorCDN,
-            placeholder: this.placeholder ? this.placeholder : '',
-            value: this.initialValue,
-            mode: 'wysiwyg',
-            toolbarConfig: {
-                hide: true,
-            },
-            toolbar: [
-                'bold', 'italic', 'link', 'list', 'line', 'strike',
-                'undo', 'redo',
-            ],
-            cache: {
-                enable: false,
-            },
-            counter: {
-                enable: false,
-            },
-        });
+  private initVditor() {
+    if (this.vditor !== null) {
+      this.vditor.destroy();
     }
+    this.vditor = new Vditor(this.$refs.editor as HTMLElement, {
+      debugger: env === 'development',
+      cdn: vditorCDN,
+      placeholder: this.placeholder ? this.placeholder : '',
+      value: this.initialValue,
+      mode: 'wysiwyg',
+      toolbarConfig: {
+        hide: true,
+      },
+      toolbar: ['bold', 'italic', 'link', 'list', 'line', 'strike', 'undo', 'redo'],
+      cache: {
+        enable: false,
+      },
+      counter: {
+        enable: false,
+      },
+    });
+  }
 
-    private mounted() {
-        this.initVditor();
-    }
+  private mounted() {
+    this.initVditor();
+  }
 
-    get content() {
-        return this.vditor?.getValue() || '';
-    }
+  get content() {
+    return this.vditor?.getValue() || '';
+  }
 
-    set content(value: string) {
-        if (this.vditor) {
-            this.vditor.setValue(value);
-        }
+  set content(value: string) {
+    if (this.vditor) {
+      this.vditor.setValue(value);
     }
+  }
 
-    public reset() {
-        this.initVditor();
-    }
+  public reset() {
+    this.initVditor();
+  }
 }
 </script>
 
@@ -81,15 +78,17 @@ export default class SimpleEditor extends Vue {
 
 <style>
 .vditor {
-    --textarea-background-color: white;
+  --textarea-background-color: white;
 }
 
 .simple-editor .vditor-reset {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
-.simple-editor h1::before, .simple-editor h2::before, .simple-editor h3::before {
-    content: ''
+.simple-editor h1::before,
+.simple-editor h2::before,
+.simple-editor h3::before {
+  content: '';
 }
 </style>

@@ -3,12 +3,22 @@
     <v-progress-linear v-if="loading" indeterminate />
     <v-tabs>
       <v-tabs-slider />
-      <v-tab>{{$t('Memberships')}}</v-tab>
-      <v-tab>{{$t('Settings')}}</v-tab>
-      <v-tab>{{$t('运营')}}</v-tab>
+      <v-tab>{{ $t('Memberships') }}</v-tab>
+      <v-tab>{{ $t('Settings') }}</v-tab>
+      <v-tab>{{ $t('运营') }}</v-tab>
       <v-spacer />
-      <v-autocomplete :items="moderatedSites" v-model="selectedSiteUUID" clearable outlined class="mt-2"
-                      dense :label="$t('Circle')" item-text="name" item-value="uuid" @change="onSiteSelected" />
+      <v-autocomplete
+        :items="moderatedSites"
+        v-model="selectedSiteUUID"
+        clearable
+        outlined
+        class="mt-2"
+        dense
+        :label="$t('Circle')"
+        item-text="name"
+        item-value="uuid"
+        @change="onSiteSelected"
+      />
 
       <!-- Applications -->
       <v-tab-item>
@@ -24,7 +34,7 @@
           </template>
 
           <template v-slot:item.applied_site="{ item }">
-            {{item.applied_site.name}}
+            {{ item.applied_site.name }}
           </template>
 
           <template v-slot:item.actions="{ item }">
@@ -33,88 +43,140 @@
         </v-data-table>
       </v-tab-item>
 
-
       <!-- Config -->
       <v-tab-item>
         <v-card class="ma-3">
-            <v-card-text v-if="selectedSite !== null">
-                <div>
-                  <span class="black--text mr-1">{{$t('Link')}}:</span> <SiteBtn :site="selectedSite" />
-                </div>
-                <div>
-                  <span class="black--text mr-1">{{$t('类型：')}}</span> {{$t('site.permission_type.' + selectedSite.permission_type)}}
-                </div>
-                <div>
-                    <template v-if="!showSiteConfigEditor">
-                      <span class="black--text mr-1">Name:</span>
-                      <span>{{selectedSite.name}}</span>
-                    </template>
-                    <v-text-field v-model="siteConfigUpdate.name" label="Name" v-else />
-                </div>
+          <v-card-text v-if="selectedSite !== null">
+            <div>
+              <span class="black--text mr-1">{{ $t('Link') }}:</span>
+              <SiteBtn :site="selectedSite" />
+            </div>
+            <div>
+              <span class="black--text mr-1">{{ $t('类型：') }}</span>
+              {{ $t('site.permission_type.' + selectedSite.permission_type) }}
+            </div>
+            <div>
+              <template v-if="!showSiteConfigEditor">
+                <span class="black--text mr-1">Name:</span>
+                <span>{{ selectedSite.name }}</span>
+              </template>
+              <v-text-field v-model="siteConfigUpdate.name" label="Name" v-else />
+            </div>
 
-                <div>
-                  <template v-if="!showSiteConfigEditor">
-                    <span class="black--text mr-1" v-if="!showSiteConfigEditor">Description:</span>
-                    <span>{{selectedSite.description}}</span>
-                  </template>
-                  <v-text-field v-model="siteConfigUpdate.description" label="Description" v-else />
-                </div>
+            <div>
+              <template v-if="!showSiteConfigEditor">
+                <span class="black--text mr-1" v-if="!showSiteConfigEditor">Description:</span>
+                <span>{{ selectedSite.description }}</span>
+              </template>
+              <v-text-field v-model="siteConfigUpdate.description" label="Description" v-else />
+            </div>
 
-                <div>
-                  <v-chip-group v-if="!showSiteConfigEditor">
-                      <span class="black--text mr-1">Topics:</span>
-                      <v-chip small :to="'/topics/' + topic.uuid" v-for="topic in siteTopics" :key="topic.uuid">
-                          {{ topic.name }}
-                      </v-chip>
-                  </v-chip-group>
+            <div>
+              <v-chip-group v-if="!showSiteConfigEditor">
+                <span class="black--text mr-1">Topics:</span>
+                <v-chip
+                  small
+                  :to="'/topics/' + topic.uuid"
+                  v-for="topic in siteTopics"
+                  :key="topic.uuid"
+                >
+                  {{ topic.name }}
+                </v-chip>
+              </v-chip-group>
 
-                  <v-combobox hide-selected multiple small-chips
-                              :label="$t('Topics')"
-                              :delimiters="[',', '，', '、']"
-                              v-if="showSiteConfigEditor"
-                              v-model="newSiteTopicNames" />
-                </div>
+              <v-combobox
+                hide-selected
+                multiple
+                small-chips
+                :label="$t('Topics')"
+                :delimiters="[',', '，', '、']"
+                v-if="showSiteConfigEditor"
+                v-model="newSiteTopicNames"
+              />
+            </div>
 
-                <div v-if="showSiteConfigEditor">
-                  <span class="black--text mr-1">加入申请处理方式：</span>
-                  <v-radio-group v-model="autoApproval">
-                    <v-radio label="自动审核" :value="true" />
-                    <v-radio label="人工审核" :value="false" />
-                  </v-radio-group>
-                </div>
-                <div v-else>
-                  <span class="black--text mr-1">加入申请处理方式：</span>
-                  <span v-if="selectedSite.auto_approval">{{$t('自动审核')}}</span>
-                  <span v-else>{{$t('人工审核')}}</span>
-                </div>
+            <div v-if="showSiteConfigEditor">
+              <span class="black--text mr-1">加入申请处理方式：</span>
+              <v-radio-group v-model="autoApproval">
+                <v-radio label="自动审核" :value="true" />
+                <v-radio label="人工审核" :value="false" />
+              </v-radio-group>
+            </div>
+            <div v-else>
+              <span class="black--text mr-1">加入申请处理方式：</span>
+              <span v-if="selectedSite.auto_approval">{{ $t('自动审核') }}</span>
+              <span v-else>{{ $t('人工审核') }}</span>
+            </div>
 
-                <div>
-                  <span class="black--text mr-1" v-if="autoApproval">{{$t('自动通过应满足的所有条件：')}}</span>
-                  <span class="black--text mr-1" v-else>{{$t('提交申请给人工审核前应满足的所有条件：')}}</span>
-                  <div class="ma-2">
-                    <v-text-field label="Min karma" v-if="showSiteConfigEditor" type="number" clearable
-                                  v-model="siteConfigUpdate.min_karma_for_application" />
-                    <v-text-field label="Min karma" v-else disabled
-                                  :value="selectedSite.min_karma_for_application ? selectedSite.min_karma_for_application : 'any'" />
+            <div>
+              <span class="black--text mr-1" v-if="autoApproval">{{
+                $t('自动通过应满足的所有条件：')
+              }}</span>
+              <span class="black--text mr-1" v-else>{{
+                $t('提交申请给人工审核前应满足的所有条件：')
+              }}</span>
+              <div class="ma-2">
+                <v-text-field
+                  label="Min karma"
+                  v-if="showSiteConfigEditor"
+                  type="number"
+                  clearable
+                  v-model="siteConfigUpdate.min_karma_for_application"
+                />
+                <v-text-field
+                  label="Min karma"
+                  v-else
+                  disabled
+                  :value="
+                    selectedSite.min_karma_for_application
+                      ? selectedSite.min_karma_for_application
+                      : 'any'
+                  "
+                />
 
-                    <v-combobox multiple small-chips :delimiters="[',', '，', '、']"
-                                label="Email domain suffixes (e.g. '@harvard.edu')" v-if="showSiteConfigEditor" clearable
-                                v-model="emailSuffixes" />
-                    <v-text-field label="Email domain suffixes (e.g. '@harvard.edu')" v-else disabled
-                                  :value="selectedSite.email_domain_suffix_for_application ? selectedSite.email_domain_suffix_for_application : 'any'" />
-                  </div>
-                </div>
-
-            </v-card-text>
-            <v-card-text v-else>
-              Please select a circle.
-            </v-card-text>
-            <v-card-actions v-if="selectedSite !== null">
-              <v-spacer />
-              <v-btn class="mr-2" @click="showSiteConfigEditor = true" color="primary" v-show="!showSiteConfigEditor">Edit</v-btn>
-              <v-btn class="mr-2" @click="commitSiteConfig" color="primary" v-show="showSiteConfigEditor">Save Edit</v-btn>
-              <v-btn class="mr-2" @click="showSiteConfigEditor = false" v-show="showSiteConfigEditor">Cancel Edit</v-btn>
-            </v-card-actions>
+                <v-combobox
+                  multiple
+                  small-chips
+                  :delimiters="[',', '，', '、']"
+                  label="Email domain suffixes (e.g. '@harvard.edu')"
+                  v-if="showSiteConfigEditor"
+                  clearable
+                  v-model="emailSuffixes"
+                />
+                <v-text-field
+                  label="Email domain suffixes (e.g. '@harvard.edu')"
+                  v-else
+                  disabled
+                  :value="
+                    selectedSite.email_domain_suffix_for_application
+                      ? selectedSite.email_domain_suffix_for_application
+                      : 'any'
+                  "
+                />
+              </div>
+            </div>
+          </v-card-text>
+          <v-card-text v-else> Please select a circle. </v-card-text>
+          <v-card-actions v-if="selectedSite !== null">
+            <v-spacer />
+            <v-btn
+              class="mr-2"
+              @click="showSiteConfigEditor = true"
+              color="primary"
+              v-show="!showSiteConfigEditor"
+              >Edit</v-btn
+            >
+            <v-btn
+              class="mr-2"
+              @click="commitSiteConfig"
+              color="primary"
+              v-show="showSiteConfigEditor"
+              >Save Edit</v-btn
+            >
+            <v-btn class="mr-2" @click="showSiteConfigEditor = false" v-show="showSiteConfigEditor"
+              >Cancel Edit</v-btn
+            >
+          </v-card-actions>
         </v-card>
       </v-tab-item>
 
@@ -122,18 +184,21 @@
       <v-tab-item>
         <v-card class="ma-2">
           <v-card-title>
-            {{$t('广播通知')}}
+            {{ $t('广播通知') }}
           </v-card-title>
           <v-card-text v-if="selectedSite !== null">
-            {{$t('请先将广播的内容提交到「分享」板块，然后将其链接粘贴至下方发送给圈子「{circle}」的成员。', {circle: selectedSite.name})}}
+            {{
+              $t(
+                '请先将广播的内容提交到「分享」板块，然后将其链接粘贴至下方发送给圈子「{circle}」的成员。',
+                { circle: selectedSite.name }
+              )
+            }}
             <v-text-field v-model="broadcastSubmissionLink" label="「分享」链接" />
           </v-card-text>
-          <v-card-text v-else>
-            Please select a circle.
-          </v-card-text>
+          <v-card-text v-else> Please select a circle. </v-card-text>
           <v-card-actions v-if="selectedSite !== null">
             <v-spacer />
-            <v-btn color="primary" @click="submitNewSubmissionBroadcast">{{$t('Send')}}</v-btn>
+            <v-btn color="primary" @click="submitNewSubmissionBroadcast">{{ $t('Send') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-tab-item>
@@ -155,7 +220,7 @@ import { apiTopic } from '@/api/topic';
 import { commitAddNotification } from '@/store/main/mutations';
 
 @Component({
-    components: { UserLink, UserSearch, EditIcon, SiteBtn },
+  components: { UserLink, UserSearch, EditIcon, SiteBtn },
 })
 export default class Moderation extends Vue {
   private applicationHeaders = [
@@ -186,15 +251,22 @@ export default class Moderation extends Vue {
 
   private broadcastSubmissionLink = '';
 
-  get token() { return this.$store.state.main.token; }
+  get token() {
+    return this.$store.state.main.token;
+  }
 
   private loading = true;
   private async mounted() {
     this.moderatedSites = readModeratedSites(this.$store);
     if (this.moderatedSites) {
-      const siteApps = await Promise.all(this.moderatedSites.map(async (site: ISite) => {
-        return { site, applications: (await api.getPendingApplications(this.token, site.uuid)).data };
-      }));
+      const siteApps = await Promise.all(
+        this.moderatedSites.map(async (site: ISite) => {
+          return {
+            site,
+            applications: (await api.getPendingApplications(this.token, site.uuid)).data,
+          };
+        })
+      );
       for (const siteAppsEntry of siteApps) {
         this.allApplications.set(siteAppsEntry.site.uuid, siteAppsEntry.applications);
       }
@@ -204,24 +276,26 @@ export default class Moderation extends Vue {
   }
 
   private resetSiteConfig(site: ISite) {
-      for (const key in site) {
-          if (site[key] !== undefined) {
-              this.siteConfigUpdate[key] = site[key];
-          }
+    for (const key in site) {
+      if (site[key] !== undefined) {
+        this.siteConfigUpdate[key] = site[key];
       }
-      this.siteTopics = site.topics;
-      this.autoApproval = site.auto_approval;
-      this.newSiteTopicNames = site.topics.map((s) => s.name);
-      if (site.email_domain_suffix_for_application) {
-        this.emailSuffixes = site.email_domain_suffix_for_application.split(',');
-      }
+    }
+    this.siteTopics = site.topics;
+    this.autoApproval = site.auto_approval;
+    this.newSiteTopicNames = site.topics.map((s) => s.name);
+    if (site.email_domain_suffix_for_application) {
+      this.emailSuffixes = site.email_domain_suffix_for_application.split(',');
+    }
   }
 
   private async onSiteSelected() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.moderatedSites) {
         if (this.selectedSiteUUID !== null) {
-          this.selectedSite = this.moderatedSites.filter((site) => site.uuid === this.selectedSiteUUID)[0];
+          this.selectedSite = this.moderatedSites.filter(
+            (site) => site.uuid === this.selectedSiteUUID
+          )[0];
           this.resetSiteConfig(this.selectedSite);
           this.applications = this.allApplications.get(this.selectedSiteUUID)!;
         } else {
@@ -235,20 +309,27 @@ export default class Moderation extends Vue {
   private async commitSiteConfig() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.selectedSite) {
-          const responses = await Promise.all(
-                    this.newSiteTopicNames.map((name) => apiTopic.createTopic(this.$store.state.main.token, { name })));
-          const topicsIds = responses.map((r) => r.data.uuid);
-          this.siteConfigUpdate.topic_uuids = topicsIds;
-          this.siteConfigUpdate.auto_approval = this.autoApproval;
-          if (this.emailSuffixes) {
-            this.siteConfigUpdate.email_domain_suffix_for_application = this.emailSuffixes.join(',');
-          }
-          const response = await api.updateSiteConfig(this.token, this.selectedSite.uuid, this.siteConfigUpdate);
-          if (response) {
-              this.selectedSite = response.data;
-              this.resetSiteConfig(this.selectedSite);
-              this.showSiteConfigEditor = false;
-          }
+        const responses = await Promise.all(
+          this.newSiteTopicNames.map((name) =>
+            apiTopic.createTopic(this.$store.state.main.token, { name })
+          )
+        );
+        const topicsIds = responses.map((r) => r.data.uuid);
+        this.siteConfigUpdate.topic_uuids = topicsIds;
+        this.siteConfigUpdate.auto_approval = this.autoApproval;
+        if (this.emailSuffixes) {
+          this.siteConfigUpdate.email_domain_suffix_for_application = this.emailSuffixes.join(',');
+        }
+        const response = await api.updateSiteConfig(
+          this.token,
+          this.selectedSite.uuid,
+          this.siteConfigUpdate
+        );
+        if (response) {
+          this.selectedSite = response.data;
+          this.resetSiteConfig(this.selectedSite);
+          this.showSiteConfigEditor = false;
+        }
       }
     });
   }
@@ -257,10 +338,10 @@ export default class Moderation extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       const updatedApplication = (await api.approveApplication(this.token, application.id)).data;
       if (updatedApplication.pending) {
-        commitAddNotification(this.$store,
-          { color: 'error',
-            content: 'Failed to approve',
-          });
+        commitAddNotification(this.$store, {
+          color: 'error',
+          content: 'Failed to approve',
+        });
         return;
       }
       this.applications.splice(this.applications.indexOf(application), 1);
@@ -270,10 +351,10 @@ export default class Moderation extends Vue {
   private async submitNewSubmissionBroadcast() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (!this.selectedSite) {
-        commitAddNotification(this.$store,
-          { color: 'error',
-            content: 'Site is not selected',
-          });
+        commitAddNotification(this.$store, {
+          color: 'error',
+          content: 'Site is not selected',
+        });
         return;
       }
       let submissionUUID = '';
@@ -286,10 +367,7 @@ export default class Moderation extends Vue {
           throw new Error('Invalid sharing link');
         }
       } catch (e) {
-        commitAddNotification(this.$store,
-          { color: 'error',
-            content: e,
-          });
+        commitAddNotification(this.$store, { color: 'error', content: e });
         return;
       }
       await api.createTask(this.token, {
@@ -297,10 +375,10 @@ export default class Moderation extends Vue {
         submission_uuid: submissionUUID,
         to_members_of_site_uuid: this.selectedSite!.uuid,
       });
-      commitAddNotification(this.$store,
-          { color: 'success',
-            content: '通知创建成功，即将发送',
-          });
+      commitAddNotification(this.$store, {
+        color: 'success',
+        content: '通知创建成功，即将发送',
+      });
       this.broadcastSubmissionLink = '';
     });
   }

@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiLockClock } from '@mdi/js'
+import { mdiLockClock } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiLockClock
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiLockClock,
+  }),
+};
 </script>

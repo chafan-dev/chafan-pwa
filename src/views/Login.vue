@@ -17,6 +17,5 @@ import LoginCard from '@/components/LoginCard.vue';
 @Component({
   components: { LoginCard },
 })
-export default class Login extends Vue {
-}
+export default class Login extends Vue {}
 </script>

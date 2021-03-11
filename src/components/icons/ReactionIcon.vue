@@ -3,12 +3,12 @@
 </template>
 
 <script>
-  import { mdiEmoticonHappyOutline } from '@mdi/js'
+import { mdiEmoticonHappyOutline } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiEmoticonHappyOutline
-    }),
-    inheritAttrs: true,
-  }
+export default {
+  data: () => ({
+    svgPath: mdiEmoticonHappyOutline,
+  }),
+  inheritAttrs: true,
+};
 </script>

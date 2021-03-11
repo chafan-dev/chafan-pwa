@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiAccountCircle } from '@mdi/js'
+import { mdiAccountCircle } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiAccountCircle
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiAccountCircle,
+  }),
+};
 </script>

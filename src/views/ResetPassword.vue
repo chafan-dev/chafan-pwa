@@ -4,33 +4,57 @@
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <ValidationObserver v-slot="{ handleSubmit, reset }">
-          <v-card class="elevation-12">
-            <v-toolbar dark color="primary">
-              <v-toolbar-title>{{appName}} - {{$t('Reset Password')}}</v-toolbar-title>
-              <v-spacer />
-              <LangPicker></LangPicker>
-            </v-toolbar>
-            <v-card-text>
-              <p class="subheading">{{$t('Enter your new password below')}}</p>
-              <v-form @keyup.enter="handleSubmit(submit)" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
-                  <ValidationProvider rules="required|min:3|password|password1:@confirm" v-slot="{ errors }" name="password">
-                    <v-text-field :label="$t('Password')" type="password" v-model="password" required />
+            <v-card class="elevation-12">
+              <v-toolbar dark color="primary">
+                <v-toolbar-title>{{ appName }} - {{ $t('Reset Password') }}</v-toolbar-title>
+                <v-spacer />
+                <LangPicker></LangPicker>
+              </v-toolbar>
+              <v-card-text>
+                <p class="subheading">
+                  {{ $t('Enter your new password below') }}
+                </p>
+                <v-form
+                  @keyup.enter="handleSubmit(submit)"
+                  v-model="valid"
+                  ref="form"
+                  @submit.prevent=""
+                  lazy-validation
+                >
+                  <ValidationProvider
+                    rules="required|min:3|password|password1:@confirm"
+                    v-slot="{ errors }"
+                    name="password"
+                  >
+                    <v-text-field
+                      :label="$t('Password')"
+                      type="password"
+                      v-model="password"
+                      required
+                    />
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
                   <ValidationProvider rules="required" v-slot="{ errors }" name="confirm">
-                    <v-text-field :label="$t('Password confirmation')" type="password" v-model="confirmation" required />
+                    <v-text-field
+                      :label="$t('Password confirmation')"
+                      type="password"
+                      v-model="confirmation"
+                      required
+                    />
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
-              </v-form>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn @click="cancel">{{$t('Cancel')}}</v-btn>
-              <v-btn @click="resetAll(reset)">{{$t('Reset')}}</v-btn>
-              <v-btn @click="handleSubmit(submit)" :disabled="!valid" color="primary">{{$t('Save')}}</v-btn>
-            </v-card-actions>
-          </v-card>
+                </v-form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn @click="cancel">{{ $t('Cancel') }}</v-btn>
+                <v-btn @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+                <v-btn @click="handleSubmit(submit)" :disabled="!valid" color="primary">{{
+                  $t('Save')
+                }}</v-btn>
+              </v-card-actions>
+            </v-card>
           </ValidationObserver>
         </v-flex>
       </v-layout>
@@ -70,7 +94,7 @@ export default class UserProfileEdit extends Vue {
   }
 
   public checkToken() {
-    const token = (this.$router.currentRoute.query.token as string);
+    const token = this.$router.currentRoute.query.token as string;
     if (!token) {
       commitAddNotification(this.$store, {
         content: this.$t('No token provided in the URL, start a new password recovery').toString(),
@@ -85,7 +109,10 @@ export default class UserProfileEdit extends Vue {
   public async submit() {
     const token = this.checkToken();
     if (token) {
-      await dispatchResetPassword(this.$store, { token, password: this.password });
+      await dispatchResetPassword(this.$store, {
+        token,
+        password: this.password,
+      });
       if (this.$router.currentRoute.path !== '/login') {
         this.$router.push('/login');
       }

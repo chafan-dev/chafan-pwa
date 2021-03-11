@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiNewspaperVariant } from '@mdi/js'
+import { mdiNewspaperVariant } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiNewspaperVariant
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiNewspaperVariant,
+  }),
+};
 </script>

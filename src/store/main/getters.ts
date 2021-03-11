@@ -3,28 +3,26 @@ import { getStoreAccessors } from 'typesafe-vuex';
 import { State } from '../state';
 
 export const getters = {
-    hasModeratedSites: (state: MainState) => {
-        return (
-            state.moderated_sites &&
-            state.moderated_sites.length > 0);
-    },
-    loginError: (state: MainState) => state.logInError,
-    dashboardShowDrawer: (state: MainState) => state.dashboardShowDrawer,
-    dashboardMiniDrawer: (state: MainState) => state.dashboardMiniDrawer,
-    userProfile: (state: MainState) => state.userProfile,
-    moderatedSites: (state: MainState) => state.moderated_sites,
-    token: (state: MainState) => state.token,
-    userMode: (state: MainState) => state.userMode,
-    topBanner: (state: MainState) => state.topBanner,
-    localePreference: (state: MainState) => state.userProfile?.locale_preference,
-    isLoggedIn: (state: MainState) => state.isLoggedIn,
-    showLoginPrompt: (state: MainState) => state.showLoginPrompt,
-    firstNotification: (state: MainState) => state.notifications.length > 0 && state.notifications[0],
-    workingDraft: (state: MainState) => state.workingDraft,
-    narrowUI: (state: MainState) => state.narrowUI,
+  hasModeratedSites: (state: MainState) => {
+    return state.moderated_sites && state.moderated_sites.length > 0;
+  },
+  loginError: (state: MainState) => state.logInError,
+  dashboardShowDrawer: (state: MainState) => state.dashboardShowDrawer,
+  dashboardMiniDrawer: (state: MainState) => state.dashboardMiniDrawer,
+  userProfile: (state: MainState) => state.userProfile,
+  moderatedSites: (state: MainState) => state.moderated_sites,
+  token: (state: MainState) => state.token,
+  userMode: (state: MainState) => state.userMode,
+  topBanner: (state: MainState) => state.topBanner,
+  localePreference: (state: MainState) => state.userProfile?.locale_preference,
+  isLoggedIn: (state: MainState) => state.isLoggedIn,
+  showLoginPrompt: (state: MainState) => state.showLoginPrompt,
+  firstNotification: (state: MainState) => state.notifications.length > 0 && state.notifications[0],
+  workingDraft: (state: MainState) => state.workingDraft,
+  narrowUI: (state: MainState) => state.narrowUI,
 };
 
-const {read} = getStoreAccessors<MainState, State>('');
+const { read } = getStoreAccessors<MainState, State>('');
 
 export const readDashboardMiniDrawer = read(getters.dashboardMiniDrawer);
 export const readDashboardShowDrawer = read(getters.dashboardShowDrawer);

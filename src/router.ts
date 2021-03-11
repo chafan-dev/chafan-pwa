@@ -27,51 +27,63 @@ export default new Router({
         },
         {
           path: 'article-columns/:id',
-          component: () => import(/* webpackChunkName: "main-article-columns" */ './views/main/ArticleColumn.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-article-columns" */ './views/main/ArticleColumn.vue'),
         },
         {
           path: 'articles/:id',
-          component: () => import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
           children: [
             {
               path: 'comments/:article_comment_id',
-              component: () => import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
+              component: () =>
+                import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
             },
           ],
         },
         {
           path: 'submissions/:id',
-          component: () => import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
           children: [
             {
               path: 'comments/:submission_comment_id',
-              component: () => import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
+              component: () =>
+                import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
             },
           ],
         },
         {
           path: 'questions/:id',
-          component: () => import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
           children: [
             {
               path: 'answers/:aid',
-              component: () => import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+              component: () =>
+                import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
               children: [
                 {
                   path: 'comments/:acid',
-                  component: () => import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+                  component: () =>
+                    import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
                 },
               ],
             },
             {
               path: 'comments/:qcid',
-              component: () => import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+              component: () =>
+                import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
             },
           ],
         },
         {
           path: 'article-focus',
-          component: () => import(/* webpackChunkName: "main-article-focus" */ './views/main/ArticleFocusMode.vue'),
+          component: () =>
+            import(
+              /* webpackChunkName: "main-article-focus" */ './views/main/ArticleFocusMode.vue'
+            ),
         },
         {
           path: 'topics/:id',
@@ -88,11 +100,13 @@ export default new Router({
         },
         {
           path: 'channels/:id',
-          component: () => import(/* webpackChunkName: "main-channels" */ './views/main/Channel.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-channels" */ './views/main/Channel.vue'),
         },
         {
           path: 'dashboard',
-          component: () => import(/* webpackChunkName: "main-dashboard" */ './views/main/Dashboard.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-dashboard" */ './views/main/Dashboard.vue'),
         },
         {
           path: 'profile',
@@ -100,18 +114,22 @@ export default new Router({
           children: [
             {
               path: 'edit',
-              component: () => import(
-                /* webpackChunkName: "main-profile-edit" */ './views/main/profile/UserProfileEdit.vue'),
+              component: () =>
+                import(
+                  /* webpackChunkName: "main-profile-edit" */ './views/main/profile/UserProfileEdit.vue'
+                ),
             },
           ],
         },
         {
           path: 'security',
-          component: () => import(/* webpackChunkName: "main-security" */ './views/main/Security.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-security" */ './views/main/Security.vue'),
         },
         {
           path: 'moderation',
-          component: () => import(/* webpackChunkName: "main-moderation" */ './views/main/Moderation.vue'),
+          component: () =>
+            import(/* webpackChunkName: "main-moderation" */ './views/main/Moderation.vue'),
         },
       ],
     },
@@ -128,7 +146,8 @@ export default new Router({
     },
     {
       path: '/recover-password',
-      component: () => import(/* webpackChunkName: "recover-password" */ './views/PasswordRecovery.vue'),
+      component: () =>
+        import(/* webpackChunkName: "recover-password" */ './views/PasswordRecovery.vue'),
     },
     {
       path: '/reset-password',
@@ -136,7 +155,8 @@ export default new Router({
     },
     {
       path: '/invitation-links/:uuid',
-      component: () => import(/* webpackChunkName: "invitation-link" */ './views/InvitationLink.vue'),
+      component: () =>
+        import(/* webpackChunkName: "invitation-link" */ './views/InvitationLink.vue'),
     },
     {
       path: '/main/*',
@@ -145,7 +165,8 @@ export default new Router({
       },
     },
     {
-      path: '/*', redirect: '/',
+      path: '/*',
+      redirect: '/',
     },
   ],
 });

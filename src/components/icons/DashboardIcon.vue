@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiViewDashboard } from '@mdi/js'
+import { mdiViewDashboard } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiViewDashboard
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiViewDashboard,
+  }),
+};
 </script>
