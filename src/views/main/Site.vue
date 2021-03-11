@@ -26,30 +26,14 @@
           </v-tab>
 
           <v-tab-item value="questions">
-            <div v-if="questions !== null && questions.length > 0">
-              <QuestionPreview
-                v-for="question in questions"
-                :key="question.uuid"
-                class="my-4"
-                :questionPreview="question"
-              />
-              <div class="text-center">
-                <span v-if="noMoreQuestion">{{ $t('没有更多了') }}</span>
-                <v-progress-circular
-                  v-else
-                  size="20"
-                  color="primary"
-                  indeterminate
-                  v-intersect="loadMoreQuestions"
-                />
-              </div>
-            </div>
-            <div class="my-4 text-center" v-else-if="questions !== null">
-              {{ $t('No questions for now') }}
-            </div>
-            <div class="my-4 text-center" v-else>
-              {{ $t('Only site members can view its content.') }}
-            </div>
+            <DynamicItemList
+              emptyItemsText="No questions for now"
+              nullItemsText="Only site members can view its content."
+              :loadItems="loadQuestions"
+              v-slot="{ item }"
+            >
+              <QuestionPreview :questionPreview="item" />
+            </DynamicItemList>
             <div class="my-4 text-center" v-if="!userProfile">
               {{ $t('登录后查看更多') }}
             </div>
@@ -138,6 +122,7 @@ import SiteCard from '@/components/SiteCard.vue';
 import UserCard from '@/components/UserCard.vue';
 import QuestionPreview from '@/components/QuestionPreview.vue';
 import SubmissionCard from '@/components/SubmissionCard.vue';
+import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 
@@ -145,7 +130,14 @@ import { readNarrowUI, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
 @Component({
-  components: { QuestionPreview, SiteCard, UserCard, InfoIcon, SubmissionCard },
+  components: {
+    QuestionPreview,
+    SiteCard,
+    UserCard,
+    InfoIcon,
+    SubmissionCard,
+    DynamicItemList,
+  },
 })
 export default class Site extends Vue {
   get isNarrowFeedUI() {
@@ -214,9 +206,6 @@ export default class Site extends Vue {
       }
 
       if (this.siteProfile !== null || this.site.public_readable) {
-        this.questions = (
-          await api.getSiteQuestions(this.token, this.site.uuid, 0, this.questionPageLimit)
-        ).data;
         if (this.siteProfile) {
           this.siteProfiles = (await api.getSiteProfiles(this.token, this.site.uuid)).data.sort(
             (a, b) => {
@@ -239,35 +228,14 @@ export default class Site extends Vue {
     });
   }
 
-  private questionPage = 1;
-  private readonly questionPageLimit = 10;
-  private noMoreQuestion = false;
-  private loadingMoreQuestions = false;
-
-  private async loadMoreQuestions() {
-    if (this.loadingMoreQuestions) {
-      return;
-    }
-    this.loadingMoreQuestions = true;
+  private async loadQuestions(skip: number, limit: number) {
+    let items: IQuestionPreview[] = [];
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.site && this.questions && !this.noMoreQuestion) {
-        this.questionPage += 1;
-        const newQuestions = (
-          await api.getSiteQuestions(
-            this.token,
-            this.site.uuid,
-            (this.questionPage - 1) * this.questionPageLimit,
-            this.questionPageLimit
-          )
-        ).data;
-        if (newQuestions.length > 0) {
-          this.questions.push(...newQuestions);
-        } else {
-          this.noMoreQuestion = true;
-        }
+      if (this.site) {
+        items = (await api.getSiteQuestions(this.token, this.site.uuid, skip, limit)).data;
       }
     });
-    this.loadingMoreQuestions = false;
+    return items;
   }
 }
 </script>
