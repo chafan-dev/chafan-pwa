@@ -23,3 +23,6 @@ yarn-error.log*
 pagekite.py
 
 *.pem
+
+# ESLint cache file
+.eslintcache
