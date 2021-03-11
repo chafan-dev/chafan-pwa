@@ -1,0 +1,3 @@
+# Ignore every js file limits us into src/** and tests/**.
+# This file need further tuning
+*.js
