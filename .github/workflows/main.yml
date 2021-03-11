@@ -29,6 +29,10 @@ jobs:
           # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
           node-version: 12.x
       - run: yarn install
+      - name: Check linting etc.
+        run: |
+          yarn run check:eslint
+          yarn run check:prettier
       - name: Unit tests
         run: yarn run test:unit
       - name: e2e tests
