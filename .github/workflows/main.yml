@@ -28,12 +28,12 @@ jobs:
         with:
           # Version Spec of the version to use.  Examples: 12.x, 10.15.1, >=10.15.0
           node-version: 12.x
-      - run: npm install
+      - run: yarn install
       - name: Unit tests
-        run: npm run test:unit
+        run: yarn run test:unit
       - name: e2e tests
         run: |
-          nohup npm run serve &
+          nohup yarn run serve &
           sleep 30
           nohup node e2e_tests/server.js &
           sleep 5
