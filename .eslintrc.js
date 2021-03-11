@@ -37,6 +37,7 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module',
     ecmaVersion: 2020,
+    extraFileExtensions: ['.vue'],
   },
 
   plugins: ['@typescript-eslint'],
