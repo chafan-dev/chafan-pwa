@@ -6,7 +6,7 @@
 ## Project setup
 
 ```
-npm install
+yarn install
 ```
 
 Example local development environment file (`.env.local`):
@@ -23,12 +23,12 @@ VUE_APP_ADMIN_UUID=
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+yarn run serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+yarn run build
 ```
 
 ### API server mock
@@ -55,7 +55,7 @@ npm install -g serve
 Build and serve locally through https:
 
 ```bash
-VUE_APP_ENV=staging npm run build
+VUE_APP_ENV=staging yarn run build
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
 node e2e_tests/server.js --secure
 # Open https://localhost:8080
@@ -64,22 +64,22 @@ node e2e_tests/server.js --secure
 ### Analyze production build
 
 ```
-npm run analyze
+yarn run analyze
 ```
 
 ### Run your tests
 ```
-npm run test
+yarn run test
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+yarn run lint
 ```
 
 ### Run your unit tests
 ```
-npm run test:unit
+yarn run test:unit
 ```
 
 ## Debugging
