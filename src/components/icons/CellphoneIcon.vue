@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiCellphone } from '@mdi/js'
+import { mdiCellphone } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiCellphone
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiCellphone,
+  }),
+};
 </script>

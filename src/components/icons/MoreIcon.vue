@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiDotsHorizontalCircleOutline } from '@mdi/js'
+import { mdiDotsHorizontalCircleOutline } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiDotsHorizontalCircleOutline
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiDotsHorizontalCircleOutline,
+  }),
+};
 </script>

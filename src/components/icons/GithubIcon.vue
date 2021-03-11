@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiGithub } from '@mdi/js'
+import { mdiGithub } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiGithub
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiGithub,
+  }),
+};
 </script>

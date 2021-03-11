@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiCogOutline } from '@mdi/js'
+import { mdiCogOutline } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiCogOutline
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiCogOutline,
+  }),
+};
 </script>

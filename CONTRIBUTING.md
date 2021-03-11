@@ -20,14 +20,14 @@ Please simply fork this repo and open a PR with description of the changes again
 
 ### Internal Branch Management
 
-- `master` is the development integration branch. It *might* be push-forced to rebase against `prod/stag` branches.
+- `master` is the development integration branch. It _might_ be push-forced to rebase against `prod/stag` branches.
 - Other feature/bug-fixes should be first pushed to a feature branch.
   - When the code is ready for review, open a PR from this branch against `master`. Remember to rebase against `master` and fix all conflicts.
 - `stag/prod` are branchs that will be deployed to staging/production environments.
 
 ### Tips:
 
-* Use `git add` to avoid adding `package-lock.json` accidentally (if you didn't change `package.json`, you should not submit a diff for the lock file).
+- Use `git add` to avoid adding `package-lock.json` accidentally (if you didn't change `package.json`, you should not submit a diff for the lock file).
 
 ## Claim issue
 

@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiTwitter } from '@mdi/js'
+import { mdiTwitter } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiTwitter
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiTwitter,
+  }),
+};
 </script>

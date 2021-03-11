@@ -3,11 +3,11 @@
 </template>
 
 <script>
-  import { mdiMagnify } from '@mdi/js'
+import { mdiMagnify } from '@mdi/js';
 
-  export default {
-    data: () => ({
-      svgPath: mdiMagnify
-    }),
-  }
+export default {
+  data: () => ({
+    svgPath: mdiMagnify,
+  }),
+};
 </script>
