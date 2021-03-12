@@ -793,6 +793,7 @@ export default class Question extends Vue {
       this.showQuestionEditor = false;
     });
   }
+
   private async cancelSubscription() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
@@ -803,6 +804,7 @@ export default class Question extends Vue {
       }
     });
   }
+
   private async subscribe() {
     if (!this.userProfile) {
       commitSetShowLoginPrompt(this.$store, true);
