@@ -14,6 +14,7 @@
     </div>
     <div class="my-4 text-center" v-else>
       {{ $t(nullItemsText) }}
+      <v-progress-circular v-if="loading" size="20" color="primary" indeterminate />
     </div>
   </div>
 </template>
@@ -23,7 +24,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
 export default class DynamicContentList<T> extends Vue {
-  @Prop({ default: 10 }) public readonly pageLimit!: number;
+  @Prop({ default: 20 }) public readonly pageLimit!: number;
   @Prop() public readonly emptyItemsText!: string;
   @Prop() public readonly nullItemsText!: string;
   @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<T[] | null>;
@@ -32,6 +33,7 @@ export default class DynamicContentList<T> extends Vue {
 
   private currentPage = 0;
   private noMore = false;
+  private loading = false;
 
   private async mounted() {
     window.onscroll = () => {
@@ -54,7 +56,9 @@ export default class DynamicContentList<T> extends Vue {
     }
 
     this.currentPage += 1;
+    this.loading = true;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
+    this.loading = false;
     if (newItems && newItems.length > 0) {
       if (this.items) {
         this.items.push(...newItems);

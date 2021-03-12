@@ -446,7 +446,7 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => {
   res.json(randomUserPreviews2);
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => {
-  res.json([]);
+  res.json(randomQuestionPreviews);
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => {
   res.json([]);
