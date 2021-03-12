@@ -22,9 +22,21 @@ export const appName = process.env.VUE_APP_NAME;
 export const sentryDSN = process.env.VUE_APP_SENTRY_DSN;
 export const prodStateJsonURL = process.env.VUE_APP_PROD_STATE_JSON_URL;
 export const adminUUID = process.env.VUE_APP_ADMIN_UUID;
+
+/**
+ * Information about this build.
+ */
 export const buildInfo = {
-  commitHash: process.env.VUE_APP_GIT_COMMIT,
-  commitHashShort: process.env.VUE_APP_GIT_COMMIT.substring(0, 7),
-  branch: process.env.VUE_APP_GIT_BRANCH,
-  commitTime: dayjs(process.env.VUE_APP_GIT_COMMIT_TIME),
+  /** Git commit ID */
+  commitHash: process.env.VUE_APP_GIT_COMMIT as string,
+  /** Git commit short ID */
+  commitHashShort: (process.env.VUE_APP_GIT_COMMIT as string).substring(0, 8),
+  /** Git branch */
+  branch: process.env.VUE_APP_GIT_BRANCH as string,
+  /** Git commit time, undefined if not available */
+  commitTime: process.env.VUE_APP_GIT_COMMIT_TIME
+    ? dayjs(process.env.VUE_APP_GIT_COMMIT_TIME)
+    : undefined,
+  /** Git tags applied to this commit */
+  tags: (process.env.VUE_APP_GIT_TAGS as string).split('\n'),
 };
