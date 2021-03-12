@@ -1,6 +1,5 @@
 <template>
   <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
-    <!-- TODO: c-card -->
     <div class="title" style="word-break: normal">
       <a class="text-decoration-none" :href="'/articles/' + articlePreview.uuid">
         {{ articlePreview.title }}

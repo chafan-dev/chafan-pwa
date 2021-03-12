@@ -77,7 +77,9 @@
                 v-for="answer in myAnswerDrafts"
                 :key="answer.uuid"
                 class="ma-3"
+                :draftMode="true"
                 :answerPreview="answer"
+                @delete-answer-draft="onDeleteAnswerDraft"
               />
 
               <ArticlePreview
@@ -86,7 +88,10 @@
                 :articlePreview="article"
                 class="ma-3"
               />
-              <div class="ma-3" v-if="myAnswerDrafts.length === 0 && myArticleDrafts.length === 0">
+              <div
+                class="text-center"
+                v-if="myAnswerDrafts.length === 0 && myArticleDrafts.length === 0"
+              >
                 暂无草稿
               </div>
             </div>
@@ -651,6 +656,15 @@ export default class Dashboard extends Vue {
         content: err.response.data.detail,
         color: 'error',
       });
+    }
+  }
+
+  private onDeleteAnswerDraft(uuid: string) {
+    if (this.myAnswerDrafts) {
+      let idx = this.myAnswerDrafts.findIndex((answer) => answer.uuid === uuid);
+      if (idx !== -1) {
+        this.myAnswerDrafts.splice(idx, 1);
+      }
     }
   }
 }

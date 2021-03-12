@@ -43,19 +43,31 @@
         </div>
 
         <div class="mt-2 mb-1">
-          <v-chip small color="warning" v-if="answer && !answer.is_published">
-            {{ $t('此为初稿仅自己可见') }}
-          </v-chip>
-          <v-chip small color="info" v-else-if="showHasDraftBadge">
-            {{ $t('编辑器中有未发表的草稿') }}
-          </v-chip>
-          <Viewer :body="answer.body" class="vditor-preview" v-intersect.once="onReadFullAnswer" />
+          <template v-if="draftMode">
+            <v-chip small color="info" v-if="answer">
+              {{ $t('草稿') }}
+            </v-chip>
+            <Viewer v-if="bodyDraft !== null" :body="bodyDraft" class="vditor-preview" />
+          </template>
+          <template v-else>
+            <v-chip small color="warning" v-if="answer && !answer.is_published">
+              {{ $t('此为初稿仅自己可见') }}
+            </v-chip>
+            <v-chip small color="info" v-else-if="showHasDraftBadge">
+              {{ $t('编辑器中有未发表的草稿') }}
+            </v-chip>
+            <Viewer
+              :body="answer.body"
+              class="vditor-preview"
+              v-intersect.once="onReadFullAnswer"
+            />
+          </template>
         </div>
 
         <div v-if="userBookmark" fluid>
           <v-row>
             <v-col class="d-flex" align-self="end">
-              <v-dialog max-width="300" v-model="showCancelUpvoteDialog">
+              <v-dialog max-width="400" v-model="showCancelUpvoteDialog">
                 <v-card>
                   <v-card-title primary-title>
                     <div class="headline">{{ $t('确定收回点赞？') }}</div>
@@ -134,11 +146,15 @@
                     </v-list>
                   </v-menu>
 
-                  <v-dialog max-width="300" v-model="confirmDeleteDialog">
+                  <v-dialog max-width="400" v-model="confirmDeleteDialog">
                     <v-card>
                       <v-card-title primary-title>
                         <div class="headline primary--text">
-                          {{ $t('确定永久删除答案及其所有历史版本？') }}
+                          {{
+                            draftMode
+                              ? $t('确定永久删除答案草稿？')
+                              : $t('确定永久删除答案及其所有历史版本？')
+                          }}
                         </div>
                       </v-card-title>
                       <v-card-actions>
@@ -331,6 +347,7 @@ export default class Answer extends Vue {
   @Prop() private readonly answerProp: IAnswer | undefined;
   @Prop({ default: false }) private readonly loadFull!: boolean;
   @Prop() private readonly showAuthor!: boolean;
+  @Prop({ default: false }) private readonly draftMode!: boolean;
   @Prop() private readonly showCommentId: number | undefined;
   @Prop({ default: true }) private readonly showQuestionInCard!: boolean;
 
@@ -509,6 +526,8 @@ export default class Answer extends Vue {
     }
   }
 
+  private bodyDraft: string | null = null;
+
   private updateStateWithLoadedAnswer(answer: IAnswer) {
     this.$emit('load');
     this.answer = answer;
@@ -520,6 +539,7 @@ export default class Answer extends Vue {
           const draft = response.data;
           if (draft.body_draft) {
             this.editButtonText = '编辑草稿';
+            this.bodyDraft = draft.body_draft;
             this.showHasDraftBadge = true;
           }
           return response.data;
@@ -591,25 +611,33 @@ export default class Answer extends Vue {
     });
   }
 
-  @Emit('delete-answer')
   private async deleteAnswer() {
-    await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
-    commitAddNotification(this.$store, {
-      content: this.$t('答案已永久删除').toString(),
-      color: 'success',
-    });
-    this.confirmDeleteDialog = false;
-    return this.answerPreview.uuid;
+    if (this.draftMode) {
+      await this.deleteDraft();
+      this.$emit('delete-answer-draft', this.answerPreview.uuid);
+    } else {
+      dispatchCaptureApiError(this.$store, async () => {
+        await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
+        commitAddNotification(this.$store, {
+          content: this.$t('答案已永久删除').toString(),
+          color: 'success',
+        });
+        this.confirmDeleteDialog = false;
+        this.$emit('delete-answer', this.answerPreview.uuid);
+      });
+    }
   }
 
   private async deleteDraft() {
-    await apiAnswer.deleteAnswerDraft(this.token, this.answer!.uuid);
-    commitAddNotification(this.$store, {
-      content: this.$t('草稿已删除').toString(),
-      color: 'success',
+    dispatchCaptureApiError(this.$store, async () => {
+      await apiAnswer.deleteAnswerDraft(this.token, this.answer!.uuid);
+      commitAddNotification(this.$store, {
+        content: this.$t('草稿已删除').toString(),
+        color: 'success',
+      });
+      this.showHasDraftBadge = false;
+      this.showEditor = false;
     });
-    this.showHasDraftBadge = false;
-    this.showEditor = false;
   }
 
   private truncatedIntro(intro: string) {
