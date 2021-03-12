@@ -86,6 +86,24 @@
           >Discord 闲聊群</a
         >
       </div>
+      <div class="caption grey--text" v-if="buildInfo">
+        基于提交
+        <a
+          class="grey--text text-decoration-none"
+          :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.commitHash"
+          target="blank"
+          ><code>{{ buildInfo.commitHashShort }}</code></a
+        >构建
+        <br />
+        位于分支
+        <a
+          class="grey--text text-decoration-none"
+          :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.branch"
+          >{{ buildInfo.branch }}</a
+        >
+        <br />
+        提交于 {{ buildInfo.commitTime }}
+      </div>
     </div>
   </div>
 </template>
@@ -102,6 +120,7 @@ import { apiMe } from '@/api/me';
 import { readIsLoggedIn } from '@/store/main/getters';
 
 import MoreIcon from '@/components/icons/MoreIcon.vue';
+import { buildInfo } from '@/env';
 
 @Component({
   components: { SiteBtn, QuestionLink, CreateSiteCard, MoreIcon },
@@ -118,6 +137,10 @@ export default class ExploreCard extends Vue {
 
   get loggedIn() {
     return readIsLoggedIn(this.$store);
+  }
+
+  get buildInfo() {
+    return buildInfo;
   }
 
   public async mounted() {
