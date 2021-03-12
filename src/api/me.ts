@@ -14,6 +14,8 @@ import {
   IUserUpdateLoginPhoneNumber,
   IUserUpdateSecondaryEmails,
   IUserUpdatePrimaryEmail,
+  IUserSubmissionSubscription,
+  ISubmission,
 } from '../interfaces';
 
 export const apiMe = {
@@ -74,6 +76,25 @@ export const apiMe = {
       authHeaders(token)
     );
   },
+  async getSubmissionSubscription(token: string, submissionUUID: string) {
+    return axios.get<IUserSubmissionSubscription>(
+      `${apiUrl}/api/v1/me/submission-subscriptions/${submissionUUID}`,
+      authHeaders(token)
+    );
+  },
+  async unsubscribeSubmission(token: string, submissionUUID: string) {
+    return axios.delete<IUserSubmissionSubscription>(
+      `${apiUrl}/api/v1/me/submission-subscriptions/${submissionUUID}`,
+      authHeaders(token)
+    );
+  },
+  async subscribeSubmission(token: string, submissionUUID: string) {
+    return axios.post<IUserSubmissionSubscription>(
+      `${apiUrl}/api/v1/me/submission-subscriptions/${submissionUUID}`,
+      null,
+      authHeaders(token)
+    );
+  },
   async getTopicSubscription(token: string, topicUUID: string) {
     return axios.get<IUserTopicSubscription>(
       `${apiUrl}/api/v1/me/topic-subscriptions/${topicUUID}`,
@@ -102,6 +123,18 @@ export const apiMe = {
   async getPendingQuestions(token: string) {
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/api/v1/me/pending-questions/`,
+      authHeaders(token)
+    );
+  },
+  async getSubscribedQuestions(token: string) {
+    return axios.get<IQuestionPreview[]>(
+      `${apiUrl}/api/v1/me/question-subscriptions/`,
+      authHeaders(token)
+    );
+  },
+  async getSubscribedSubmissions(token: string) {
+    return axios.get<ISubmission[]>(
+      `${apiUrl}/api/v1/me/submission-subscriptions/`,
       authHeaders(token)
     );
   },

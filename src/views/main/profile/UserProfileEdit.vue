@@ -188,9 +188,11 @@
             </div>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn @click="cancel">{{ $t('Cancel') }}</v-btn>
-              <v-btn @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+              <v-btn smal depressed @click="cancel">{{ $t('Cancel') }}</v-btn>
+              <v-btn smal depressed @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
               <v-btn
+                smal
+                depressed
                 color="primary"
                 @click="handleSubmit(submit)"
                 :disabled="!valid || submitIntermediate"
