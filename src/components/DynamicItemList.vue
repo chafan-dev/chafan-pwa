@@ -12,7 +12,7 @@
     <div class="my-4 text-center" v-else-if="items !== null">
       {{ $t(emptyItemsText) }}
     </div>
-    <div class="my-4 text-center" v-intersect.once="tryLoadMore(false)" v-else>
+    <div class="my-4 text-center" v-else>
       {{ $t(nullItemsText) }}
       <v-progress-circular v-if="loading" size="20" color="primary" indeterminate />
     </div>
