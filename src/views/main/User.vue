@@ -200,52 +200,52 @@
               </div>
             </v-tab-item>
 
-            <v-tab-item value="answers">
-              <template v-if="authoredAnswers !== null">
-                <p v-if="authoredAnswers.length === 0">{{ $t('暂无') }}</p>
-                <Answer
-                  v-for="answer in authoredAnswers"
-                  :key="answer.uuid"
-                  class="my-4"
-                  :answerPreview="answer"
-                /> </template
-              ><v-skeleton-loader type="paragraph" v-else />
+            <v-tab-item value="answers" class="pt-2">
+              <DynamicItemList
+                v-if="userPublic"
+                emptyItemsText="暂无"
+                nullItemsText=""
+                :loadItems="loadAnswers"
+                v-slot="{ item }"
+              >
+                <Answer :answerPreview="item" />
+              </DynamicItemList>
             </v-tab-item>
 
-            <v-tab-item value="questions">
-              <template v-if="askedQuestions !== null">
-                <p v-if="askedQuestions.length === 0">{{ $t('暂无') }}</p>
-                <QuestionPreview
-                  :questionPreview="question"
-                  class="my-4"
-                  v-for="question in askedQuestions"
-                  :key="question.uuid"
-                /> </template
-              ><v-skeleton-loader type="paragraph" v-else />
+            <v-tab-item value="questions" class="pt-2">
+              <DynamicItemList
+                v-if="userPublic"
+                emptyItemsText="暂无"
+                nullItemsText=""
+                :loadItems="loadQuestions"
+                v-slot="{ item }"
+              >
+                <QuestionPreview :questionPreview="item" />
+              </DynamicItemList>
             </v-tab-item>
 
-            <v-tab-item value="articles">
-              <template v-if="articles !== null">
-                <p v-if="articles.length === 0">{{ $t('暂无') }}</p>
-                <ArticlePreview
-                  :articlePreview="article"
-                  class="my-4"
-                  :key="article.uuid"
-                  v-for="article in articles"
-                /> </template
-              ><v-skeleton-loader type="paragraph" v-else />
+            <v-tab-item value="articles" class="pt-2">
+              <DynamicItemList
+                v-if="userPublic"
+                emptyItemsText="暂无"
+                nullItemsText=""
+                :loadItems="loadArticles"
+                v-slot="{ item }"
+              >
+                <ArticlePreview :articlePreview="item" />
+              </DynamicItemList>
             </v-tab-item>
 
-            <v-tab-item value="submissions">
-              <template v-if="submissions !== null">
-                <p v-if="submissions.length === 0">{{ $t('暂无') }}</p>
-                <SubmissionCard
-                  :submission="submission"
-                  class="my-4"
-                  v-for="submission in submissions"
-                  :key="submission.uuid"
-                /> </template
-              ><v-skeleton-loader type="paragraph" v-else />
+            <v-tab-item value="submissions" class="pt-2">
+              <DynamicItemList
+                v-if="userPublic"
+                emptyItemsText="暂无"
+                nullItemsText=""
+                :loadItems="loadSubmissions"
+                v-slot="{ item }"
+              >
+                <SubmissionCard :submission="item" />
+              </DynamicItemList>
             </v-tab-item>
 
             <v-tab-item value="followers">
@@ -300,6 +300,7 @@ import SiteBtn from '@/components/SiteBtn.vue';
 import SubmissionCard from '@/components/SubmissionCard.vue';
 import UserLink from '@/components/UserLink.vue';
 import UserGrid from '@/components/UserGrid.vue';
+import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import TwitterIcon from '@/components/icons/TwitterIcon.vue';
 import WebIcon from '@/components/icons/WebIcon.vue';
@@ -323,6 +324,7 @@ import { readIsLoggedIn } from '@/store/main/getters';
     LinkedinIcon,
     ArticlePreview,
     SubmissionCard,
+    DynamicItemList,
   },
 })
 export default class User extends Vue {
@@ -369,25 +371,21 @@ export default class User extends Vue {
     {
       code: 'answers',
       text: 'Answers',
-      render: this.renderAnswers,
       tabExtraCount: (userPublic: IUserPublic) => userPublic.answers_count,
     },
     {
       code: 'questions',
       text: 'Questions',
-      render: this.renderAskedQuestions,
       tabExtraCount: (userPublic: IUserPublic) => userPublic.questions_count,
     },
     {
       code: 'articles',
       text: 'Articles',
-      render: this.renderArticles,
       tabExtraCount: (userPublic: IUserPublic) => userPublic.articles_count,
     },
     {
       code: 'submissions',
       text: 'Sharings',
-      render: this.renderSubmissions,
       tabExtraCount: (userPublic: IUserPublic) => userPublic.submissions_count,
     },
     {
@@ -411,13 +409,15 @@ export default class User extends Vue {
       if (this.loggedIn) {
         this.userPublic = (await apiPeople.getUserPublic(this.token, this.handle)).data;
         const currentItem = this.tabItems.find((item) => item.code === this.currentTabItem);
-        if (currentItem) {
+        if (currentItem && currentItem.render) {
           await currentItem.render(this.userPublic);
         }
         await Promise.all(
           this.tabItems.map(async (item) => {
             if (item.code !== this.currentTabItem && this.userPublic) {
-              await item.render(this.userPublic);
+              if (item.render) {
+                await item.render(this.userPublic);
+              }
             }
           })
         );
@@ -441,21 +441,52 @@ export default class User extends Vue {
     return this.$store.state.main.token;
   }
 
-  private async renderAnswers(userPublic: IUserPublic) {
-    this.authoredAnswers = (await apiPeople.getAnswersByAuthor(this.token, userPublic.uuid)).data;
+  private async loadAnswers(skip: number, limit: number) {
+    let items: IAnswerPreview[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.userPublic !== null) {
+        items = (await apiPeople.getAnswersByAuthor(this.token, this.userPublic.uuid, skip, limit))
+          .data;
+      }
+    });
+    return items;
   }
 
-  private async renderAskedQuestions(userPublic: IUserPublic) {
-    this.askedQuestions = (await apiPeople.getQuestionsByAuthor(this.token, userPublic.uuid)).data;
+  private async loadQuestions(skip: number, limit: number) {
+    let items: IQuestionPreview[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.userPublic !== null) {
+        items = (
+          await apiPeople.getQuestionsByAuthor(this.token, this.userPublic.uuid, skip, limit)
+        ).data;
+      }
+    });
+    return items;
   }
 
-  private async renderSubmissions(userPublic: IUserPublic) {
-    this.submissions = (await apiPeople.getSubmissionsByAuthor(this.token, userPublic.uuid)).data;
+  private async loadSubmissions(skip: number, limit: number) {
+    let items: ISubmission[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.userPublic !== null) {
+        items = (
+          await apiPeople.getSubmissionsByAuthor(this.token, this.userPublic.uuid, skip, limit)
+        ).data;
+      }
+    });
+    return items;
   }
 
-  private async renderArticles(userPublic: IUserPublic) {
-    this.articles = (await apiPeople.getArticlesByAuthor(this.token, userPublic.uuid)).data;
+  private async loadArticles(skip: number, limit: number) {
+    let items: IArticlePreview[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.userPublic !== null) {
+        items = (await apiPeople.getArticlesByAuthor(this.token, this.userPublic.uuid, skip, limit))
+          .data;
+      }
+    });
+    return items;
   }
+
   private async renderFollowers(userPublic: IUserPublic) {
     this.followers = (await apiPeople.getUserFollowers(this.token, userPublic.uuid)).data;
   }

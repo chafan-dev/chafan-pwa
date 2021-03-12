@@ -517,8 +517,10 @@ const i18n = new VueI18n({
       我的回答: 'My answer',
       '添加额外的 GIF 头像': 'Extra GIF avatar',
       点击更改默认头像: 'Change default avatar',
+      没有更多了: "That's all",
     },
     zh: {
+      没有更多了: '没有更多了',
       '添加额外的 GIF 头像': '添加额外的 GIF 头像',
       点击更改默认头像: '点击更改默认头像',
       我的回答: '我的回答',
