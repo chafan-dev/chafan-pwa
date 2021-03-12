@@ -143,7 +143,9 @@
                       </v-card-title>
                       <v-card-actions>
                         <v-spacer />
-                        <v-btn depressed small="confirmDeleteDialog = false">{{ $t('No') }}</v-btn>
+                        <v-btn depressed small @click="confirmDeleteDialog = false">{{
+                          $t('No')
+                        }}</v-btn>
                         <v-btn
                           depressed
                           small
