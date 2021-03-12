@@ -12,7 +12,7 @@
     <div class="my-4 text-center" v-else-if="items !== null">
       {{ $t(emptyItemsText) }}
     </div>
-    <div class="my-4 text-center" v-intersect.once="tryLoadMore" v-else>
+    <div class="my-4 text-center" v-intersect.once="tryLoadMore(false)" v-else>
       {{ $t(nullItemsText) }}
       <v-progress-circular v-if="loading" size="20" color="primary" indeterminate />
     </div>
@@ -38,12 +38,12 @@ export default class DynamicContentList<T> extends Vue {
   private async mounted() {
     this.loading = true;
     window.onscroll = () => {
-      this.tryLoadMore();
+      this.tryLoadMore(false);
     };
-    this.tryLoadMore();
+    this.tryLoadMore(true);
   }
 
-  private async tryLoadMore() {
+  private async tryLoadMore(ignoreScroll: boolean) {
     if (this.noMore) {
       return;
     }
@@ -52,7 +52,7 @@ export default class DynamicContentList<T> extends Vue {
         window.innerHeight +
         300 >=
       document.documentElement.offsetHeight;
-    if (!bottomOfWindow) {
+    if (!ignoreScroll && !bottomOfWindow) {
       return;
     }
 
@@ -66,7 +66,6 @@ export default class DynamicContentList<T> extends Vue {
         } else {
           this.items = newItems;
         }
-        setTimeout(this.tryLoadMore, 100);
       } else {
         this.noMore = true;
       }
