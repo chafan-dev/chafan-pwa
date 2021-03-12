@@ -86,6 +86,7 @@
                 :articlePreview="article"
                 class="ma-3"
               />
+              <div v-if="myAnswerDrafts.length === 0 && myArticleDrafts.length === 0">暂无草稿</div>
             </div>
             <v-progress-linear indeterminate v-else />
           </v-tab-item>

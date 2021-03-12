@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
-    <v-row class="mb-12">
-      <v-col>
+    <v-row justify="center" fluid>
+      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
         <div class="mb-1">
-          <div class="headline primary--text">
+          <div class="headline primary--text mb-3">
             {{ $t('All Circles') }}
           </div>
           <ExploreSitesGrid />
