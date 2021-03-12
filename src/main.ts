@@ -524,8 +524,10 @@ const i18n = new VueI18n({
       '提交申请给人工审核前应满足的所有条件：':
         'All conditions to be automatically met before manual approval: ',
       '加入申请处理方式：': 'How to approve application to join: ',
+      编辑答案: 'Edit answer',
     },
     zh: {
+      编辑答案: '编辑答案',
       '加入申请处理方式：': '加入申请处理方式：',
       人工审核: '人工审核',
       '提交申请给人工审核前应满足的所有条件：': '提交申请给人工审核前应满足的所有条件：',
