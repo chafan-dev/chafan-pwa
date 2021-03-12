@@ -222,7 +222,10 @@ export default class RichEditor extends Vue {
     'bold',
     'italic',
     'strike',
-    'link',
+    {
+      name: 'link',
+      suffix: ']()',
+    },
     '|',
     'list',
     'ordered-list',

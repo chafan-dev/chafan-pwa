@@ -86,6 +86,11 @@ export default class SimpleEditor extends Vue {
   padding-right: 8px !important;
 }
 
+.simple-editor .vditor-toolbar {
+  height: 0px;
+  border-bottom: 0px;
+}
+
 .simple-editor h1::before,
 .simple-editor h2::before,
 .simple-editor h3::before {
