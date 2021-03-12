@@ -158,7 +158,7 @@
                     :clickable="false"
                   />
                 </v-tab>
-                <v-tab-item v-for="channel in myChannels" :key="channel.id" :value="channel.id">
+                <v-tab-item v-for="channel in myChannels" :key="channel.id">
                   <ChatWindow :channel="channel" />
                 </v-tab-item>
               </v-tabs>
