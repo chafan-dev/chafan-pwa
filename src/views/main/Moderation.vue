@@ -104,14 +104,14 @@
               </div>
 
               <div v-if="showSiteConfigEditor">
-                <span class="black--text mr-1">加入申请处理方式：</span>
+                <span class="black--text mr-1">{{ $t('加入申请处理方式：') }}</span>
                 <v-radio-group v-model="autoApproval">
                   <v-radio label="自动审核" :value="true" />
                   <v-radio label="人工审核" :value="false" />
                 </v-radio-group>
               </div>
               <div v-else>
-                <span class="black--text mr-1">加入申请处理方式：</span>
+                <span class="black--text mr-1">{{ $t('加入申请处理方式：') }}</span>
                 <span v-if="selectedSite.auto_approval">{{ $t('自动审核') }}</span>
                 <span v-else>{{ $t('人工审核') }}</span>
               </div>
@@ -146,7 +146,7 @@
                     multiple
                     small-chips
                     :delimiters="[',', '，', '、']"
-                    label="Email domain suffixes (e.g. '@harvard.edu')"
+                    label="Email domain suffixes (e.g. '@harvard.edu'), ENTER to confirm each one"
                     v-if="showSiteConfigEditor"
                     clearable
                     v-model="emailSuffixes"
@@ -182,7 +182,7 @@
                 @click="commitSiteConfig"
                 color="primary"
                 v-show="showSiteConfigEditor"
-                >Save Edit</v-btn
+                >{{ $t('提交') }}</v-btn
               >
               <v-btn
                 small
@@ -190,7 +190,7 @@
                 class="mr-2"
                 @click="showSiteConfigEditor = false"
                 v-show="showSiteConfigEditor"
-                >Cancel</v-btn
+                >{{ $t('Cancel') }}</v-btn
               >
             </v-card-actions>
           </v-card>
@@ -208,7 +208,7 @@
             </v-card-actions>
           </v-card>
         </template>
-        <div class="ma-2" v-else>Please select a circle.</div>
+        <div class="mt-2 text-center" v-else>Please select a circle.</div>
       </v-tab-item>
 
       <!-- Operation -->
@@ -310,6 +310,7 @@ export default class Moderation extends Vue {
   }
 
   private resetSiteConfig(site: ISite) {
+    this.siteConfigUpdate = {};
     for (const key in site) {
       if (site[key] !== undefined) {
         this.siteConfigUpdate[key] = site[key];

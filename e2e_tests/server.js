@@ -324,7 +324,7 @@ const userProfile = {
   is_active: true,
   is_superuser: false,
   handle: EXAMPLE_USER_ME_HANDLE,
-  moderated_sites: [],
+  moderated_sites: [example_site1],
   subscribed_topics: [],
   residency_topics: [],
   profession_topic: {
@@ -372,7 +372,11 @@ app.post('/api/v1/login/access-token', (req, res) => {
 });
 
 app.get('/api/v1/me/moderated-sites/', (req, res) => {
-  res.json([]);
+  res.json([example_site1]);
+});
+
+app.get(`/api/v1/applications/pending/${example_site1.uuid}/`, (req, res) => {
+  res.json([])
 });
 
 app.get('/api/v1/sitemaps/', (req, res) => {
