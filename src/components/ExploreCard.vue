@@ -87,22 +87,29 @@
         >
       </div>
       <div class="caption grey--text" v-if="buildInfo">
-        基于提交
-        <a
-          class="grey--text text-decoration-none"
-          :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.commitHash"
-          target="blank"
-          ><code>{{ buildInfo.commitHashShort }}</code></a
-        >构建
-        <br />
-        位于分支
-        <a
-          class="grey--text text-decoration-none"
-          :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.branch"
-          >{{ buildInfo.branch }}</a
+        <pre style="cursor: pointer" @click="expandDebugInfo = !expandDebugInfo">
+v{{ buildInfo.commitHashShort }}</pre
         >
-        <br />
-        提交于 {{ buildInfo.commitTime }}
+        <v-expand-transition>
+          <div v-show="expandDebugInfo">
+            Commit:
+            <a
+              class="grey--text text-decoration-none"
+              :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.commitHash"
+              target="blank"
+              ><code>{{ buildInfo.commitHashShort }}</code></a
+            >
+            <br />
+            Branch:
+            <a
+              class="grey--text text-decoration-none"
+              :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.branch"
+              >{{ buildInfo.branch }}</a
+            >
+            <br />
+            Commited at {{ $dayjs(buildInfo.commitTime).fromNow() }}
+          </div>
+        </v-expand-transition>
       </div>
     </div>
   </div>
@@ -132,6 +139,7 @@ export default class ExploreCard extends Vue {
   private showAllSiteProfilesDialogButton = false;
   private questions: IQuestionPreview[] | null = null;
   private loadingSites = true;
+  private expandDebugInfo = false;
 
   private showCreateSiteDialog = false;
 

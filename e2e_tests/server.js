@@ -387,7 +387,7 @@ app.get(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`, (req, res) => {
 });
 
 app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, res) => {
-  res.json({ msg: "" })
+  res.json({ msg: '' });
 });
 
 app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
@@ -454,7 +454,7 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/articles/`, (req, res) => {
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/answers/`, (req, res) => {
   const skip = req.query.skip ? parseInt(req.query.skip) : 0;
   const limit = req.query.limit ? parseInt(req.query.limit) : 10;
-  res.json(randomAnswerPreviews.slice(skip, skip+limit));
+  res.json(randomAnswerPreviews.slice(skip, skip + limit));
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followers/`, (req, res) => {
   res.json(randomUserPreviews1);
@@ -465,7 +465,7 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => {
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => {
   const skip = req.query.skip ? parseInt(req.query.skip) : 0;
   const limit = req.query.limit ? parseInt(req.query.limit) : 10;
-  res.json(randomQuestionPreviews.slice(skip, skip+limit));
+  res.json(randomQuestionPreviews.slice(skip, skip + limit));
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => {
   res.json([]);
@@ -568,7 +568,7 @@ app.get(`/api/v1/comments/${EXAMPLE_USER_ME_COMMENT1_UUID}/child-comments/`, (re
 });
 
 app.post('/api/v1/answers/3b4TBWxFUnBe4aRrKq4X/views/', (req, res) => {
-  res.json({ msg: "" })
+  res.json({ msg: '' });
 });
 
 app.get('/api/v1/activities/', (req, res) => {
@@ -647,10 +647,10 @@ for (const answerPreview of randomAnswerPreviews) {
       bookmarked: false,
       view_times: 4,
     });
-  })
+  });
 
   app.post(`/api/v1/answers/${answerPreview.uuid}/views/`, (req, res) => {
-    res.json({ msg: "" })
+    res.json({ msg: '' });
   });
 
   app.get(`/api/v1/reactions/answer/${answerPreview.uuid}`, (req, res) => {
