@@ -167,6 +167,19 @@ const example_answer1_preview = {
   is_hidden_by_moderator: false,
 };
 
+const randomAnswerPreviews = [];
+for (var i = 0; i < 40; i++) {
+  const uuid = randomString();
+  randomAnswerPreviews.push({
+    uuid: uuid,
+    author: example_user1_preview,
+    question: example_question_preview,
+    body: '我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收...',
+    upvotes_count: 2,
+    is_hidden_by_moderator: false,
+  });
+}
+
 const EXAMPLE_USER1_SUBMISSION1_UUID = 'example-user1-submission1-uuid';
 const EXAMPLE_USER2_COMMENT1_UUID = 'example-user1-comment-1-uuid';
 const EXAMPLE_USER_ME_COMMENT1_UUID = 'example-user-me-comment-1-uuid';
@@ -373,7 +386,9 @@ app.get(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`, (req, res) => {
   res.json(example_user1_submission1);
 });
 
-app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, res) => {});
+app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, res) => {
+  res.json({ msg: "" })
+});
 
 app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
   res.json({
@@ -437,7 +452,9 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/articles/`, (req, res) => {
   res.json([]);
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/answers/`, (req, res) => {
-  res.json([]);
+  const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  res.json(randomAnswerPreviews.slice(skip, skip+limit));
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followers/`, (req, res) => {
   res.json(randomUserPreviews1);
@@ -446,7 +463,9 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/followed/`, (req, res) => {
   res.json(randomUserPreviews2);
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => {
-  res.json(randomQuestionPreviews);
+  const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  res.json(randomQuestionPreviews.slice(skip, skip+limit));
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => {
   res.json([]);
@@ -548,7 +567,9 @@ app.get(`/api/v1/comments/${EXAMPLE_USER_ME_COMMENT1_UUID}/child-comments/`, (re
   res.json([]);
 });
 
-app.post('/api/v1/answers/3b4TBWxFUnBe4aRrKq4X/views/', (req, res) => {});
+app.post('/api/v1/answers/3b4TBWxFUnBe4aRrKq4X/views/', (req, res) => {
+  res.json({ msg: "" })
+});
 
 app.get('/api/v1/activities/', (req, res) => {
   if (req.query.before_activity_id === undefined) {
@@ -599,6 +620,44 @@ for (const site of randomSites) {
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const limit = req.query.limit ? parseInt(req.query.limit) : 10;
     res.json([example_user1_submission1].slice(skip, skip + limit));
+  });
+}
+
+for (const answerPreview of randomAnswerPreviews) {
+  app.get(`/api/v1/answers/${answerPreview.uuid}`, (req, res) => {
+    res.json({
+      uuid: answerPreview.uuid,
+      updated_at: '2021-02-06T20:37:28.104656+00:00',
+      body:
+        '我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收运营对社交网路有两点影响。\n\n- 对公司决策产生制约\n- 对这些公司全球化有负面效应\n\n因此只有当大公司开始有衰退迹象并且做不好全球化的时候才会让政府当冤大头。未来一段时间还看不到这个现象。\n',
+      is_published: true,
+      draft_saved_at: null,
+      editor: 'wysiwyg',
+      math_enabled: false,
+      source_format: 'markdown',
+      upvotes_count: 2,
+      is_hidden_by_moderator: false,
+      comments: [],
+      author: example_user1_preview,
+      question: example_question_preview,
+      site: example_site1,
+      upvoted: true,
+      comment_writable: true,
+      bookmark_count: 0,
+      bookmarked: false,
+      view_times: 4,
+    });
+  })
+
+  app.post(`/api/v1/answers/${answerPreview.uuid}/views/`, (req, res) => {
+    res.json({ msg: "" })
+  });
+
+  app.get(`/api/v1/reactions/answer/${answerPreview.uuid}`, (req, res) => {
+    res.json({
+      counters: {},
+      my_reactions: [],
+    });
   });
 }
 
