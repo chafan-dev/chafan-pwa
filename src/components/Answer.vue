@@ -43,10 +43,10 @@
         </div>
 
         <div class="mt-2 mb-1">
-          <v-chip small class="ml-2" color="warning" v-if="answer && !answer.is_published">
+          <v-chip small color="warning" v-if="answer && !answer.is_published">
             {{ $t('此为初稿仅自己可见') }}
           </v-chip>
-          <v-chip small class="ml-2" color="info" v-else-if="showHasDraftBadge">
+          <v-chip small color="info" v-else-if="showHasDraftBadge">
             {{ $t('编辑器中有未发表的草稿') }}
           </v-chip>
           <Viewer :body="answer.body" class="vditor-preview" v-intersect.once="onReadFullAnswer" />
