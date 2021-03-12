@@ -10,7 +10,7 @@ import {
   IUserPublic,
   IUserWorkExperience,
 } from '@/interfaces';
-import { authHeaders } from '@/utils';
+import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiPeople = {
   async getUserPublic(token: string, handle: string) {
@@ -28,28 +28,40 @@ export const apiPeople = {
       authHeaders(token)
     );
   },
-  async getQuestionsByAuthor(token: string, userUUID: string) {
+  async getQuestionsByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/api/v1/people/${userUUID}/questions/`,
-      authHeaders(token)
+      authHeadersWithParams(token, params)
     );
   },
-  async getSubmissionsByAuthor(token: string, userUUID: string) {
+  async getSubmissionsByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
     return axios.get<ISubmission[]>(
       `${apiUrl}/api/v1/people/${userUUID}/submissions/`,
-      authHeaders(token)
+      authHeadersWithParams(token, params)
     );
   },
-  async getArticlesByAuthor(token: string, userUUID: string) {
+  async getArticlesByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
     return axios.get<IArticlePreview[]>(
       `${apiUrl}/api/v1/people/${userUUID}/articles/`,
-      authHeaders(token)
+      authHeadersWithParams(token, params)
     );
   },
-  async getAnswersByAuthor(token: string, userUUID: string) {
+  async getAnswersByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
     return axios.get<IAnswerPreview[]>(
       `${apiUrl}/api/v1/people/${userUUID}/answers/`,
-      authHeaders(token)
+      authHeadersWithParams(token, params)
     );
   },
   async getUserEducationExperiences(token: string, userUUID: string) {
