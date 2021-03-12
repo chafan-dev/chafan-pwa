@@ -24,7 +24,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
 export default class DynamicContentList<T> extends Vue {
-  @Prop({ default: 10 }) public readonly pageLimit!: number;
+  @Prop({ default: 20 }) public readonly pageLimit!: number;
   @Prop() public readonly emptyItemsText!: string;
   @Prop() public readonly nullItemsText!: string;
   @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<T[] | null>;

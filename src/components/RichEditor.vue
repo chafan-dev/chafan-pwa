@@ -197,7 +197,7 @@ export default class RichEditor extends Vue {
 
   private archivePage = 1;
   private archivePagesLength = 1;
-  private readonly archivePageLimit = 2;
+  private readonly archivePageLimit = 10;
 
   // prevent double-posting
   private writingSessionUUID = uuidv4();
