@@ -66,12 +66,14 @@ module.exports = {
 /** Set git information to process arguments */
 function setGitInfo() {
   try {
-    let [commit, commitTime] = spawnSync('git', ['show', '-s', '--format=%H%n%cI', 'HEAD'], {
+    let commit = spawnSync('git', ['rev-parse', 'HEAD'], { timeout: 2000 })
+      .stdout.toString('utf-8')
+      .trim();
+    let commitTime = spawnSync('git', ['show', '-s', '--format=%cI', 'HEAD'], {
       timeout: 2000,
     })
       .stdout.toString('utf-8')
-      .trim()
-      .split('\n');
+      .trim();
 
     let branch = spawnSync('git', ['branch', '--show-current'], { timeout: 2000 })
       .stdout.toString()
