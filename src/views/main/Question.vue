@@ -651,18 +651,15 @@ export default class Question extends Vue {
             if (b.uuid === this.answerUUID) {
               return 1;
             }
-            if (a.author.uuid === this.userProfile?.uuid) {
-              this.currentUserAnswerUUID = a.uuid;
-              return -1;
-            }
-            if (b.author.uuid === this.userProfile?.uuid) {
-              this.currentUserAnswerUUID = b.uuid;
-              return 1;
-            }
             if (a.upvotes_count > b.upvotes_count) {
               return -1;
             }
             return 1;
+          });
+          answerPreviews.forEach((a) => {
+            if (a.author.uuid === this.userProfile?.uuid) {
+              this.currentUserAnswerUUID = a.uuid;
+            }
           });
           this.loadingProgress = 66;
 
