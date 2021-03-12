@@ -1,30 +1,7 @@
 const webpack = require('webpack');
 const { spawnSync } = require('child_process');
 
-// Generate git commit information
-try {
-  let [commit, commitTime] = spawnSync('git', ['show', '-s', '--format=%H%n%cI', 'HEAD'], {
-    timeout: 2000,
-  })
-    .stdout.toString('utf-8')
-    .trim()
-    .split('\n');
-
-  let branch = spawnSync('git', ['branch', '--show-current'], { timeout: 2000 })
-    .stdout.toString()
-    .trim();
-
-  process.env.VUE_APP_GIT_COMMIT = commit;
-  process.env.VUE_APP_GIT_BRANCH = branch;
-  process.env.VUE_APP_GIT_COMMIT_TIME = commitTime;
-
-  console.log('Sending these variables to frontend:');
-  console.log('Commit: ', commit);
-  console.log('Branch: ', branch);
-  console.log('Timestamp: ', commitTime);
-} catch (e) {
-  console.error('Failed to get git version info:', e);
-}
+setGitInfo();
 
 module.exports = {
   // Fix Vuex-typescript in prod: https://github.com/istrib/vuex-typescript/issues/13#issuecomment-409869231
@@ -85,3 +62,40 @@ module.exports = {
     disableHostCheck: true,
   },
 };
+
+/** Set git information to process arguments */
+function setGitInfo() {
+  try {
+    let [commit, commitTime] = spawnSync('git', ['show', '-s', '--format=%H%n%cI', 'HEAD'], {
+      timeout: 2000,
+    })
+      .stdout.toString('utf-8')
+      .trim()
+      .split('\n');
+
+    let branch = spawnSync('git', ['branch', '--show-current'], { timeout: 2000 })
+      .stdout.toString()
+      .trim();
+
+    let tags = spawnSync('git', ['tag', '--points-at', 'HEAD'], { timeout: 2000 })
+      .stdout.toString()
+      .trim();
+
+    // A single string containing current commit ID
+    process.env.VUE_APP_GIT_COMMIT = commit;
+    // A single string containing current branch name
+    process.env.VUE_APP_GIT_BRANCH = branch;
+    // A single string containing last commit time
+    process.env.VUE_APP_GIT_COMMIT_TIME = commitTime;
+    // A newline-separated string containing all tags applied to this commit,
+    // or an empty string containing nothing.
+    process.env.VUE_APP_GIT_TAGS = tags;
+
+    console.log('Sending these variables to frontend:');
+    console.log('Commit: ', commit);
+    console.log('Branch: ', branch);
+    console.log('Timestamp: ', commitTime);
+  } catch (e) {
+    console.error('Failed to get git version info:', e);
+  }
+}
