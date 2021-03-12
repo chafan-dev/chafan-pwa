@@ -89,15 +89,14 @@ export interface IQuestion {
   uuid: string;
   site: ISite;
   author: IUserPreview;
-  editor: IUserPreview;
+  editor?: IUserPreview;
   created_at: string;
   updated_at: string;
   title: string;
   topics: ITopic[];
-  description: string;
+  description?: string;
   comments: IComment[];
   view_times: number;
-  question: IQuestion;
   is_placed_at_home: boolean;
   upvoted: boolean;
   upvotes_count: number;
@@ -742,7 +741,7 @@ export interface IQuestionArchive {
   description?: string;
   topics: ITopic[];
   created_at: string;
-  editor: IUserPreview;
+  editor?: IUserPreview;
 }
 
 export interface ITopBanner {

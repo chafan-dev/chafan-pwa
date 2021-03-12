@@ -359,6 +359,24 @@ const example_answer1 = {
   view_times: 4,
 };
 
+app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
+  res.json({
+    uuid: example_question_preview.uuid,
+    site: example_site1,
+    author: example_user1_preview,
+    created_at: '2021-02-02T20:02:56.170487+00:00',
+    updated_at: '2021-02-02T20:02:56.170487+00:00',
+    title: example_question_preview.title,
+    topics: [],
+    comments: [],
+    view_times: 10,
+    is_placed_at_home: false,
+    upvoted: false,
+    upvotes_count: 2,
+    answers_count: 11,
+  });
+});
+
 app.post('/api/v1/ws/token', (req, res) => {
   res.json({
     msg: 'example-ws-token',
@@ -392,6 +410,22 @@ app.get(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`, (req, res) => {
 
 app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, res) => {
   res.json({ msg: '' });
+});
+
+app.post(`/api/v1/questions/${example_question_preview.uuid}/views/`, (req, res) => {
+  res.json({ msg: '' });
+});
+
+app.get(`/api/v1/questions/${example_question_preview.uuid}/answers/`, (req, res) => {
+  res.json([example_answer1]);
+});
+
+app.get(`/api/v1/me/question-subscriptions/${example_question_preview.uuid}`, (req, res) => {
+  res.json({
+    question_uuid: example_question_preview.uuid,
+    subscription_count: 10,
+    subscribed_by_me: false,
+  });
 });
 
 app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
@@ -536,6 +570,13 @@ app.get('/api/v1/answers/3b4TBWxFUnBe4aRrKq4X', (req, res) => {
 });
 
 app.get('/api/v1/reactions/answer/3b4TBWxFUnBe4aRrKq4X', (req, res) => {
+  res.json({
+    counters: {},
+    my_reactions: [],
+  });
+});
+
+app.get(`/api/v1/reactions/question/${example_question_preview.uuid}`, (req, res) => {
   res.json({
     counters: {},
     my_reactions: [],
