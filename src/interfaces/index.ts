@@ -537,6 +537,12 @@ export interface IUserQuestionSubscription {
   subscribed_by_me: boolean;
 }
 
+export interface IUserSubmissionSubscription {
+  submission_uuid: string;
+  subscription_count: number;
+  subscribed_by_me: boolean;
+}
+
 export interface IUserAnswerBookmark {
   answer_uuid: string;
   bookmarked_by_me: boolean;

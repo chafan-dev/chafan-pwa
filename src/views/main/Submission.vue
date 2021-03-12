@@ -99,7 +99,8 @@
               </v-dialog>
               <v-btn
                 small
-                depressed="showCancelUpvoteDialog = true"
+                depressed
+                @click="showCancelUpvoteDialog = true"
                 class="mr-1"
                 color="primary lighten-2"
                 v-if="upvotes && upvotes.upvoted"
@@ -123,6 +124,19 @@
                 <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('赞') }}</span>
                 ({{ upvotes.count }})
               </v-btn>
+
+              <BookmarkedIcon
+                class="mr-1"
+                @click="cancelSubscription"
+                :disabled="cancelSubscriptionIntermediate"
+                v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
+              />
+              <ToBookmarkIcon
+                class="mr-1"
+                @click="subscribe"
+                v-else
+                :disabled="subscribeIntermediate"
+              />
 
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
@@ -260,7 +274,7 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
-import { commitAddNotification } from '@/store/main/mutations';
+import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
 import { readUserMode, readUserProfile } from '@/store/main/getters';
 import {
@@ -271,6 +285,7 @@ import {
   IUserProfile,
   ISubmissionArchive,
   IComment,
+  IUserSubmissionSubscription,
 } from '@/interfaces';
 import { rankComments } from '@/utils';
 import SimpleViewer from '@/components/SimpleViewer.vue';
@@ -278,6 +293,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
+import { apiMe } from '@/api/me';
 
 @Component({
   components: {
@@ -369,6 +385,9 @@ export default class Submission extends Vue {
           query: { ...this.$route.query, title: this.submission.title },
         });
       }
+      this.submissionSubscription = (
+        await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
+      ).data;
       document.title = this.submission.title;
     } catch (err) {
       commitAddNotification(this.$store, {
@@ -536,6 +555,34 @@ export default class Submission extends Vue {
   private async cancelSubmissionUpdate() {
     this.$router.push(this.$router.currentRoute.path);
     this.showSubmissionEditor = false;
+  }
+
+  private submissionSubscription: IUserSubmissionSubscription | null = null;
+
+  private async cancelSubscription() {
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.submission) {
+        this.cancelSubscriptionIntermediate = true;
+        const r = await apiMe.unsubscribeSubmission(this.token, this.submission.uuid);
+        this.submissionSubscription = r.data;
+        this.cancelSubscriptionIntermediate = false;
+      }
+    });
+  }
+
+  private async subscribe() {
+    if (!this.userProfile) {
+      commitSetShowLoginPrompt(this.$store, true);
+      return;
+    }
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.submission) {
+        this.subscribeIntermediate = true;
+        const r = await apiMe.subscribeSubmission(this.token, this.submission.uuid);
+        this.submissionSubscription = r.data;
+        this.subscribeIntermediate = false;
+      }
+    });
   }
 }
 </script>

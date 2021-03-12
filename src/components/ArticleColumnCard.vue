@@ -4,20 +4,20 @@
       <v-col align-self="center">
         <div
           :class="{
-            'mb-6': currentUserId === articleColumn.owner.uuid,
-            'mb-2': currentUserId !== articleColumn.owner.uuid,
+            'mb-6': currentUserId === articleColumn.owner.uuid && !compactMode,
+            'mb-2': currentUserId !== articleColumn.owner.uuid && !compactMode,
           }"
         >
           <div class="mb-1" :class="{ headline: !compactMode, 'text-center': !compactMode }">
             <a
               :href="'/article-columns/' + articleColumn.uuid"
-              class="text-decoration-none"
+              class="text-decoration-none title"
               v-if="!showColumnEditor"
             >
               {{ name }}
             </a>
-            <span class="grey--text" v-if="compactMode && desc && !showColumnEditor">
-              : {{ desc }}
+            <span class="grey--text ml-2" v-if="compactMode && desc && !showColumnEditor">
+              {{ desc }}
             </span>
             <v-text-field :label="$t('专栏名称')" v-model="name" v-if="showColumnEditor" />
           </div>
@@ -56,9 +56,9 @@
             <v-btn
               small
               @click="subscribe"
-              :disabled="subscribeIntermediate || currentUserId === articleColumn.owner.uuid"
+              :disabled="subscribeIntermediate"
               color="primary"
-              v-else
+              v-else-if="currentUserId !== articleColumn.owner.uuid"
             >
               {{ $t('关注') }} ({{ subscription.subscription_count }})
               <v-progress-circular

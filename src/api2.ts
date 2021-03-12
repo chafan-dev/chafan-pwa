@@ -17,12 +17,6 @@ export const api2 = {
   async getCoinPayments(token: string) {
     return axios.get<ICoinPayment[]>(`${apiUrl}/api/v1/coin-payments/`, authHeaders(token));
   },
-  async getSubscribedQuestions(token: string) {
-    return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/api/v1/me/question-subscriptions/`,
-      authHeaders(token)
-    );
-  },
   async getReadNotifications(token: string) {
     return axios.get<INotification[]>(`${apiUrl}/api/v1/notifications/read/`, authHeaders(token));
   },

@@ -513,8 +513,10 @@ const i18n = new VueI18n({
       '加入圈子：': 'Circle to join: ',
       创建后添加细节: 'Add details afterwards',
       离开: 'Leave',
+      收藏的分享: 'Bookmarked sharings',
     },
     zh: {
+      收藏的分享: '收藏的分享',
       离开: '离开',
       添加站内用户: '添加站内用户',
       '加入圈子：': '加入圈子：',
