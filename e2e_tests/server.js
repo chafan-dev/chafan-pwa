@@ -376,7 +376,7 @@ app.get('/api/v1/me/moderated-sites/', (req, res) => {
 });
 
 app.get(`/api/v1/applications/pending/${example_site1.uuid}/`, (req, res) => {
-  res.json([])
+  res.json([]);
 });
 
 app.get('/api/v1/sitemaps/', (req, res) => {
