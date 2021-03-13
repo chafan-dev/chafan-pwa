@@ -31,16 +31,16 @@
 
         <div v-if="showSharing">
           <v-progress-linear v-if="loadingSubmissions" indeterminate />
-          <div
-            :class="{
-              'pl-3 pr-3': $vuetify.breakpoint.mdAndUp,
-              'pt-1': true,
-              'pb-1': true,
-            }"
-            v-for="submission in submissions"
-            :key="submission.uuid"
-          >
-            <SubmissionCard class="ml-2 mr-2" :submission="submission" />
+          <div class="my-4" v-for="submission in submissions" :key="submission.uuid">
+            <SubmissionCard
+              :class="{
+                'px-3': $vuetify.breakpoint.mdAndUp,
+                'py-4': $vuetify.breakpoint.mdAndUp,
+                'px-2': !$vuetify.breakpoint.mdAndUp,
+                'py-3': !$vuetify.breakpoint.mdAndUp,
+              }"
+              :submission="submission"
+            />
           </div>
         </div>
 
