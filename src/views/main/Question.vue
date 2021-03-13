@@ -419,7 +419,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import Answer from '@/components/Answer.vue';
-import QuestionCard from '@/components/QuestionCard.vue';
+import QuestionCard from '@/components/question/QuestionCard.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
@@ -439,15 +439,15 @@ import { apiAnswer } from '@/api/answer';
 import { readIsLoggedIn, readNarrowUI, readUserMode, readUserProfile } from '@/store/main/getters';
 import {
   IAnswer,
-  IQuestion,
-  IUserQuestionSubscription,
-  ISite,
-  IUserSiteProfile,
   IAnswerPreview,
-  IQuestionUpvotes,
-  IUserProfile,
-  IQuestionArchive,
   INewEditEvent,
+  IQuestion,
+  IQuestionArchive,
+  IQuestionUpvotes,
+  ISite,
+  IUserProfile,
+  IUserQuestionSubscription,
+  IUserSiteProfile,
 } from '@/interfaces';
 import { newAnswerHandler } from '@/utils';
 import SimpleViewer from '@/components/SimpleViewer.vue';

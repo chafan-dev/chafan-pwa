@@ -68,7 +68,7 @@
 import { api } from '@/api';
 import { apiMe } from '@/api/me';
 import { IArticleColumn, IQuestionPreview, IUserSiteProfile } from '@/interfaces';
-import QuestionLink from '@/components/QuestionLink.vue';
+import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';

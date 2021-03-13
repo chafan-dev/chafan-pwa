@@ -38,7 +38,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { apiTopic } from '@/api/topic';
 import { IQuestionPreview, ITopic } from '@/interfaces';
-import QuestionLink from '@/components/QuestionLink.vue';
+import QuestionLink from '@/components/question/QuestionLink.vue';
 import TopicCard from '@/components/TopicCard.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';

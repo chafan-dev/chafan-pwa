@@ -116,11 +116,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { api } from '@/api';
-import { IUserProfile, ISite, IUserSiteProfile, IQuestionPreview, ISubmission } from '@/interfaces';
+import { IQuestionPreview, ISite, ISubmission, IUserProfile, IUserSiteProfile } from '@/interfaces';
 
 import SiteCard from '@/components/SiteCard.vue';
 import UserCard from '@/components/UserCard.vue';
-import QuestionPreview from '@/components/QuestionPreview.vue';
+import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import SubmissionCard from '@/components/SubmissionCard.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 

@@ -223,7 +223,7 @@ import LinkIcon from '@/components/icons/LinkIcon.vue';
 import { apiArticle } from '@/api/article';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
-import QuestionLink from '@/components/QuestionLink.vue';
+import QuestionLink from '@/components/question/QuestionLink.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
