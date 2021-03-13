@@ -7,7 +7,7 @@ User-agent: *
 Allow: /questions/
 Allow: /articles/
 Allow: /submissions/
-Allow: /sites/
+Allow: /sites
 Allow: /users/
 
 User-agent: *
