@@ -158,6 +158,26 @@ for (var i = 0; i < 40; i++) {
   });
 }
 
+const randomSubmissions = [];
+for (var i = 0; i < 40; i++) {
+  const uuid = randomString();
+  randomSubmissions.push({
+    uuid: uuid,
+    title: '知乎提交赴美 IPO 申请',
+    description: '\n',
+    url: 'https://readhub.cn/topic/84nlE5nwJaO',
+    created_at: '2021-03-05T19:30:54.694708+00:00',
+    updated_at: '2021-03-05T19:30:57.482069+00:00',
+    topics: [],
+    upvotes_count: 0,
+    author: example_user1_preview,
+    comments: [],
+    site: example_site1,
+    upvoted: false,
+    view_times: 2,
+  });
+}
+
 const example_answer1_preview = {
   uuid: '3b4TBWxFUnBe4aRrKq4X',
   author: example_user1_preview,
@@ -453,7 +473,7 @@ app.get('/api/v1/me/article-columns/', (req, res) => {
 });
 
 app.get('/api/v1/submissions/', (req, res) => {
-  res.json([]);
+  res.json(randomSubmissions);
 });
 
 app.get('/api/v1/me/pending-questions/', (req, res) => {
