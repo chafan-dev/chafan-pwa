@@ -589,6 +589,7 @@ export default class Answer extends Vue {
           source_format: this.answer.source_format,
           editor: this.answer.editor,
           math_enabled: this.answer.math_enabled,
+          visibility: this.answer.visibility,
         });
       } else {
         commitSetWorkingDraft(this.$store, {
@@ -596,6 +597,7 @@ export default class Answer extends Vue {
           body: this.answer.body,
           rendered_body_text: null,
           math_enabled: this.answer.math_enabled,
+          visibility: this.answer.visibility,
           editor: this.answer.editor,
           source_format: this.answer.source_format,
           is_draft: false,

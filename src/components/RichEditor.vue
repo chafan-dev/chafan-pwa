@@ -188,6 +188,7 @@ export default class RichEditor extends Vue {
 
   private format: 'markdown' = 'markdown';
   private mathEnabled = false;
+  private visibility: 'anyone' | 'registered' = 'anyone';
   private showHelp = false;
   private historyDialog = false;
   private answerId: string | null = null;
@@ -321,6 +322,7 @@ export default class RichEditor extends Vue {
       rendered_body_text: this.getTextContent(),
       source_format: this.format,
       is_draft: !isPublished,
+      visibility: this.visibility,
       editor: this.getEditorMode(),
       math_enabled: this.mathEnabled,
     };

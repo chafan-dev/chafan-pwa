@@ -83,6 +83,7 @@ export interface IAnswer {
   bookmark_count: number;
   archives_count: number;
   bookmarked: boolean;
+  visibility: 'anyone' | 'registered';
 }
 
 export interface IQuestion {
@@ -182,6 +183,7 @@ export interface IAnswerCreate {
   source_format: 'markdown';
   is_published: boolean;
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  visibility: 'anyone' | 'registered';
   math_enabled: boolean;
   writing_session_uuid: string;
 }
@@ -191,6 +193,7 @@ export interface IAnswerUpdate {
   is_draft: boolean;
   source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  visibility: 'anyone' | 'registered';
   math_enabled: boolean;
 }
 
@@ -199,6 +202,7 @@ export interface IRichEditorState {
   body: string;
   rendered_body_text: string | null;
   source_format: 'markdown';
+  visibility: 'anyone' | 'registered';
   is_draft: boolean;
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   math_enabled: boolean;
@@ -260,30 +264,6 @@ export interface IAnswerPreview {
   body: string;
   upvotes_count: number;
   is_hidden_by_moderator: boolean;
-}
-
-// To be deprecated
-export interface ICreateQuestionActivityContent {
-  author_preview: IUserPreview;
-  question_preview: IQuestionPreview;
-}
-
-// To be deprecated
-export interface ICreateAnswerActivityContent {
-  author_preview: IUserPreview;
-  answer_preview: IAnswerPreview;
-}
-
-// To be deprecated
-export interface IUpvoteAnswerActivityContent {
-  voter_preview: IUserPreview;
-  answer_preview: IAnswerPreview;
-}
-
-// To be deprecated
-export interface IFollowUserActivityContent {
-  follower_preview: IUserPreview;
-  followed_preview: IUserPreview;
 }
 
 export interface CreateQuestion {
@@ -586,15 +566,6 @@ export interface IUserPublicForVisitor {
   articles_count: number;
 }
 
-export interface IProfileUpdateMod {
-  site_uuid: string;
-}
-
-export interface IProfileCreate {
-  site_uuid: string;
-  owner_uuid: string;
-}
-
 export interface ITopic {
   uuid: string;
   name: string;
@@ -759,6 +730,7 @@ export interface IArticleCreate {
   source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   math_enabled: boolean;
+  visibility: 'anyone' | 'registered';
   writing_session_uuid: string;
 }
 
@@ -769,6 +741,7 @@ export interface IArticleUpdate {
   source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   math_enabled: boolean;
+  visibility: 'anyone' | 'registered';
 }
 
 export interface IArticleDraft {
@@ -788,6 +761,7 @@ export interface IArticle {
   source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   math_enabled: boolean;
+  visibility: 'anyone' | 'registered';
   topics: ITopic[];
   upvotes_count: number;
   author: IUserPreview;

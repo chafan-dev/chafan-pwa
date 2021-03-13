@@ -71,6 +71,7 @@ export default class ArticleFocusMode extends Vue {
         rendered_body_text: null,
         math_enabled: article.math_enabled,
         editor: article.editor,
+        visibility: article.visibility,
         source_format: article.source_format,
         is_draft: true,
       });
@@ -143,6 +144,7 @@ export default class ArticleFocusMode extends Vue {
             updated_body: payload.edit.body,
             source_format: payload.edit.source_format,
             editor: payload.edit.editor,
+            visibility: payload.edit.visibility,
             math_enabled: payload.edit.math_enabled,
             is_draft: payload.edit.is_draft,
           });
