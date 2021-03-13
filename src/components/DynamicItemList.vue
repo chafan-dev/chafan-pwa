@@ -6,15 +6,13 @@
       </div>
       <div class="text-center">
         <span v-if="noMore">{{ $t('没有更多了') }}</span>
-        <v-progress-circular v-else size="20" color="primary" indeterminate />
       </div>
     </div>
     <div class="my-4 text-center" v-else-if="items !== null">
       {{ $t(emptyItemsText) }}
     </div>
-    <div class="my-4 text-center" v-else>
-      {{ $t(nullItemsText) }}
-      <v-progress-circular v-if="loading" size="20" color="primary" indeterminate />
+    <div class="my-4 text-center" v-if="!noMore">
+      <v-progress-circular size="20" color="primary" indeterminate />
     </div>
   </div>
 </template>
@@ -26,17 +24,14 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 export default class DynamicContentList<T> extends Vue {
   @Prop({ default: 20 }) public readonly pageLimit!: number;
   @Prop() public readonly emptyItemsText!: string;
-  @Prop() public readonly nullItemsText!: string;
   @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<T[] | null>;
 
   private items: T[] | null = null;
 
   private currentPage = 0;
   private noMore = false;
-  private loading = false;
 
   private async mounted() {
-    this.loading = true;
     window.onscroll = () => {
       this.tryLoadMore(false);
     };
@@ -58,15 +53,13 @@ export default class DynamicContentList<T> extends Vue {
 
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
-    this.loading = false;
     if (newItems) {
-      if (newItems.length > 0) {
-        if (this.items) {
-          this.items.push(...newItems);
-        } else {
-          this.items = newItems;
-        }
+      if (this.items) {
+        this.items.push(...newItems);
       } else {
+        this.items = newItems;
+      }
+      if (newItems.length < this.pageLimit) {
         this.noMore = true;
       }
     }

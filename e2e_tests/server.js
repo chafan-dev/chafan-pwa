@@ -526,7 +526,9 @@ app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/questions/`, (req, res) => {
   res.json(randomQuestionPreviews.slice(skip, skip + limit));
 });
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/submissions/`, (req, res) => {
-  res.json([]);
+  const skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+  res.json(randomSubmissions.slice(0, 4).slice(skip, skip + limit));
 });
 
 app.get(`/api/v1/people/${EXAMPLE_USER1_UUID}/edu-exps/`, (req, res) => {

@@ -27,28 +27,34 @@
 
           <v-tab-item value="questions">
             <DynamicItemList
+              v-if="siteProfile"
               emptyItemsText="No questions for now"
-              nullItemsText="Only site members can view its content."
               :loadItems="loadQuestions"
               v-slot="{ item }"
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
-            <div class="my-4 text-center" v-if="!userProfile">
+            <div class="my-4 text-center" v-else-if="userProfile">
+              {{ $t('Only site members can view its content.') }}
+            </div>
+            <div class="my-4 text-center" v-else>
               {{ $t('登录后查看更多') }}
             </div>
           </v-tab-item>
 
           <v-tab-item value="submissions">
             <DynamicItemList
+              v-if="siteProfile"
               emptyItemsText="No submissions for now"
-              nullItemsText="Only site members can view its content."
               :loadItems="loadSubmissions"
               v-slot="{ item }"
             >
               <SubmissionCard :submission="item" />
             </DynamicItemList>
-            <div class="my-4 text-center" v-if="!userProfile">
+            <div class="my-4 text-center" v-else-if="userProfile">
+              {{ $t('Only site members can view its content.') }}
+            </div>
+            <div class="my-4 text-center" v-else>
               {{ $t('登录后查看更多') }}
             </div>
           </v-tab-item>
