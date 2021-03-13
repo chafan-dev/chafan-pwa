@@ -35,7 +35,7 @@
 <script lang="ts">
 import { IQuestionPreview } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';

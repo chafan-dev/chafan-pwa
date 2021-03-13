@@ -366,7 +366,7 @@ import { api2 } from '@/api2';
 import { apiAnswer } from '@/api/answer';
 import { apiArticle } from '@/api/article';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
-import QuestionPreview from '@/components/QuestionPreview.vue';
+import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import ChatWindow from '@/components/ChatWindow.vue';
 import Answer from '@/components/Answer.vue';

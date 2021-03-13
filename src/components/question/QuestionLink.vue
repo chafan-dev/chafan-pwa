@@ -6,7 +6,8 @@
 
 <script lang="ts">
 import { IQuestionPreview } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
 @Component
 export default class QuestionLink extends Vue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
@@ -14,6 +15,7 @@ export default class QuestionLink extends Vue {
   get id() {
     return this.questionPreview.uuid;
   }
+
   get title() {
     return this.questionPreview.title;
   }

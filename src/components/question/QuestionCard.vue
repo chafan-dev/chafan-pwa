@@ -70,7 +70,7 @@
 import { IQuestion, ISite, IUserQuestionSubscription } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import { api } from '@/api';
 import { dispatchCaptureApiError } from '@/store/main/actions';

@@ -1,14 +1,5 @@
 <template>
-  <v-card
-    :class="{
-      'pa-3': $vuetify.breakpoint.mdAndUp,
-      'pa-2': !$vuetify.breakpoint.mdAndUp,
-      'c-card': !embedded,
-    }"
-    :flat="embedded"
-    :loading="loading"
-    v-if="!showEditor && !loading"
-  >
+  <base-card v-if="!showEditor && !loading" :embedded="embedded" :loading="loading">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
@@ -259,19 +250,19 @@
             >{{ $t('取消隐藏') }}</v-btn
           >
           <v-btn
-            small
-            depressed
-            class="slim-btn ma-1"
-            @click="toggleHideAnswer"
-            color="warning"
-            :disabled="toggleHideAnswerIntermediate"
             v-else
-            >{{ $t('隐藏') }}</v-btn
-          >
+            :disabled="toggleHideAnswerIntermediate"
+            class="slim-btn ma-1"
+            color="warning"
+            depressed
+            small
+            @click="toggleHideAnswer"
+            >{{ $t('隐藏') }}
+          </v-btn>
         </v-col>
       </v-row>
     </div>
-  </v-card>
+  </base-card>
   <RichEditor
     v-else-if="answer && showEditor"
     :formatProp="answer.source_format"
@@ -285,17 +276,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
-  IAnswerDraft,
   IAnswer,
+  IAnswerDraft,
   IAnswerPreview,
   IAnswerUpvotes,
+  INewEditEvent,
   ISite,
   IUserAnswerBookmark,
   IUserProfile,
   IUserSiteProfile,
-  INewEditEvent,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import { readUserMode, readUserProfile } from '@/store/main/getters';
@@ -308,7 +299,7 @@ import { api } from '@/api';
 import { apiAnswer } from '@/api/answer';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
-import QuestionLink from '@/components/QuestionLink.vue';
+import QuestionLink from '@/components/question/QuestionLink.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { AnswerEditHandler } from '@/handlers';
@@ -319,9 +310,11 @@ import {
   commitSetWorkingDraft,
 } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
   components: {
+    BaseCard,
     UserLink,
     QuestionLink,
     CommentBlock,
