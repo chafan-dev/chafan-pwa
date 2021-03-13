@@ -5,14 +5,27 @@ import 'intersection-observer';
 
 import { getBrowserLocale } from '@/utils';
 
+// styles
+import './styles/app.scss';
+
 // plugins
 import vuetify from './plugins/vuetify';
 import './plugins/vee-validate';
 
 import Dayjs from '@/dayjsPlugin';
+import editorPlugins from '@/editorPlugins';
+import VueI18n from 'vue-i18n';
+import * as Sentry from '@sentry/vue';
+import { Integrations } from '@sentry/tracing';
+import { sentryDSN } from '@/env';
+import App from './App.vue';
+import router from './router';
+import store from '@/store';
+import './registerServiceWorker';
+import 'vuetify/dist/vuetify.min.css';
+
 Vue.use(Dayjs);
 
-import editorPlugins from '@/editorPlugins';
 Vue.use(editorPlugins);
 
 declare module 'vue/types/vue' {
@@ -21,7 +34,6 @@ declare module 'vue/types/vue' {
   }
 }
 
-import VueI18n from 'vue-i18n';
 Vue.use(VueI18n);
 const i18n = new VueI18n({
   locale: getBrowserLocale(),
@@ -1015,13 +1027,11 @@ const i18n = new VueI18n({
       'Other Circles': '其他圈子',
       'New reply': '新回复',
       'Write reply': '回复评论',
+      "Haven't account": '还没账户',
+      'In-depth social Q&A site': '有深度的社交问答网站',
     },
   },
 });
-
-import * as Sentry from '@sentry/vue';
-import { Integrations } from '@sentry/tracing';
-import { sentryDSN } from '@/env';
 
 if (sentryDSN) {
   Sentry.init({
@@ -1037,12 +1047,6 @@ if (sentryDSN) {
     },
   });
 }
-
-import App from './App.vue';
-import router from './router';
-import store from '@/store';
-import './registerServiceWorker';
-import 'vuetify/dist/vuetify.min.css';
 
 Vue.config.productionTip = false;
 
