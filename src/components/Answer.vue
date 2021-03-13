@@ -1,5 +1,14 @@
 <template>
-  <base-card v-if="!showEditor && !loading" :embedded="embedded" :loading="loading">
+  <v-card
+    v-if="!showEditor && !loading"
+    :class="{
+      'pa-3': $vuetify.breakpoint.mdAndUp,
+      'pa-2': !$vuetify.breakpoint.mdAndUp,
+      'c-card': !embedded,
+    }"
+    :flat="embedded"
+    :loading="loading"
+  >
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
@@ -262,7 +271,7 @@
         </v-col>
       </v-row>
     </div>
-  </base-card>
+  </v-card>
   <RichEditor
     v-else-if="answer && showEditor"
     :formatProp="answer.source_format"
