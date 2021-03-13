@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { mdiLock } from '@mdi/js';
+import { mdiAccountGroup } from '@mdi/js';
 
 export default {
   data: () => ({
-    svgPath: mdiLock,
+    svgPath: mdiAccountGroup,
   }),
 };
 </script>
