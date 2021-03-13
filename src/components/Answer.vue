@@ -319,11 +319,9 @@ import {
   commitSetWorkingDraft,
 } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
-import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
   components: {
-    BaseCard,
     UserLink,
     QuestionLink,
     CommentBlock,
