@@ -15,8 +15,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
   name: 'BaseCard',
 })
 export default class BaseCard extends Vue {
-  @Prop({ default: false }) private readonly embedded!: false;
-  @Prop({ default: false }) private readonly divider!: false;
+  @Prop({ default: false }) private readonly embedded!: boolean;
+  @Prop({ default: false }) private readonly divider!: boolean;
 }
 </script>
 
