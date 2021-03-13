@@ -90,6 +90,7 @@ export const newAnswerHandler = async (
           editor: edit.editor,
           math_enabled: edit.math_enabled,
           question_uuid: questionUUID,
+          visibility: edit.visibility,
           writing_session_uuid: writingSessionUUID,
           is_published: !edit.is_draft,
         })
@@ -131,6 +132,7 @@ export const newArticleHandler = async (
         body: edit.body,
         source_format: edit.source_format,
         editor: edit.editor,
+        visibility: edit.visibility,
         math_enabled: edit.math_enabled,
         is_published: !edit.is_draft,
         writing_session_uuid: writingSessionUUID,

@@ -85,6 +85,7 @@ class AnswerEditHandler {
           updated_body: payload.edit.body,
           source_format: payload.edit.source_format,
           is_draft: payload.edit.is_draft,
+          visibility: payload.edit.visibility,
           editor: payload.edit.editor,
           math_enabled: payload.edit.math_enabled,
         });
