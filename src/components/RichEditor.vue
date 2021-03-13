@@ -41,16 +41,36 @@
         <span>{{ $t('版本历史') }}</span>
       </v-tooltip>
 
-      <v-tooltip bottom v-if="answerId || articleId">
+      <v-menu offset-y top v-if="answerId || articleId" :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" align-self="center" class="d-flex">
-            <DeleteIcon @click="showDraftDialog = true" />
-          </div>
+          <SettingsIcon v-bind="attrs" v-on="on" />
         </template>
-        <span>{{ $t('删除') }}</span>
-      </v-tooltip>
+        <v-list dense>
+          <v-list-item @click="showDeleteDraftDialog = true">
+            <v-list-item-icon>
+              <DeleteIcon />
+            </v-list-item-icon>
+            <v-list-item-content>{{ $t('删除') }}</v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon class="pl-1 pt-2">
+              <RegisteredVisibilityIcon v-if="visibility === 'registered'" />
+              <AnyoneVisibilityIcon v-else-if="visibility === 'anyone'" />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-select
+                dense
+                :items="visibilityItems"
+                v-model="visibility"
+                item-text="text"
+                item-value="value"
+              />
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
-      <v-dialog max-width="400" v-model="showDraftDialog">
+      <v-dialog max-width="400" v-model="showDeleteDraftDialog">
         <v-card>
           <v-card-title primary-title>
             {{ $t('删除当前草稿？') }}
@@ -153,6 +173,9 @@
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import HistoryIcon from '@/components/icons/HistoryIcon.vue';
+import SettingsIcon from '@/components/icons/SettingsIcon.vue';
+import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
+import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readUserProfile, readWorkingDraft } from '@/store/main/getters';
 import { uuidv4 } from '@/utils';
@@ -173,7 +196,13 @@ import { vditorCDN } from '@/common';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
 @Component({
-  components: { HistoryIcon, DeleteIcon },
+  components: {
+    HistoryIcon,
+    DeleteIcon,
+    SettingsIcon,
+    AnyoneVisibilityIcon,
+    RegisteredVisibilityIcon,
+  },
 })
 export default class RichEditor extends Vue {
   get token() {
@@ -182,13 +211,29 @@ export default class RichEditor extends Vue {
   @Prop({ default: false }) private readonly focusMode!: boolean;
   @Prop() private readonly answerIdProp: string | undefined;
   @Prop() private readonly articleIdProp: string | undefined;
+  @Prop({ default: false }) private readonly inPrivateSite!: boolean;
   @Prop() private readonly archivesCount: number | undefined;
   @Prop({ default: false }) private readonly hasTitle!: boolean;
   @Prop({ default: 'Publish' }) private readonly publishText!: string;
 
   private format: 'markdown' = 'markdown';
   private mathEnabled = false;
-  private visibility: 'anyone' | 'registered' = 'anyone';
+  private readonly visibilityItems = [
+    {
+      text: this.$t('仅注册用户可读').toString(),
+      value: 'registered',
+    },
+  ].concat(
+    this.inPrivateSite
+      ? []
+      : [
+          {
+            text: this.$t('公开可读').toString(),
+            value: 'anyone',
+          },
+        ]
+  );
+  private visibility: 'anyone' | 'registered' = this.inPrivateSite ? 'registered' : 'anyone';
   private showHelp = false;
   private historyDialog = false;
   private answerId: string | null = null;
@@ -272,7 +317,7 @@ export default class RichEditor extends Vue {
     'fullscreen',
   ];
 
-  private showDraftDialog = false;
+  private showDeleteDraftDialog = false;
 
   private mounted() {
     this.answerId = this.answerIdProp ? this.answerIdProp : null;
@@ -281,6 +326,7 @@ export default class RichEditor extends Vue {
     if (workingDraft) {
       this.format = workingDraft.source_format;
       this.mathEnabled = workingDraft.math_enabled;
+      this.visibility = workingDraft.visibility;
       this.articleTitle = workingDraft.title;
       this.initEditor(workingDraft.body, workingDraft.editor);
       this.lastSaveLength = workingDraft.body.length;
@@ -507,7 +553,7 @@ export default class RichEditor extends Vue {
 
   @Emit('delete-draft')
   private deleteDraft() {
-    this.showDraftDialog = false;
+    this.showDeleteDraftDialog = false;
   }
 
   private async changeArchivePage() {

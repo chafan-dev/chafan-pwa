@@ -348,6 +348,7 @@
             class="ma-1"
             v-if="showEditor"
             publishText="发表答案"
+            :inPrivateSite="!question.site.public_readable"
             @submit-edit="newEditHandler"
             @cancel-edit="cancelHandler"
             @delete-draft="deleteDraft"

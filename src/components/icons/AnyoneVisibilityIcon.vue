@@ -1,0 +1,13 @@
+<template>
+  <v-icon v-on="$listeners" v-bind="$attrs" small>{{ svgPath }}</v-icon>
+</template>
+
+<script>
+import { mdiEarth } from '@mdi/js';
+
+export default {
+  data: () => ({
+    svgPath: mdiEarth,
+  }),
+};
+</script>
