@@ -27,7 +27,7 @@
 
           <v-tab-item value="questions">
             <DynamicItemList
-              v-if="siteProfile"
+              v-if="readable"
               emptyItemsText="No questions for now"
               :loadItems="loadQuestions"
               v-slot="{ item }"
@@ -44,7 +44,7 @@
 
           <v-tab-item value="submissions">
             <DynamicItemList
-              v-if="siteProfile"
+              v-if="readable"
               emptyItemsText="No submissions for now"
               :loadItems="loadSubmissions"
               v-slot="{ item }"
@@ -155,6 +155,9 @@ export default class Site extends Vue {
   private submissions: ISubmission[] | null = [];
   private showQuestionEditor = false;
   private showSubmissionEditor = false;
+  get readable() {
+    return this.site && (this.siteProfile !== null || this.site.public_readable);
+  }
 
   private tabItems = [
     {
