@@ -190,28 +190,45 @@
           <v-menu left v-if="userProfile" offset-y transition="slide-x-transition">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                icon
                 v-bind="attrs"
                 v-on="on"
                 :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+                icon
               >
-                <Avatar :userPreview="userProfile" v-if="userProfile && userProfile.avatar_url" />
+                <Avatar v-if="userProfile && userProfile.avatar_url" :userPreview="userProfile" />
                 <AccountIcon v-else />
               </v-btn>
             </template>
 
-            <v-list dense>
-              <v-list-item to="/dashboard">
-                <v-list-item-title><DashboardIcon /> {{ $t('Dashboard') }}</v-list-item-title>
+            <v-list dense min-width="48" nav>
+              <v-list-item
+                v-for="item in accountItems"
+                :key="item.text"
+                :href="item.href"
+                :to="item.to"
+                link
+              >
+                <v-list-item-icon>
+                  <component v-bind:is="item.icon" />
+                </v-list-item-icon>
+
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ item.text }}
+                  </v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
-              <v-list-item :href="`/users/${userProfile.handle}`">
-                <v-list-item-title><ProfileIcon /> {{ $t('我的个人页面') }}</v-list-item-title>
-              </v-list-item>
-              <v-list-item href="mailto:contact@cha.fan">
-                <v-list-item-title> <EmailIcon /> {{ $t('联系我们') }} </v-list-item-title>
-              </v-list-item>
+
+              <v-divider />
+
               <v-list-item @click="logout">
-                <v-list-item-title><LogoutIcon /> {{ $t('Logout') }}</v-list-item-title>
+                <v-list-item-icon>
+                  <LogoutIcon />
+                </v-list-item-icon>
+
+                <v-list-item-content>
+                  <v-list-item-title> {{ $t('Logout') }}</v-list-item-title>
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -265,6 +282,7 @@ import { api2 } from '@/api2';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
@@ -277,6 +295,7 @@ const routeGuardMain = async (to, from, next) => {
 
 @Component({
   components: {
+    BaseCard,
     CreateQuestionForm,
     AccountIcon,
     LangPicker,
@@ -428,6 +447,24 @@ export default class Main extends Vue {
   private switchUseMode() {
     commitSetUserMode(this.$store, this.userMode);
   }
+
+  private readonly accountItems = [
+    {
+      icon: 'DashboardIcon',
+      text: this.$t('Dashboard'),
+      to: '/dashboard',
+    },
+    {
+      icon: 'ProfileIcon',
+      text: this.$t('个人资料'),
+      href: `/users/${this.userProfile?.handle}`,
+    },
+    {
+      icon: 'EmailIcon',
+      text: this.$t('联系我们'),
+      href: 'mailto:contact@cha.fan',
+    },
+  ];
 }
 </script>
 
@@ -440,14 +477,21 @@ export default class Main extends Vue {
 .slim-btn {
   padding: 0 8px !important;
 }
+
 .thin-btn {
   max-width: 35px !important;
 }
+
 .app-bar-inner {
   width: 100%;
 }
 
 .opacity-none:before {
   opacity: 0 !important;
+}
+
+.v-list-item__action:first-child,
+.v-list-item__icon:first-child {
+  margin-right: 14px !important;
 }
 </style>

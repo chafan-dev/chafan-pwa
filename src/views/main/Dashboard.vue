@@ -21,9 +21,9 @@
               <NewInviteLinkBtn />
               <!-- Extra div wrapper to align the buttons -->
               <div v-if="userProfile">
-                <v-btn class="ml-2" depressed small :to="`/users/${userProfile.handle}`">{{
-                  $t('我的个人页面')
-                }}</v-btn>
+                <v-btn class="ml-2" depressed small :to="`/users/${userProfile.handle}`"
+                  >{{ $t('个人资料') }}
+                </v-btn>
               </div>
               <div v-if="userProfile">
                 <v-btn class="ml-2" depressed small to="/security">{{ $t('Security') }}</v-btn>
