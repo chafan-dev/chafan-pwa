@@ -2,11 +2,11 @@
   <v-menu offset-y transition="slide-x-transition" left>
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        dark
-        icon
         v-bind="attrs"
         v-on="on"
         :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+        :dark="dark"
+        icon
       >
         <I18nIcon />
       </v-btn>
@@ -29,16 +29,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { availableLocales, getBrowserLocale, setAppLocale } from '@/utils'; // FIXME: store locale in main.store
 import I18nIcon from '@/components/icons/I18nIcon.vue';
-import { readLocalePreference, readIsLoggedIn } from '@/store/main/getters';
+import { readIsLoggedIn, readLocalePreference } from '@/store/main/getters';
 import { dispatchUpdateUserProfile } from '@/store/main/actions';
 
 @Component({
   components: { I18nIcon },
 })
 export default class LangPicker extends Vue {
+  @Prop({ default: true }) private readonly dark!: boolean;
+
   private selectedLang: string = getBrowserLocale();
   private selectedLangIdx: number = 0;
 

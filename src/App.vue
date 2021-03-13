@@ -28,7 +28,7 @@
         </v-btn>
       </v-snackbar>
       <v-dialog v-model="showLoginPrompt" max-width="600">
-        <LoginCard :showTopBar="false" />
+        <LoginCard :showTopBar="false" class="py-10" />
       </v-dialog>
     </v-app>
   </div>
@@ -37,7 +37,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import NotificationsManager from '@/components/NotificationsManager.vue';
-import LoginCard from '@/components/LoginCard.vue';
+import LoginCard from '@/components/login/LoginCard.vue';
 import {
   readIsLoggedIn,
   readLocalePreference,
