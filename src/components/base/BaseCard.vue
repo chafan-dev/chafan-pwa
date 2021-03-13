@@ -9,8 +9,11 @@
 </template>
 
 <script lang="ts">
-import { Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
+@Component({
+  name: 'BaseCard',
+})
 export default class BaseCard extends Vue {
   @Prop({ default: false }) private readonly embedded!: boolean;
   @Prop({ default: false }) private readonly divider!: boolean;
