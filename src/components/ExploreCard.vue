@@ -118,7 +118,7 @@ v{{ buildInfo.commitHashShort }}</pre
 <script lang="ts">
 import { IQuestionPreview, IUserSiteProfile } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
-import QuestionLink from '@/components/QuestionLink.vue';
+import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSiteCard from '@/components/CreateSiteCard.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';

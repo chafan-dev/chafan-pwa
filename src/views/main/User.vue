@@ -291,7 +291,7 @@ import {
   IUserPublicForVisitor,
   IUserWorkExperience,
 } from '@/interfaces';
-import QuestionPreview from '@/components/QuestionPreview.vue';
+import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
 import UserCard from '@/components/UserCard.vue';

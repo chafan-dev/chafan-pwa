@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
   IAnswerPreview,
   IArticlePreview,
@@ -25,7 +25,7 @@ import {
 } from '@/interfaces';
 
 import SubmissionCard from '@/components/SubmissionCard.vue';
-import QuestionPreview from '@/components/QuestionPreview.vue';
+import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
 import SimpleViewer from '@/components/SimpleViewer.vue';
