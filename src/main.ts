@@ -1027,7 +1027,7 @@ const i18n = new VueI18n({
       'Other Circles': '其他圈子',
       'New reply': '新回复',
       'Write reply': '回复评论',
-      "Haven't account": '还没账户',
+      'No account': '还没账户',
       'In-depth social Q&A site': '有深度的社交问答网站',
     },
   },
