@@ -1,7 +1,7 @@
 import dayjs from '@/dayjs';
 
 export default {
-  install: (Vue, options) => {
+  install: (Vue) => {
     Vue.prototype.$dayjs = dayjs;
   },
 };

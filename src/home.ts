@@ -53,7 +53,7 @@ export const combinedActivities = (activities: IActivity[]) => {
     }
   }
 
-  questionUpvotes.forEach((v, k, map) => {
+  questionUpvotes.forEach((v) => {
     if (v.length > 1) {
       newActivities.push({
         id: v[0].id,
@@ -74,7 +74,7 @@ export const combinedActivities = (activities: IActivity[]) => {
     }
   });
 
-  submissionUpvotes.forEach((v, k, map) => {
+  submissionUpvotes.forEach((v) => {
     if (v.length > 1) {
       newActivities.push({
         id: v[0].id,
@@ -95,7 +95,7 @@ export const combinedActivities = (activities: IActivity[]) => {
     }
   });
 
-  answerUpvotes.forEach((v, k, map) => {
+  answerUpvotes.forEach((v) => {
     if (v.length > 1) {
       newActivities.push({
         id: v[0].id,
@@ -116,7 +116,7 @@ export const combinedActivities = (activities: IActivity[]) => {
     }
   });
 
-  followUsers.forEach((v, k, map) => {
+  followUsers.forEach((v) => {
     if (v.length > 1) {
       newActivities.push({
         id: v[0].id,
@@ -138,7 +138,7 @@ export const combinedActivities = (activities: IActivity[]) => {
   });
 
   // Combine repeated publish/unpublish/publish event.
-  createArticles.forEach((v, k, map) => {
+  createArticles.forEach((v) => {
     newActivities.push(v[0]);
   });
 
