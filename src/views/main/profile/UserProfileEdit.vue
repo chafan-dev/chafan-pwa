@@ -10,7 +10,7 @@
               </div>
               <v-spacer></v-spacer
               ><v-btn depressed small :to="`/users/${userProfile.handle}`">{{
-                $t('我的个人页面')
+                $t('个人资料')
               }}</v-btn>
             </v-card-title>
             <div class="pa-4">
