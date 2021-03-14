@@ -537,6 +537,7 @@ const i18n = new VueI18n({
         'All conditions to be automatically met before manual approval: ',
       '加入申请处理方式：': 'How to approve application to join: ',
       编辑答案: 'Edit answer',
+      'No account': 'No account',
     },
     zh: {
       编辑答案: '编辑答案',
