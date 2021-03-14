@@ -26,175 +26,183 @@
               :xl="showTopBar ? 5 : 11"
               cols="12"
             >
-              <h3 class="text-h3 font-weight-bold text-center">
-                {{ $t('Login') }}
-              </h3>
+              <ValidationObserver v-slot="{ handleSubmit, valid }">
+                <h3 class="text-h3 font-weight-bold text-center">
+                  {{ $t('Login') }}
+                </h3>
 
-              <div class="text-right mt-4">
-                <RouterLink class="text-decoration-none" to="/signup">
-                  {{ $t('No account') }}?
-                </RouterLink>
-              </div>
+                <div class="text-right mt-4">
+                  <RouterLink class="text-decoration-none" to="/signup">
+                    {{ $t('No account') }}?
+                  </RouterLink>
+                </div>
 
-              <div class="mt-4">
-                <ValidationProvider
-                  v-if="loginMethod === 'email'"
-                  v-slot="{ errors }"
-                  name="email"
-                  rules="email"
-                >
-                  <v-text-field
-                    v-model="email"
-                    :label="$t('Email')"
-                    name="login"
-                    type="text"
-                    @keyup.enter="submit"
-                  >
-                    <template v-slot:prepend>
-                      <AccountCircleOutlineIcon />
-                    </template>
-                  </v-text-field>
-                  <span class="error--text">{{ errors[0] }}</span>
-                </ValidationProvider>
-
-                <v-sheet v-else-if="loginMethod === 'cellphone'">
+                <div class="mt-4">
                   <ValidationProvider
+                    v-if="loginMethod === 'email'"
                     v-slot="{ errors }"
-                    name="phonenumber"
-                    rules="phone_number_e164"
+                    name="email"
+                    rules="email"
                   >
                     <v-text-field
-                      v-model="phoneNumber"
-                      :label="$t('Cellphone number')"
-                      name="phonenumber"
+                      v-model="email"
+                      :label="$t('Email')"
+                      name="login"
                       type="text"
                       @keyup.enter="submit"
                     >
                       <template v-slot:prepend>
-                        <CellphoneIcon />
+                        <AccountCircleOutlineIcon />
                       </template>
                     </v-text-field>
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
-                  <div class="d-flex">
+                  <v-sheet v-else-if="loginMethod === 'cellphone'">
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      name="phonenumber"
+                      rules="phone_number_e164"
+                    >
+                      <v-text-field
+                        v-model="phoneNumber"
+                        :label="$t('Cellphone number')"
+                        name="phonenumber"
+                        type="text"
+                        @keyup.enter="submit"
+                      >
+                        <template v-slot:prepend>
+                          <CellphoneIcon />
+                        </template>
+                      </v-text-field>
+                      <span class="error--text">{{ errors[0] }}</span>
+                    </ValidationProvider>
+
+                    <div class="d-flex">
+                      <v-text-field
+                        v-model="verificationCode"
+                        :label="$t('验证码')"
+                        name="verification-code"
+                        type="text"
+                        @keyup.enter="verifyCode"
+                      >
+                        <template v-slot:prepend>
+                          <VerifyCodeIcon />
+                        </template>
+                      </v-text-field>
+
+                      <v-btn
+                        :disabled="verificationCodeDisabled"
+                        class="mt-4"
+                        color="primary"
+                        depressed
+                        small
+                        @click="sendVerificationCode"
+                      >
+                        {{ $t('Send me verification code') }}
+                      </v-btn>
+                    </div>
+                  </v-sheet>
+
+                  <ValidationProvider rules="required" v-slot="{ errors }" name="password">
                     <v-text-field
-                      v-model="verificationCode"
-                      :label="$t('验证码')"
-                      name="verification-code"
-                      type="text"
-                      @keyup.enter="verifyCode"
+                      v-if="loginMethod === 'email'"
+                      id="password"
+                      v-model="password"
+                      :label="$t('Password')"
+                      name="password"
+                      type="password"
+                      @keyup.enter="submit"
+                      required
                     >
                       <template v-slot:prepend>
-                        <VerifyCodeIcon />
+                        <LockOutlineIcon />
                       </template>
                     </v-text-field>
+                    <span class="error--text">{{ errors[0] }}</span>
+                  </ValidationProvider>
 
+                  <v-sheet class="mb-2">
+                    <div v-if="loginError">
+                      <v-alert :value="loginError" transition="fade-transition" type="error">
+                        Incorrect email or password
+                      </v-alert>
+                    </div>
+                    <div class="text-right">
+                      <router-link class="text-decoration-none caption" to="/recover-password"
+                        >{{ $t('Forgot your password?') }}
+                      </router-link>
+                    </div>
+                  </v-sheet>
+
+                  <v-sheet>
                     <v-btn
-                      :disabled="verificationCodeDisabled"
-                      class="mt-4"
+                      :disabled="
+                        submitIntermediate ||
+                        (loginMethod === 'cellphone' && !this.verificationCode) ||
+                        !valid
+                      "
+                      block
                       color="primary"
                       depressed
-                      small
-                      @click="sendVerificationCode"
+                      large
+                      @click.prevent="handleSubmit(submit)"
                     >
-                      {{ $t('Send me verification code') }}
+                      {{ $t('Login') }}
+                      <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
                     </v-btn>
-                  </div>
-                </v-sheet>
+                  </v-sheet>
 
-                <v-text-field
-                  v-if="loginMethod === 'email'"
-                  id="password"
-                  v-model="password"
-                  :label="$t('Password')"
-                  name="password"
-                  type="password"
-                  @keyup.enter="submit"
-                >
-                  <template v-slot:prepend>
-                    <LockOutlineIcon />
-                  </template>
-                </v-text-field>
+                  <v-sheet class="mt-4 d-flex align-center justify-end">
+                    <v-btn
+                      class="text-capitalize"
+                      depressed
+                      href="https://about.cha.fan/signup"
+                      link
+                      small
+                      text
+                    >
+                      <HelpCircleOutline class="mr-1" />
+                      {{ $t('如何加入 Chafan?') }}
+                    </v-btn>
 
-                <v-sheet class="mb-2">
-                  <div v-if="loginError">
-                    <v-alert :value="loginError" transition="fade-transition" type="error">
-                      Incorrect email or password
-                    </v-alert>
-                  </div>
-                  <div class="text-right">
-                    <router-link class="text-decoration-none caption" to="/recover-password"
-                      >{{ $t('Forgot your password?') }}
-                    </router-link>
-                  </div>
-                </v-sheet>
+                    <v-btn
+                      class="text-capitalize"
+                      depressed
+                      href="mailto:contact@cha.fan"
+                      link
+                      small
+                      text
+                    >
+                      <EmailEditOutline class="mr-1" />
+                      {{ $t('联系我们') }}
+                    </v-btn>
 
-                <v-sheet>
-                  <v-btn
-                    :disabled="
-                      submitIntermediate || (loginMethod === 'cellphone' && !this.verificationCode)
-                    "
-                    block
-                    color="primary"
-                    depressed
-                    large
-                    @click.prevent="submit"
-                  >
-                    {{ $t('Login') }}
-                    <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
-                  </v-btn>
-                </v-sheet>
-
-                <v-sheet class="mt-4 d-flex align-center justify-end">
-                  <v-btn
-                    class="text-capitalize"
-                    depressed
-                    href="https://about.cha.fan/signup"
-                    link
-                    small
-                    text
-                  >
-                    <HelpCircleOutline class="mr-1" />
-                    {{ $t('如何加入 Chafan?') }}
-                  </v-btn>
-
-                  <v-btn
-                    class="text-capitalize"
-                    depressed
-                    href="mailto:contact@cha.fan"
-                    link
-                    small
-                    text
-                  >
-                    <EmailEditOutline class="mr-1" />
-                    {{ $t('联系我们') }}
-                  </v-btn>
-
-                  <lang-picker :dark="false" />
-                </v-sheet>
-              </div>
-
-              <div class="my-8">
-                <div class="d-flex align-center">
-                  <v-sheet color="grey lighten-2" height=".5" width="100%" />
-
-                  <div class="mx-2">Or</div>
-
-                  <v-sheet color="grey lighten-2" height=".5" width="100%" />
+                    <lang-picker :dark="false" />
+                  </v-sheet>
                 </div>
-              </div>
 
-              <div class="text-center">
-                <v-btn class="text-capitalize" depressed large @click="switchLoginMethod">
-                  {{
-                    loginMethod === 'email'
-                      ? $t('Cellphone number').toString()
-                      : $t('Email').toString()
-                  }}
-                  {{ $t('Login') }}
-                </v-btn>
-              </div>
+                <div class="my-8">
+                  <div class="d-flex align-center">
+                    <v-sheet color="grey lighten-2" height=".5" width="100%" />
+
+                    <div class="mx-2">Or</div>
+
+                    <v-sheet color="grey lighten-2" height=".5" width="100%" />
+                  </div>
+                </div>
+
+                <div class="text-center">
+                  <v-btn class="text-capitalize" depressed large @click="switchLoginMethod">
+                    {{
+                      loginMethod === 'email'
+                        ? $t('Cellphone number').toString()
+                        : $t('Email').toString()
+                    }}
+                    {{ $t('Login') }}
+                  </v-btn>
+                </div>
+              </ValidationObserver>
             </v-col>
           </v-row>
         </v-container>
