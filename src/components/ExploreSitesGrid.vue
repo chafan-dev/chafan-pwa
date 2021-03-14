@@ -1,12 +1,12 @@
 <template>
   <v-row v-if="!loading">
-    <v-col v-for="(blocks, idx) in allBlocks" :key="idx">
-      <v-card v-for="(block, idx) in blocks" :key="idx" class="mb-4 pa-2">
-        <h3>{{ block.topicName }}</h3>
-        <div>
-          <SiteBtn :showHotness="true" :site="site" :key="site.uuid" v-for="site in block.sites" />
+    <v-col v-for="(blocks, idx) in allBlocks" :key="idx" class="pb-2">
+      <base-card v-for="(block, idx) in blocks" :key="idx">
+        <h3 class="body-1">{{ block.topicName }}</h3>
+        <div class="mt-2">
+          <SiteBtn v-for="site in block.sites" :key="site.uuid" :showHotness="true" :site="site" />
         </div>
-      </v-card>
+      </base-card>
     </v-col>
   </v-row>
 </template>
@@ -17,6 +17,7 @@ import { ISite, ISiteMap } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 function uniqBy(a, key) {
   const seen = new Set();
@@ -27,18 +28,18 @@ function uniqBy(a, key) {
 }
 
 @Component({
-  components: { SiteBtn },
+  components: { BaseCard, SiteBtn },
 })
 export default class ExploreSitesGrid extends Vue {
-  get allBlocks() {
-    return [this.blocks1, this.blocks2];
-  }
   private blocks1: Array<{ topicName: string; sites: ISite[] }> = [];
   private blocks1Weight = 0;
   private blocks2: Array<{ topicName: string; sites: ISite[] }> = [];
   private blocks2Weight = 0;
-
   private loading = true;
+
+  get allBlocks() {
+    return [this.blocks1, this.blocks2];
+  }
 
   private sitesFromSiteMap(siteMap: ISiteMap): ISite[] {
     return siteMap.sites.concat(
