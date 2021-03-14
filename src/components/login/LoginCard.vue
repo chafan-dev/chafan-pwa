@@ -32,7 +32,7 @@
 
               <div class="text-right mt-4">
                 <RouterLink class="text-decoration-none" to="/signup">
-                  {{ $t("Haven't account") }}?
+                  {{ $t('No account') }}?
                 </RouterLink>
               </div>
 
