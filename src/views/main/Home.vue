@@ -10,7 +10,7 @@
     <v-row class="pa-3" justify="center">
       <!-- Feed column -->
       <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }" fluid>
-        <div class="d-flex justify-space-between mb-3">
+        <div v-if="userProfile" class="d-flex justify-space-between mb-3">
           <NewContentActionBar />
           <v-spacer />
           <SharingIcon v-if="!showSharing" class="mr-2" @click="toggleSharing" />
