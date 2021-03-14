@@ -82,7 +82,7 @@ import UserSearch from '@/components/UserSearch.vue';
 import { AxiosError } from 'axios';
 import { commitAddNotification } from '@/store/main/mutations';
 import { readUserProfile } from '@/store/main/getters';
-import { adminUUID } from '@/env';
+import { adminUUID, env } from '@/env';
 
 @Component({
   components: { UserSearch },
@@ -98,6 +98,9 @@ export default class CreateSite extends Vue {
   private readonly permissionTypeItems = ['public', 'private'];
 
   get canCreateSite() {
+    if (env !== 'production') {
+      return true;
+    }
     const userProfile = readUserProfile(this.$store);
     if (userProfile && userProfile.karma >= 1000 && this.siteCreate.permission_type === 'public') {
       return true;
