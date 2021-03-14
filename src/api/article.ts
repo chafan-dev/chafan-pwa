@@ -60,7 +60,7 @@ export const apiArticle = {
       authHeaders(token)
     );
   },
-  async getArticleArchives(token: string, articleUUID: string, offset: number, limit: number) {
+  async getArticleArchives(token: string, articleUUID: string) {
     return axios.get<IArticleArchive[]>(
       `${apiUrl}/api/v1/articles/${articleUUID}/archives/`,
       authHeaders(token)

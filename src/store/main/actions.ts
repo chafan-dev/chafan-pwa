@@ -65,7 +65,7 @@ export const actions = {
       ) {
         throw new Error('Incorrect email or password');
       } else {
-        handleApiError(context, err);
+        await handleApiError(context, err);
       }
     }
   },
@@ -94,7 +94,7 @@ export const actions = {
       const response = (
         await Promise.all([
           apiMe.updateMe(context.state.token, payload),
-          await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 500)),
+          await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ])
       )[0];
       commitSetUserProfile(context, response.data);
@@ -156,7 +156,7 @@ export const actions = {
     await dispatchLogOut(context);
     commitAddNotification(context, { content: 'Logged out', color: 'success' });
   },
-  actionRouteLogOut(context: MainContext) {},
+  actionRouteLogOut() {},
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
     let message = payload.message;
     if (payload.response && payload.response.data && payload.response.data.detail) {
@@ -182,7 +182,7 @@ export const actions = {
     context: MainContext,
     payload: { notification: AppNotification; timeout: number }
   ) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         commitRemoveNotification(context, payload.notification);
         resolve(true);
@@ -196,10 +196,10 @@ export const actions = {
     };
     try {
       commitAddNotification(context, loadingNotification);
-      const response = (
+      (
         await Promise.all([
           api.passwordRecovery(payload.email),
-          await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 500)),
+          await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ])
       )[0];
       commitRemoveNotification(context, loadingNotification);
@@ -223,10 +223,10 @@ export const actions = {
     };
     try {
       commitAddNotification(context, loadingNotification);
-      const response = (
+      (
         await Promise.all([
           api.resetPassword(payload.password, payload.token),
-          await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 500)),
+          await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ])
       )[0];
       commitRemoveNotification(context, loadingNotification);
@@ -247,7 +247,7 @@ export const actions = {
     try {
       await action();
     } catch (err) {
-      handleApiError(context, err);
+      await handleApiError(context, err);
     }
   },
   async apiErrorCapturedWithErrorHandler(
@@ -263,7 +263,7 @@ export const actions = {
       if (fns.errorFilter && fns.errorFilter(err)) {
         // Do nothing
       } else {
-        handleApiError(context, err);
+        await handleApiError(context, err);
       }
     }
   },
