@@ -204,7 +204,7 @@
               <v-list-item
                 v-for="item in accountItems"
                 :key="item.text"
-                :href="item.href"
+                :href="item.hrefRequiresUserProfile ? item.href(userProfile) : item.href"
                 :to="item.to"
                 link
               >
@@ -457,7 +457,8 @@ export default class Main extends Vue {
     {
       icon: 'ProfileIcon',
       text: this.$t('个人资料'),
-      href: `/users/${this.userProfile?.handle}`,
+      hrefRequiresUserProfile: true,
+      href: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
     },
     {
       icon: 'EmailIcon',
