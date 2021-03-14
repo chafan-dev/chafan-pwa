@@ -3,7 +3,7 @@
     <user-agreement
       :overlay="overlay"
       :show-fab-hint="showFabHint"
-      :show-user-agreement="!showUserAgreement"
+      :show-user-agreement="showUserAgreement"
       v-on:continue-user-agreement="continueUserAgreement"
     />
 
