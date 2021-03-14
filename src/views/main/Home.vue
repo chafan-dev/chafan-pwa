@@ -48,30 +48,12 @@
             </v-card>
           </v-dialog>
 
-          <div v-if="!userProfile" class="ma-4">
-            {{ $t('登录后浏览更多个性化内容！') }}
-            <ExploreSitesGrid class="mt-2" />
-          </div>
+          <user-logout-welcome v-if="!userProfile" />
 
-          <v-card v-if="showExploreSites" class="ma-4" flat>
-            <v-card-title>
-              {{ $t('刚刚加入？') }}
-              <v-spacer />
-              <CloseIcon @click="onCloseExploreSites" />
-            </v-card-title>
-            <v-card-text>
-              <div>
-                1. {{ $t('完善')
-                }}<a class="text-decoration-none" href="/profile/edit" target="_blank">{{
-                  $t('个人页面')
-                }}</a
-                >{{ $t('来告诉朋友们你是谁') }}<br />
-                2.
-                {{ $t('探索 Chafan 上的感兴趣的圈子和用户来生成自己的信息流：') }}
-              </div>
-              <ExploreSitesGrid class="mt-2" />
-            </v-card-text>
-          </v-card>
+          <user-welcome
+            v-if="showExploreSites"
+            v-on:on-close-explore-sites="onCloseExploreSites()"
+          />
 
           <v-card flat>
             <div v-for="activity in activities" :key="activity.id">
@@ -420,9 +402,13 @@ import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UserAgreement from '@/components/user/UserAgreement.vue';
+import UserWelcome from '@/components/user/UserWelcome.vue';
+import UserLogoutWelcome from '@/components/user/UserLogoutWelcome.vue';
 
 @Component({
   components: {
+    UserLogoutWelcome,
+    UserWelcome,
     UserAgreement,
     BaseCard,
     CreateQuestionForm,
