@@ -1,37 +1,27 @@
 <template>
   <v-container :class="{ 'pa-1': !$vuetify.breakpoint.mdAndUp }" fluid>
-    <v-overlay v-model="overlay" opacity="0.5" z-index="10">
-      <v-card elevation="2" rounded v-show="showUserAgreement" color="white">
-        <v-card-title class="primary--text">{{ $t('使用前必读') }}</v-card-title>
-        <div class="black--text ma-4">
-          请仔细阅读<a class="text-decoration-none" href="https://about.cha.fan/docs"
-            >本网站相关文档</a
-          >。 如果你继续使用本网站，将视为同意「网站用户协议」并了解「社区行为守则」的内容。
-        </div>
-        <v-card-actions class="ma-2">
-          <v-spacer />
-          <v-btn color="primary" @click="continueUserAgreement">同意</v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-card color="white" elevation="2" rounded v-show="showFabHint">
-        <v-card-title class="primary--text">{{ $t('Try the explore button') }} ↘</v-card-title>
-      </v-card>
-    </v-overlay>
-    <v-row justify="center" class="pa-3">
+    <user-agreement
+      :overlay="overlay"
+      :show-fab-hint="showFabHint"
+      :show-user-agreement="!showUserAgreement"
+      v-on:continue-user-agreement="continueUserAgreement"
+    />
+
+    <v-row class="pa-3" justify="center">
       <!-- Feed column -->
       <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }" fluid>
         <div class="d-flex justify-space-between mb-3">
           <NewContentActionBar />
           <v-spacer />
-          <SharingIcon class="mr-2" @click="toggleSharing" v-if="!showSharing" />
-          <FeedIcon class="mr-2" @click="toggleSharing" v-else />
+          <SharingIcon v-if="!showSharing" class="mr-2" @click="toggleSharing" />
+          <FeedIcon v-else class="mr-2" @click="toggleSharing" />
 
           <UIStyleControllers />
         </div>
 
         <div v-if="showSharing">
           <v-progress-linear v-if="loadingSubmissions" indeterminate />
-          <div class="my-4" v-for="submission in submissions" :key="submission.uuid">
+          <div v-for="submission in submissions" :key="submission.uuid" class="my-4">
             <SubmissionCard
               :class="{
                 'px-3': $vuetify.breakpoint.mdAndUp,
@@ -46,7 +36,7 @@
 
         <div v-if="!showSharing && !loadingActivities">
           <v-progress-linear v-if="loadingActivities" indeterminate />
-          <v-dialog max-width="600" v-model="showSubjectDialog">
+          <v-dialog v-model="showSubjectDialog" max-width="600">
             <v-card class="pt-6">
               <v-card-text>
                 <UserGrid :users="subjectsInDialog" />
@@ -63,7 +53,7 @@
             <ExploreSitesGrid class="mt-2" />
           </div>
 
-          <v-card class="ma-4" flat v-if="showExploreSites">
+          <v-card v-if="showExploreSites" class="ma-4" flat>
             <v-card-title>
               {{ $t('刚刚加入？') }}
               <v-spacer />
@@ -86,14 +76,14 @@
           <v-card flat>
             <div v-for="activity in activities" :key="activity.id">
               <v-card
-                class="my-4 c-card"
-                elevation="1"
                 :class="{
                   'px-3': $vuetify.breakpoint.mdAndUp,
                   'py-4': $vuetify.breakpoint.mdAndUp,
                   'px-2': !$vuetify.breakpoint.mdAndUp,
                   'py-3': !$vuetify.breakpoint.mdAndUp,
                 }"
+                class="my-4 c-card"
+                elevation="1"
               >
                 <!-- Row for top info -->
                 <v-row justify="space-between" no-gutters>
@@ -240,16 +230,16 @@
                     "
                   >
                     <UserCard
+                      :compactMode="true"
                       :embedded="true"
                       :userPreview="activity.event.content.user"
-                      :compactMode="true"
                     />
                   </div>
                   <div v-if="activity.verb === 'follow_article_column'">
                     <ArticleColumnCard
-                      :embedded="true"
-                      :compactMode="true"
                       :articleColumn="activity.event.content.article_column"
+                      :compactMode="true"
+                      :embedded="true"
                     />
                   </div>
                   <div
@@ -259,8 +249,8 @@
                     "
                   >
                     <Answer
-                      :embedded="true"
                       :answerPreview="activity.event.content.answer"
+                      :embedded="true"
                       :showAuthor="true"
                     />
                   </div>
@@ -300,14 +290,14 @@
                   </div>
                   <div v-else-if="activity.verb === 'comment_article'">
                     <CommentCard
-                      :comment="activity.event.content.comment"
                       :articlePreview="activity.event.content.article"
+                      :comment="activity.event.content.comment"
                     />
                   </div>
                   <div v-else-if="activity.verb === 'comment_answer'">
                     <CommentCard
-                      :comment="activity.event.content.comment"
                       :answerPreview="activity.event.content.answer"
+                      :comment="activity.event.content.comment"
                     />
                   </div>
                   <div v-else-if="activity.verb === 'reply_comment'">
@@ -323,20 +313,20 @@
                     "
                   >
                     <ArticlePreview
-                      :embedded="true"
                       :articlePreview="activity.event.content.article"
+                      :embedded="true"
                     />
                   </div>
                   <div v-else-if="activity.verb === 'create_article'">
                     <ArticlePreview
-                      :embedded="true"
                       :articlePreview="activity.event.content.article"
+                      :embedded="true"
                     />
                   </div>
                   <div v-else-if="activity.verb === 'answer_question'">
                     <Answer
-                      :embedded="true"
                       :answerPreview="activity.event.content.answer"
+                      :embedded="true"
                       :showAuthor="false"
                     />
                   </div>
@@ -359,9 +349,9 @@
 
           <div class="text-center">
             <v-progress-circular
-              indeterminate
-              color="primary"
               v-if="preloadMoreActivitiesIntermediate"
+              color="primary"
+              indeterminate
             />
             <span v-if="noMoreNewActivities">{{ $t('No more new activities.') }}</span>
           </div>
@@ -370,23 +360,23 @@
 
       <!-- Side column -->
       <v-col
-        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
         v-if="$vuetify.breakpoint.mdAndUp"
+        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
         <ExploreCard />
       </v-col>
-      <v-bottom-sheet class="bottom-info-panel" v-else>
+      <v-bottom-sheet v-else class="bottom-info-panel">
         <template v-slot:activator="{ on, attrs }">
           <v-btn
+            v-bind="attrs"
+            v-on="on"
+            bottom
+            class="fab"
             color="primary"
             fab
             fixed
             right
-            bottom
-            class="fab"
             @click="onFabClicked"
-            v-bind="attrs"
-            v-on="on"
           >
             <ExploreIcon />
           </v-btn>
@@ -428,9 +418,13 @@ import { dispatchCaptureApiError, dispatchUpdateUserProfileQuiet } from '@/store
 import { apiSubmission } from '@/api/submission';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
+import BaseCard from '@/components/base/BaseCard.vue';
+import UserAgreement from '@/components/user/UserAgreement.vue';
 
 @Component({
   components: {
+    UserAgreement,
+    BaseCard,
     CreateQuestionForm,
     UIStyleControllers,
     UserLink,
@@ -595,10 +589,12 @@ export default class Home extends Vue {
       });
     }
   }
+
   private showSubjects(subjects: IUserPreview[]) {
     this.showSubjectDialog = true;
     this.subjectsInDialog = subjects;
   }
+
   private async toggleSharing() {
     this.showSharing = !this.showSharing;
   }
