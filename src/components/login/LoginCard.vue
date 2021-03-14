@@ -38,25 +38,53 @@
                 </div>
 
                 <div class="mt-4">
-                  <ValidationProvider
-                    v-if="loginMethod === 'email'"
-                    v-slot="{ errors }"
-                    name="email"
-                    rules="email"
-                  >
-                    <v-text-field
-                      v-model="email"
-                      :label="$t('Email')"
-                      name="login"
-                      type="text"
-                      @keyup.enter="submit"
-                    >
-                      <template v-slot:prepend>
-                        <AccountCircleOutlineIcon />
-                      </template>
-                    </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  <!-- NOTE(zhen): v-if doesn't work on ValidationProvider -->
+                  <template v-if="loginMethod === 'email'">
+                    <ValidationProvider v-slot="{ errors }" name="email" rules="email">
+                      <v-text-field
+                        v-model="email"
+                        :label="$t('Email')"
+                        name="login"
+                        type="text"
+                        @keyup.enter="submit"
+                      >
+                        <template v-slot:prepend>
+                          <AccountCircleOutlineIcon />
+                        </template>
+                      </v-text-field>
+                      <span class="error--text">{{ errors[0] }}</span>
+                    </ValidationProvider>
+
+                    <ValidationProvider rules="required" v-slot="{ errors }" name="password">
+                      <v-text-field
+                        id="password"
+                        v-model="password"
+                        :label="$t('Password')"
+                        name="password"
+                        type="password"
+                        @keyup.enter="submit"
+                        required
+                      >
+                        <template v-slot:prepend>
+                          <LockOutlineIcon />
+                        </template>
+                      </v-text-field>
+                      <span class="error--text">{{ errors[0] }}</span>
+                    </ValidationProvider>
+
+                    <v-sheet class="mb-2">
+                      <div v-if="loginError">
+                        <v-alert :value="loginError" transition="fade-transition" type="error">
+                          Incorrect email or password
+                        </v-alert>
+                      </div>
+                      <div class="text-right">
+                        <router-link class="text-decoration-none caption" to="/recover-password"
+                          >{{ $t('Forgot your password?') }}
+                        </router-link>
+                      </div>
+                    </v-sheet>
+                  </template>
 
                   <v-sheet v-else-if="loginMethod === 'cellphone'">
                     <ValidationProvider
@@ -104,42 +132,11 @@
                     </div>
                   </v-sheet>
 
-                  <ValidationProvider rules="required" v-slot="{ errors }" name="password">
-                    <v-text-field
-                      v-if="loginMethod === 'email'"
-                      id="password"
-                      v-model="password"
-                      :label="$t('Password')"
-                      name="password"
-                      type="password"
-                      @keyup.enter="submit"
-                      required
-                    >
-                      <template v-slot:prepend>
-                        <LockOutlineIcon />
-                      </template>
-                    </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
-
-                  <v-sheet class="mb-2">
-                    <div v-if="loginError">
-                      <v-alert :value="loginError" transition="fade-transition" type="error">
-                        Incorrect email or password
-                      </v-alert>
-                    </div>
-                    <div class="text-right">
-                      <router-link class="text-decoration-none caption" to="/recover-password"
-                        >{{ $t('Forgot your password?') }}
-                      </router-link>
-                    </div>
-                  </v-sheet>
-
                   <v-sheet>
                     <v-btn
                       :disabled="
                         submitIntermediate ||
-                        (loginMethod === 'cellphone' && !this.verificationCode) ||
+                        (loginMethod === 'cellphone' && !verificationCode) ||
                         !valid
                       "
                       block
