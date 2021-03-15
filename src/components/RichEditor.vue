@@ -568,6 +568,16 @@ export default class RichEditor extends Vue {
           )
         ).data;
       }
+      if (this.articleId) {
+        this.articleArchives = (
+          await apiArticle.getArticleArchives(
+            this.token,
+            this.articleId,
+            (this.archivePage - 1) * this.archivePageLimit,
+            this.archivePageLimit
+          )
+        ).data;
+      }
     });
   }
 }

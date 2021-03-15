@@ -15,7 +15,7 @@ import {
   IArticleDraft,
   IUserArticleColumnSubscription,
 } from '@/interfaces';
-import { authHeaders } from '@/utils';
+import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiArticle = {
   async upvoteArticle(token: string, articleUUID: string) {
@@ -60,10 +60,13 @@ export const apiArticle = {
       authHeaders(token)
     );
   },
-  async getArticleArchives(token: string, articleUUID: string, offset: number, limit: number) {
+  async getArticleArchives(token: string, articleUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
     return axios.get<IArticleArchive[]>(
       `${apiUrl}/api/v1/articles/${articleUUID}/archives/`,
-      authHeaders(token)
+      authHeadersWithParams(token, params)
     );
   },
   async getArticlesOfColumn(token: string, articleColumnUUID: string) {
