@@ -15,7 +15,7 @@
           <v-spacer />
           <SharingIcon v-if="!showSharing" class="mr-2" @click="toggleSharing" />
           <FeedIcon v-else class="mr-2" @click="toggleSharing" />
-
+          <router-link to="/explore"><ExploreIcon /></router-link>
           <UIStyleControllers />
         </div>
 
@@ -345,7 +345,7 @@
         v-if="$vuetify.breakpoint.mdAndUp"
         :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
-        <ExploreCard />
+        <HomeSideCard />
       </v-col>
       <v-bottom-sheet v-else class="bottom-info-panel">
         <template v-slot:activator="{ on, attrs }">
@@ -360,11 +360,11 @@
             right
             @click="onFabClicked"
           >
-            <ExploreIcon />
+            <HomeFabIcon />
           </v-btn>
         </template>
         <v-sheet class="pa-2">
-          <ExploreCard />
+          <HomeSideCard />
         </v-sheet>
       </v-bottom-sheet>
     </v-row>
@@ -385,9 +385,10 @@ import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import Answer from '@/components/Answer.vue';
-import ExploreCard from '@/components/ExploreCard.vue';
+import HomeSideCard from '@/components/HomeSideCard.vue';
 import SubmissionCard from '@/components/SubmissionCard.vue';
 import ExploreIcon from '@/components/icons/ExploreIcon.vue';
+import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SharingIcon from '@/components/icons/SharingIcon.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
@@ -417,11 +418,12 @@ import UserLogoutWelcome from '@/components/user/UserLogoutWelcome.vue';
     Answer,
     QuestionPreview,
     SiteBtn,
-    ExploreCard,
+    HomeSideCard,
     ArticlePreview,
     QuestionLink,
-    ExploreIcon,
+    HomeFabIcon,
     UserCard,
+    ExploreIcon,
     ArticleColumnCard,
     CommentCard,
     NewContentActionBar,

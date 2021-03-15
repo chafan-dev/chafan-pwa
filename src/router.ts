@@ -18,8 +18,8 @@ export default new Router({
           component: () => import(/* webpackChunkName: "main-home" */ './views/main/Home.vue'),
         },
         {
-          path: 'sites/',
-          component: () => import(/* webpackChunkName: "main-sites" */ './views/main/Sites.vue'),
+          path: 'explore/',
+          component: () => import(/* webpackChunkName: "main-sites" */ './views/main/Explore.vue'),
         },
         {
           path: 'sites/:subdomain',
