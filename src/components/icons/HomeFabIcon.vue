@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { mdiLightbulbOn } from '@mdi/js';
+import { mdiCompass } from '@mdi/js';
 
 export default {
   data: () => ({
-    svgPath: mdiLightbulbOn,
+    svgPath: mdiCompass,
   }),
 };
 </script>

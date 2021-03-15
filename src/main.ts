@@ -539,8 +539,10 @@ const i18n = new VueI18n({
       编辑答案: 'Edit answer',
       'No account': 'No account',
       submission: 'Sharing',
+      探索: 'Explore',
     },
     zh: {
+      探索: '探索',
       submission: '分享',
       编辑答案: '编辑答案',
       '加入申请处理方式：': '加入申请处理方式：',

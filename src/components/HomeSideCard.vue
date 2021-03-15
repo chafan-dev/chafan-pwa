@@ -7,10 +7,6 @@
         </div>
 
         <div class="d-flex mt-1">
-          <!-- NOTE: /sites is a list of all circles, is not same as my circles for now -->
-          <v-btn small depressed class="primary mr-1" to="/sites">
-            {{ $t('查看所有圈子') }}
-          </v-btn>
           <v-btn small depressed @click="showCreateSiteDialog = true">{{ $t('创建圈子') }}</v-btn>
 
           <v-dialog max-width="500" v-model="showCreateSiteDialog">
@@ -132,7 +128,7 @@ import { buildInfo } from '@/env';
 @Component({
   components: { SiteBtn, QuestionLink, CreateSiteCard, MoreIcon },
 })
-export default class ExploreCard extends Vue {
+export default class HomeSideCard extends Vue {
   private siteProfiles: IUserSiteProfile[] = [];
   private visibleSiteProfiles: IUserSiteProfile[] = [];
   private showAllSiteProfilesDialog = false;
