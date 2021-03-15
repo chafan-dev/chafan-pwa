@@ -5,7 +5,7 @@
       v-model="loadingProgress"
       :indeterminate="loadingProgress === 0"
     />
-    <v-row justify="center" v-else>
+    <v-row v-else justify="center">
       <v-col
         :class="{
           'col-8': $vuetify.breakpoint.mdAndUp,
@@ -20,38 +20,36 @@
           <!-- Question topics display/editor -->
           <v-chip-group v-if="!showQuestionEditor">
             <v-chip
-              :to="'/topics/' + topic.uuid"
               v-for="topic in question.topics"
               :key="topic.uuid"
+              :to="'/topics/' + topic.uuid"
             >
               {{ topic.name }}
             </v-chip>
           </v-chip-group>
           <v-combobox
+            v-if="showQuestionEditor"
+            v-model="newQuestionTopicNames"
+            :delimiters="[',', '，', '、']"
+            :items="hintTopicNames"
+            :label="$t('Topics')"
             hide-selected
             multiple
             small-chips
-            :label="$t('Topics')"
-            :items="hintTopicNames"
-            :delimiters="[',', '，', '、']"
-            v-if="showQuestionEditor"
-            v-model="newQuestionTopicNames"
           />
 
           <!-- Question title display/editor -->
           <div>
-            <div class="headline primary--text" v-if="!showQuestionEditor">
-              <a class="text-decoration-none" :href="`/questions/${this.question.uuid}`">
-                {{ question.title }}
-              </a>
+            <div v-if="!showQuestionEditor" class="text-h5 mb-2">
+              {{ question.title }}
             </div>
             <v-textarea
+              v-else
+              v-model="newQuestionTitle"
+              :label="$t('Title')"
               auto-grow
               dense
               rows="1"
-              :label="$t('Title')"
-              v-model="newQuestionTitle"
-              v-else
             />
           </div>
 
@@ -62,46 +60,46 @@
           />
           <div v-else-if="showQuestionEditor">
             <SimpleEditor
-              :placeholder="$t('Description')"
               ref="descEditor"
-              class="mb-2"
               :initialValue="question.description"
+              :placeholder="$t('Description')"
+              class="mb-2"
             />
           </div>
         </div>
 
         <!-- Question control -->
         <v-row justify="space-between">
-          <v-col class="d-flex" v-if="!showQuestionEditor">
+          <v-col v-if="!showQuestionEditor" class="d-flex">
             <v-btn
+              v-if="currentUserAnswerUUID"
+              class="ma-1 slim-btn"
               depressed
               small
-              class="ma-1 slim-btn"
               @click="goToCurrentUserAnswer"
-              v-if="currentUserAnswerUUID"
             >
               {{ $t('我的回答') }}
             </v-btn>
             <v-btn
+              v-else-if="answerWritable"
+              class="ma-1 slim-btn"
+              color="primary"
               depressed
               small
-              color="primary"
-              class="ma-1 slim-btn"
               @click="showEditor = !showEditor"
-              v-else-if="answerWritable"
-              >{{ $t('写回答') }}</v-btn
-            >
-            <v-tooltip bottom v-else>
+              >{{ $t('写回答') }}
+            </v-btn>
+            <v-tooltip v-else bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
-                  depressed
-                  small
-                  class="ma-1 slim-btn grey--text"
                   v-bind="attrs"
                   v-on="on"
+                  :ripple="false"
+                  class="ma-1 slim-btn grey--text"
+                  depressed
                   elevation="0"
                   plain
-                  :ripple="false"
+                  small
                 >
                   {{ $t('写回答') }}
                 </v-btn>
@@ -109,7 +107,7 @@
               <span>{{ $t('该圈子仅会员可以写回答') }}</span>
             </v-tooltip>
 
-            <v-btn depressed small class="ma-1 slim-btn" @click="toggleShowComments">
+            <v-btn class="ma-1 slim-btn" depressed small @click="toggleShowComments">
               <CommentsIcon class="mr-1" small />
               <span v-if="$vuetify.breakpoint.mdAndUp">
                 {{
@@ -121,7 +119,7 @@
               <span v-else-if="question.comments.length"> {{ question.comments.length }}</span>
             </v-btn>
 
-            <v-dialog max-width="300" v-model="showCancelUpvoteDialog">
+            <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
               <v-card>
                 <v-card-title primary-title>
                   <div class="headline primary--text">
@@ -132,10 +130,10 @@
                   <v-spacer />
                   <v-btn depressed @click="showCancelUpvoteDialog = false">{{ $t('No') }}</v-btn>
                   <v-btn
-                    depressed
-                    color="warning"
-                    @click="cancelUpvote"
                     :disabled="cancelUpvoteIntermediate"
+                    color="warning"
+                    depressed
+                    @click="cancelUpvote"
                   >
                     {{ $t('Yes') }}
                   </v-btn>
@@ -143,25 +141,25 @@
               </v-card>
             </v-dialog>
             <v-btn
-              depressed
-              @click="showCancelUpvoteDialog = true"
-              small
+              v-if="upvotes && upvotes.upvoted"
               class="slim-btn ma-1"
               color="primary lighten-2"
-              v-if="upvotes && upvotes.upvoted"
+              depressed
+              small
+              @click="showCancelUpvoteDialog = true"
             >
               <UpvoteIcon />
               <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('好问题') }}</span>
               ({{ upvotes.count }})
             </v-btn>
             <v-btn
-              depressed
-              small
-              class="slim-btn ma-1"
-              color="primary"
-              @click="upvote"
               v-else-if="upvotes"
               :disabled="userProfile.uuid === question.author.uuid || upvoteIntermediate"
+              class="slim-btn ma-1"
+              color="primary"
+              depressed
+              small
+              @click="upvote"
             >
               <UpvoteIcon />
               <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('好问题') }}</span>
@@ -169,21 +167,21 @@
             </v-btn>
 
             <BookmarkedIcon
+              v-if="questionSubscription && questionSubscription.subscribed_by_me"
+              :disabled="cancelSubscriptionIntermediate"
               class="ma-1"
               @click="cancelSubscription"
-              :disabled="cancelSubscriptionIntermediate"
-              v-if="questionSubscription && questionSubscription.subscribed_by_me"
             />
             <ToBookmarkIcon
-              class="ma-1"
-              @click="subscribe"
               v-else
               :disabled="subscribeIntermediate"
+              class="ma-1"
+              @click="subscribe"
             />
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
                 <div v-bind="attrs" v-on="on" align-self="center" class="d-flex">
-                  <EditIcon @click="showQuestionEditor = true" v-show="editable" />
+                  <EditIcon v-show="editable" @click="showQuestionEditor = true" />
                 </div>
               </template>
               <span>{{ $t('编辑问题') }}</span>
@@ -196,39 +194,39 @@
               'col-12': !$vuetify.breakpoint.mdAndUp,
               'less-top-padding': !$vuetify.breakpoint.mdAndUp,
             }"
-            class="d-flex"
             align-self="center"
+            class="d-flex"
           >
             <v-spacer />
             <SiteBtn :site="question.site" class="elevation-0" />
-            <HistoryIcon @click="showHistoryDialog" v-if="editable && userProfile" />
+            <HistoryIcon v-if="editable && userProfile" @click="showHistoryDialog" />
           </v-col>
 
           <v-col v-if="showQuestionEditor && userProfile" class="d-flex">
             <v-btn
-              depressed
-              small
-              class="ma-1 slim-btn"
-              @click="commitQuestionEdit"
-              color="primary"
               v-show="editable"
               :disabled="commitQuestionEditIntermediate"
-              >{{ $t('更新问题描述') }}</v-btn
-            >
-            <v-btn
+              class="ma-1 slim-btn"
+              color="primary"
               depressed
               small
-              class="ma-1 slim-btn"
-              @click="showQuestionEditor = false"
-              color="warning"
+              @click="commitQuestionEdit"
+              >{{ $t('更新问题描述') }}
+            </v-btn>
+            <v-btn
               v-show="editable"
-              >{{ $t('取消更新') }}</v-btn
-            >
+              class="ma-1 slim-btn"
+              color="warning"
+              depressed
+              small
+              @click="showQuestionEditor = false"
+              >{{ $t('取消更新') }}
+            </v-btn>
             <v-spacer />
-            <v-btn small depressed v-if="showQuestionEditor" @click="prepareShowMoveQuestionDialog">
+            <v-btn v-if="showQuestionEditor" depressed small @click="prepareShowMoveQuestionDialog">
               {{ $t('转移问题') }}
             </v-btn>
-            <v-dialog max-width="600" v-model="showMoveQuestionDialog">
+            <v-dialog v-model="showMoveQuestionDialog" max-width="600">
               <v-card>
                 <v-card-title primary-title>
                   <div class="headline primary--text">{{ $t('转移问题') }}</div>
@@ -236,51 +234,51 @@
                 <v-card-text>
                   <span>{{ $t('现问题所属圈子') }}: {{ question.site.name }}</span>
                   <v-select
-                    :label="$t('新的圈子')"
-                    :items="siteProfiles"
-                    item-value="site"
-                    item-text="site.name"
                     v-model="newQuestionSite"
+                    :items="siteProfiles"
+                    :label="$t('新的圈子')"
+                    item-text="site.name"
+                    item-value="site"
                   />
                 </v-card-text>
                 <v-card-actions>
                   <span>{{ $t('没有权限？联系管理员帮助转移') }}</span>
                   <v-spacer />
-                  <v-btn small depressed color="warning" @click="confirmMoveQuestion">{{
-                    $t('确认转移')
-                  }}</v-btn>
+                  <v-btn color="warning" depressed small @click="confirmMoveQuestion"
+                    >{{ $t('确认转移') }}
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
 
             <v-btn
-              small
-              depressed
               v-if="showQuestionEditor & canHide"
-              color="warning"
               class="ml-2"
+              color="warning"
+              depressed
+              small
               @click="showConfirmHideQuestionDialog = true"
             >
               {{ $t('隐藏问题') }}
             </v-btn>
-            <v-dialog max-width="600" v-model="showConfirmHideQuestionDialog">
+            <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
               <v-card>
                 <v-card-title primary-title>
                   <div class="headline primary--text">
                     {{ $t('确认隐藏问题？') }}
                   </div>
                 </v-card-title>
-                <v-card-text> 隐藏后问题将对所有用户不可见。 </v-card-text>
+                <v-card-text> 隐藏后问题将对所有用户不可见。</v-card-text>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn small depressed color="warning" @click="confirmHideQuestion">{{
-                    $t('确认隐藏')
-                  }}</v-btn>
+                  <v-btn color="warning" depressed small @click="confirmHideQuestion"
+                    >{{ $t('确认隐藏') }}
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
           </v-col>
-          <v-dialog max-width="900" v-model="historyDialog">
+          <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
               <v-card-title primary-title>
                 <div class="headline primary--text">{{ $t('问题历史') }}</div>
@@ -297,11 +295,11 @@
                   <v-expansion-panel-content>
                     <v-chip-group>
                       <v-chip
-                        :to="'/topics/' + topic.uuid"
                         v-for="topic in archive.topics"
                         :key="topic.uuid"
-                        >{{ topic.name }}</v-chip
-                      >
+                        :to="'/topics/' + topic.uuid"
+                        >{{ topic.name }}
+                      </v-chip>
                     </v-chip-group>
                     <div class="headline primary--text">
                       {{ archive.title }}
@@ -315,29 +313,29 @@
         </v-row>
 
         <div class="d-flex justify-end">
-          <ReactionBlock objectType="question" :objectId="question.uuid" />
+          <ReactionBlock :objectId="question.uuid" objectType="question" />
         </div>
 
         <!-- Comments -->
         <v-expand-transition>
           <CommentBlock
             v-show="showComments"
-            :siteId="question.site ? question.site.uuid : undefined"
-            commentLabel="评论问题"
             :commentSubmitIntermediate="commentSubmitIntermediate"
             :comments="question.comments"
+            :siteId="question.site ? question.site.uuid : undefined"
             :writable="commentWritable"
+            commentLabel="评论问题"
             @submit-new-comment="submitNewQuestionCommentBody"
           />
         </v-expand-transition>
 
         <div class="ml-2 text-center">
-          <span class="text-caption grey--text" v-if="showEditor && userProfile">{{
+          <span v-if="showEditor && userProfile" class="text-caption grey--text">{{
             $t('编辑答案')
           }}</span>
           <span
-            class="text-caption grey--text"
             v-else-if="loadedFullAnswers.length === 0 && answerPreviews.length === 0"
+            class="text-caption grey--text"
             >{{ $t('暂无答案') }}</span
           >
         </div>
@@ -345,10 +343,10 @@
         <!-- Answer editor -->
         <v-expand-transition v-if="userProfile">
           <RichEditor
-            class="ma-1"
             v-if="showEditor"
-            publishText="发表答案"
             :inPrivateSite="!question.site.public_readable"
+            class="ma-1"
+            publishText="发表答案"
             @submit-edit="newEditHandler"
             @cancel-edit="cancelHandler"
             @delete-draft="deleteDraft"
@@ -360,54 +358,54 @@
           v-if="answerPreviews && answerPreviews.length && loadingFullAnswer"
           class="text-center"
         >
-          <v-progress-circular size="30" indeterminate />
+          <v-progress-circular indeterminate size="30" />
         </div>
         <Answer
           v-for="answer in loadedFullAnswers"
           :key="answer.uuid"
-          class="mb-4"
           :answerPreview="answer"
           :answerProp="answer"
-          :showAuthor="true"
-          :showQuestionInCard="false"
-          :showCommentId="answerCommentId"
-          @delete-answer="deleteHandler"
           :loadFull="true"
+          :showAuthor="true"
+          :showCommentId="answerCommentId"
+          :showQuestionInCard="false"
+          class="mb-4"
+          @delete-answer="deleteHandler"
         />
         <Answer
           v-for="answerPreview in answerPreviews"
           :key="answerPreview.uuid"
+          :answerPreview="answerPreview"
+          :loadFull="answerPreviews.indexOf(answerPreview) <= 2"
+          :showAuthor="true"
+          :showCommentId="answerPreview.uuid === answerUUID ? answerCommentId : undefined"
+          :showQuestionInCard="false"
           class="mb-4"
           @load="loadingFullAnswer = false"
-          :answerPreview="answerPreview"
-          :showAuthor="true"
-          :showQuestionInCard="false"
-          :showCommentId="answerPreview.uuid === answerUUID ? answerCommentId : undefined"
           @delete-answer="deleteHandler"
-          :loadFull="answerPreviews.indexOf(answerPreview) <= 2"
         />
       </v-col>
 
       <v-col
-        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
         v-if="$vuetify.breakpoint.mdAndUp"
+        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
         <QuestionCard
-          :questionSubscription="questionSubscription"
           :question="question"
+          :questionSubscription="questionSubscription"
           :site="questionSite"
         />
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab fixed right bottom v-bind="attrs" v-on="on">
+          <v-btn v-bind="attrs" v-on="on" bottom fab fixed right>
             <InfoIcon />
           </v-btn>
         </template>
         <v-sheet class="pa-2">
           <QuestionCard
-            :questionSubscription="questionSubscription"
             :question="question"
+            :questionSubscription="questionSubscription"
             :site="questionSite"
           />
         </v-sheet>
@@ -479,44 +477,6 @@ import { apiComment } from '@/api/comment';
   },
 })
 export default class Question extends Vue {
-  get isUserMode() {
-    return readUserMode(this.$store);
-  }
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
-  get id() {
-    return this.$router.currentRoute.params.id;
-  }
-  get answerUUID() {
-    const aid = this.$router.currentRoute.params.aid;
-    if (aid) {
-      return aid;
-    } else {
-      return null;
-    }
-  }
-  get answerCommentId() {
-    const acid = this.$router.currentRoute.params.acid;
-    if (acid) {
-      return acid;
-    } else {
-      return null;
-    }
-  }
-  get questionCommentId() {
-    const qcid = this.$router.currentRoute.params.qcid;
-    if (qcid) {
-      return qcid;
-    } else {
-      return null;
-    }
-  }
-
-  get token() {
-    return this.$store.state.main.token;
-  }
-
   private question: IQuestion | null = null;
   private showEditor: boolean = false;
   private newQuestionTitle: string = '';
@@ -536,39 +496,72 @@ export default class Question extends Vue {
   private canHide = false;
   private showConfirmHideQuestionDialog = false;
   private loadingFullAnswer = true;
-
   private loadingProgress = 0;
   private loading = true;
-
   private isModerator = false;
   private toggleShowInHomeIntermediate = false;
   private isTopQuestionInSite = false;
   private isShowInHome = false;
   private userProfile: IUserProfile | null = null;
-
   private commitQuestionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
-
   private showMoveQuestionDialog = false;
-
   private savedNewAnswer: IAnswer | null = null;
-
   private handlingNewEdit = false;
-
   private showCancelUpvoteDialog: boolean = false;
   private upvoteIntermediate: boolean = false;
   private cancelUpvoteIntermediate = false;
   private upvotes: IQuestionUpvotes | null = null;
-
   private archives: IQuestionArchive[] = [];
   private historyDialog = false;
-
   private siteProfiles: IUserSiteProfile[] = [];
   private newQuestionSite: ISite | null = null;
   private currentUserAnswerUUID: string | null = null;
-
   private commentSubmitIntermediate = false;
+
+  get isUserMode() {
+    return readUserMode(this.$store);
+  }
+
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
+  }
+
+  get id() {
+    return this.$router.currentRoute.params.id;
+  }
+
+  get answerUUID() {
+    const aid = this.$router.currentRoute.params.aid;
+    if (aid) {
+      return aid;
+    } else {
+      return null;
+    }
+  }
+
+  get answerCommentId() {
+    const acid = this.$router.currentRoute.params.acid;
+    if (acid) {
+      return acid;
+    } else {
+      return null;
+    }
+  }
+
+  get questionCommentId() {
+    const qcid = this.$router.currentRoute.params.qcid;
+    if (qcid) {
+      return qcid;
+    } else {
+      return null;
+    }
+  }
+
+  get token() {
+    return this.$store.state.main.token;
+  }
 
   private async mounted() {
     try {
@@ -754,6 +747,7 @@ export default class Question extends Vue {
       this.handlingNewEdit = false;
     });
   }
+
   private async submitNewQuestionCommentBody(commentBody: string) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
@@ -906,6 +900,7 @@ export default class Question extends Vue {
       this.$router.push(`/questions/${this.question?.uuid}`);
     }
   }
+
   private async prepareShowMoveQuestionDialog() {
     this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
     this.showMoveQuestionDialog = true;
