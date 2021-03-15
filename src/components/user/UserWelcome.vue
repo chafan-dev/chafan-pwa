@@ -18,14 +18,19 @@
       </v-alert>
 
       <div>
-        <v-stepper class="elevation-0" value="1" vertical>
-          <v-stepper-step step="1">
+        <v-stepper v-model="stepperValue" class="elevation-0" vertical>
+          <v-stepper-step :complete="stepperValue > 1" step="1">
             <div class="d-flex">
               {{ $t('完善') }}
 
-              <router-link class="text-decoration-none" to="/profile/edit">
+              <a
+                class="text-decoration-none"
+                href="/profile/edit"
+                target="_blank"
+                @click="stepperValue = 2"
+              >
                 {{ $t('个人页面') }}
-              </router-link>
+              </a>
 
               {{ $t('来告诉朋友们你是谁') }}
             </div>
@@ -55,5 +60,7 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 @Component({
   components: { InfoIcon, CloseIcon, BaseCard, ExploreSitesGrid },
 })
-export default class UserWelcome extends Vue {}
+export default class UserWelcome extends Vue {
+  private stepperValue = 1;
+}
 </script>
