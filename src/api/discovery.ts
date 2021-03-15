@@ -13,4 +13,10 @@ export const apiDiscovery = {
       authHeaders(token)
     );
   },
+  async getInterestingQuestions(token: string) {
+    return axios.get<IQuestionPreview[]>(
+      `${apiUrl}/api/v1/discovery/interesting-questions/`,
+      authHeaders(token)
+    );
+  },
 };
