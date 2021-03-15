@@ -55,7 +55,7 @@
     <v-divider />
     <div class="my-3">
       <div class="headline">{{ $t('Pinned questions') }}</div>
-      <v-skeleton-loader type="paragraph" v-if="questions === null" />
+      <v-skeleton-loader type="paragraph" v-if="loadingPinnedQuestions" />
       <ul v-else class="my-3">
         <li v-for="question in questions" :key="question.uuid">
           <QuestionLink :questionPreview="question" />
@@ -137,6 +137,7 @@ export default class ExploreCard extends Vue {
   private visibleSiteProfiles: IUserSiteProfile[] = [];
   private showAllSiteProfilesDialog = false;
   private showAllSiteProfilesDialogButton = false;
+  private loadingPinnedQuestions = true;
   private questions: IQuestionPreview[] | null = null;
   private loadingSites = true;
   private expandDebugInfo = false;
@@ -154,6 +155,7 @@ export default class ExploreCard extends Vue {
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.questions = (await api2.getQuestionsAtHome()).data;
+      this.loadingPinnedQuestions = false;
       if (this.$store.state.main.token) {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;
         if (!this.$vuetify.breakpoint.mdAndUp) {
