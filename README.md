@@ -65,7 +65,7 @@ node e2e_tests/server.js --secure
 
 ### Vercel builds
 
-`master` branch is continuously integrated to https://chafan-frontend.vercel.app/ which uses
+`master` branch is continuously integrated to https://chafan-frontend-git-master-chafan.vercel.app which uses
 a test-only API server at http://chafan-test.herokuapp.com/ that runs the same code as production server.
 
 You need to ask @izgzhen for an invitation link to sign up for a account. When signing up, you need to flow
