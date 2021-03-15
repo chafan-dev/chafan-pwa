@@ -35,9 +35,6 @@ export const api2 = {
   async getWsToken(token: string) {
     return axios.post<IMsg>(`${apiUrl}/api/v1/ws/token`, null, authHeaders(token));
   },
-  async getQuestionsAtHome() {
-    return axios.get<IQuestionPreview[]>(`${apiUrl}/api/v1/home/questions/`);
-  },
   async getReactions(
     token: string,
     objectId: string,

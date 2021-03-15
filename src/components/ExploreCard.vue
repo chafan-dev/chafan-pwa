@@ -122,7 +122,7 @@ import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSiteCard from '@/components/CreateSiteCard.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { api2 } from '@/api2';
+import { apiDiscovery } from '@/api/discovery';
 import { apiMe } from '@/api/me';
 import { readIsLoggedIn } from '@/store/main/getters';
 
@@ -154,7 +154,7 @@ export default class ExploreCard extends Vue {
 
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.questions = (await api2.getQuestionsAtHome()).data;
+      this.questions = (await apiDiscovery.getPinnedQuestions()).data;
       this.loadingPinnedQuestions = false;
       if (this.$store.state.main.token) {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;
