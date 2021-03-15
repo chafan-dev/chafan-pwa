@@ -8,14 +8,11 @@
   </v-sheet>
 </template>
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 
 @Component({
   components: { ExploreSitesGrid },
 })
-export default class UserWelcome extends Vue {
-  @Emit('on-close-explore-sites')
-  public onCloseExploreSites() {}
-}
+export default class UserWelcome extends Vue {}
 </script>
