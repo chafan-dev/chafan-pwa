@@ -46,7 +46,7 @@
   </v-sheet>
 </template>
 <script lang="ts">
-import { Component, Emit, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
@@ -55,8 +55,5 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 @Component({
   components: { InfoIcon, CloseIcon, BaseCard, ExploreSitesGrid },
 })
-export default class UserWelcome extends Vue {
-  @Emit('on-close-explore-sites')
-  public onCloseExploreSites() {}
-}
+export default class UserWelcome extends Vue {}
 </script>
