@@ -67,6 +67,7 @@
 <script lang="ts">
 import { api } from '@/api';
 import { apiMe } from '@/api/me';
+import { apiDiscovery } from '@/api/discovery';
 import { IArticleColumn, IQuestionPreview, IUserSiteProfile } from '@/interfaces';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
@@ -97,7 +98,7 @@ export default class NewContentActionBar extends Vue {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(token)).data;
         this.myArticleColumns = (await api.getMyArticleColumns(token)).data;
       }
-      this.questionsToAnswer = (await apiMe.getPendingQuestions(token)).data;
+      this.questionsToAnswer = (await apiDiscovery.getPendingQuestions(token)).data;
     });
   }
 

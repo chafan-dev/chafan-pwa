@@ -120,12 +120,6 @@ export const apiMe = {
   async getModeratedSites(token: string) {
     return axios.get<ISite[]>(`${apiUrl}/api/v1/me/moderated-sites/`, authHeaders(token));
   },
-  async getPendingQuestions(token: string) {
-    return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/api/v1/me/pending-questions/`,
-      authHeaders(token)
-    );
-  },
   async getSubscribedQuestions(token: string) {
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/api/v1/me/question-subscriptions/`,
