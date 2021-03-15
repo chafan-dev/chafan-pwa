@@ -1,6 +1,6 @@
 <template>
-  <div ref="vditorViewer" class="simple-viewer">
-    <div class="vditor-viewer" />
+  <div>
+    <div ref="vditorViewer" class="simple-viewer" />
     <LightboxGroup ref="lightbox" />
   </div>
 </template>
@@ -18,7 +18,7 @@ export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
 
   private mounted() {
-    Vditor.preview(this.$el as HTMLDivElement, this.body, {
+    Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
       mode: 'light',
       cdn: vditorCDN,
       after: () => {
@@ -36,7 +36,7 @@ export default class Viewer extends Vue {
 .simple-viewer img
     max-height: 100px
 
-.vditor-viewer
+.simple-viewer
     font-family: $body-font-family
     font-size: $font-size-root
 
