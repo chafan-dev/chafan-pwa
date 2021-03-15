@@ -538,8 +538,10 @@ const i18n = new VueI18n({
       '加入申请处理方式：': 'How to approve application to join: ',
       编辑答案: 'Edit answer',
       'No account': 'No account',
+      submission: 'Sharing',
     },
     zh: {
+      submission: '分享',
       编辑答案: '编辑答案',
       '加入申请处理方式：': '加入申请处理方式：',
       人工审核: '人工审核',
