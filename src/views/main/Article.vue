@@ -41,7 +41,7 @@
           <v-chip small class="ml-2" color="info" v-else-if="showHasDraftBadge">{{
             $t('编辑器中有未发表的草稿')
           }}</v-chip>
-          <Viewer :body="article.body" :bodyFormat="article.body_format" />
+          <Viewer :body="article.body" :bodyFormat="article.body_format" :editor="article.editor" />
         </div>
 
         <div fluid>

@@ -540,8 +540,10 @@ const i18n = new VueI18n({
       'No account': 'No account',
       submission: 'Sharing',
       探索: 'Explore',
+      tiptap: 'tiptap (beta ⚠️)',
     },
     zh: {
+      tiptap: 'tiptap (beta ⚠️)',
       探索: '探索',
       submission: '分享',
       编辑答案: '编辑答案',

@@ -9,7 +9,23 @@
     <v-overlay v-model="overlay" opacity="0.5" z-index="10">
       <v-progress-circular indeterminate />
     </v-overlay>
-    <div id="vditor" class="mb-2" :class="{ 'mt-2': focusMode }" />
+
+    <Tiptap
+      ref="tiptap"
+      class="mb-2 mx-2"
+      :class="{ 'mt-2': focusMode }"
+      v-show="topLevelEditor === 'tiptap'"
+      :onEditorChange="onEditorChange"
+    />
+
+    <VditorComponent
+      ref="vditor"
+      class="mb-2"
+      :class="{ 'mt-2': focusMode }"
+      v-show="topLevelEditor === 'vditor'"
+      :onEditorChange="onEditorChange"
+    />
+
     <div class="d-flex align-center">
       <v-btn small depressed color="slim-btn primary" @click="submitEdit(true)">
         {{ $t(publishText) }}
@@ -43,7 +59,7 @@
 
       <v-menu offset-y top v-if="answerId || articleId" :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
-          <SettingsIcon v-bind="attrs" v-on="on" />
+          <SettingsIcon class="ml-1" v-bind="attrs" v-on="on" />
         </template>
         <v-list dense>
           <v-list-item @click="showDeleteDraftDialog = true">
@@ -64,6 +80,21 @@
                 v-model="visibility"
                 item-text="text"
                 item-value="value"
+              />
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-icon>
+              <EditIcon />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-select
+                dense
+                :items="topLevelEditorItems"
+                v-model="topLevelEditor"
+                item-text="text"
+                item-value="value"
+                @change="onChangeTopLevelEditor"
               />
             </v-list-item-content>
           </v-list-item>
@@ -108,7 +139,7 @@
                 <v-spacer />
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <Viewer :body="archive.body" />
+                <Viewer :body="archive.body" :editor="archive.editor" />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -131,7 +162,7 @@
                 <div class="title">
                   {{ archive.title }}
                 </div>
-                <Viewer :body="archive.body" />
+                <Viewer :body="archive.body" :editor="archive.editor" />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -180,6 +211,7 @@ import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readUserProfile, readWorkingDraft } from '@/store/main/getters';
 import { uuidv4 } from '@/utils';
 import {
+  editor_T,
   IAnswer,
   IArchive,
   IArticle,
@@ -189,14 +221,18 @@ import {
 } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { apiArticle } from '@/api/article';
-import { apiUrl, env } from '@/env';
+import { env } from '@/env';
 
-import Vditor from '@chafan/vditor';
-import { vditorCDN } from '@/common';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import Tiptap from '@/components/editor/Tiptap.vue';
+import VditorComponent from '@/components/editor/VditorComponent.vue';
+import EditIcon from '@/components/icons/EditIcon.vue';
 
 @Component({
   components: {
+    EditIcon,
+    Tiptap,
+    VditorComponent,
     HistoryIcon,
     DeleteIcon,
     SettingsIcon,
@@ -215,6 +251,16 @@ export default class RichEditor extends Vue {
   @Prop() private readonly archivesCount: number | undefined;
   @Prop({ default: false }) private readonly hasTitle!: boolean;
   @Prop({ default: 'Publish' }) private readonly publishText!: string;
+  private readonly topLevelEditorItems = [
+    {
+      text: this.$t('Vditor').toString(),
+      value: 'vditor',
+    },
+    {
+      text: this.$t('tiptap (beta ⚠️)').toString(),
+      value: 'tiptap',
+    },
+  ];
 
   private readonly visibilityItems = [
     {
@@ -246,8 +292,6 @@ export default class RichEditor extends Vue {
   // prevent double-posting
   private writingSessionUUID = uuidv4();
 
-  private vditor: Vditor | null = null;
-
   private lastAutoSavedAt: string | null = null;
 
   private lastSaveLength = 0;
@@ -259,62 +303,6 @@ export default class RichEditor extends Vue {
 
   private articleArchives: IArticleArchive[] = [];
   private selectedArticleArchive: IArticleArchive | null = null;
-
-  private allToolbarItems: any[] = [
-    'emoji',
-    'headings',
-    'bold',
-    'italic',
-    'strike',
-    {
-      name: 'link',
-      suffix: ']()',
-    },
-    '|',
-    'list',
-    'ordered-list',
-    'check',
-    'outdent',
-    'indent',
-    '|',
-    'quote',
-    'line',
-    'code',
-    'inline-code',
-    'insert-before',
-    'insert-after',
-    '|',
-    {
-      name: 'upload',
-      tip: '上传图片',
-    },
-    'table',
-    '|',
-    'undo',
-    'redo',
-    '|',
-    'fullscreen',
-    'edit-mode',
-    'both',
-    'code-theme',
-    'content-theme',
-    'export',
-    'outline',
-    'info',
-    'help',
-  ];
-
-  private showInMobileToolBar = [
-    'headings',
-    'bold',
-    'italic',
-    'link',
-    'list',
-    'line',
-    'upload',
-    'fullscreen',
-  ];
-
   private showDeleteDraftDialog = false;
 
   private mounted() {
@@ -327,7 +315,7 @@ export default class RichEditor extends Vue {
       this.initEditor(workingDraft.body, workingDraft.editor);
       this.lastSaveLength = workingDraft.body.length;
     } else {
-      this.initEditor('', readUserProfile(this.$store)!.default_editor_mode);
+      this.initEditor(null, readUserProfile(this.$store)!.default_editor_mode);
     }
 
     if (this.archivesCount !== undefined) {
@@ -335,26 +323,43 @@ export default class RichEditor extends Vue {
     }
   }
 
-  private getEditorMode(): 'wysiwyg' | 'markdown_splitview' | 'markdown_realtime_rendering' {
-    if (this.vditor!.getCurrentMode() === 'wysiwyg') {
-      return 'wysiwyg';
-    } else if (this.vditor!.getCurrentMode() === 'ir') {
-      return 'markdown_realtime_rendering';
-    } else {
-      return 'markdown_splitview';
+  private getEditorMode(): editor_T {
+    if (this.topLevelEditor === 'tiptap') {
+      return 'tiptap';
+    } else if (this.topLevelEditor === 'vditor') {
+      return (this.$refs.vditor as VditorComponent).getMode();
     }
+    commitAddNotification(this.$store, {
+      content: this.$t('编辑器错误').toString(),
+      color: 'error',
+    });
+    return 'wysiwyg';
   }
 
   private getContent() {
-    return this.vditor!.getValue();
+    if (this.topLevelEditor === 'tiptap') {
+      return JSON.stringify((this.$refs.tiptap as Tiptap).getJSON());
+    } else if (this.topLevelEditor === 'vditor') {
+      return (this.$refs.vditor as VditorComponent).getContent();
+    }
+    commitAddNotification(this.$store, {
+      content: this.$t('编辑器错误').toString(),
+      color: 'error',
+    });
+    return '';
   }
 
   private getTextContent() {
-    let text = '';
-    for (const el of this.$el.querySelectorAll('.vditor-content')) {
-      text += el.textContent;
+    if (this.topLevelEditor === 'tiptap') {
+      return (this.$refs.tiptap as Tiptap).getText();
+    } else if (this.topLevelEditor === 'vditor') {
+      return (this.$refs.vditor as VditorComponent).getText();
     }
-    return text;
+    commitAddNotification(this.$store, {
+      content: this.$t('编辑器错误').toString(),
+      color: 'error',
+    });
+    return '';
   }
 
   private readState(isPublished: boolean): IRichEditorState {
@@ -368,71 +373,18 @@ export default class RichEditor extends Vue {
     };
   }
 
-  private initEditor(
-    body: string,
-    editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering'
-  ) {
-    let toolBar: any[] = [];
-    if (this.$vuetify.breakpoint.mdAndUp) {
-      toolBar = this.allToolbarItems.slice(0, this.allToolbarItems.length - 7).concat([
-        {
-          name: 'more',
-          toolbar: this.allToolbarItems.slice(this.allToolbarItems.length - 7),
-        },
-      ]);
-    } else {
-      const toolBarMore: any[] = [];
-      for (const item of this.allToolbarItems) {
-        if (
-          this.showInMobileToolBar.includes(item) ||
-          this.showInMobileToolBar.includes(item.name)
-        ) {
-          toolBar.push(item);
-        } else if (item !== '|') {
-          toolBarMore.push(item);
-        }
+  private topLevelEditor: 'tiptap' | 'vditor' = 'vditor';
+
+  private initEditor(body: string | null, editor: editor_T) {
+    if (editor === 'tiptap') {
+      this.topLevelEditor = 'tiptap';
+      if (body) {
+        (this.$refs.tiptap as Tiptap).loadJSON(JSON.parse(body));
       }
-      toolBar.push({
-        name: 'more',
-        toolbar: toolBarMore,
-      });
-    }
-    let editorMode: 'wysiwyg' | 'sv' | 'ir';
-    if (editor === 'markdown' || editor == 'markdown_realtime_rendering') {
-      editorMode = 'ir';
-    } else if (editor === 'wysiwyg') {
-      editorMode = 'wysiwyg';
     } else {
-      editorMode = 'sv';
+      this.topLevelEditor = 'vditor';
+      (this.$refs.vditor as VditorComponent).init(editor, body || '');
     }
-    this.vditor = new Vditor('vditor', {
-      minHeight: 300,
-      toolbar: toolBar,
-      debugger: env === 'development',
-      cdn: vditorCDN,
-      preview: {
-        mode: 'both',
-        actions: [],
-      },
-      input: (value: string) => {
-        this.onEditorChange(value);
-      },
-      upload: {
-        max: 5 * 1024 * 1024,
-        // TODO: token for CORS validation
-        accept: 'image/png, image/jpeg, image/bmp, image/gif',
-        fieldName: 'files',
-        url: `${apiUrl}/api/v1/upload/vditor/`,
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-      },
-      mode: editorMode,
-      value: body,
-      cache: {
-        enable: false,
-      },
-    });
   }
 
   @Emit('submit-edit')
@@ -488,11 +440,11 @@ export default class RichEditor extends Vue {
     };
   }
 
-  private onEditorChange(value: string) {
-    if (Math.abs(value.length - this.lastSaveLength) > 50) {
+  private onEditorChange(textContent: string) {
+    if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
       if (!this.lastSaveIntermediate) {
         this.lastSaveIntermediate = true;
-        this.lastSaveLength = value.length;
+        this.lastSaveLength = textContent.length;
         this.autoSaveEdit();
         if (this.lastSaveTimerId !== null) {
           clearTimeout(this.lastSaveTimerId);
@@ -574,20 +526,21 @@ export default class RichEditor extends Vue {
       }
     });
   }
+
+  private onChangeTopLevelEditor() {
+    if (this.topLevelEditor === 'tiptap') {
+      const oldContent = (this.$refs.vditor as VditorComponent).getHTML();
+      (this.$refs.tiptap as Tiptap).loadHTML(oldContent);
+    } else if (this.topLevelEditor === 'vditor') {
+      const oldContent = (this.$refs.tiptap as Tiptap).getHTML();
+      (this.$refs.vditor as VditorComponent).init('wysiwyg', undefined, oldContent);
+    }
+  }
 }
 </script>
 
 <style lang="scss">
 .slim-btn {
   padding: 0 8px !important;
-}
-
-.vditor {
-  --textarea-background-color: white;
-}
-
-.vditor-sv {
-  font-family: mononoki, Consolas, Liberation Mono, Menlo, Courier, monospace, Apple Color Emoji,
-    Segoe UI Emoji, Noto Color Emoji, Segoe UI Symbol, Android Emoji, EmojiSymbols;
 }
 </style>
