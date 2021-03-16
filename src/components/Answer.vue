@@ -58,6 +58,7 @@
             </v-chip>
             <Viewer
               :body="answer.body"
+              :bodyFormat="answer.body_format"
               class="vditor-preview"
               v-intersect.once="onReadFullAnswer"
             />
