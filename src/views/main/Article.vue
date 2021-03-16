@@ -113,7 +113,7 @@
                   small
                   depressed
                   class="mr-1"
-                  :href="`/article-focus?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
+                  :href="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
                   v-show="currentUserIsAuthor"
                   >{{ $t(editButtonText) }}</v-btn
                 >

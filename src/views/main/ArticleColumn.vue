@@ -14,7 +14,7 @@
               depressed
               color="primary"
               v-if="articleColumn && articleColumn.owner.uuid === currentUserId"
-              :to="`/article-focus?articleColumnId=${articleColumn.uuid}`"
+              :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
               class="mt-2"
             >
               {{ $t('写文章') }}
