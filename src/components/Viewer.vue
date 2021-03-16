@@ -1,6 +1,7 @@
 <template>
   <div ref="vditorViewer" :class="{ 'vditor-viewer-desktop': $vuetify.breakpoint.mdAndUp }">
-    <div class="vditor-viewer" />
+    <div class="vditor-viewer" v-html="body" v-if="bodyFormat === 'html'" />
+    <div class="vditor-viewer" v-if="bodyFormat === 'markdown'" />
     <LightboxGroup ref="lightbox" />
   </div>
 </template>
@@ -16,16 +17,22 @@ import { vditorCDN } from '@/common';
 })
 export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
+  @Prop() public readonly bodyFormat!: 'markdown' | 'html';
 
   private mounted() {
-    Vditor.preview(this.$el as HTMLDivElement, this.body, {
-      mode: 'light',
-      cdn: vditorCDN,
-      after: () => {
-        const lightbox = this.$refs.lightbox as LightboxGroup;
-        lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
-      },
-    });
+    if (this.bodyFormat === 'html') {
+      const lightbox = this.$refs.lightbox as LightboxGroup;
+      lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+    } else if (this.bodyFormat === 'markdown') {
+      Vditor.preview(this.$el as HTMLDivElement, this.body, {
+        mode: 'light',
+        cdn: vditorCDN,
+        after: () => {
+          const lightbox = this.$refs.lightbox as LightboxGroup;
+          lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+        },
+      });
+    }
   }
 }
 </script>
@@ -35,6 +42,9 @@ export default class Viewer extends Vue {
 
 .vditor-viewer-desktop img
     max-height: 500px
+
+.vditor-viewer img
+  max-width: 100%
 
 .vditor-viewer
     font-family: $body-font-family
