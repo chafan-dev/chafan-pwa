@@ -442,7 +442,7 @@ const i18n = new VueI18n({
       回答: 'Answer',
       回答问题: 'Answer question',
       专栏: 'Article Column',
-      创建文章: 'Create new article',
+      创建文章: 'New article',
       等待回答的问题: 'Questions waiting for answers',
       'upvoted answer': 'upvoted answer',
       '在「用户中心」中可以创建专栏': 'You can create new question column in "Dashboard"',

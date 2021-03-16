@@ -1,3 +1,10 @@
+export type editor_T =
+  | 'wysiwyg'
+  | 'markdown'
+  | 'markdown_splitview'
+  | 'markdown_realtime_rendering';
+export type body_format_T = 'markdown' | 'html';
+
 export interface IUserProfile {
   id: number;
   uuid: string;
@@ -25,7 +32,7 @@ export interface IUserProfile {
   homepage_url?: string;
   karma: number;
   enable_deliver_unread_notifications: boolean;
-  default_editor_mode: 'wysiwyg' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  default_editor_mode: editor_T;
 }
 
 export interface IUserSiteProfile {
@@ -70,9 +77,9 @@ export interface IAnswer {
   updated_at: string;
   draft_saved_at?: string;
   body: string;
-  body_format: 'markdown' | 'html';
+  body_format: body_format_T;
   is_published: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  editor: editor_T;
   comments: IComment[];
   is_hidden_by_moderator: boolean;
   view_times: number;
@@ -123,7 +130,7 @@ export interface IUserUpdateMe {
   linkedin_url?: string;
   homepage_url?: string;
   enable_deliver_unread_notifications?: boolean;
-  default_editor_mode?: 'wysiwyg' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  default_editor_mode?: editor_T;
 }
 
 export interface IUserProfileUpdate {
@@ -180,7 +187,7 @@ export interface IAnswerCreate {
   question_uuid: string;
   body: string;
   is_published: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  editor: editor_T;
   visibility: 'anyone' | 'registered';
   writing_session_uuid: string;
 }
@@ -188,7 +195,7 @@ export interface IAnswerCreate {
 export interface IAnswerUpdate {
   updated_body: string;
   is_draft: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  editor: editor_T;
   visibility: 'anyone' | 'registered';
 }
 
@@ -198,7 +205,7 @@ export interface IRichEditorState {
   rendered_body_text: string | null;
   visibility: 'anyone' | 'registered';
   is_draft: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  editor: editor_T;
 }
 
 export interface IQuestionCreate {
@@ -720,7 +727,7 @@ export interface IArticleCreate {
   body: string;
   article_column_uuid: string;
   is_published: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  editor: editor_T;
   visibility: 'anyone' | 'registered';
   writing_session_uuid: string;
 }
@@ -729,7 +736,7 @@ export interface IArticleUpdate {
   updated_title: string;
   updated_body: string;
   is_draft: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  editor: editor_T;
   visibility: 'anyone' | 'registered';
 }
 
@@ -747,7 +754,8 @@ export interface IArticle {
   initial_published_at: string;
   draft_saved_at?: string;
   is_published: boolean;
-  editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
+  body_format: body_format_T;
+  editor: editor_T;
   visibility: 'anyone' | 'registered';
   topics: ITopic[];
   upvotes_count: number;
@@ -789,7 +797,6 @@ export interface IArticlePreview {
   author: IUserPreview;
   article_column: IArticleColumn;
   title: string;
-  body_preview: string;
   upvotes_count: number;
   is_published: boolean;
 }
