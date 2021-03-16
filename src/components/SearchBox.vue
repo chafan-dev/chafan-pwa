@@ -107,7 +107,7 @@ export default {
         this.loadingAnswers = false;
       });
     },
-    getItemText(item) {
+    getItemFullText(item) {
       if (item.type === 'user') {
         let name = `@${item.data.handle}`;
         if (item.data.full_name) {
@@ -123,6 +123,14 @@ export default {
       }
       if (item.type === 'answer') {
         return item.data.body;
+      }
+    },
+    getItemText(item) {
+      const fullText = this.getItemFullText(item);
+      if (fullText.length > 20) {
+        return fullText.substr(0, 40) + '...';
+      } else {
+        return fullText;
       }
     },
     getItemLink(item) {
