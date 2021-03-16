@@ -699,10 +699,8 @@ export default class Question extends Vue {
         if (payload.answerId) {
           const response = await apiAnswer.updateAnswer(this.token, payload.answerId, {
             updated_body: payload.edit.body,
-            source_format: payload.edit.source_format,
             editor: payload.edit.editor,
             visibility: payload.edit.visibility,
-            math_enabled: payload.edit.math_enabled,
             is_draft: payload.edit.is_draft,
           });
           this.savedNewAnswer = response.data;
