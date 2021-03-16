@@ -13,10 +13,15 @@
         <div v-if="userProfile" class="d-flex justify-space-between mb-3">
           <NewContentActionBar />
           <v-spacer />
-          <SharingIcon v-if="!showSharing" class="mr-2" @click="toggleSharing" />
-          <FeedIcon v-else class="mr-2" @click="toggleSharing" />
-          <router-link to="/explore"><ExploreIcon /></router-link>
-          <UIStyleControllers />
+          <div class="d-flex align-center">
+            <SharingIcon v-if="!showSharing" class="mr-2" @click="toggleSharing" color="primary" />
+            <FeedIcon v-else class="mr-2" @click="toggleSharing" color="primary" />
+
+            <router-link to="/explore" class="mr-2 mb-1"
+              ><ExploreIcon color="yellow darken-3"
+            /></router-link>
+            <UIStyleControllers />
+          </div>
         </div>
 
         <div v-if="showSharing">
