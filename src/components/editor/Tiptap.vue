@@ -327,10 +327,10 @@ $color-grey: #dddddd;
 .editable-editor-content .ProseMirror {
   border: 1px solid lightgrey;
   border-radius: 5px;
+  min-height: 30rem;
 }
 
 .ProseMirror {
-  min-height: 30rem;
   padding: 5px;
 }
 </style>
