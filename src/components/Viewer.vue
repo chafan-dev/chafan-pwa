@@ -11,7 +11,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
 import { vditorCDN } from '@/common';
-import sanitizeHtml from 'sanitize-html';
+import DOMPurify from 'dompurify';
 
 @Component({
   components: { LightboxGroup },
@@ -21,9 +21,7 @@ export default class Viewer extends Vue {
   @Prop() public readonly bodyFormat!: 'markdown' | 'html';
 
   get sanitizedBody() {
-    return sanitizeHtml(this.body, {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-    });
+    return DOMPurify.sanitize(this.body);
   }
 
   private mounted() {
