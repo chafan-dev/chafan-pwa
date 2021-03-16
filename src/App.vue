@@ -112,9 +112,11 @@ export default class App extends Vue {
       });
     }
 
-    axios.get(prodStateJsonURL).then((response) => {
-      commitSetTopBanner(this.$store, response.data['top-banner']);
-    });
+    if (prodStateJsonURL) {
+      axios.get(prodStateJsonURL).then((response) => {
+        commitSetTopBanner(this.$store, response.data['top-banner']);
+      });
+    }
     await dispatchCheckLoggedIn(this.$store);
     this.showOverlay = false;
     const pref = readLocalePreference(this.$store);

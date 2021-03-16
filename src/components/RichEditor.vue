@@ -252,7 +252,7 @@ export default class RichEditor extends Vue {
 
   private lastSaveLength = 0;
   private lastSaveIntermediate = false;
-  private lastSaveTimerId: number | null = null;
+  private lastSaveTimerId: any = null;
 
   private archives: IArchive[] = [];
   private selectedArchive: IArchive | null = null;

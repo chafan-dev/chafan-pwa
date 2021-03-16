@@ -1,6 +1,6 @@
 <template>
   <div ref="vditorViewer" :class="{ 'vditor-viewer-desktop': $vuetify.breakpoint.mdAndUp }">
-    <div class="vditor-viewer" v-html="body" v-if="bodyFormat === 'html'" />
+    <div class="vditor-viewer" v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
     <div class="vditor-viewer" v-if="bodyFormat === 'markdown'" />
     <LightboxGroup ref="lightbox" />
   </div>
@@ -11,6 +11,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
 import { vditorCDN } from '@/common';
+import sanitizeHtml from 'sanitize-html';
 
 @Component({
   components: { LightboxGroup },
@@ -18,6 +19,10 @@ import { vditorCDN } from '@/common';
 export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
   @Prop() public readonly bodyFormat!: 'markdown' | 'html';
+
+  get sanitizedBody() {
+    return sanitizeHtml(this.body);
+  }
 
   private mounted() {
     if (this.bodyFormat === 'html') {

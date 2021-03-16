@@ -287,7 +287,7 @@ import BaseCard from '@/components/base/BaseCard.vue';
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
     document.title = to.meta.title;
-  } else {
+  } else if (process.env.VUE_APP_NAME) {
     document.title = process.env.VUE_APP_NAME;
   }
   next();
