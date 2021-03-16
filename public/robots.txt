@@ -4,10 +4,11 @@
 # permission.
 
 User-agent: *
+Allow: /explore
 Allow: /questions/
 Allow: /articles/
 Allow: /submissions/
-Allow: /sites
+Allow: /sites/
 Allow: /users/
 
 User-agent: *
