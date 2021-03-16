@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IQuestionPreview } from '@/interfaces';
+import { IQuestionPreview, IUserPreview } from '@/interfaces';
 import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
 
@@ -16,6 +16,12 @@ export const apiDiscovery = {
   async getInterestingQuestions(token: string) {
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/api/v1/discovery/interesting-questions/`,
+      authHeaders(token)
+    );
+  },
+  async getInterestingUsers(token: string) {
+    return axios.get<IUserPreview[]>(
+      `${apiUrl}/api/v1/discovery/interesting-users/`,
       authHeaders(token)
     );
   },

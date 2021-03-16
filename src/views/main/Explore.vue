@@ -11,7 +11,10 @@
               {{ $t('发现问题') }}
             </v-tab>
             <v-tab>
-              {{ $t('发现站点') }}
+              {{ $t('所有圈子') }}
+            </v-tab>
+            <v-tab>
+              {{ $t('关注更多用户') }}
             </v-tab>
 
             <v-tab-item>
@@ -29,10 +32,18 @@
                   :questionPreview="questionPreview"
                 />
               </div>
+              <v-skeleton-loader type="paragraph" v-else />
               <p class="text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
             <v-tab-item>
               <ExploreSitesGrid />
+            </v-tab-item>
+            <v-tab-item>
+              <div v-if="interestingUsers !== null">
+                <UserGrid :users="interestingUsers" />
+              </div>
+              <v-skeleton-loader type="paragraph" v-else />
+              <p class="text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
           </v-tabs>
         </div>
@@ -45,21 +56,24 @@
 import { apiDiscovery } from '@/api/discovery';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 import { Component, Vue } from 'vue-property-decorator';
-import { IQuestionPreview } from '@/interfaces';
+import { IQuestionPreview, IUserPreview } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
+import UserGrid from '@/components/UserGrid.vue';
 
 @Component({
-  components: { QuestionPreview, ExploreSitesGrid },
+  components: { UserGrid, QuestionPreview, ExploreSitesGrid },
 })
 export default class Explore extends Vue {
   private interestingQuestions: IQuestionPreview[] | null = null;
+  private interestingUsers: IUserPreview[] | null = null;
   get token() {
     return this.$store.state.main.token;
   }
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.interestingQuestions = (await apiDiscovery.getInterestingQuestions(this.token)).data;
+      this.interestingUsers = (await apiDiscovery.getInterestingUsers(this.token)).data;
     });
   }
 }
