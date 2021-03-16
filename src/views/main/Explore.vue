@@ -33,7 +33,7 @@
                 />
               </div>
               <v-skeleton-loader type="paragraph" v-else />
-              <p class="text-center">{{ $t('不定期随机更新') }}</p>
+              <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
             <v-tab-item>
               <ExploreSitesGrid />
@@ -43,7 +43,7 @@
                 <UserGrid :users="interestingUsers" />
               </div>
               <v-skeleton-loader type="paragraph" v-else />
-              <p class="text-center">{{ $t('不定期随机更新') }}</p>
+              <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
           </v-tabs>
         </div>
