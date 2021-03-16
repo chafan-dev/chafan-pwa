@@ -511,28 +511,11 @@ export default class Answer extends Vue {
     }
   }
 
-  private updatePreview() {
-    const previewDiv = this.$el.getElementsByClassName('vditor-preview')[0];
-    if (previewDiv === undefined) {
-      setTimeout(this.updatePreview, 200);
-      return;
-    }
-    const text = previewDiv.textContent;
-    if (text) {
-      if (text.length > 120) {
-        this.answerPreviewBody = text.substring(0, 120) + '...';
-      } else {
-        this.preview = false;
-      }
-    }
-  }
-
   private bodyDraft: string | null = null;
 
   private updateStateWithLoadedAnswer(answer: IAnswer) {
     this.$emit('load');
     this.answer = answer;
-    setTimeout(this.updatePreview, 200);
     if (this.userProfile) {
       this.currentUserIsAuthor = this.userProfile.uuid === this.answer.author.uuid;
       if (this.currentUserIsAuthor) {
