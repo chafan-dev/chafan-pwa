@@ -70,6 +70,7 @@ export interface IAnswer {
   updated_at: string;
   draft_saved_at?: string;
   body: string;
+  body_format: 'markdown' | 'html';
   is_published: boolean;
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   comments: IComment[];

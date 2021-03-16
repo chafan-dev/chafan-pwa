@@ -35,6 +35,7 @@ export default class Viewer extends Vue {
 
 .simple-viewer img
     max-height: 100px
+    max-width: 100%
 
 .simple-viewer
     font-family: $body-font-family
