@@ -490,7 +490,7 @@ export default class Answer extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answerPreview) {
         this.toggleHideAnswerIntermediate = true;
-        const response = await api.updateAnswerByMod(this.token, this.answerPreview.uuid, {
+        await api.updateAnswerByMod(this.token, this.answerPreview.uuid, {
           is_hidden_by_moderator: !this.isHiddenByMod,
         });
         this.toggleHideAnswerIntermediate = false;

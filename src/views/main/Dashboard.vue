@@ -351,6 +351,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { readUserProfile } from '@/store/main/getters';
 import {
+  editor_T,
   IAnswerPreview,
   IArticleColumn,
   IArticleColumnCreate,
@@ -498,8 +499,7 @@ export default class Dashboard extends Vue {
   private enableEmailNotifications = false;
   private changingMySettings = false;
 
-  private selectedEditorMode: 'markdown_realtime_rendering' | 'wysiwyg' | 'markdown_splitview' =
-    'wysiwyg';
+  private selectedEditorMode: editor_T = 'wysiwyg';
 
   private readonly editorModeItems = [
     {
