@@ -79,11 +79,9 @@ export default new Router({
           ],
         },
         {
-          path: 'article-focus',
+          path: 'article-editor',
           component: () =>
-            import(
-              /* webpackChunkName: "main-article-focus" */ './views/main/ArticleFocusMode.vue'
-            ),
+            import(/* webpackChunkName: "main-article-editor" */ './views/main/ArticleEditor.vue'),
         },
         {
           path: 'topics/:id',

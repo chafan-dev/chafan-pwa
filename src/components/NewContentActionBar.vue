@@ -104,7 +104,7 @@ export default class NewContentActionBar extends Vue {
 
   private async postNewArticle() {
     if (this.newArticleColumnUUID) {
-      this.$router.push(`/article-focus?articleColumnId=${this.newArticleColumnUUID}`);
+      this.$router.push(`/article-editor?articleColumnId=${this.newArticleColumnUUID}`);
     } else {
       commitAddNotification(this.$store, {
         content:

@@ -25,7 +25,7 @@ import { apiArticle } from '@/api/article';
 import { commitAddNotification, commitSetWorkingDraft } from '@/store/main/mutations';
 
 @Component
-export default class ArticleFocusMode extends Vue {
+export default class ArticleEditor extends Vue {
   get articleColumnId() {
     const id = this.$router.currentRoute.query.articleColumnId;
     if (id) {
@@ -69,10 +69,8 @@ export default class ArticleFocusMode extends Vue {
         title: article.title,
         body: article.body,
         rendered_body_text: null,
-        math_enabled: article.math_enabled,
         editor: article.editor,
         visibility: article.visibility,
-        source_format: article.source_format,
         is_draft: true,
       });
     }
@@ -142,10 +140,8 @@ export default class ArticleFocusMode extends Vue {
           const response = await apiArticle.updateArticle(this.$store.state.main.token, articleId, {
             updated_title: payload.edit.title,
             updated_body: payload.edit.body,
-            source_format: payload.edit.source_format,
             editor: payload.edit.editor,
             visibility: payload.edit.visibility,
-            math_enabled: payload.edit.math_enabled,
             is_draft: payload.edit.is_draft,
           });
           payload.saveArticleCallback(response.data);

@@ -216,8 +216,6 @@ export default class RichEditor extends Vue {
   @Prop({ default: false }) private readonly hasTitle!: boolean;
   @Prop({ default: 'Publish' }) private readonly publishText!: string;
 
-  private format: 'markdown' = 'markdown';
-  private mathEnabled = false;
   private readonly visibilityItems = [
     {
       text: this.$t('仅注册用户可读').toString(),
@@ -324,8 +322,6 @@ export default class RichEditor extends Vue {
     this.articleId = this.articleIdProp ? this.articleIdProp : null;
     const workingDraft = readWorkingDraft(this.$store);
     if (workingDraft) {
-      this.format = workingDraft.source_format;
-      this.mathEnabled = workingDraft.math_enabled;
       this.visibility = workingDraft.visibility;
       this.articleTitle = workingDraft.title;
       this.initEditor(workingDraft.body, workingDraft.editor);
@@ -366,11 +362,9 @@ export default class RichEditor extends Vue {
       title: this.articleTitle,
       body: this.getContent(),
       rendered_body_text: this.getTextContent(),
-      source_format: this.format,
       is_draft: !isPublished,
       visibility: this.visibility,
       editor: this.getEditorMode(),
-      math_enabled: this.mathEnabled,
     };
   }
 

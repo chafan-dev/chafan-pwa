@@ -86,9 +86,7 @@ export const newAnswerHandler = async (
       const newAnswer = (
         await apiAnswer.postAnswer(vueInstance.$store.state.main.token, {
           body: edit.body,
-          source_format: edit.source_format,
           editor: edit.editor,
-          math_enabled: edit.math_enabled,
           question_uuid: questionUUID,
           visibility: edit.visibility,
           writing_session_uuid: writingSessionUUID,
@@ -130,10 +128,8 @@ export const newArticleHandler = async (
       await apiArticle.postArticle(vueInstance.$store.state.main.token, {
         title: edit.title,
         body: edit.body,
-        source_format: edit.source_format,
         editor: edit.editor,
         visibility: edit.visibility,
-        math_enabled: edit.math_enabled,
         is_published: !edit.is_draft,
         writing_session_uuid: writingSessionUUID,
         article_column_uuid: articleColumnId,

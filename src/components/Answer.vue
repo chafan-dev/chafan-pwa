@@ -274,7 +274,6 @@
   </v-card>
   <RichEditor
     v-else-if="answer && showEditor"
-    :formatProp="answer.source_format"
     :answerIdProp="answer.uuid"
     publishText="发表答案"
     :inPrivateSite="!answer.site.public_readable"
@@ -587,9 +586,7 @@ export default class Answer extends Vue {
           body: draft.body_draft,
           rendered_body_text: null,
           is_draft: true,
-          source_format: this.answer.source_format,
           editor: this.answer.editor,
-          math_enabled: this.answer.math_enabled,
           visibility: this.answer.visibility,
         });
       } else {
@@ -597,10 +594,8 @@ export default class Answer extends Vue {
           title: null,
           body: this.answer.body,
           rendered_body_text: null,
-          math_enabled: this.answer.math_enabled,
           visibility: this.answer.visibility,
           editor: this.answer.editor,
-          source_format: this.answer.source_format,
           is_draft: false,
         });
       }

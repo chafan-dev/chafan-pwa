@@ -71,9 +71,7 @@ export interface IAnswer {
   draft_saved_at?: string;
   body: string;
   is_published: boolean;
-  source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
-  math_enabled: boolean;
   comments: IComment[];
   is_hidden_by_moderator: boolean;
   view_times: number;
@@ -180,32 +178,26 @@ export interface ISite {
 export interface IAnswerCreate {
   question_uuid: string;
   body: string;
-  source_format: 'markdown';
   is_published: boolean;
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   visibility: 'anyone' | 'registered';
-  math_enabled: boolean;
   writing_session_uuid: string;
 }
 
 export interface IAnswerUpdate {
   updated_body: string;
   is_draft: boolean;
-  source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
   visibility: 'anyone' | 'registered';
-  math_enabled: boolean;
 }
 
 export interface IRichEditorState {
   title: string | null; // for article
   body: string;
   rendered_body_text: string | null;
-  source_format: 'markdown';
   visibility: 'anyone' | 'registered';
   is_draft: boolean;
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
-  math_enabled: boolean;
 }
 
 export interface IQuestionCreate {
@@ -727,9 +719,7 @@ export interface IArticleCreate {
   body: string;
   article_column_uuid: string;
   is_published: boolean;
-  source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
-  math_enabled: boolean;
   visibility: 'anyone' | 'registered';
   writing_session_uuid: string;
 }
@@ -738,9 +728,7 @@ export interface IArticleUpdate {
   updated_title: string;
   updated_body: string;
   is_draft: boolean;
-  source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
-  math_enabled: boolean;
   visibility: 'anyone' | 'registered';
 }
 
@@ -758,9 +746,7 @@ export interface IArticle {
   initial_published_at: string;
   draft_saved_at?: string;
   is_published: boolean;
-  source_format: 'markdown';
   editor: 'wysiwyg' | 'markdown' | 'markdown_splitview' | 'markdown_realtime_rendering';
-  math_enabled: boolean;
   visibility: 'anyone' | 'registered';
   topics: ITopic[];
   upvotes_count: number;
