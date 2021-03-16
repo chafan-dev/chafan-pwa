@@ -154,20 +154,26 @@ export default class CreateSite extends Vue {
     } else {
       const siteCreateInfo = JSON.stringify(this.siteCreate);
       await dispatchCaptureApiError(this.$store, async () => {
-        console.log(adminUUID);
-        const r0 = await api.createChannel(this.$store.state.main.token, {
-          private_with_user_uuid: adminUUID,
-        });
-        const channelId = r0.data.id;
-        await api.createMessage(this.$store.state.main.token, {
-          channel_id: channelId,
-          body: '申请创建圈子：\n' + siteCreateInfo,
-        });
-        commitAddNotification(this.$store, {
-          content: this.$t('因 Karma 不足，已发送申请消息').toString(),
-          color: 'info',
-        });
-        this.$router.push(`/channels/${channelId}`);
+        if (adminUUID) {
+          const r0 = await api.createChannel(this.$store.state.main.token, {
+            private_with_user_uuid: adminUUID,
+          });
+          const channelId = r0.data.id;
+          await api.createMessage(this.$store.state.main.token, {
+            channel_id: channelId,
+            body: '申请创建圈子：\n' + siteCreateInfo,
+          });
+          commitAddNotification(this.$store, {
+            content: this.$t('因 Karma 不足，已发送申请消息').toString(),
+            color: 'info',
+          });
+          this.$router.push(`/channels/${channelId}`);
+        } else {
+          commitAddNotification(this.$store, {
+            content: this.$t('网站内部错误，请联系管理员').toString(),
+            color: 'error',
+          });
+        }
       });
       this.intermediate = false;
     }
