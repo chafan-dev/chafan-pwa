@@ -47,7 +47,12 @@
             <v-chip small color="info" v-if="answer">
               {{ $t('草稿') }}
             </v-chip>
-            <Viewer v-if="bodyDraft !== null" :body="bodyDraft" class="vditor-preview" />
+            <Viewer
+              v-if="bodyDraft !== null"
+              :body="bodyDraft"
+              :editor="answer.editor"
+              class="vditor-preview"
+            />
           </template>
           <template v-else>
             <v-chip small color="warning" v-if="answer && !answer.is_published">
@@ -59,6 +64,7 @@
             <Viewer
               :body="answer.body"
               :bodyFormat="answer.body_format"
+              :editor="answer.editor"
               class="vditor-preview"
               v-intersect.once="onReadFullAnswer"
             />

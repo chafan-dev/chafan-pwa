@@ -1,9 +1,10 @@
 export type editor_T =
+  | 'tiptap'
   | 'wysiwyg'
   | 'markdown'
   | 'markdown_splitview'
   | 'markdown_realtime_rendering';
-export type body_format_T = 'markdown' | 'html';
+export type body_format_T = 'markdown' | 'html' | 'tiptap_json';
 
 export interface IUserProfile {
   id: number;
@@ -691,6 +692,7 @@ export interface IAnswerDraft {
 export interface IArchive {
   id: number;
   body: string;
+  editor: editor_T;
   created_at: string;
 }
 
@@ -805,6 +807,7 @@ export interface IArticleArchive {
   uuid: string;
   title: string;
   body: string;
+  editor: editor_T;
   topics: ITopic[];
   created_at: string;
 }

@@ -514,6 +514,10 @@ export default class Dashboard extends Vue {
       text: this.$t('markdown_splitview').toString(),
       value: 'markdown_splitview',
     },
+    {
+      text: this.$t('tiptap').toString(),
+      value: 'tiptap',
+    },
   ];
 
   private async mounted() {

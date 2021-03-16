@@ -1,7 +1,12 @@
 <template>
-  <div ref="vditorViewer" :class="{ 'vditor-viewer-desktop': $vuetify.breakpoint.mdAndUp }">
-    <div class="vditor-viewer" v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
-    <div class="vditor-viewer" v-if="bodyFormat === 'markdown'" />
+  <div ref="viewer" class="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }">
+    <template v-if="editor === 'tiptap'">
+      <Tiptap ref="tiptapViewer" :editable="false" />
+    </template>
+    <template v-else>
+      <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
+      <div ref="vditorViewer" v-if="bodyFormat === 'markdown'" />
+    </template>
     <LightboxGroup ref="lightbox" />
   </div>
 </template>
@@ -12,31 +17,43 @@ import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
 import { vditorCDN } from '@/common';
 import DOMPurify from 'dompurify';
+import { body_format_T, editor_T } from '@/interfaces';
+import Tiptap from '@/components/editor/Tiptap.vue';
 
 @Component({
-  components: { LightboxGroup },
+  components: { Tiptap, LightboxGroup },
 })
 export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
-  @Prop() public readonly bodyFormat!: 'markdown' | 'html';
+  @Prop() public readonly bodyFormat!: body_format_T;
+  @Prop() public readonly editor!: editor_T;
 
   get sanitizedBody() {
     return DOMPurify.sanitize(this.body);
   }
 
   private mounted() {
-    if (this.bodyFormat === 'html') {
-      const lightbox = this.$refs.lightbox as LightboxGroup;
-      lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
-    } else if (this.bodyFormat === 'markdown') {
-      Vditor.preview(this.$el as HTMLDivElement, this.body, {
-        mode: 'light',
-        cdn: vditorCDN,
-        after: () => {
-          const lightbox = this.$refs.lightbox as LightboxGroup;
-          lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
-        },
-      });
+    if (this.editor === 'tiptap') {
+      const tiptapViewer = this.$refs.tiptapViewer as Tiptap;
+      if (this.bodyFormat === 'tiptap_json') {
+        tiptapViewer.loadJSON(JSON.parse(this.body));
+      } else if (this.bodyFormat === 'html') {
+        tiptapViewer.loadHTML(this.sanitizedBody);
+      }
+    } else {
+      if (this.bodyFormat === 'html') {
+        const lightbox = this.$refs.lightbox as LightboxGroup;
+        lightbox.loadImagesFrom(this.$refs.viewer as HTMLElement);
+      } else if (this.bodyFormat === 'markdown') {
+        Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
+          mode: 'light',
+          cdn: vditorCDN,
+          after: () => {
+            const lightbox = this.$refs.lightbox as LightboxGroup;
+            lightbox.loadImagesFrom(this.$refs.viewer as HTMLElement);
+          },
+        });
+      }
     }
   }
 }
@@ -45,13 +62,13 @@ export default class Viewer extends Vue {
 <style lang="sass">
 @import '~vuetify/src/styles/styles.sass'
 
-.vditor-viewer-desktop img
+.viewer-desktop img
     max-height: 500px
 
-.vditor-viewer img
+.viewer img
   max-width: 100%
 
-.vditor-viewer
+.viewer
     font-family: $body-font-family
     font-size: $font-size-root
 </style>
