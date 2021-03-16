@@ -266,8 +266,9 @@
           </v-tabs>
         </div>
         <div class="ml-7 mr-7" v-else>
-          <v-skeleton-loader type="paragraph" boilerplate />
-          <div class="text-center">{{ $t('登录后查看更多') }}</div>
+          <div class="text-center">
+            <RegisteredVisibilityIcon class="mr-2" /><span>{{ $t('登录后查看更多') }}</span>
+          </div>
         </div>
       </v-col>
     </v-row>
@@ -309,9 +310,11 @@ import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readIsLoggedIn } from '@/store/main/getters';
+import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 
 @Component({
   components: {
+    RegisteredVisibilityIcon,
     QuestionPreview,
     Answer,
     UserCard,

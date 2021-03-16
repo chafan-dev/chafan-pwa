@@ -21,7 +21,9 @@ export default class Viewer extends Vue {
   @Prop() public readonly bodyFormat!: 'markdown' | 'html';
 
   get sanitizedBody() {
-    return sanitizeHtml(this.body);
+    return sanitizeHtml(this.body, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+    });
   }
 
   private mounted() {
