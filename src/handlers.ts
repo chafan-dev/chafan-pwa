@@ -84,6 +84,7 @@ class AnswerEditHandler {
         const response = await apiAnswer.updateAnswer(this.token, answerUUID, {
           updated_body: payload.edit.body,
           is_draft: payload.edit.is_draft,
+          updated_body_text: payload.edit.rendered_body_text || undefined,
           visibility: payload.edit.visibility,
           editor: payload.edit.editor,
         });

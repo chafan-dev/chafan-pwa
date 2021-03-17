@@ -140,6 +140,7 @@ export default class ArticleEditor extends Vue {
           const response = await apiArticle.updateArticle(this.$store.state.main.token, articleId, {
             updated_title: payload.edit.title,
             updated_body: payload.edit.body,
+            updated_body_text: payload.edit.rendered_body_text || undefined,
             editor: payload.edit.editor,
             visibility: payload.edit.visibility,
             is_draft: payload.edit.is_draft,
