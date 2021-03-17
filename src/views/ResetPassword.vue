@@ -84,7 +84,7 @@ export default class UserProfileEdit extends Vue {
     this.checkToken();
   }
 
-  public resetAll(reset) {
+  public resetAll() {
     this.password = '';
     this.confirmation = '';
   }
