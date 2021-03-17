@@ -83,21 +83,22 @@
               />
             </v-list-item-content>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-icon>
-              <EditIcon />
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-select
-                dense
-                :items="topLevelEditorItems"
-                v-model="topLevelEditor"
-                item-text="text"
-                item-value="value"
-                @change="onChangeTopLevelEditor"
-              />
-            </v-list-item-content>
-          </v-list-item>
+          <!--  NOTE: This is experimental...turn on later -- also to make it appear before ID are generated        -->
+          <!--          <v-list-item>-->
+          <!--            <v-list-item-icon>-->
+          <!--              <EditIcon />-->
+          <!--            </v-list-item-icon>-->
+          <!--            <v-list-item-content>-->
+          <!--              <v-select-->
+          <!--                dense-->
+          <!--                :items="topLevelEditorItems"-->
+          <!--                v-model="topLevelEditor"-->
+          <!--                item-text="text"-->
+          <!--                item-value="value"-->
+          <!--                @change="onChangeTopLevelEditor"-->
+          <!--              />-->
+          <!--            </v-list-item-content>-->
+          <!--          </v-list-item>-->
         </v-list>
       </v-menu>
 
