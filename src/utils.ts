@@ -26,10 +26,6 @@ export const removeLocalToken = () => {
 
 export const availableLocales = ['en', 'zh'];
 
-import { MainState } from '@/store/main/state';
-import { ActionContext } from 'vuex';
-import { State } from '@/store/state';
-
 export const getBrowserLocale = () => {
   const langFirst = navigator.language.split('-')[0];
   if (availableLocales.includes(langFirst)) {
@@ -60,12 +56,11 @@ export const setAppLocale = (vueInstance: any, selectedLang: string) => {
   }
 };
 
-import { commitAddNotification, commitSetTopBanner } from '@/store/main/mutations';
+import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchCheckApiError } from './store/main/actions';
 import { captureException } from '@sentry/vue';
 import { IComment, IRichEditorState } from './interfaces';
 import { env } from './env';
-import { AxiosError } from 'axios';
 
 export const newAnswerHandler = async (
   vueInstance: any,
@@ -184,26 +179,6 @@ export const uuidv4 = () => {
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
-};
-
-type MainContext = ActionContext<MainState, State>;
-
-export const handleApiError = async (context: MainContext, err: AxiosError) => {
-  if (err.toString() === 'Error: Network Error') {
-    commitSetTopBanner(context, {
-      color: 'grey',
-      textColor: 'white',
-      text: '无法连接到服务器',
-      enabled: true,
-    });
-  } else {
-    await dispatchCheckApiError(context, err);
-    if (env !== 'development') {
-      captureException(err);
-    } else {
-      throw err;
-    }
-  }
 };
 
 export const rankComments = (dayjs, comments: IComment[]) => {

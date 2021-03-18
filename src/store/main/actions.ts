@@ -1,7 +1,7 @@
 import { api } from '@/api';
 import { IUserUpdateMe } from '@/interfaces';
 import router from '@/router';
-import { getLocalToken, handleApiError, removeLocalToken, saveLocalToken } from '@/utils';
+import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
 import axios, { AxiosError } from 'axios';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
@@ -19,8 +19,9 @@ import {
   commitSetUserProfile,
 } from './mutations';
 import { AppNotification, MainState } from './state';
-import { prodStateJsonURL } from '@/env';
+import { env, prodStateJsonURL } from '@/env';
 import { apiMe } from '@/api/me';
+import { captureException } from '@sentry/vue';
 
 type MainContext = ActionContext<MainState, State>;
 
@@ -30,6 +31,7 @@ export interface ILoginPayload {
   password?: string;
   code?: string;
   phoneNumber?: string;
+  hcaptcha_token?: string;
 }
 
 export const actions = {
@@ -37,7 +39,11 @@ export const actions = {
     try {
       let response;
       if (payload.type === 'email') {
-        response = await api.logInGetToken(payload.username!, payload.password!);
+        response = await api.logInGetToken(
+          payload.username!,
+          payload.password!,
+          payload.hcaptcha_token!
+        );
       } else {
         response = await api.logInWithCodeGetToken(payload.phoneNumber!, payload.code!);
       }
@@ -65,7 +71,7 @@ export const actions = {
       ) {
         throw new Error('Incorrect email or password');
       } else {
-        await handleApiError(context, err);
+        await dispatchCheckApiError(context, err);
       }
     }
   },
@@ -172,24 +178,36 @@ export const actions = {
   },
   async actionLogOut(context: MainContext) {
     await dispatchRemoveLogIn(context);
-    await dispatchRouteLogOut(context);
   },
   async actionUserLogOut(context: MainContext) {
     await dispatchLogOut(context);
     commitAddNotification(context, { content: 'Logged out', color: 'success' });
   },
-  actionRouteLogOut() {},
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
-    let message = payload.message;
-    if (payload.response && payload.response.data && payload.response.data.detail) {
-      message += `, detail: ${JSON.stringify(payload.response.data.detail)}`;
-    }
-    axios.get(prodStateJsonURL).then((response) => {
-      commitSetTopBanner(context, response.data['top-banner']);
-    });
-    commitAddNotification(context, { content: message, color: 'error' });
-    if (payload.response && payload.response.status === 401) {
-      await dispatchLogOut(context);
+    if (payload.toString() === 'Error: Network Error') {
+      commitSetTopBanner(context, {
+        color: 'grey',
+        textColor: 'white',
+        text: '无法连接到服务器',
+        enabled: true,
+      });
+    } else {
+      let message = payload.message;
+      if (payload.response && payload.response.data && payload.response.data.detail) {
+        message += `, detail: ${JSON.stringify(payload.response.data.detail)}`;
+      }
+      axios.get(prodStateJsonURL).then((response) => {
+        commitSetTopBanner(context, response.data['top-banner']);
+      });
+      commitAddNotification(context, { content: message, color: 'error' });
+      if (payload.response && payload.response.status === 401) {
+        await dispatchLogOut(context);
+      }
+      if (env !== 'development') {
+        captureException(payload);
+      } else {
+        throw payload;
+      }
     }
   },
   actionRouteLoggedIn(context: MainContext) {
@@ -269,7 +287,7 @@ export const actions = {
     try {
       await action();
     } catch (err) {
-      await handleApiError(context, err);
+      await dispatchCheckApiError(context, err);
     }
   },
   async apiErrorCapturedWithErrorHandler(
@@ -285,7 +303,7 @@ export const actions = {
       if (fns.errorFilter && fns.errorFilter(err)) {
         // Do nothing
       } else {
-        await handleApiError(context, err);
+        await dispatchCheckApiError(context, err);
       }
     }
   },
@@ -306,7 +324,6 @@ export const dispatchCaptureApiErrorWithErrorHandler = dispatch(
 export const dispatchUserLogOut = dispatch(actions.actionUserLogOut);
 export const dispatchRemoveLogIn = dispatch(actions.actionRemoveLogIn);
 export const dispatchRouteLoggedIn = dispatch(actions.actionRouteLoggedIn);
-export const dispatchRouteLogOut = dispatch(actions.actionRouteLogOut);
 export const dispatchUpdateUserProfile = dispatch(actions.actionUpdateUserProfile);
 export const dispatchAddFlag = dispatch(actions.actionAddFlag);
 export const dispatchRemoveFlag = dispatch(actions.actionRemoveFlag);
