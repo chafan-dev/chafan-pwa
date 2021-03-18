@@ -267,7 +267,7 @@
         </div>
         <div class="ml-7 mr-7" v-else>
           <div class="text-center">
-            <RegisteredVisibilityIcon class="mr-2" /><span>{{ $t('登录后查看更多') }}</span>
+            <RegisteredUserOnlyIcon class="mr-2" /><span>{{ $t('登录后查看更多') }}</span>
           </div>
         </div>
       </v-col>
@@ -310,11 +310,11 @@ import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readIsLoggedIn } from '@/store/main/getters';
-import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
+import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
 
 @Component({
   components: {
-    RegisteredVisibilityIcon,
+    RegisteredUserOnlyIcon,
     QuestionPreview,
     Answer,
     UserCard,
