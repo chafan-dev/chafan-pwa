@@ -4,7 +4,7 @@
       :overlay="overlay"
       :show-fab-hint="showFabHint"
       :show-user-agreement="showUserAgreement"
-      v-on:continue-user-agreement="continueUserAgreement"
+      @continue-user-agreement="continueUserAgreement"
     />
 
     <v-row class="pa-3" justify="center">

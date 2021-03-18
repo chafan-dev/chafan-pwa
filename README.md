@@ -19,6 +19,7 @@ VUE_APP_ENV=development
 VUE_APP_APPZI=
 VUE_APP_PROD_STATE_JSON_URL=https://chafan-prod-state.s3.amazonaws.com/prod-state.json
 VUE_APP_ADMIN_UUID=
+VUE_APP_HCAPTCHA_SITEKEY=10000000-ffff-ffff-ffff-000000000001
 ```
 
 ### Compiles and hot-reloads for development

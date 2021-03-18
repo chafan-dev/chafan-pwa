@@ -43,11 +43,11 @@ import {
 import { authHeaders, authHeadersWithParams } from './utils';
 
 export const api = {
-  async logInGetToken(username: string, password: string) {
+  async logInGetToken(username: string, password: string, hcaptcha_token: string) {
     const params = new URLSearchParams();
     params.append('username', username);
     params.append('password', password);
-
+    params.append('hcaptcha_token', hcaptcha_token);
     return axios.post(`${apiUrl}/api/v1/login/access-token`, params);
   },
   async logInWithCodeGetToken(phoneNumber: string, code: string) {

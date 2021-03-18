@@ -451,11 +451,15 @@ import {
 import { newAnswerHandler } from '@/utils';
 import SimpleViewer from '@/components/SimpleViewer.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import {
+  dispatchCaptureApiError,
+  dispatchCaptureApiErrorWithErrorHandler,
+} from '@/store/main/actions';
 import { apiQuestion } from '@/api/question';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
+import { AxiosError } from 'axios';
 
 @Component({
   components: {
@@ -571,21 +575,31 @@ export default class Question extends Vue {
       }
     } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
 
-    try {
-      const response = await api.getQuestion(this.token, this.id);
-      this.question = response.data;
-      if (!this.$route.query.title) {
-        this.$router.replace({
-          query: { ...this.$route.query, title: this.question.title },
-        });
-      }
-    } catch (err) {
-      commitAddNotification(this.$store, {
-        content: this.$t('问题不存在，返回主页').toString(),
-        color: 'error',
-      });
-      this.$router.push('/');
-    }
+    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
+      action: async () => {
+        const response = await api.getQuestion(this.token, this.id);
+        this.question = response.data;
+        if (!this.$route.query.title) {
+          this.$router.replace({
+            query: { ...this.$route.query, title: this.question.title },
+          });
+        }
+      },
+      errorFilter: (err: AxiosError) => {
+        if (
+          err.response &&
+          err.response.data.detail === "The question doesn't exists in the system."
+        ) {
+          commitAddNotification(this.$store, {
+            content: this.$t('问题不存在，返回主页').toString(),
+            color: 'error',
+          });
+          this.$router.push('/');
+          return true;
+        }
+        return false;
+      },
+    });
 
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {

@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
@@ -29,8 +29,5 @@ export default class UserAgreement extends Vue {
   @Prop() private readonly overlay!: boolean;
   @Prop() private readonly showUserAgreement!: boolean;
   @Prop() private readonly showFabHint!: boolean;
-
-  @Emit('continue-user-agreement')
-  public continueUserAgreement() {}
 }
 </script>

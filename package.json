@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@chafan/vditor": "3.8.2-chafan.3",
+    "@hcaptcha/vue-hcaptcha": "^0.3.0",
     "@sentry/tracing": "^5.30.0",
     "@sentry/vue": "^5.30.0",
     "axios": "^0.21.1",

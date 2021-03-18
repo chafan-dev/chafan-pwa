@@ -72,6 +72,10 @@
                       <span class="error--text">{{ errors[0] }}</span>
                     </ValidationProvider>
 
+                    <div class="text-center">
+                      <vue-hcaptcha :sitekey="hCaptchaSiteKey" @verify="verifiedCaptchaToken" />
+                    </div>
+
                     <v-sheet class="mb-2">
                       <div v-if="loginError">
                         <v-alert :value="loginError" transition="fade-transition" type="error">
@@ -137,7 +141,8 @@
                       :disabled="
                         submitIntermediate ||
                         (loginMethod === 'cellphone' && !verificationCode) ||
-                        !valid
+                        !valid ||
+                        !captchaToken
                       "
                       block
                       color="primary"
@@ -229,6 +234,8 @@ import LockOutline from '@/components/icons/LockOutlineIcon.vue';
 import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
 import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
+import { hCaptchaSiteKey } from '@/env';
+import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 
 @Component({
   components: {
@@ -244,6 +251,7 @@ import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
     JoinChafanIcon,
     EmailIcon,
     CellphoneIcon,
+    VueHcaptcha,
   },
 })
 export default class LoginCard extends Vue {
@@ -257,6 +265,10 @@ export default class LoginCard extends Vue {
   private sendVerificationCodeIntermediate = false;
   private verificationCodeDisabled = false;
   private verificationCode: string | null = null;
+
+  get hCaptchaSiteKey() {
+    return hCaptchaSiteKey;
+  }
 
   private get loginError() {
     this.submitIntermediate = false;
@@ -295,6 +307,7 @@ export default class LoginCard extends Vue {
           type: this.loginMethod,
           username: this.email,
           password: this.password,
+          hcaptcha_token: this.captchaToken || undefined,
         });
       } else {
         if (this.verificationCode) {
@@ -321,6 +334,13 @@ export default class LoginCard extends Vue {
 
   private async switchLoginMethod() {
     this.loginMethod = this.loginMethod === 'email' ? 'cellphone' : 'email';
+  }
+
+  private captchaVerified = false;
+  private captchaToken: string | null = null;
+  private verifiedCaptchaToken(token: string) {
+    this.captchaVerified = true;
+    this.captchaToken = token;
   }
 }
 </script>
