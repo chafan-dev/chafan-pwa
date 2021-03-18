@@ -53,15 +53,7 @@ import {
   commitSetShowLoginPrompt,
   commitSetTopBanner,
 } from './store/main/mutations';
-
-function getDefaultNarrowFeedUI() {
-  try {
-    const value = localStorage.getItem('narrowFeedUI');
-    return value === null || value === 'true';
-  } catch (e) {
-    return false;
-  }
-}
+import { getDefaultNarrowFeedUI } from '@/common';
 
 @Component({
   components: {

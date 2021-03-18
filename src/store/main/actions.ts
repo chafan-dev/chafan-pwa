@@ -107,12 +107,19 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionUpdateUserProfileQuiet(context: MainContext, payload: IUserUpdateMe) {
-    try {
-      const response = await apiMe.updateMe(context.state.token, payload);
-      commitSetUserProfile(context, response.data);
-    } catch (error) {
-      await dispatchCheckApiError(context, error);
+  async actionAddFlag(context: MainContext, flag: string) {
+    const userProfile = readUserProfile(context);
+    if (userProfile) {
+      const flagList = userProfile.flag_list;
+      if (!flagList.includes(flag)) {
+        flagList.push(flag);
+      }
+      await dispatchCaptureApiError(context, async () => {
+        const resp = await apiMe.updateMe(context.state.token, {
+          flag_list: flagList,
+        });
+        commitSetUserProfile(context, resp.data);
+      });
     }
   },
   async actionCheckLoggedIn(context: MainContext) {
@@ -286,7 +293,7 @@ export const dispatchRemoveLogIn = dispatch(actions.actionRemoveLogIn);
 export const dispatchRouteLoggedIn = dispatch(actions.actionRouteLoggedIn);
 export const dispatchRouteLogOut = dispatch(actions.actionRouteLogOut);
 export const dispatchUpdateUserProfile = dispatch(actions.actionUpdateUserProfile);
-export const dispatchUpdateUserProfileQuiet = dispatch(actions.actionUpdateUserProfileQuiet);
+export const dispatchAddFlag = dispatch(actions.actionAddFlag);
 export const dispatchRemoveNotification = dispatch(actions.removeNotification);
 export const dispatchPasswordRecovery = dispatch(actions.passwordRecovery);
 export const dispatchResetPassword = dispatch(actions.resetPassword);

@@ -354,7 +354,7 @@ const userProfile = {
   remaining_coins: 12,
   view_times: 10,
   enable_deliver_unread_notifications: true,
-  flags: 'activated webfront-fab-clicked user-agreement-yes', // Change it to empty to show user agreement popout etc. See use of these strings Home.vue
+  flag_list: ['activated', 'webfront-fab-clicked', 'user-agreement-yes'], // Change it to empty to show user agreement popout etc. See use of these strings Home.vue
 };
 
 const example_answer1 = {
