@@ -24,7 +24,7 @@ export interface IUserProfile {
   view_times: number;
   personal_introduction?: string;
   locale_preference?: string;
-  flags?: string;
+  flag_list: string[];
   avatar_url?: string;
   gif_avatar_url?: string;
   github_username?: string;
@@ -123,7 +123,7 @@ export interface IUserUpdateMe {
   education_experiences?: IUserEducationExperienceUpdate[];
   personal_introduction?: string;
   locale_preference?: string;
-  flags?: string;
+  flag_list?: string[];
   avatar_url?: string;
   gif_avatar_url?: string;
   github_username?: string;
@@ -142,6 +142,7 @@ export interface IUserProfileUpdate {
   password?: string;
   is_active?: boolean;
   is_superuser?: boolean;
+  flag_list?: string[];
 }
 
 export interface IUserProfileCreate {

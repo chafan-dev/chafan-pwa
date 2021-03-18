@@ -402,7 +402,7 @@ import ArticlePreview from '@/components/ArticlePreview.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import { readNarrowUI, readUserProfile } from '@/store/main/getters';
 import { setAppLocale } from '@/utils';
-import { dispatchCaptureApiError, dispatchUpdateUserProfileQuiet } from '@/store/main/actions';
+import { dispatchCaptureApiError, dispatchAddFlag } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
@@ -475,7 +475,7 @@ export default class Home extends Vue {
       if (this.userProfile.locale_preference) {
         setAppLocale(this, this.userProfile.locale_preference);
       }
-      if (this.userProfile.flags && this.userProfile.flags.split(' ').includes(this.YES_FLAG)) {
+      if (this.userProfile.flag_list.includes(this.YES_FLAG)) {
         this.showUserAgreement = false;
       } else {
         this.showUserAgreement = true;
@@ -488,10 +488,7 @@ export default class Home extends Vue {
           limit: this.loadingLimit,
         });
         this.activities = combinedActivities(response.data);
-        if (
-          this.userProfile!.flags &&
-          this.userProfile!.flags.split(' ').includes(this.EXPLORE_SITES)
-        ) {
+        if (this.userProfile!.flag_list.includes(this.EXPLORE_SITES)) {
           this.showExploreSites = false;
         } else if (this.activities.length === 0) {
           this.showExploreSites = true;
@@ -528,20 +525,20 @@ export default class Home extends Vue {
 
   private async onCloseExploreSites() {
     this.showExploreSites = false;
-    await this.addFlag(this.EXPLORE_SITES);
+    await dispatchAddFlag(this.$store, this.EXPLORE_SITES);
   }
 
   private async onFabClicked() {
     this.overlay = false;
-    await this.addFlag(this.FAB_FLAG);
+    await dispatchAddFlag(this.$store, this.FAB_FLAG);
   }
 
   private async continueUserAgreement() {
     this.showUserAgreement = false;
-    await this.addFlag(this.YES_FLAG);
+    await dispatchAddFlag(this.$store, this.YES_FLAG);
     if (this.userProfile) {
       if (!this.$vuetify.breakpoint.mdAndUp) {
-        if (this.userProfile.flags && this.userProfile.flags.split(' ').includes(this.FAB_FLAG)) {
+        if (this.userProfile.flag_list.includes(this.FAB_FLAG)) {
           this.overlay = false;
         } else {
           this.showFabHint = true;
@@ -566,21 +563,6 @@ export default class Home extends Vue {
           this.activities.push(...combinedActivities(response.data));
         }
         this.preloadMoreActivitiesIntermediate = false;
-      });
-    }
-  }
-
-  private async addFlag(flag: string) {
-    let flags: string[] = [];
-    if (this.userProfile) {
-      if (this.userProfile.flags) {
-        flags = this.userProfile.flags.split(' ');
-      }
-      if (!flags.includes(flag)) {
-        flags.push(flag);
-      }
-      await dispatchUpdateUserProfileQuiet(this.$store, {
-        flags: flags.join(' '),
       });
     }
   }

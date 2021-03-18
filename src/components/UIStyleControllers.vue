@@ -18,6 +18,7 @@ import ExpandHorizontalIcon from '@/components/icons/ExpandHorizontalIcon.vue';
 import CollapseHorizontalIcon from '@/components/icons/CollapseHorizontalIcon.vue';
 import { commitSetNarrowUI } from '@/store/main/mutations';
 import { readNarrowUI } from '@/store/main/getters';
+import { NARROW_FEED_UI_KEY } from '@/common';
 
 @Component({
   components: { ExpandHorizontalIcon, CollapseHorizontalIcon },
@@ -30,8 +31,8 @@ export default class UIStyleControllers extends Vue {
   private setNarrowFeedUI(value: boolean) {
     commitSetNarrowUI(this.$store, value);
     try {
-      localStorage.removeItem('narrowFeedUI');
-      localStorage.setItem('narrowFeedUI', value.toString());
+      localStorage.removeItem(NARROW_FEED_UI_KEY);
+      localStorage.setItem(NARROW_FEED_UI_KEY, value.toString());
     } catch (e) {}
   }
 }
