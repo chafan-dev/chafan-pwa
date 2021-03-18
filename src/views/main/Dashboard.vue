@@ -534,7 +534,33 @@ export default class Dashboard extends Vue {
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.userProfile) {
+        this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(
+          this.LABS_TIPTAP_EDITOR_OPTION
+        );
+
+        const editorModeItems = [
+          {
+            text: this.$t('wysiwyg').toString(),
+            value: 'wysiwyg',
+          },
+          {
+            text: this.$t('markdown_realtime_rendering').toString(),
+            value: 'markdown_realtime_rendering',
+          },
+          {
+            text: this.$t('markdown_splitview').toString(),
+            value: 'markdown_splitview',
+          },
+        ];
+        if (this.tiptapEditorOptionOn) {
+          editorModeItems.push({
+            text: this.$t('tiptap').toString(),
+            value: 'tiptap',
+          });
+        }
+        this.editorModeItems = editorModeItems;
         this.selectedEditorMode = this.userProfile.default_editor_mode;
+
         this.enableEmailNotifications = this.userProfile.enable_deliver_unread_notifications;
         this.myArticleColumns = (await api.getMyArticleColumns(this.$store.state.main.token)).data;
         this.articleColumnsIntermediate = false;
@@ -566,33 +592,6 @@ export default class Dashboard extends Vue {
         this.myAnswerDrafts = (await api.getAnswerDrafts(this.$store.state.main.token)).data;
         this.myArticleDrafts = (await api.getArticleDrafts(this.$store.state.main.token)).data;
         this.draftsIntermediate = false;
-
-        this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(
-          this.LABS_TIPTAP_EDITOR_OPTION
-        );
-
-        const editorModeItems = [
-          {
-            text: this.$t('wysiwyg').toString(),
-            value: 'wysiwyg',
-          },
-          {
-            text: this.$t('markdown_realtime_rendering').toString(),
-            value: 'markdown_realtime_rendering',
-          },
-          {
-            text: this.$t('markdown_splitview').toString(),
-            value: 'markdown_splitview',
-          },
-        ];
-        if (this.tiptapEditorOptionOn) {
-          editorModeItems.push({
-            text: this.$t('tiptap').toString(),
-            value: 'tiptap',
-          });
-        }
-
-        this.editorModeItems = editorModeItems;
       }
     });
   }
