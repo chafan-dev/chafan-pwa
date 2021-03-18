@@ -122,6 +122,21 @@ export const actions = {
       });
     }
   },
+  async actionRemoveFlag(context: MainContext, flag: string) {
+    const userProfile = readUserProfile(context);
+    if (userProfile) {
+      const flagList = userProfile.flag_list;
+      if (flagList.includes(flag)) {
+        flagList.splice(flagList.indexOf(flag), 1);
+      }
+      await dispatchCaptureApiError(context, async () => {
+        const resp = await apiMe.updateMe(context.state.token, {
+          flag_list: flagList,
+        });
+        commitSetUserProfile(context, resp.data);
+      });
+    }
+  },
   async actionCheckLoggedIn(context: MainContext) {
     if (!context.state.isLoggedIn) {
       let token = context.state.token;
@@ -294,6 +309,7 @@ export const dispatchRouteLoggedIn = dispatch(actions.actionRouteLoggedIn);
 export const dispatchRouteLogOut = dispatch(actions.actionRouteLogOut);
 export const dispatchUpdateUserProfile = dispatch(actions.actionUpdateUserProfile);
 export const dispatchAddFlag = dispatch(actions.actionAddFlag);
+export const dispatchRemoveFlag = dispatch(actions.actionRemoveFlag);
 export const dispatchRemoveNotification = dispatch(actions.removeNotification);
 export const dispatchPasswordRecovery = dispatch(actions.passwordRecovery);
 export const dispatchResetPassword = dispatch(actions.resetPassword);

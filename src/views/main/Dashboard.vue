@@ -37,6 +37,7 @@
                 :disabled="changingMySettings"
               />
               <v-select
+                v-if="editorModeItems"
                 :label="$t('默认编辑器模式')"
                 :items="editorModeItems"
                 item-text="text"
@@ -45,25 +46,50 @@
                 @change="onChangeEditorMode"
                 :disabled="changingMySettings"
               />
-              <v-btn depressed small @click="showExportDialog = true">{{
-                $t('导出我的数据和创作内容')
-              }}</v-btn>
-              <v-progress-circular indeterminate v-if="changingMySettings" />
+              <div>
+                <div class="d-flex">
+                  <v-btn class="mr-2" depressed small @click="showExportDialog = true">{{
+                    $t('导出我的数据和创作内容')
+                  }}</v-btn>
+                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true">{{
+                    $t('Labs')
+                  }}</v-btn>
+                </div>
 
-              <v-dialog v-model="showExportDialog" max-width="500px">
-                <v-card>
-                  <v-card-title>
-                    {{ $t('导出我的数据和创作内容') }}
-                  </v-card-title>
-                  <v-card-text>
-                    {{
-                      $t(
-                        'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。'
-                      )
-                    }}
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+                <v-dialog v-model="showExportDialog" max-width="500px">
+                  <v-card>
+                    <v-card-title>
+                      {{ $t('导出我的数据和创作内容') }}
+                    </v-card-title>
+                    <v-card-text>
+                      {{
+                        $t(
+                          'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。'
+                        )
+                      }}
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+
+                <v-dialog v-model="showLabsDialog" max-width="500px">
+                  <v-card>
+                    <v-card-title>
+                      {{ $t('Labs') }}
+                    </v-card-title>
+                    <v-card-text>
+                      {{ $t('试验性功能：') }}
+                      <div>
+                        <v-switch
+                          label="Tiptap 编辑器选项"
+                          v-model="tiptapEditorOptionOn"
+                          @change="updateLabs"
+                        />
+                      </div>
+                      <v-progress-circular indeterminate v-if="changingMySettings" />
+                    </v-card-text>
+                  </v-card>
+                </v-dialog>
+              </div>
             </div>
           </v-tab-item>
 
@@ -377,7 +403,7 @@ import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import Event from '@/components/Event.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 
@@ -439,6 +465,8 @@ export default class Dashboard extends Vue {
   private commitNewArticleColumnIntermediate = false;
 
   private showExportDialog = false;
+  private showLabsDialog = false;
+  private tiptapEditorOptionOn = false;
 
   private tabItems = [
     {
@@ -501,24 +529,7 @@ export default class Dashboard extends Vue {
 
   private selectedEditorMode: editor_T = 'wysiwyg';
 
-  private readonly editorModeItems = [
-    {
-      text: this.$t('wysiwyg').toString(),
-      value: 'wysiwyg',
-    },
-    {
-      text: this.$t('markdown_realtime_rendering').toString(),
-      value: 'markdown_realtime_rendering',
-    },
-    {
-      text: this.$t('markdown_splitview').toString(),
-      value: 'markdown_splitview',
-    },
-    {
-      text: this.$t('tiptap').toString(),
-      value: 'tiptap',
-    },
-  ];
+  private editorModeItems: { text: string; value: string }[] | null = null;
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -534,12 +545,12 @@ export default class Dashboard extends Vue {
         this.myRewards = (await api.getRewards(this.$store.state.main.token)).data;
         this.rewardsIntermediate = false;
 
-        const r4 = await apiAnswer.getAnswerBookmarks(this.$store.state.main.token);
-        this.answerBookmarks = r4.data;
+        this.answerBookmarks = (
+          await apiAnswer.getAnswerBookmarks(this.$store.state.main.token)
+        ).data;
         this.answerBookmarksIntermediate = false;
 
-        const r5 = await api2.getCoinPayments(this.$store.state.main.token);
-        this.coinPayments = r5.data;
+        this.coinPayments = (await api2.getCoinPayments(this.$store.state.main.token)).data;
         this.coinPaymentsIntermediate = false;
 
         this.subscribedQuestions = (
@@ -555,6 +566,33 @@ export default class Dashboard extends Vue {
         this.myAnswerDrafts = (await api.getAnswerDrafts(this.$store.state.main.token)).data;
         this.myArticleDrafts = (await api.getArticleDrafts(this.$store.state.main.token)).data;
         this.draftsIntermediate = false;
+
+        this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(
+          this.LABS_TIPTAP_EDITOR_OPTION
+        );
+
+        const editorModeItems = [
+          {
+            text: this.$t('wysiwyg').toString(),
+            value: 'wysiwyg',
+          },
+          {
+            text: this.$t('markdown_realtime_rendering').toString(),
+            value: 'markdown_realtime_rendering',
+          },
+          {
+            text: this.$t('markdown_splitview').toString(),
+            value: 'markdown_splitview',
+          },
+        ];
+        if (this.tiptapEditorOptionOn) {
+          editorModeItems.push({
+            text: this.$t('tiptap').toString(),
+            value: 'tiptap',
+          });
+        }
+
+        this.editorModeItems = editorModeItems;
       }
     });
   }
@@ -636,31 +674,21 @@ export default class Dashboard extends Vue {
   }
 
   private async claimReward(reward: IReward) {
-    try {
+    await dispatchCaptureApiError(this.$store, async () => {
       const idx = this.myRewards.indexOf(reward);
       this.myRewards.splice(idx, 1);
       const newReward = (await api.claimReward(this.$store.state.main.token, reward.id)).data;
       this.myRewards.splice(idx, 0, newReward);
-    } catch (err) {
-      commitAddNotification(this.$store, {
-        content: err.response.data.detail,
-        color: 'error',
-      });
-    }
+    });
   }
 
   private async refundReward(reward: IReward) {
-    try {
+    await dispatchCaptureApiError(this.$store, async () => {
       const idx = this.myRewards.indexOf(reward);
       this.myRewards.splice(idx, 1);
       const newReward = (await api.refundReward(this.$store.state.main.token, reward.id)).data;
       this.myRewards.splice(idx, 0, newReward);
-    } catch (err) {
-      commitAddNotification(this.$store, {
-        content: err.response.data.detail,
-        color: 'error',
-      });
-    }
+    });
   }
 
   private onDeleteAnswerDraft(uuid: string) {
@@ -670,6 +698,19 @@ export default class Dashboard extends Vue {
         this.myAnswerDrafts.splice(idx, 1);
       }
     }
+  }
+
+  private readonly LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
+
+  private async updateLabs() {
+    this.changingMySettings = true;
+    if (this.tiptapEditorOptionOn) {
+      await dispatchAddFlag(this.$store, this.LABS_TIPTAP_EDITOR_OPTION);
+    } else {
+      await dispatchRemoveFlag(this.$store, this.LABS_TIPTAP_EDITOR_OPTION);
+    }
+    this.changingMySettings = false;
+    this.$router.go(0);
   }
 }
 </script>
