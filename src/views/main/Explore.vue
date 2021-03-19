@@ -6,18 +6,18 @@
           <div class="headline primary--text mb-3">
             {{ $t('探索') }}
           </div>
-          <v-tabs>
-            <v-tab>
+          <v-tabs v-model="currentTabItem">
+            <v-tab href="#questions">
               {{ $t('发现问题') }}
             </v-tab>
-            <v-tab>
+            <v-tab href="#sites">
               {{ $t('所有圈子') }}
             </v-tab>
-            <v-tab>
+            <v-tab href="#users">
               {{ $t('关注更多用户') }}
             </v-tab>
 
-            <v-tab-item>
+            <v-tab-item value="questions">
               <div v-if="interestingQuestions !== null" class="pb-2">
                 <QuestionPreview
                   v-for="questionPreview in interestingQuestions"
@@ -35,10 +35,10 @@
               <v-skeleton-loader type="paragraph" v-else />
               <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
-            <v-tab-item>
+            <v-tab-item value="sites">
               <ExploreSitesGrid />
             </v-tab-item>
-            <v-tab-item>
+            <v-tab-item value="users">
               <div v-if="interestingUsers !== null">
                 <UserGrid :users="interestingUsers" />
               </div>
@@ -70,6 +70,18 @@ export default class Explore extends Vue {
   get token() {
     return this.$store.state.main.token;
   }
+  get currentTabItem() {
+    return this.$route.query.tab ? this.$route.query.tab : 'questions';
+  }
+
+  set currentTabItem(tab) {
+    if (tab !== 'questions') {
+      this.$router.replace({ query: { ...this.$route.query, tab } });
+    } else {
+      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+    }
+  }
+
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.interestingQuestions = (await apiDiscovery.getInterestingQuestions(this.token)).data;

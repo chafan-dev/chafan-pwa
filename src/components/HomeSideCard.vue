@@ -18,21 +18,26 @@
       <v-skeleton-loader type="paragraph" v-if="loadingSites" />
       <div v-else>
         <!-- TODO: rank/compute recently used sites. -->
-        <SiteBtn
-          :site="profile.site"
-          v-for="profile in visibleSiteProfiles"
-          :key="profile.site.uuid"
-        />
-        <v-btn
-          small
-          color="info"
-          depressed
-          class="mt-1"
-          v-if="showAllSiteProfilesDialogButton"
-          @click="showAllSiteProfilesDialog = true"
-        >
-          <MoreIcon class="mr-1" />{{ $t('More') }}
-        </v-btn>
+        <div>
+          <SiteBtn
+            :site="profile.site"
+            v-for="profile in visibleSiteProfiles"
+            :key="profile.site.uuid"
+          />
+          <v-btn
+            small
+            color="info"
+            depressed
+            class="mt-1"
+            v-if="showAllSiteProfilesDialogButton"
+            @click="showAllSiteProfilesDialog = true"
+          >
+            <MoreIcon class="mr-1" />{{ $t('More') }}
+          </v-btn>
+          <v-btn small depressed outlined color="info" class="mt-1" to="/explore?tab=sites">
+            {{ $t('所有圈子') }}
+          </v-btn>
+        </div>
         <v-dialog v-model="showAllSiteProfilesDialog">
           <v-card>
             <v-card-title>{{ $t('My Circles') }}</v-card-title>
