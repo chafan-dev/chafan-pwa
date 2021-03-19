@@ -19,7 +19,7 @@
     <!-- Comment control -->
     <div class="d-flex mt-1 align-center">
       <!-- Part I -->
-      <template v-if="enableUpvotes && upvotes && !isDeleted && !showEditor">
+      <template v-if="enableUpvotes && upvotes && !isDeleted">
         <span class="text-caption d-flex align-center mr-2" v-if="currentUserIsAuthor">
           <UpvoteIcon /> {{ upvotes.count }}
         </span>
@@ -50,11 +50,11 @@
         <span>{{ $t('查看回复') }}</span>
       </v-tooltip>
 
-      <template v-if="!isDeleted && !currentUserIsAuthor && !showEditor">
+      <template v-if="!isDeleted && !currentUserIsAuthor">
         <span
           @click="showEditor = true"
           style="cursor: pointer"
-          v-if="writable"
+          v-if="writable && !showEditor"
           class="text-caption d-flex align-center"
         >
           <ReplyIcon /> {{ $t('回复') }}
@@ -136,26 +136,28 @@
         </div>
       </div>
 
-      <div v-if="showEditor">
-        <SimpleEditor class="mt-2 mb-2" ref="commentReplyEditor" :placeholder="$t('回复')" />
-        <div class="d-flex">
-          <v-spacer />
-          <v-btn
-            small
-            depressed
-            class="mr-2"
-            color="primary"
-            @click="submitNewReplyBody"
-            :disabled="submitIntermediate"
-          >
-            {{ $t('发送回复') }}
-            <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
-          </v-btn>
-          <v-btn small depressed @click="showEditor = false">
-            {{ $t('Cancel') }}
-          </v-btn>
+      <v-expand-transition>
+        <div v-show="showEditor" class="ml-4">
+          <SimpleEditor class="mt-2 mb-2" ref="commentReplyEditor" :placeholder="$t('回复')" />
+          <div class="d-flex">
+            <v-spacer />
+            <v-btn
+              small
+              depressed
+              class="mr-2"
+              color="primary"
+              @click="submitNewReplyBody"
+              :disabled="submitIntermediate"
+            >
+              {{ $t('发送回复') }}
+              <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
+            </v-btn>
+            <v-btn small depressed @click="showEditor = false">
+              {{ $t('Cancel') }}
+            </v-btn>
+          </div>
         </div>
-      </div>
+      </v-expand-transition>
     </div>
 
     <!-- Replies -->
