@@ -303,11 +303,15 @@ export default class LoginCard extends Vue {
     this.submitIntermediate = true;
     try {
       if (this.loginMethod === 'email') {
+        if (!this.captchaToken) {
+          this.submitIntermediate = false;
+          return;
+        }
         await dispatchLogIn(this.$store, {
           type: this.loginMethod,
           username: this.email,
           password: this.password,
-          hcaptcha_token: this.captchaToken || undefined,
+          hcaptcha_token: this.captchaToken,
         });
       } else {
         if (this.verificationCode) {
