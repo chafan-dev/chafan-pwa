@@ -462,6 +462,14 @@ app.get(`/api/v1/me/question-subscriptions/${example_question_preview.uuid}`, (r
   });
 });
 
+app.get(`/api/v1/me/submission-subscriptions/${example_user1_submission1.uuid}`, (req, res) => {
+  res.json({
+    submission_uuid: example_user1_submission1.uuid,
+    subscription_count: 10,
+    subscribed_by_me: false,
+  });
+});
+
 app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`, (req, res) => {
   res.json({
     karma: 0,
