@@ -33,10 +33,8 @@
 
             <!-- Submission title display/editor -->
             <div>
-              <div class="headline primary--text" v-if="!showSubmissionEditor">
-                <a class="text-decoration-none" :href="`/submissions/${submission.uuid}`">
-                  {{ submission.title }}
-                </a>
+              <div class="text-h5 mb-2" v-if="!showSubmissionEditor">
+                {{ submission.title }}
               </div>
               <v-textarea
                 auto-grow
