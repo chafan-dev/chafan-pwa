@@ -6,14 +6,14 @@ let envApiUrl = '';
 let envWsUrl = '';
 
 if (env === 'production') {
-  envApiUrl = `https://${process.env.VUE_APP_DOMAIN_PROD}`;
-  envWsUrl = `wss://${process.env.VUE_APP_DOMAIN_PROD}`;
+  envApiUrl = `https://${process.env.VUE_APP_API}`;
+  envWsUrl = `wss://${process.env.VUE_APP_API}`;
 } else if (env === 'staging') {
-  envApiUrl = `https://${process.env.VUE_APP_DOMAIN_STAG}`;
-  envWsUrl = `wss://${process.env.VUE_APP_DOMAIN_STAG}`;
+  envApiUrl = `https://${process.env.VUE_APP_API}`;
+  envWsUrl = `wss://${process.env.VUE_APP_API}`;
 } else {
-  envApiUrl = `http://${process.env.VUE_APP_DOMAIN_DEV}`;
-  envWsUrl = `ws://${process.env.VUE_APP_DOMAIN_DEV}`;
+  envApiUrl = `http://${process.env.VUE_APP_API}`;
+  envWsUrl = `ws://${process.env.VUE_APP_API}`;
 }
 
 export const apiUrl = envApiUrl;

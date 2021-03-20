@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src <%= VUE_APP_DEFAULT_SRC %>; style-src <%= VUE_APP_STYLE_SRC %>; script-src <%= VUE_APP_SCRIPT_SRC %>; connect-src <%= VUE_APP_CONNECT_SRC %>;">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <script async src="<%= VUE_APP_APPZI %>"></script>
     <link
@@ -31,9 +32,6 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chafan.3/dist/index.css"
     />
-    <script>
-      window.Lute = window.Lute || {};
-    </script>
     <title><%= VUE_APP_NAME %></title>
   </head>
   <body>
