@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const enableWs = require('express-ws');
 const process = require('process');
+const bodyParser = require('body-parser');
 
 function randomString() {
   return Math.random()
@@ -13,6 +14,7 @@ const port = 4582;
 
 const app = express();
 app.use(cors());
+app.use(bodyParser.json());
 app.options('*', cors());
 
 let server = null;
@@ -337,7 +339,7 @@ const example_topic2 = {
   parent_topic_uuid: null,
 };
 
-const userProfile = {
+const meProfile = {
   id: 1,
   uuid: EXAMPLE_USER_ME_UUID,
   email: 'test@cha.fan',
@@ -353,6 +355,7 @@ const userProfile = {
   },
   remaining_coins: 12,
   view_times: 10,
+  default_editor_mode: 'wysiwyg',
   enable_deliver_unread_notifications: true,
   flag_list: ['activated', 'webfront-fab-clicked', 'user-agreement-yes'], // Change it to empty to show user agreement popout etc. See use of these strings Home.vue
 };
@@ -399,6 +402,18 @@ app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
 app.post('/api/v1/ws/token', (req, res) => {
   res.json({
     msg: 'example-ws-token',
+  });
+});
+
+app.post('/api/v1/invitation-links/', (req, res) => {
+  const site = randomSites.filter((s) => s.uuid === req.body.invited_to_site_uuid)[0];
+  res.json({
+    uuid: req.body.invited_to_site_uuid + '-invitation-link',
+    created_at: '2021-02-02T20:02:56.170487+00:00',
+    expired_at: '2022-02-02T20:02:56.170487+00:00',
+    invited_to_site: site,
+    inviter: meUserPreview,
+    remaining_quota: 100,
   });
 });
 
@@ -456,11 +471,11 @@ app.get(`/api/v1/profiles/members/${example_site1.uuid}/${EXAMPLE_USER_ME_UUID}`
 });
 
 app.get('/api/v1/me', (req, res) => {
-  res.json(userProfile);
+  res.json(meProfile);
 });
 
 app.put('/api/v1/me', (req, res) => {
-  res.json(userProfile);
+  res.json(meProfile);
 });
 
 app.get('/api/v1/me/site-profiles/', (req, res) => {
@@ -475,7 +490,43 @@ app.get('/api/v1/submissions/', (req, res) => {
   res.json(randomSubmissions);
 });
 
-app.get('/api/v1/me/pending-questions/', (req, res) => {
+app.get('/api/v1/discovery/pending-questions/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/discovery/pinned-questions/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/me/channels/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/me/answer-bookmarks/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/coin-payments/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/me/question-subscriptions/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/me/submission-subscriptions/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/drafts/answers/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/drafts/articles/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/rewards/', (req, res) => {
   res.json([]);
 });
 
@@ -686,6 +737,17 @@ for (const site of randomSites) {
     const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     const limit = req.query.limit ? parseInt(req.query.limit) : 10;
     res.json([example_user1_submission1].slice(skip, skip + limit));
+  });
+
+  app.get(`/api/v1/invitation-links/${site.uuid}-invitation-link`, (req, res) => {
+    res.json({
+      uuid: site.uuid + '-invitation-link',
+      created_at: '2021-02-02T20:02:56.170487+00:00',
+      expired_at: '2022-02-02T20:02:56.170487+00:00',
+      invited_to_site: site,
+      inviter: meUserPreview,
+      remaining_quota: 100,
+    });
   });
 }
 

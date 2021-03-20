@@ -63,7 +63,7 @@ import { apiMe } from '@/api/me';
 @Component({
   components: { UserSearch, AccountIcon, ShieldCheckIcon, SiteIcon, SiteBtn },
 })
-export default class Invite extends Vue {
+export default class NewInviteLinkBtn extends Vue {
   @Prop() public readonly site: ISite | undefined;
 
   private sites: ISite[] = [];
