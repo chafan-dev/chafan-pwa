@@ -49,7 +49,7 @@
               <div>
                 <div class="d-flex">
                   <v-btn class="mr-2" depressed small @click="showExportDialog = true">{{
-                    $t('导出我的数据和创作内容')
+                    $t('导出')
                   }}</v-btn>
                   <v-btn class="mr-2" depressed small @click="showLabsDialog = true">{{
                     $t('Labs')
@@ -59,7 +59,7 @@
                 <v-dialog v-model="showExportDialog" max-width="500px">
                   <v-card>
                     <v-card-title>
-                      {{ $t('导出我的数据和创作内容') }}
+                      {{ $t('导出') }}
                     </v-card-title>
                     <v-card-text>
                       {{
@@ -98,7 +98,7 @@
               <div class="headline primary--text">{{ $t('我的草稿') }}</div>
               <v-spacer />
             </v-card-title>
-            <div v-if="!draftsIntermediate">
+            <div v-if="myAnswerDrafts !== null && myArticleDrafts !== null">
               <Answer
                 v-for="answer in myAnswerDrafts"
                 :key="answer.uuid"
@@ -456,7 +456,6 @@ export default class Dashboard extends Vue {
   private rewardsIntermediate = true;
   private articleColumnsIntermediate = true;
   private answerBookmarksIntermediate = true;
-  private draftsIntermediate = true;
   private coinPaymentsIntermediate = true;
   private subscribedQuestionsIntermediate = true;
   private subscribedSubmissionsIntermediate = true;
@@ -521,8 +520,8 @@ export default class Dashboard extends Vue {
     { text: this.$t('Action'), value: 'action' },
   ];
 
-  private myAnswerDrafts: IAnswerPreview[] = [];
-  private myArticleDrafts: IArticlePreview[] = [];
+  private myAnswerDrafts: IAnswerPreview[] | null = null;
+  private myArticleDrafts: IArticlePreview[] | null = null;
 
   private enableEmailNotifications = false;
   private changingMySettings = false;
@@ -562,36 +561,48 @@ export default class Dashboard extends Vue {
         this.selectedEditorMode = this.userProfile.default_editor_mode;
 
         this.enableEmailNotifications = this.userProfile.enable_deliver_unread_notifications;
-        this.myArticleColumns = (await api.getMyArticleColumns(this.$store.state.main.token)).data;
-        this.articleColumnsIntermediate = false;
 
-        this.myChannels = (await apiMe.getMyChannels(this.$store.state.main.token)).data;
-        this.channelsIntermediate = false;
+        api.getMyArticleColumns(this.$store.state.main.token).then((r) => {
+          this.myArticleColumns = r.data;
+          this.articleColumnsIntermediate = false;
+        });
 
-        this.myRewards = (await api.getRewards(this.$store.state.main.token)).data;
-        this.rewardsIntermediate = false;
+        apiMe.getMyChannels(this.$store.state.main.token).then((r) => {
+          this.myChannels = r.data;
+          this.channelsIntermediate = false;
+        });
 
-        this.answerBookmarks = (
-          await apiAnswer.getAnswerBookmarks(this.$store.state.main.token)
-        ).data;
-        this.answerBookmarksIntermediate = false;
+        api.getRewards(this.$store.state.main.token).then((r) => {
+          this.myRewards = r.data;
+          this.rewardsIntermediate = false;
+        });
 
-        this.coinPayments = (await api2.getCoinPayments(this.$store.state.main.token)).data;
-        this.coinPaymentsIntermediate = false;
+        apiAnswer.getAnswerBookmarks(this.$store.state.main.token).then((r) => {
+          this.answerBookmarks = r.data;
+          this.answerBookmarksIntermediate = false;
+        });
 
-        this.subscribedQuestions = (
-          await apiMe.getSubscribedQuestions(this.$store.state.main.token)
-        ).data;
-        this.subscribedQuestionsIntermediate = false;
+        api2.getCoinPayments(this.$store.state.main.token).then((r) => {
+          this.coinPayments = r.data;
+          this.coinPaymentsIntermediate = false;
+        });
 
-        this.subscribedSubmissions = (
-          await apiMe.getSubscribedSubmissions(this.$store.state.main.token)
-        ).data;
-        this.subscribedSubmissionsIntermediate = false;
+        apiMe.getSubscribedQuestions(this.$store.state.main.token).then((r) => {
+          this.subscribedQuestions = r.data;
+          this.subscribedQuestionsIntermediate = false;
+        });
 
-        this.myAnswerDrafts = (await api.getAnswerDrafts(this.$store.state.main.token)).data;
-        this.myArticleDrafts = (await api.getArticleDrafts(this.$store.state.main.token)).data;
-        this.draftsIntermediate = false;
+        apiMe.getSubscribedSubmissions(this.$store.state.main.token).then((r) => {
+          this.subscribedSubmissions = r.data;
+          this.subscribedSubmissionsIntermediate = false;
+        });
+
+        api.getAnswerDrafts(this.$store.state.main.token).then((r) => {
+          this.myAnswerDrafts = r.data;
+        });
+        api.getArticleDrafts(this.$store.state.main.token).then((r) => {
+          this.myArticleDrafts = r.data;
+        });
       }
     });
   }

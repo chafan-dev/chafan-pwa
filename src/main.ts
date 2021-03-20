@@ -414,7 +414,7 @@ const i18n = new VueI18n({
       'commented article': 'commented article',
       'commented answer': 'commented answer',
       'replyed comment': 'replyed comment',
-      导出我的数据和创作内容: 'Export my data and created content',
+      导出: 'Export',
       'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
         'Chafan supports data and content ownership, you can export your data and content at any time. Current automated export is not implemented, please contact takeout@cha.fan and we will send your data snapshot in a week',
       管理员模式: 'Admin mode',
@@ -541,8 +541,10 @@ const i18n = new VueI18n({
       submission: 'Sharing',
       探索: 'Explore',
       tiptap: 'tiptap (beta ⚠️)',
+      所有圈子: 'All Circles',
     },
     zh: {
+      所有圈子: '所有圈子',
       tiptap: 'tiptap (beta ⚠️)',
       探索: '探索',
       submission: '分享',
@@ -664,7 +666,7 @@ const i18n = new VueI18n({
       'You can check all your rewards in ': '查看你的收到/发出的所有奖励：',
       普通用户模式: '普通用户模式',
       管理员模式: '管理员模式',
-      导出我的数据和创作内容: '导出我的数据和创作内容',
+      导出: '导出',
       'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
         'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。',
       'commented question': '评论了问题',
