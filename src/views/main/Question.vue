@@ -448,7 +448,6 @@ import {
   IUserQuestionSubscription,
   IUserSiteProfile,
 } from '@/interfaces';
-import { newAnswerHandler } from '@/utils';
 import SimpleViewer from '@/components/SimpleViewer.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import {
@@ -460,6 +459,7 @@ import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
+import { AnswerEditHandler } from '@/handlers';
 
 @Component({
   components: {
@@ -702,62 +702,37 @@ export default class Question extends Vue {
     });
   }
 
-  // FIXME: how to combine it with the logic in newEditHandler?
   private async newEditHandler(payload: INewEditEvent) {
-    if (this.handlingNewEdit) {
-      return;
-    }
     this.handlingNewEdit = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
-        if (payload.answerId) {
-          const response = await apiAnswer.updateAnswer(this.token, payload.answerId, {
-            updated_body: payload.edit.body,
-            editor: payload.edit.editor,
-            visibility: payload.edit.visibility,
-            is_draft: payload.edit.is_draft,
-          });
-          this.savedNewAnswer = response.data;
-          payload.saveCallback(response.data);
-          if (!payload.isAutosaved) {
-            commitAddNotification(this.$store, {
-              content: this.$t(payload.edit.is_draft ? '答案草稿已更新' : '更新已发表').toString(),
-              color: 'success',
-            });
-            this.showEditor = false;
-            const answerUUIDx = this.loadedFullAnswers.findIndex(
-              (answer) => answer.uuid === response.data.uuid
-            );
-            if (answerUUIDx === -1) {
-              this.loadedFullAnswers.unshift(response.data);
-            } else {
-              this.loadedFullAnswers[answerUUIDx] = response.data;
-            }
-          }
-        } else {
-          const newAnswer = await newAnswerHandler(
-            this,
-            payload.edit,
-            payload.writingSessionUUID,
-            payload.isAutosaved,
-            this.question.uuid
+    const handler = new AnswerEditHandler(
+      this,
+      payload.answerId || null,
+      this.question!.uuid,
+      (answer, isAutoSaved) => {
+        this.savedNewAnswer = answer;
+        if (!isAutoSaved) {
+          this.showEditor = false;
+          const answerUUIDx = this.loadedFullAnswers.findIndex(
+            (answer) => answer.uuid === answer.uuid
           );
-          if (newAnswer) {
-            payload.saveCallback(newAnswer);
-            this.savedNewAnswer = newAnswer;
-            if (!payload.isAutosaved) {
-              commitAddNotification(this.$store, {
-                content: this.$t(payload.edit.is_draft ? '草稿已保存' : '已发表').toString(),
-                color: 'success',
-              });
-              this.loadedFullAnswers.unshift(newAnswer);
-              this.showEditor = false;
-            }
+          if (answerUUIDx === -1) {
+            this.loadedFullAnswers.unshift(answer);
+          } else {
+            this.loadedFullAnswers[answerUUIDx] = answer;
           }
         }
+        this.handlingNewEdit = false;
+      },
+      (answer, isAutoSaved) => {
+        this.savedNewAnswer = answer;
+        if (!isAutoSaved) {
+          this.loadedFullAnswers.unshift(answer);
+          this.showEditor = false;
+        }
+        this.handlingNewEdit = false;
       }
-      this.handlingNewEdit = false;
-    });
+    );
+    await handler.newEditHandler(payload);
   }
 
   private async submitNewQuestionCommentBody(commentBody: string) {

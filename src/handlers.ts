@@ -15,17 +15,20 @@ class AnswerEditHandler {
   private answerUUID: string | null;
   private questionUUID: string;
   private updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void;
+  private newAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void;
 
   constructor(
     vueInstance: any,
     answerUUID: string | null,
     questionUUID: string,
-    updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void
+    updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void,
+    newAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void
   ) {
     this.vueInstance = vueInstance;
     this.answerUUID = answerUUID;
     this.questionUUID = questionUUID;
     this.updatedAnswerCallback = updatedAnswerCallback;
+    this.newAnswerCallback = newAnswerCallback;
   }
 
   get token() {
@@ -61,7 +64,7 @@ class AnswerEditHandler {
       if (!this.answerUUID && !payload.answerId) {
         // new answer to question
         const answer = await newAnswerHandler(
-          this,
+          this.vueInstance,
           payload.edit,
           payload.writingSessionUUID,
           payload.isAutosaved,
