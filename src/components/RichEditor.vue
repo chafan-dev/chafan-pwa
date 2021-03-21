@@ -57,12 +57,12 @@
         <span>{{ $t('版本历史') }}</span>
       </v-tooltip>
 
-      <v-menu offset-y top v-if="answerId || articleId" :close-on-content-click="false">
+      <v-menu offset-y top :close-on-content-click="false">
         <template v-slot:activator="{ on, attrs }">
           <SettingsIcon class="ml-1" v-bind="attrs" v-on="on" />
         </template>
         <v-list dense>
-          <v-list-item @click="showDeleteDraftDialog = true">
+          <v-list-item @click="showDeleteDraftDialog = true" v-if="answerId || articleId">
             <v-list-item-icon>
               <DeleteIcon />
             </v-list-item-icon>
@@ -83,22 +83,21 @@
               />
             </v-list-item-content>
           </v-list-item>
-          <!--  NOTE: This is experimental...turn on later -- also to make it appear before ID are generated        -->
-          <!--          <v-list-item>-->
-          <!--            <v-list-item-icon>-->
-          <!--              <EditIcon />-->
-          <!--            </v-list-item-icon>-->
-          <!--            <v-list-item-content>-->
-          <!--              <v-select-->
-          <!--                dense-->
-          <!--                :items="topLevelEditorItems"-->
-          <!--                v-model="topLevelEditor"-->
-          <!--                item-text="text"-->
-          <!--                item-value="value"-->
-          <!--                @change="onChangeTopLevelEditor"-->
-          <!--              />-->
-          <!--            </v-list-item-content>-->
-          <!--          </v-list-item>-->
+          <v-list-item v-if="topLevelEditorItems !== null">
+            <v-list-item-icon>
+              <EditIcon />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-select
+                dense
+                :items="topLevelEditorItems"
+                v-model="topLevelEditor"
+                item-text="text"
+                item-value="value"
+                @change="onChangeTopLevelEditor"
+              />
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-menu>
 
@@ -228,6 +227,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import Tiptap from '@/components/editor/Tiptap.vue';
 import VditorComponent from '@/components/editor/VditorComponent.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
+import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 
 @Component({
   components: {
@@ -252,16 +252,7 @@ export default class RichEditor extends Vue {
   @Prop() private readonly archivesCount: number | undefined;
   @Prop({ default: false }) private readonly hasTitle!: boolean;
   @Prop({ default: 'Publish' }) private readonly publishText!: string;
-  private readonly topLevelEditorItems = [
-    {
-      text: this.$t('Vditor').toString(),
-      value: 'vditor',
-    },
-    {
-      text: this.$t('tiptap (beta ⚠️)').toString(),
-      value: 'tiptap',
-    },
-  ];
+  private topLevelEditorItems: { text: string; value: string }[] | null = null;
 
   private readonly visibilityItems = [
     {
@@ -321,6 +312,23 @@ export default class RichEditor extends Vue {
 
     if (this.archivesCount !== undefined) {
       this.archivePagesLength = Math.ceil(this.archivesCount / this.archivePageLimit);
+    }
+
+    const topLevelEditorItems = [
+      {
+        text: this.$t('Vditor').toString(),
+        value: 'vditor',
+      },
+    ];
+    const userProfile = readUserProfile(this.$store);
+    if (userProfile!.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
+      topLevelEditorItems.push({
+        text: this.$t('tiptap (beta ⚠️)').toString(),
+        value: 'tiptap',
+      });
+    }
+    if (topLevelEditorItems.length > 1) {
+      this.topLevelEditorItems = topLevelEditorItems;
     }
   }
 
