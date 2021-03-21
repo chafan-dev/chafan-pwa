@@ -393,7 +393,8 @@ export default class Answer extends Vue {
     this,
     this.answerPreview.uuid,
     this.answerPreview.question.uuid,
-    this.updatedAnswerCallback
+    this.updatedAnswerCallback,
+    (answer, isAutoSaved) => {}
   );
 
   private editButtonText = '编辑';
