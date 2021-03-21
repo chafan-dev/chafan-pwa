@@ -1,11 +1,16 @@
 <template>
   <div ref="viewer" class="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }">
     <template v-if="editor === 'tiptap'">
-      <Tiptap ref="tiptapViewer" :editable="false" />
+      <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
+      <Tiptap
+        ref="tiptapViewer"
+        v-else-if="!bodyFormat || bodyFormat === 'tiptap_json'"
+        :editable="false"
+      />
     </template>
     <template v-else>
       <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
-      <div ref="vditorViewer" v-if="bodyFormat === 'markdown'" />
+      <div ref="vditorViewer" v-else-if="!bodyFormat || bodyFormat === 'markdown'" />
     </template>
     <LightboxGroup ref="lightbox" />
   </div>
@@ -25,7 +30,7 @@ import Tiptap from '@/components/editor/Tiptap.vue';
 })
 export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
-  @Prop() public readonly bodyFormat!: body_format_T;
+  @Prop() public readonly bodyFormat: body_format_T | undefined;
   @Prop() public readonly editor!: editor_T;
 
   get sanitizedBody() {
@@ -35,7 +40,7 @@ export default class Viewer extends Vue {
   private mounted() {
     if (this.editor === 'tiptap') {
       const tiptapViewer = this.$refs.tiptapViewer as Tiptap;
-      if (this.bodyFormat === 'tiptap_json') {
+      if (!this.bodyFormat || this.bodyFormat === 'tiptap_json') {
         tiptapViewer.loadJSON(JSON.parse(this.body));
       } else if (this.bodyFormat === 'html') {
         tiptapViewer.loadHTML(this.sanitizedBody);
@@ -44,7 +49,7 @@ export default class Viewer extends Vue {
       if (this.bodyFormat === 'html') {
         const lightbox = this.$refs.lightbox as LightboxGroup;
         lightbox.loadImagesFrom(this.$refs.viewer as HTMLElement);
-      } else if (this.bodyFormat === 'markdown') {
+      } else if (!this.bodyFormat || this.bodyFormat === 'markdown') {
         Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
           mode: 'light',
           cdn: vditorCDN,
