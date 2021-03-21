@@ -34,6 +34,12 @@ Please simply fork this repo and open a PR with description of the changes again
 If you want to work on an existing issue, please claim it explicitly in the issue before working on it.
 If you didn't move on with the issue, we will assume you are busy and the claim will be automatically released after two weeks.
 
+## Difference between terms used in codebase and shown to user
+
+- `submission`: 分享/Sharing
+- `site`: 圈子/Circle
+- `channel`: 私信聊天室/Private messaging
+
 ## Misc
 
 You can use both English and Chinese to communicate.
