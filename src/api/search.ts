@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IAnswerPreview, IQuestionPreview, ISubmission, ITopic, IUserPreview } from '@/interfaces';
+import {
+  IAnswerPreview,
+  IQuestionPreview,
+  ISite,
+  ISubmission,
+  ITopic,
+  IUserPreview,
+} from '@/interfaces';
 import { authHeadersWithParams } from '@/utils';
 
 export const apiSearch = {
@@ -25,6 +32,14 @@ export const apiSearch = {
     params.append('q', fragment);
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/api/v1/search/questions/`,
+      authHeadersWithParams(token, params)
+    );
+  },
+  async searchSites(token: string, fragment: string) {
+    const params = new URLSearchParams();
+    params.append('q', fragment);
+    return axios.get<ISite[]>(
+      `${apiUrl}/api/v1/search/sites/`,
       authHeadersWithParams(token, params)
     );
   },
