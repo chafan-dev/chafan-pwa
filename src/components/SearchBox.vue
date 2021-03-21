@@ -3,7 +3,9 @@
     outlined
     dense
     filled
-    :loading="loadingSubmissions || loadingQuestions || loadingAnswers || loadingUsers"
+    :loading="
+      loadingSubmissions || loadingQuestions || loadingAnswers || loadingUsers || loadingSites
+    "
     :items="items"
     item-value="handle"
     :item-text="getItemText"
@@ -34,6 +36,7 @@ export default {
     return {
       loadingSubmissions: false,
       loadingQuestions: false,
+      loadingSites: false,
       loadingAnswers: false,
       loadingUsers: false,
       items: [],
@@ -77,6 +80,7 @@ export default {
         });
         this.loadingUsers = false;
       });
+
       apiSearch.searchQuestions(this.token, v).then((response) => {
         response.data.forEach((question) => {
           this.items.push({
@@ -85,6 +89,16 @@ export default {
           });
         });
         this.loadingQuestions = false;
+      });
+
+      apiSearch.searchSites(this.token, v).then((response) => {
+        response.data.forEach((site) => {
+          this.items.push({
+            type: 'site',
+            data: site,
+          });
+        });
+        this.loadingSites = false;
       });
 
       apiSearch.searchSubmissions(this.token, v).then((response) => {
@@ -118,6 +132,9 @@ export default {
       if (item.type === 'question') {
         return item.data.title;
       }
+      if (item.type === 'site') {
+        return item.data.name;
+      }
       if (item.type === 'submission') {
         return item.data.title;
       }
@@ -142,6 +159,9 @@ export default {
       }
       if (item.type === 'submission') {
         return `/submissions/${item.data.uuid}`;
+      }
+      if (item.type === 'site') {
+        return `/sites/${item.data.subdomain}`;
       }
       if (item.type === 'answer') {
         return `/questions/${item.data.question.uuid}/answers/${item.data.uuid}`;
