@@ -406,6 +406,7 @@ import Event from '@/components/Event.vue';
 import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
+import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 
 @Component({
   components: {
@@ -533,9 +534,7 @@ export default class Dashboard extends Vue {
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.userProfile) {
-        this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(
-          this.LABS_TIPTAP_EDITOR_OPTION
-        );
+        this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION);
 
         const editorModeItems = [
           {
@@ -710,14 +709,12 @@ export default class Dashboard extends Vue {
     }
   }
 
-  private readonly LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
-
   private async updateLabs() {
     this.changingMySettings = true;
     if (this.tiptapEditorOptionOn) {
-      await dispatchAddFlag(this.$store, this.LABS_TIPTAP_EDITOR_OPTION);
+      await dispatchAddFlag(this.$store, LABS_TIPTAP_EDITOR_OPTION);
     } else {
-      await dispatchRemoveFlag(this.$store, this.LABS_TIPTAP_EDITOR_OPTION);
+      await dispatchRemoveFlag(this.$store, LABS_TIPTAP_EDITOR_OPTION);
     }
     this.changingMySettings = false;
     this.$router.go(0);

@@ -73,6 +73,7 @@ class AnswerEditHandler {
         if (answer) {
           this.answerUUID = answer.uuid;
           payload.saveCallback(answer);
+          this.newAnswerCallback(answer, payload.isAutosaved);
           if (!payload.isAutosaved) {
             commitAddNotification(this.vueInstance.$store, {
               content: this.vueInstance
