@@ -23,12 +23,13 @@
         >{{ $t('me') }}</span
       >
 
-      <span place="invited_email" v-else-if="event.content.invited_email">{{
+      <span place="invited_email" v-if="event.content.invited_email">{{
         event.content.invited_email
       }}</span>
-      <span place="reward_coin_amount" v-else-if="event.content.reward">{{
+
+      <a place="reward_coin_amount" v-if="event.content.reward" href="/dashboard?tab=coins">{{
         event.content.reward.coin_amount
-      }}</span>
+      }}</a>
 
       <span place="comment" v-if="event.content.comment">
         <CommentPreview :comment="event.content.comment" />
