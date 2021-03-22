@@ -9,7 +9,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
-import { vditorCDN } from '@/common';
+import { postProcessViewerDOM, vditorCDN } from '@/common';
 
 @Component({
   components: { LightboxGroup },
@@ -24,6 +24,7 @@ export default class Viewer extends Vue {
       after: () => {
         const lightbox = this.$refs.lightbox as LightboxGroup;
         lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+        postProcessViewerDOM(this.$store.state.main.token, this.$refs.vditorViewer as HTMLElement);
       },
     });
   }

@@ -97,12 +97,6 @@ export const api = {
       authHeadersWithParams(token, params)
     );
   },
-  async getQuestion(token: string, questionUUID: string) {
-    return axios.get<IQuestion>(`${apiUrl}/api/v1/questions/${questionUUID}`, authHeaders(token));
-  },
-  async postQuestion(token: string, data: IQuestionCreate) {
-    return axios.post<IQuestion>(`${apiUrl}/api/v1/questions/`, data, authHeaders(token));
-  },
   async getUserSiteProfile(token: string, siteUUID: string, userUUID: string) {
     return axios.get<IUserSiteProfile>(
       `${apiUrl}/api/v1/profiles/members/${siteUUID}/${userUUID}`,

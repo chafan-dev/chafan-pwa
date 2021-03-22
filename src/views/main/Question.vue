@@ -577,7 +577,7 @@ export default class Question extends Vue {
 
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const response = await api.getQuestion(this.token, this.id);
+        const response = await apiQuestion.getQuestion(this.token, this.id);
         this.question = response.data;
         if (!this.$route.query.title) {
           this.$router.replace({
