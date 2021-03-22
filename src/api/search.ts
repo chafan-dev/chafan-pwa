@@ -13,7 +13,7 @@ import { authHeadersWithParams } from '@/utils';
 export const apiSearch = {
   async searchUsers(token: string, fragment: string) {
     const params = new URLSearchParams();
-    params.append('fragment', fragment);
+    params.append('q', fragment);
     return axios.get<IUserPreview[]>(
       `${apiUrl}/api/v1/search/users/`,
       authHeadersWithParams(token, params)
@@ -21,7 +21,7 @@ export const apiSearch = {
   },
   async searchTopics(token: string, fragment: string) {
     const params = new URLSearchParams();
-    params.append('fragment', fragment);
+    params.append('q', fragment);
     return axios.get<ITopic[]>(
       `${apiUrl}/api/v1/search/topics/`,
       authHeadersWithParams(token, params)
