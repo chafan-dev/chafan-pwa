@@ -20,7 +20,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
-import { vditorCDN } from '@/common';
+import { vditorCDN, postProcessViewerDOM } from '@/common';
 import DOMPurify from 'dompurify';
 import { body_format_T, editor_T } from '@/interfaces';
 import Tiptap from '@/components/editor/Tiptap.vue';
@@ -46,16 +46,19 @@ export default class Viewer extends Vue {
         tiptapViewer.loadHTML(this.sanitizedBody);
       }
     } else {
+      const viewer = this.$refs.viewer as HTMLElement;
       if (this.bodyFormat === 'html') {
         const lightbox = this.$refs.lightbox as LightboxGroup;
-        lightbox.loadImagesFrom(this.$refs.viewer as HTMLElement);
+        lightbox.loadImagesFrom(viewer);
+        postProcessViewerDOM(this.$store.state.main.token, viewer);
       } else if (!this.bodyFormat || this.bodyFormat === 'markdown') {
         Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
           mode: 'light',
           cdn: vditorCDN,
           after: () => {
             const lightbox = this.$refs.lightbox as LightboxGroup;
-            lightbox.loadImagesFrom(this.$refs.viewer as HTMLElement);
+            lightbox.loadImagesFrom(viewer);
+            postProcessViewerDOM(this.$store.state.main.token, viewer);
           },
         });
       }

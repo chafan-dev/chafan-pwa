@@ -37,6 +37,7 @@ import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { api } from '@/api';
+import { apiQuestion } from '@/api/question';
 
 @Component({
   components: { UserLink, Invite },
@@ -89,7 +90,7 @@ export default class CreateQuestionForm extends Vue {
     }
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;
-      const response = await api.postQuestion(this.token, {
+      const response = await apiQuestion.postQuestion(this.token, {
         site_uuid: siteUUID,
         title: this.newQuestionTitle,
       });

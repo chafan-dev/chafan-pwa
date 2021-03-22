@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IMsg, IQuestion, IQuestionArchive, IQuestionUpvotes } from '@/interfaces';
+import { IMsg, IQuestion, IQuestionArchive, IQuestionCreate, IQuestionUpvotes } from '@/interfaces';
 import { authHeaders } from '@/utils';
 
 export const apiQuestion = {
@@ -43,5 +43,11 @@ export const apiQuestion = {
       null,
       authHeaders(token)
     );
+  },
+  async getQuestion(token: string, questionUUID: string) {
+    return axios.get<IQuestion>(`${apiUrl}/api/v1/questions/${questionUUID}`, authHeaders(token));
+  },
+  async postQuestion(token: string, data: IQuestionCreate) {
+    return axios.post<IQuestion>(`${apiUrl}/api/v1/questions/`, data, authHeaders(token));
   },
 };
