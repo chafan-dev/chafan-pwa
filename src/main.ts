@@ -546,8 +546,10 @@ const i18n = new VueI18n({
       关注更多用户: 'Follow more people',
       不定期随机更新: 'Updated randomly once in a while',
       site: 'Circle',
+      answer: 'Answer',
     },
     zh: {
+      answer: '答案',
       site: '圈子',
       发现问题: '发现问题',
       不定期随机更新: '不定期随机更新',
