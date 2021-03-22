@@ -1,17 +1,12 @@
 <template>
   <div class="simple-editor">
     <SimpleVditor
-      v-if="topLevelEditor === 'vditor'"
+      v-show="isVditor"
       ref="simpleVditor"
       :initial-value="initialValue"
       :placeholder="placeholder"
     />
-    <Tiptap
-      :initial-value="initialValue"
-      :comment-mode="true"
-      v-if="topLevelEditor === 'tiptap'"
-      ref="tiptap"
-    />
+    <Tiptap :initial-value="initialValue" :comment-mode="true" v-show="isTiptap" ref="tiptap" />
   </div>
 </template>
 
@@ -27,14 +22,15 @@ import Tiptap from '@/components/editor/Tiptap.vue';
 export default class SimpleEditor extends Vue {
   @Prop({ default: '' }) public readonly initialValue!: string;
   @Prop() public readonly placeholder: string | undefined;
-  private topLevelEditor: 'vditor' | 'tiptap' | null = null;
-
-  get editor() {
-    return readUserProfile(this.$store)!.default_editor_mode;
-  }
+  private isVditor = false;
+  private isTiptap = false;
 
   get simpleVditor() {
     return this.$refs.simpleVditor as SimpleVditor;
+  }
+
+  get editor() {
+    return readUserProfile(this.$store)!.default_editor_mode;
   }
 
   get tiptap() {
@@ -43,34 +39,33 @@ export default class SimpleEditor extends Vue {
 
   private mounted() {
     if (this.editor === 'tiptap') {
-      this.topLevelEditor = 'tiptap';
+      this.isTiptap = true;
     } else {
-      this.topLevelEditor = 'vditor';
-      this.simpleVditor.initVditor();
+      this.isVditor = true;
     }
   }
 
   get content() {
-    if (this.topLevelEditor === 'tiptap') {
+    if (this.isTiptap) {
       return JSON.stringify(this.tiptap.getJSON());
-    } else if (this.topLevelEditor === 'vditor') {
+    } else if (this.isVditor) {
       return this.simpleVditor.content;
     }
     return '';
   }
 
   set content(value: string) {
-    if (this.topLevelEditor === 'tiptap') {
+    if (this.isTiptap) {
       this.tiptap.loadJSON(JSON.parse(value));
-    } else if (this.topLevelEditor === 'vditor') {
+    } else if (this.isVditor) {
       this.simpleVditor.content = value;
     }
   }
 
   public reset() {
-    if (this.topLevelEditor === 'vditor') {
+    if (this.isVditor) {
       this.simpleVditor.initVditor();
-    } else if (this.topLevelEditor === 'tiptap') {
+    } else if (this.isTiptap) {
       this.tiptap.reset();
     }
   }
