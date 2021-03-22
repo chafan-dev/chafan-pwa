@@ -4,6 +4,7 @@
 # permission.
 
 User-agent: *
+Allow: /$
 Allow: /explore
 Allow: /questions/
 Allow: /articles/
