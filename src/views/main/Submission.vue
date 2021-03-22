@@ -453,14 +453,15 @@ export default class Submission extends Vue {
       }
     });
   }
-  private async submitNewSubmissionCommentBody(commentBody: string) {
+  private async submitNewSubmissionCommentBody({ body, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       this.commentSubmitIntermediate = true;
       if (this.submission) {
         const response = await apiComment.postComment(this.token, {
           site_uuid: this.submission?.site.uuid,
           submission_uuid: this.id,
-          body: commentBody,
+          body,
+          editor,
         });
         const comment = response.data;
         this.comments.push(comment);
@@ -472,12 +473,12 @@ export default class Submission extends Vue {
   private async commitSubmissionEdit() {
     this.commitSubmissionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.submission) {
+      const descEditor = this.$refs.descEditor as SimpleEditor;
+      if (descEditor.content && this.submission) {
         const responses = await Promise.all(
           this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
-        const descEditor = this.$refs.descEditor as SimpleEditor;
         const response = await apiSubmission.updateSubmission(this.token, this.submission.uuid, {
           title: this.newSubmissionTitle,
           description: descEditor.content,

@@ -69,7 +69,10 @@ export default class CommentBlock extends Vue {
     }
     const commentCopy = `${editor.content}`;
     editor.reset();
-    return commentCopy;
+    return {
+      body: commentCopy,
+      editor: editor.editor,
+    };
   }
 }
 </script>

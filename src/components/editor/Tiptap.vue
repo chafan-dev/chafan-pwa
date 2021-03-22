@@ -40,7 +40,11 @@
 
       <editor-content
         class="editor__content"
-        :class="{ 'editable-editor-content': editable }"
+        :class="{
+          'editable-editor-content': editable,
+          'editable-comment': commentMode && editable,
+          'editable-non-comment': !commentMode && editable,
+        }"
         :editor="editor"
       />
     </div>
@@ -101,6 +105,8 @@ import { apiSearch } from '@/api/search';
 export default class Tiptap extends Vue {
   @Prop() public readonly onEditorChange: ((string) => void) | undefined;
   @Prop({ default: true }) public readonly editable!: boolean;
+  @Prop() public readonly initialValue: string | undefined;
+  @Prop({ default: false }) public readonly commentMode!: boolean;
 
   private keepInBounds = true;
 
@@ -141,6 +147,7 @@ export default class Tiptap extends Vue {
 
   private mounted() {
     this.editor = new Editor({
+      content: this.initialValue,
       extensions: [
         new Blockquote(),
         new BulletList(),
@@ -306,6 +313,10 @@ export default class Tiptap extends Vue {
   private beforeDestroy() {
     this.destroyPopup();
     this.editor.destroy();
+  }
+
+  public reset() {
+    this.editor.clearContent();
   }
 }
 </script>
@@ -506,6 +517,14 @@ $color-grey: #dddddd;
 .editable-editor-content .ProseMirror {
   border: 1px solid lightgrey;
   border-radius: 5px;
+  min-height: 30rem;
+}
+
+.editable-comment .ProseMirror {
+  min-height: 5rem;
+}
+
+.editable-non-comment .ProseMirror {
   min-height: 30rem;
 }
 

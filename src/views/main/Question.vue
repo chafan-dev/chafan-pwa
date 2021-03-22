@@ -735,14 +735,15 @@ export default class Question extends Vue {
     await handler.newEditHandler(payload);
   }
 
-  private async submitNewQuestionCommentBody(commentBody: string) {
+  private async submitNewQuestionCommentBody({ body, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.commentSubmitIntermediate = true;
         const response = await apiComment.postComment(this.token, {
           site_uuid: this.question?.site.uuid,
           question_uuid: this.id,
-          body: commentBody,
+          body,
+          editor,
         });
         const comment = response.data;
         this.question.comments.push(comment);
@@ -754,12 +755,12 @@ export default class Question extends Vue {
   private async commitQuestionEdit() {
     this.commitQuestionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
+      const descEditor = this.$refs.descEditor as SimpleEditor;
+      if (this.question && descEditor.content) {
         const responses = await Promise.all(
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
-        const descEditor = this.$refs.descEditor as SimpleEditor;
         const response = await api.updateQuestion(this.token, this.question.uuid, {
           title: this.newQuestionTitle,
           description: descEditor.content,
