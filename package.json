@@ -24,6 +24,7 @@
     "piexifjs": "^1.0.6",
     "register-service-worker": "^1.0.0",
     "sass": "^1.32.6",
+    "tippy.js": "^6.3.1",
     "tiptap": "^1.32.1",
     "tiptap-extensions": "^1.35.1",
     "typesafe-vuex": "^3.1.1",
