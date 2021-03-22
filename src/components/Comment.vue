@@ -10,7 +10,7 @@
 
     <!-- Comment body -->
     <template v-if="!showUpdateEditor">
-      <SimpleViewer v-if="!isDeleted" :body="comment.body" />
+      <SimpleViewer v-if="!isDeleted" :body="comment.body" :editor="comment.editor" />
       <div v-else>
         <div class="grey--text">{{ $t('Deleted.') }}</div>
       </div>
@@ -313,6 +313,7 @@ export default class Comment extends Vue {
       this.currentUserIsAuthor = userProfile.uuid === this.comment.author.uuid;
     }
   }
+
   private async submitNewReplyBody() {
     const editor = this.$refs.commentReplyEditor as SimpleEditor;
     if (editor.content.length === 0) {
@@ -328,6 +329,7 @@ export default class Comment extends Vue {
         site_uuid: this.siteId,
         parent_comment_uuid: this.comment.uuid,
         body: editor.content,
+        editor: editor.editor,
       });
       const comment = response.data;
       if (this.childComments === null) {

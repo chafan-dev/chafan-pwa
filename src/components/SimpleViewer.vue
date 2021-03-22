@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <div ref="vditorViewer" class="simple-viewer" />
+  <div class="simple-viewer">
+    <Tiptap
+      ref="tiptapViewer"
+      v-if="editor === 'tiptap'"
+      :editable="false"
+      :initial-value="parsedBody"
+    />
+    <div ref="vditorViewer" v-else />
     <LightboxGroup ref="lightbox" />
   </div>
 </template>
@@ -10,23 +16,35 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
 import { postProcessViewerDOM, vditorCDN } from '@/common';
+import { editor_T } from '@/interfaces';
+import Tiptap from '@/components/editor/Tiptap.vue';
 
 @Component({
-  components: { LightboxGroup },
+  components: { Tiptap, LightboxGroup },
 })
-export default class Viewer extends Vue {
+export default class SimpleViewer extends Vue {
   @Prop() public readonly body!: string;
+  @Prop() public readonly editor: editor_T | undefined;
+
+  get parsedBody() {
+    return JSON.parse(this.body);
+  }
 
   private mounted() {
-    Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
-      mode: 'light',
-      cdn: vditorCDN,
-      after: () => {
-        const lightbox = this.$refs.lightbox as LightboxGroup;
-        lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
-        postProcessViewerDOM(this.$store.state.main.token, this.$refs.vditorViewer as HTMLElement);
-      },
-    });
+    if (this.editor !== 'tiptap') {
+      Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
+        mode: 'light',
+        cdn: vditorCDN,
+        after: () => {
+          const lightbox = this.$refs.lightbox as LightboxGroup;
+          lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+          postProcessViewerDOM(
+            this.$store.state.main.token,
+            this.$refs.vditorViewer as HTMLElement
+          );
+        },
+      });
+    }
   }
 }
 </script>

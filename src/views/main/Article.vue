@@ -334,13 +334,14 @@ export default class Article extends Vue {
       }
     });
   }
-  private async submitNewArticleCommentBody(body: string) {
+  private async submitNewArticleCommentBody({ body, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
         this.commentSubmitIntermediate = true;
         const response = await apiComment.postComment(this.token, {
           article_uuid: this.article.uuid,
           body,
+          editor,
         });
         const comment = response.data;
         this.article.comments.push(comment);

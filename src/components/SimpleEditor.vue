@@ -1,60 +1,78 @@
 <template>
-  <div ref="editor" class="simple-editor" />
+  <div class="simple-editor">
+    <SimpleVditor
+      v-if="topLevelEditor === 'vditor'"
+      ref="simpleVditor"
+      :initial-value="initialValue"
+      :placeholder="placeholder"
+    />
+    <Tiptap
+      :initial-value="initialValue"
+      :comment-mode="true"
+      v-if="topLevelEditor === 'tiptap'"
+      ref="tiptap"
+    />
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { env } from '@/env';
+import SimpleVditor from '@/components/editor/SimpleVditor.vue';
+import { readUserProfile } from '@/store/main/getters';
+import Tiptap from '@/components/editor/Tiptap.vue';
 
-import Vditor from '@chafan/vditor';
-import { vditorCDN } from '@/common';
-
-@Component
+@Component({
+  components: { Tiptap, SimpleVditor },
+})
 export default class SimpleEditor extends Vue {
   @Prop({ default: '' }) public readonly initialValue!: string;
   @Prop() public readonly placeholder: string | undefined;
+  private topLevelEditor: 'vditor' | 'tiptap' | null = null;
 
-  private vditor: Vditor | null = null;
+  get editor() {
+    return readUserProfile(this.$store)!.default_editor_mode;
+  }
 
-  private initVditor() {
-    if (this.vditor !== null) {
-      this.vditor.destroy();
-    }
-    this.vditor = new Vditor(this.$refs.editor as HTMLElement, {
-      debugger: env === 'development',
-      cdn: vditorCDN,
-      placeholder: this.placeholder ? this.placeholder : '',
-      value: this.initialValue,
-      mode: 'wysiwyg',
-      toolbarConfig: {
-        hide: true,
-      },
-      toolbar: ['bold', 'italic', 'link', 'list', 'line', 'strike', 'undo', 'redo'],
-      cache: {
-        enable: false,
-      },
-      counter: {
-        enable: false,
-      },
-    });
+  get simpleVditor() {
+    return this.$refs.simpleVditor as SimpleVditor;
+  }
+
+  get tiptap() {
+    return this.$refs.tiptap as Tiptap;
   }
 
   private mounted() {
-    this.initVditor();
+    if (this.editor === 'tiptap') {
+      this.topLevelEditor = 'tiptap';
+    } else {
+      this.topLevelEditor = 'vditor';
+      this.simpleVditor.initVditor();
+    }
   }
 
   get content() {
-    return this.vditor?.getValue() || '';
+    if (this.topLevelEditor === 'tiptap') {
+      return JSON.stringify(this.tiptap.getJSON());
+    } else if (this.topLevelEditor === 'vditor') {
+      return this.simpleVditor.content;
+    }
+    return '';
   }
 
   set content(value: string) {
-    if (this.vditor) {
-      this.vditor.setValue(value);
+    if (this.topLevelEditor === 'tiptap') {
+      this.tiptap.loadJSON(JSON.parse(value));
+    } else if (this.topLevelEditor === 'vditor') {
+      this.simpleVditor.content = value;
     }
   }
 
   public reset() {
-    this.initVditor();
+    if (this.topLevelEditor === 'vditor') {
+      this.simpleVditor.initVditor();
+    } else if (this.topLevelEditor === 'tiptap') {
+      this.tiptap.reset();
+    }
   }
 }
 </script>
@@ -74,26 +92,4 @@ export default class SimpleEditor extends Vue {
 
 .simple-editor p
     margin-bottom: 10px
-</style>
-
-<style>
-.vditor {
-  --textarea-background-color: white;
-}
-
-.simple-editor .vditor-reset {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.simple-editor .vditor-toolbar {
-  height: 0px;
-  border-bottom: 0px;
-}
-
-.simple-editor h1::before,
-.simple-editor h2::before,
-.simple-editor h3::before {
-  content: '';
-}
 </style>

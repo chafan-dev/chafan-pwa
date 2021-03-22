@@ -547,8 +547,10 @@ const i18n = new VueI18n({
       不定期随机更新: 'Updated randomly once in a while',
       site: 'Circle',
       answer: 'Answer',
+      'No users found': 'No users found',
     },
     zh: {
+      'No users found': '无结果',
       answer: '答案',
       site: '圈子',
       发现问题: '发现问题',

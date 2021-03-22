@@ -303,6 +303,7 @@ import {
   IUserAnswerBookmark,
   IUserProfile,
   IUserSiteProfile,
+  editor_T,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import { readUserMode, readUserProfile } from '@/store/main/getters';
@@ -477,7 +478,7 @@ export default class Answer extends Vue {
     });
   }
 
-  private async submitNewAnswerCommentBody(body: string) {
+  private async submitNewAnswerCommentBody({ body, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
         this.commentSubmitIntermediate = true;
@@ -485,6 +486,7 @@ export default class Answer extends Vue {
           site_uuid: this.answer.site.uuid,
           answer_uuid: this.answer.uuid,
           body,
+          editor,
         });
         const comment = response.data;
         this.answer.comments.push(comment);
