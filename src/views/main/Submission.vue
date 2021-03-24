@@ -6,7 +6,10 @@
       :indeterminate="loadingProgress === 0"
     />
     <v-row justify="center" v-else>
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col
+        :class="{ 'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI }"
+        fluid
+      >
         <ValidationObserver v-slot="{ handleSubmit }">
           <!-- Submission info/editor -->
           <div>
@@ -275,7 +278,7 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
-import { readUserMode, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI, readUserMode, readUserProfile } from '@/store/main/getters';
 import {
   ISubmission,
   ISite,
@@ -543,6 +546,10 @@ export default class Submission extends Vue {
     }
   }
 
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
+  }
+
   private async confirmHideSubmission() {
     await dispatchCaptureApiError(this.$store, async () => {
       await apiSubmission.hideSubmission(this.$store.state.main.token, this.submission!.uuid);
@@ -597,5 +604,9 @@ export default class Submission extends Vue {
 .less-left-right-padding {
   padding-left: 6px !important;
   padding-right: 6px !important;
+}
+
+.fixed-narrow-col {
+  max-width: 800px;
 }
 </style>

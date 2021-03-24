@@ -5,7 +5,7 @@
       v-model="loadingProgress"
       :indeterminate="loadingProgress === 0"
     />
-    <v-row v-else justify="center">
+    <v-row class="px-2" v-else justify="center">
       <v-col
         :class="{
           'col-8': $vuetify.breakpoint.mdAndUp,
@@ -976,8 +976,6 @@ export default class Question extends Vue {
 /* FIXME: Potential code duplication with Home.vue */
 .fixed-narrow-col {
   max-width: 800px;
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .fixed-narrow-sidecol {
