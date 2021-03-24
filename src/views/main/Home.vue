@@ -384,7 +384,6 @@ import { IActivity, ISubmission, IUserPreview, IUserProfile } from '@/interfaces
 import SiteBtn from '@/components/SiteBtn.vue';
 import UserLink from '@/components/UserLink.vue';
 import UserCard from '@/components/UserCard.vue';
-import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 import CommentCard from '@/components/CommentCard.vue';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
@@ -436,7 +435,6 @@ import UserLogoutWelcome from '@/components/user/UserLogoutWelcome.vue';
     SubmissionCard,
     FeedIcon,
     UserGrid,
-    ExploreSitesGrid,
     CloseIcon,
   },
 })
