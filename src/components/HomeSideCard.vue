@@ -28,11 +28,11 @@
             small
             color="info"
             depressed
-            class="mt-1"
+            class="mt-1 mr-1"
             v-if="showAllSiteProfilesDialogButton"
             @click="showAllSiteProfilesDialog = true"
           >
-            <MoreIcon class="mr-1" />{{ $t('More') }}
+            <MoreIcon />{{ $t('More') }}
           </v-btn>
           <v-btn small depressed outlined color="info" class="mt-1" to="/explore?tab=sites">
             {{ $t('所有圈子') }}
