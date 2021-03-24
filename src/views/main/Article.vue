@@ -3,6 +3,7 @@
     <v-col
       :class="{
         'col-8': $vuetify.breakpoint.mdAndUp,
+        'fixed-narrow-col': isNarrowFeedUI,
       }"
       fluid
     >
@@ -222,6 +223,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
+import { readNarrowUI } from '@/store/main/getters';
 
 @Component({
   components: {
@@ -247,6 +249,9 @@ export default class Article extends Vue {
       return null;
     }
     return this.$store.state.main.userProfile.uuid;
+  }
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
   }
   get id() {
     return this.$router.currentRoute.params.id;
@@ -414,5 +419,9 @@ export default class Article extends Vue {
 .less-left-right-padding {
   padding-left: 6px !important;
   padding-right: 6px !important;
+}
+
+.fixed-narrow-col {
+  max-width: 800px;
 }
 </style>
