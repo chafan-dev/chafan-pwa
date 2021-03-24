@@ -6,7 +6,13 @@
       :initial-value="initialValue"
       :placeholder="placeholder"
     />
-    <Tiptap :initial-value="initialValue" :comment-mode="true" v-show="isTiptap" ref="tiptap" />
+    <Tiptap
+      :initial-value="initialValue"
+      :placeholder="placeholder"
+      :comment-mode="true"
+      v-show="isTiptap"
+      ref="tiptap"
+    />
   </div>
 </template>
 
