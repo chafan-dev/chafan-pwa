@@ -63,7 +63,7 @@
             <SimpleEditor
               ref="descEditor"
               :initialValue="question.description"
-              :placeholder="$t('Description')"
+              :placeholder="$t('描述（选填）')"
               class="mb-2"
             />
           </div>

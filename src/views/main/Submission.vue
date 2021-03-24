@@ -51,7 +51,7 @@
 
             <!-- Submission URL display -->
             <div v-if="submission.url">
-              <LinkIcon /> {{ $t('源链接') }}:
+              <LinkIcon /> {{ $t('源链接（选填）') }}:
               <a class="text-decoration-none" :href="submission.url" target="_blank">
                 {{ submission.url }}
               </a>
@@ -65,7 +65,7 @@
             />
             <div v-else-if="showSubmissionEditor">
               <SimpleEditor
-                :placeholder="$t('Description')"
+                :placeholder="$t('描述（选填）')"
                 ref="descEditor"
                 :initialValue="submission.description"
                 class="mb-2"
