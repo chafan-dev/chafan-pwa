@@ -57,6 +57,7 @@
           <SimpleViewer
             v-if="!showQuestionEditor && question.description"
             :body="question.description"
+            :editor="question.description_editor"
           />
           <div v-else-if="showQuestionEditor">
             <SimpleEditor
@@ -764,6 +765,7 @@ export default class Question extends Vue {
         const response = await api.updateQuestion(this.token, this.question.uuid, {
           title: this.newQuestionTitle,
           description: descEditor.content,
+          description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
         });
         if (response) {
