@@ -104,6 +104,7 @@ export interface IQuestion {
   title: string;
   topics: ITopic[];
   description?: string;
+  description_editor: editor_T;
   comments: IComment[];
   view_times: number;
   is_placed_at_home: boolean;
@@ -513,6 +514,7 @@ export interface ICommentUpdate {
 export interface IQuestionUpdate {
   title?: string;
   description?: string;
+  description_editor?: editor_T;
   topic_uuids?: string[];
 }
 
@@ -991,6 +993,7 @@ export interface ISubmissionCreate {
 export interface ISubmissionUpdate {
   title?: string;
   description?: string;
+  description_editor?: editor_T;
   topic_uuids?: string[];
 }
 
@@ -998,6 +1001,7 @@ export interface ISubmission {
   uuid: string;
   title: string;
   description?: string;
+  description_editor: editor_T;
   url?: string;
   created_at: string;
   updated_at: string;

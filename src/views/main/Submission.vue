@@ -58,6 +58,7 @@
             <SimpleViewer
               v-if="!showSubmissionEditor && submission.description"
               :body="submission.description"
+              :editor="submission.description_editor"
             />
             <div v-else-if="showSubmissionEditor">
               <SimpleEditor
@@ -482,6 +483,7 @@ export default class Submission extends Vue {
         const response = await apiSubmission.updateSubmission(this.token, this.submission.uuid, {
           title: this.newSubmissionTitle,
           description: descEditor.content,
+          description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
         });
         if (response) {
