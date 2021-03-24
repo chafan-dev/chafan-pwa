@@ -43,11 +43,19 @@
           </v-stepper-step>
 
           <v-stepper-content step="2" />
+          <explore-sites-grid />
         </v-stepper>
+
+        <div class="text-center mb-4">
+          更多帮助：<a
+            class="text-decoration-none"
+            href="https://cha.fan/questions/6Xrr59FKbTdFU4M6mXUg"
+            target="_blank"
+            >「新用户如何上手 Chafan？ 」</a
+          >
+        </div>
       </div>
     </base-card>
-
-    <explore-sites-grid class="mt-2" />
   </v-sheet>
 </template>
 <script lang="ts">
