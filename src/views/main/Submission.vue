@@ -250,7 +250,37 @@
             @submit-new-comment="submitNewSubmissionCommentBody"
           />
 
-          <div v-if="!userProfile" class="mt-2">{{ $t('登录后参与讨论') }}</div>
+          <div v-if="!userProfile" class="mt-2 text-center">{{ $t('登录后参与讨论') }}</div>
+          <div>
+            <div class="text-center">
+              <span
+                class="grey--text text-caption"
+                style="cursor: pointer"
+                @click="showHelp = !showHelp"
+              >
+                帮助文档：什么是分享?
+              </span>
+            </div>
+            <v-expand-transition>
+              <div v-show="showHelp">
+                <ul>
+                  <li>
+                    分享需要填写一个标题，并可以选择添加一个外部链接和细节描述。描述和标题请尽量与来源和客观信息保持一致，你的主观想法可以更多放在评论区。
+                  </li>
+                  <li>分享的内容要和圈子的内容主题要求一致。</li>
+                  <li>
+                    分享的核心是默认展开的评论区，在这里你可以不用像写答案一样长篇大论，而是添加一些简短的想法。
+                  </li>
+                  <li>你的分享动态会推送到你的关注者的时间线上。</li>
+                  <li>你的分享有新评论时目前<b>不会推送通知给提交者</b>以减少噪音。</li>
+                  <li>
+                    每个圈子有自己的分享榜单，榜单的排序方式既考虑提交的时间，也考虑「赞」的数量。同时，每个分享下的评论也会按「赞」数排序。
+                  </li>
+                  <li>首页也有一个将你所加入的所有圈子的分享榜单聚合在一起的个性化分享榜单</li>
+                </ul>
+              </div>
+            </v-expand-transition>
+          </div>
         </ValidationObserver>
       </v-col>
     </v-row>
@@ -296,9 +326,11 @@ import { apiSubmission } from '@/api/submission';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
+import MoreIcon from '@/components/icons/MoreIcon.vue';
 
 @Component({
   components: {
+    MoreIcon,
     Answer,
     SubmissionCard,
     CommentBlock,
@@ -328,8 +360,8 @@ export default class Submission extends Vue {
   get token() {
     return this.$store.state.main.token;
   }
+  private showHelp: boolean = false;
   private submission: ISubmission | null = null;
-  private showEditor: boolean = false;
   private newSubmissionTitle: string = '';
   private newSubmissionUrl: string | undefined = undefined;
   private showSubmissionEditor: boolean = false;
