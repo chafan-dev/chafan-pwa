@@ -6,7 +6,7 @@
       </a>
     </div>
     <div class="grey--text subtitle-2" v-if="questionPreview.description">
-      {{ shortDesc(questionPreview.description) }}
+      {{ shortDesc }}
     </div>
     <div class="d-flex">
       <div
@@ -47,7 +47,8 @@ export default class QuestionPreview extends Vue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
   @Prop({ default: false }) private readonly embedded!: false;
 
-  public shortDesc(d: string) {
+  get shortDesc() {
+    const d = this.questionPreview.description_text || this.questionPreview.description!;
     if (d.length > 60) {
       return d.substring(0, 60) + '..';
     } else {
