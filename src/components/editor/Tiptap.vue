@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="tiptap-editor">
     <div v-if="editor">
+      <input type="text" v-model="editor.extensions.options.placeholder.emptyNodeText" hidden />
       <editor-menu-bubble
         :editor="editor"
         :keep-in-bounds="keepInBounds"
@@ -87,6 +88,7 @@ import {
   Strike,
   Underline,
   History,
+  Placeholder,
 } from 'tiptap-extensions';
 import Mention from '@/plugins/tiptap-mention';
 
@@ -106,6 +108,7 @@ export default class Tiptap extends Vue {
   @Prop() public readonly onEditorChange: ((string) => void) | undefined;
   @Prop({ default: true }) public readonly editable!: boolean;
   @Prop() public readonly initialValue: string | undefined;
+  @Prop() public readonly placeholder: string | undefined;
   @Prop({ default: false }) public readonly commentMode!: boolean;
 
   private keepInBounds = true;
@@ -149,6 +152,13 @@ export default class Tiptap extends Vue {
     this.editor = new Editor({
       content: this.initialValue,
       extensions: [
+        new Placeholder({
+          emptyEditorClass: 'is-editor-empty',
+          emptyNodeClass: 'is-empty',
+          emptyNodeText: this.placeholder || '',
+          showOnlyWhenEditable: true,
+          showOnlyCurrent: true,
+        }),
         new Blockquote(),
         new BulletList(),
         new CodeBlock(),
@@ -578,5 +588,13 @@ $color-grey: #dddddd;
   text-align: inherit;
   color: $color-white;
   border-radius: 5px;
+}
+
+.tiptap-editor p.is-editor-empty:first-child::before {
+  content: attr(data-empty-text);
+  float: left;
+  color: #aaa;
+  pointer-events: none;
+  height: 0;
 }
 </style>
