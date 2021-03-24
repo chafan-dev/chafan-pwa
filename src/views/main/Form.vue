@@ -3,10 +3,16 @@
     <v-row v-if="!loading" class="mb-12" justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <div v-if="!showResponse">
-          <h2>{{ form.title }}</h2>
+          <h2 class="ml-2">{{ form.title }}</h2>
           <div>
-            <v-card v-for="field in form.form_fields" :key="field.unique_name" class="ma-2 pa-4">
-              <h3>{{ field.field_type.desc }}</h3>
+            <v-card
+              flat
+              outlined
+              v-for="field in form.form_fields"
+              :key="field.unique_name"
+              class="ma-2 pa-4"
+            >
+              <span>{{ field.field_type.desc }}</span>
               <div v-if="field.field_type.field_type_name === 'text_field'">
                 <v-textarea
                   :label="$t('Content')"
@@ -36,7 +42,7 @@
             </v-card>
           </div>
           <div class="ma-2 text-center">
-            <v-btn color="primary" @click="submitResponse">{{ $t('提交') }}</v-btn>
+            <v-btn depressed color="primary" @click="submitResponse">{{ $t('提交') }}</v-btn>
           </div>
         </div>
         <FormResponseCard :formResponse="formResponse" v-else />
