@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: c-card -->
   <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
     <div class="title" style="word-break: normal">
       <a class="text-decoration-none" :href="'/submissions/' + submission.uuid">
@@ -30,7 +29,7 @@
       </div>
     </div>
     <div class="grey--text subtitle-2" v-if="submission.description">
-      {{ shortDesc(submission.description) }}
+      {{ shortDesc }}
     </div>
   </v-card>
 </template>
@@ -50,7 +49,8 @@ export default class submission extends Vue {
   @Prop({ default: false }) private readonly embedded!: false;
   @Prop() private readonly submission!: ISubmission;
 
-  private shortDesc(d: string) {
+  get shortDesc() {
+    const d = this.submission.description_text || this.submission.description!;
     if (d.length > 60) {
       return d.substring(0, 60) + '..';
     } else {

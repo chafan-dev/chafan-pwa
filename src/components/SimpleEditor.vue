@@ -15,6 +15,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import SimpleVditor from '@/components/editor/SimpleVditor.vue';
 import { readUserProfile } from '@/store/main/getters';
 import Tiptap from '@/components/editor/Tiptap.vue';
+import { commitAddNotification } from '@/store/main/mutations';
 
 @Component({
   components: { Tiptap, SimpleVditor },
@@ -60,6 +61,19 @@ export default class SimpleEditor extends Vue {
     } else if (this.isVditor) {
       this.simpleVditor.content = value;
     }
+  }
+
+  public getTextContent() {
+    if (this.isTiptap) {
+      return this.tiptap.getText();
+    } else if (this.isVditor) {
+      return this.simpleVditor.getText();
+    }
+    commitAddNotification(this.$store, {
+      content: this.$t('编辑器错误').toString(),
+      color: 'error',
+    });
+    return '';
   }
 
   public reset() {

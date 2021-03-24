@@ -295,7 +295,7 @@ export default class Tiptap extends Vue {
   }
 
   public getText() {
-    return this.$el.querySelector('.editor__content')!.textContent;
+    return this.$el.querySelector('.editor__content')!.textContent || '';
   }
 
   public getJSON() {
