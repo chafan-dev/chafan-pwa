@@ -23,7 +23,7 @@ VUE_APP_DEFAULT_SRC='self' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com
 VUE_APP_STYLE_SRC='self' 'unsafe-inline' cdn.jsdelivr.net
 VUE_APP_FRAME_SRC=w.appzi.io assets.hcaptcha.com
 VUE_APP_SCRIPT_SRC='self' 'unsafe-inline' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com w.appzi.io
-VUE_APP_CONNECT_SRC='*'
+VUE_APP_CONNECT_SRC=* data:
 ```
 
 ### Compiles and hot-reloads for development
