@@ -92,6 +92,7 @@ export interface IAnswer {
   archives_count: number;
   bookmarked: boolean;
   visibility: 'anyone' | 'registered';
+  keywords?: string[];
 }
 
 export interface IQuestion {
@@ -112,6 +113,7 @@ export interface IQuestion {
   upvoted: boolean;
   upvotes_count: number;
   answers_count: number;
+  keywords?: string[];
 }
 
 export interface IUserUpdateMe {
