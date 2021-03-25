@@ -150,7 +150,7 @@ export default class Tiptap extends Vue {
 
   private mounted() {
     this.editor = new Editor({
-      content: this.initialValue,
+      content: this.initialValue ? JSON.parse(this.initialValue) : undefined,
       extensions: [
         new Placeholder({
           emptyEditorClass: 'is-editor-empty',

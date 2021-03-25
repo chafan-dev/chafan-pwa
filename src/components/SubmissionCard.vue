@@ -28,7 +28,10 @@
         </a>
       </div>
     </div>
-    <div class="grey--text subtitle-2" v-if="submission.description">
+    <div
+      class="grey--text subtitle-2"
+      v-if="submission.description && submission.description.trim()"
+    >
       {{ shortDesc }}
     </div>
   </v-card>

@@ -68,6 +68,7 @@
                 :placeholder="$t('描述（选填）')"
                 ref="descEditor"
                 :initialValue="submission.description"
+                :editorProp="submission.description_editor"
                 class="mb-2"
               />
             </div>
