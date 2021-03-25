@@ -404,7 +404,7 @@
           </v-btn>
         </template>
         <v-sheet class="pa-2">
-          <QuestionCard
+          <QuestionInfo
             :question="question"
             :questionSubscription="questionSubscription"
             :site="questionSite"
@@ -419,7 +419,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import Answer from '@/components/Answer.vue';
-import QuestionCard from '@/components/question/QuestionCard.vue';
+import QuestionInfo from '@/components/question/QuestionInfo.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
@@ -465,7 +465,7 @@ import { AnswerEditHandler } from '@/handlers';
 @Component({
   components: {
     Answer,
-    QuestionCard,
+    QuestionInfo,
     CommentBlock,
     UserLink,
     EditIcon,

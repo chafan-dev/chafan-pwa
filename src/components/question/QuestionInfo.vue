@@ -85,7 +85,7 @@ import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 @Component({
   components: { RefreshIcon, QuestionLink, UserLink, UserSearch },
 })
-export default class QuestionCard extends Vue {
+export default class QuestionInfo extends Vue {
   @Prop() public readonly site!: ISite;
   @Prop() public readonly question!: IQuestion;
   @Prop() public readonly questionSubscription!: IUserQuestionSubscription;
