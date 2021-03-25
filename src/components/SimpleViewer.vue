@@ -1,11 +1,6 @@
 <template>
   <div class="simple-viewer">
-    <Tiptap
-      ref="tiptapViewer"
-      v-if="editor === 'tiptap'"
-      :editable="false"
-      :initial-value="parsedBody"
-    />
+    <Tiptap ref="tiptapViewer" v-if="editor === 'tiptap'" :editable="false" :initial-value="body" />
     <div ref="vditorViewer" v-else />
     <LightboxGroup ref="lightbox" />
   </div>
@@ -25,10 +20,6 @@ import Tiptap from '@/components/editor/Tiptap.vue';
 export default class SimpleViewer extends Vue {
   @Prop() public readonly body!: string;
   @Prop() public readonly editor: editor_T | undefined;
-
-  get parsedBody() {
-    return JSON.parse(this.body);
-  }
 
   private mounted() {
     if (this.editor !== 'tiptap') {

@@ -22,6 +22,7 @@ import SimpleVditor from '@/components/editor/SimpleVditor.vue';
 import { readUserProfile } from '@/store/main/getters';
 import Tiptap from '@/components/editor/Tiptap.vue';
 import { commitAddNotification } from '@/store/main/mutations';
+import { editor_T } from '@/interfaces';
 
 @Component({
   components: { Tiptap, SimpleVditor },
@@ -29,6 +30,7 @@ import { commitAddNotification } from '@/store/main/mutations';
 export default class SimpleEditor extends Vue {
   @Prop({ default: '' }) public readonly initialValue!: string;
   @Prop() public readonly placeholder: string | undefined;
+  @Prop() public readonly editorProp: editor_T | undefined;
   private isVditor = false;
   private isTiptap = false;
 
@@ -37,6 +39,9 @@ export default class SimpleEditor extends Vue {
   }
 
   get editor() {
+    if (this.editorProp) {
+      return this.editorProp;
+    }
     return readUserProfile(this.$store)!.default_editor_mode;
   }
 
