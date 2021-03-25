@@ -391,12 +391,21 @@ app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
     title: example_question_preview.title,
     topics: [],
     comments: [],
+    keywords: ['test'],
     view_times: 10,
     is_placed_at_home: false,
     upvoted: false,
     upvotes_count: 2,
     answers_count: 11,
   });
+});
+
+app.get('/api/v1/search/questions/', (req, res) => {
+  if (req.query.q === 'test') {
+    res.json(randomQuestionPreviews);
+  } else {
+    res.json([]);
+  }
 });
 
 app.post('/api/v1/ws/token', (req, res) => {
