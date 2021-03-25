@@ -182,12 +182,90 @@
             </v-list>
           </v-dialog>
 
-          <v-btn @click="showLoginPrompt" depressed outlined v-if="!userProfile">
-            {{ $t('Login') }}
-          </v-btn>
+          <template v-if="!userProfile">
+            <FeedbackIcon @click="prepareFeedbackForm" class="ml-1" />
+            <v-btn @click="showLoginPrompt" depressed outlined class="ml-2">
+              {{ $t('Login') }}
+            </v-btn>
+          </template>
+
+          <v-dialog v-model="showFeedbackForm" max-width="500">
+            <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
+              <v-card>
+                <v-card-title>
+                  {{ $t('你的反馈会让 Chafan 变得更好') }}
+                </v-card-title>
+                <v-card-text>
+                  <div>
+                    <div v-if="feedbackScreenshotUrl">
+                      <ValidationProvider name="description" rules="required" v-slot="{ errors }">
+                        <v-textarea label="问题/建议描述（必填）" v-model="feedbackText" rows="3" />
+                        <span class="error--text">{{ errors[0] }}</span>
+                      </ValidationProvider>
+                      <template v-if="userProfile === null">
+                        <ValidationProvider name="email" rules="required|email" v-slot="{ errors }">
+                          <v-text-field label="Email（必填）" v-model="feedbackEmail" />
+                          <span class="error--text">{{ errors[0] }}</span>
+                        </ValidationProvider>
+                      </template>
+                      <v-switch label="包含截图？" v-model="feedbackIncludesScreenshot" />
+                      <v-btn
+                        small
+                        depressed
+                        info
+                        outlined
+                        @click="showFeedbackScreenshot = !showFeedbackScreenshot"
+                      >
+                        {{ $t('截图预览') }}
+                      </v-btn>
+                      <v-expand-transition>
+                        <v-img
+                          :src="feedbackScreenshotUrl"
+                          v-show="showFeedbackScreenshot"
+                          class="ma-2"
+                        />
+                      </v-expand-transition>
+                    </div>
+                    <span v-else>
+                      {{ $t('生成截图中...') }}
+                      <v-progress-circular size="20" indeterminate />
+                    </span>
+                  </div>
+                </v-card-text>
+                <v-card-actions>
+                  <a
+                    class="text-decoration-none"
+                    href="https://about.cha.fan/docs/troubleshooting/"
+                    target="_blank"
+                  >
+                    常见问题及解决方法
+                  </a>
+                  <v-spacer />
+                  <v-btn small depressed @click="cancelFeedbackForm(reset)">
+                    {{ $t('取消') }}
+                  </v-btn>
+                  <v-btn
+                    small
+                    depressed
+                    color="primary"
+                    @click="handleSubmit(submitFeedbackForm)"
+                    :disabled="!valid || sendingFeedback"
+                  >
+                    {{ $t('提交') }}
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </ValidationObserver>
+          </v-dialog>
 
           <!-- ... menu -->
-          <v-menu left v-if="userProfile" offset-y transition="slide-x-transition">
+          <v-menu
+            left
+            v-if="userProfile"
+            offset-y
+            transition="slide-x-transition"
+            v-model="showTopMenu"
+          >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 v-bind="attrs"
@@ -215,6 +293,18 @@
                 <v-list-item-content>
                   <v-list-item-title>
                     {{ item.text }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-list-item @click="prepareFeedbackForm">
+                <v-list-item-icon>
+                  <FeedbackIcon />
+                </v-list-item-icon>
+
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ $t('问题反馈') }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -283,6 +373,8 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
+import html2canvas from 'html2canvas';
+import FeedbackIcon from '@/components/icons/FeedbackIcon.vue';
 
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
@@ -295,6 +387,7 @@ const routeGuardMain = async (to, from, next) => {
 
 @Component({
   components: {
+    FeedbackIcon,
     BaseCard,
     CreateQuestionForm,
     AccountIcon,
@@ -460,12 +553,47 @@ export default class Main extends Vue {
       hrefRequiresUserProfile: true,
       href: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
     },
-    {
-      icon: 'EmailIcon',
-      text: this.$t('联系我们'),
-      href: 'mailto:contact@cha.fan',
-    },
   ];
+
+  private showTopMenu = false;
+  private showFeedbackForm = false;
+  private feedbackScreenshotUrl: string | null = null;
+  private feedbackIncludesScreenshot = true;
+  private showFeedbackScreenshot = false;
+  private feedbackText = '';
+  private feedbackEmail = '';
+
+  private prepareFeedbackForm() {
+    this.showTopMenu = false;
+    setTimeout(() => {
+      html2canvas(document.body).then((canvas) => {
+        this.showFeedbackForm = !this.showFeedbackForm;
+        this.feedbackScreenshotUrl = canvas.toDataURL('image/jpeg', 0.5);
+      });
+    }, 100);
+  }
+
+  private sendingFeedback = false;
+  private async submitFeedbackForm() {
+    this.sendingFeedback = true;
+    const formData = new FormData();
+    formData.append('description', this.feedbackText);
+    if (this.feedbackIncludesScreenshot) {
+      const blob = await (await fetch(this.feedbackScreenshotUrl!)).blob();
+      formData.append('file', blob);
+    }
+    if (!this.userProfile) {
+      formData.append('email', this.feedbackEmail);
+    }
+    await api2.uploadFeedback(this.$store.state.main.token, formData);
+    this.sendingFeedback = false;
+    this.showFeedbackForm = false;
+  }
+
+  private cancelFeedbackForm(reset) {
+    this.showFeedbackForm = false;
+    reset();
+  }
 }
 </script>
 

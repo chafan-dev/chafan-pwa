@@ -48,4 +48,7 @@ export const api2 = {
   async updateReaction(token: string, payload: IReaction) {
     return axios.put<IReactions>(`${apiUrl}/api/v1/reactions/`, payload, authHeaders(token));
   },
+  async uploadFeedback(token: string, payload: FormData) {
+    return axios.post<IMsg>(`${apiUrl}/api/v1/feedbacks/`, payload, authHeadersFormData(token));
+  },
 };
