@@ -1,9 +1,20 @@
 <template>
-  <span>
-    <v-dialog v-model="imgObject.showDialog" v-for="(imgObject, idx) in imgObjects" :key="idx">
-      <v-img :src="imgObject.url" />
+  <v-sheet>
+    <v-dialog
+      v-for="(imgObject, idx) in imgObjects"
+      :key="idx"
+      v-model="imgObject.showDialog"
+      width="90vw"
+    >
+      <v-card>
+        <div class="lightbox-wrapper">
+          <div class="lightbox-img">
+            <img :src="imgObject.url" draggable="false" />
+          </div>
+        </div>
+      </v-card>
     </v-dialog>
-  </span>
+  </v-sheet>
 </template>
 
 <script lang="ts">
@@ -28,3 +39,34 @@ export default class LightboxGroup extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.lightbox-wrapper {
+  height: 90vh;
+  transform: translate3d(0px, 0px, 0px);
+}
+
+.lightbox-img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 50%;
+  top: 50%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translate3d(-50%, -50%, 0) scaleX(1);
+  transform: translate3d(-50%, -50%, 0) scaleX(1);
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+
+  img {
+    margin: auto;
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: center;
+  }
+}
+</style>
