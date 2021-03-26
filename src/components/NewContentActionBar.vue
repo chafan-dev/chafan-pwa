@@ -41,18 +41,11 @@
       $t('回答')
     }}</v-btn>
     <v-dialog max-width="500" v-model="showAnswerActionDialog">
-      <v-card>
-        <v-card-title primary-title>
-          <div class="headline primary--text">{{ $t('等待回答的问题') }}</div>
-        </v-card-title>
-        <v-card-text>
-          <ul>
-            <li v-for="question in questionsToAnswer" :key="question.uuid">
-              <QuestionLink :questionPreview="question" />
-            </li>
-          </ul>
-        </v-card-text>
-      </v-card>
+      <v-sheet class="pa-4">
+        <RotationList :items="questionsToAnswer" :title="$t('等待回答的问题')" v-slot="{ item }">
+          <QuestionLink :questionPreview="item" />
+        </RotationList>
+      </v-sheet>
     </v-dialog>
 
     <v-btn small depressed class="mr-1" @click="showSubmissionActionDialog = true">{{
@@ -75,9 +68,10 @@ import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
 import { Component, Vue } from 'vue-property-decorator';
+import RotationList from '@/components/base/RotationList.vue';
 
 @Component({
-  components: { QuestionLink, CreateSubmissionForm, CreateQuestionForm },
+  components: { RotationList, QuestionLink, CreateSubmissionForm, CreateQuestionForm },
 })
 export default class NewContentActionBar extends Vue {
   private questionsToAnswer: IQuestionPreview[] = [];

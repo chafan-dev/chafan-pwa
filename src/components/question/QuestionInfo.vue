@@ -55,18 +55,12 @@
     <span class="text-caption grey--text" v-if="question.view_times">
       {{ $t('问题已经被浏览n次', { times: question.view_times }) }}
     </span>
-    <v-divider class="my-2" />
-    <div class="d-flex" v-if="relatedQuestions !== null">
-      <span class="title">{{ $t('相关问题') }}</span>
-      <v-spacer />
-      <v-btn small outlined color="secondary" @click="changeRelatedQuestionsSubset">
-        <span class="mr-1">{{ $t('换一批') }}</span>
-        <RefreshIcon @click="changeRelatedQuestionsSubset" />
-      </v-btn>
-    </div>
-    <div class="pt-1" v-for="questionPreview in relatedQuestionsSubset" :key="questionPreview.uuid">
-      <QuestionLink :question-preview="questionPreview" />
-    </div>
+    <template v-if="relatedQuestions !== null">
+      <v-divider class="my-2" />
+      <RotationList :items="relatedQuestions" :title="$t('相关问题')" v-slot="{ item }">
+        <QuestionLink :question-preview="item" />
+      </RotationList>
+    </template>
   </div>
 </template>
 
@@ -81,9 +75,10 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSearch } from '@/api/search';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
+import RotationList from '@/components/base/RotationList.vue';
 
 @Component({
-  components: { RefreshIcon, QuestionLink, UserLink, UserSearch },
+  components: { RotationList, RefreshIcon, QuestionLink, UserLink, UserSearch },
 })
 export default class QuestionInfo extends Vue {
   @Prop() public readonly site!: ISite;
@@ -96,17 +91,6 @@ export default class QuestionInfo extends Vue {
   private invitedUserId: string | null = null;
   private myToken: string | null = null;
   private relatedQuestions: IQuestionPreview[] | null = null;
-  private relatedQuestionsSubset: IQuestionPreview[] = [];
-  private relatedQuestionsSubsetIndex = 0;
-
-  private changeRelatedQuestionsSubset() {
-    const pages = Math.ceil(this.relatedQuestions!.length / 5);
-    this.relatedQuestionsSubsetIndex = (this.relatedQuestionsSubsetIndex + 1) % pages;
-    this.relatedQuestionsSubset = this.relatedQuestions!.slice(
-      this.relatedQuestionsSubsetIndex * 5,
-      (this.relatedQuestionsSubsetIndex + 1) * 5
-    );
-  }
 
   public async mounted() {
     this.myToken = this.$store.state.main.token;
@@ -123,7 +107,6 @@ export default class QuestionInfo extends Vue {
       if (i >= 0) {
         this.relatedQuestions.splice(i, 1);
       }
-      this.relatedQuestionsSubset = this.relatedQuestions!.slice(0, 5);
     }
   }
 
