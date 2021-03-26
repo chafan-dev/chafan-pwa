@@ -524,7 +524,7 @@ app.get('/api/v1/submissions/', (req, res) => {
 });
 
 app.get('/api/v1/discovery/pending-questions/', (req, res) => {
-  res.json([]);
+  res.json(randomQuestionPreviews);
 });
 
 app.get('/api/v1/discovery/pinned-questions/', (req, res) => {
