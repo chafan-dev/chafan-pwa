@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 function randomString() {
   return Math.random()
     .toString(36)
-    .substring(2, 5 + Math.ceil(Math.random() * 3));
+    .substring(2, 5 + Math.ceil(Math.random() * 10));
 }
 
 const port = 4582;
@@ -151,7 +151,7 @@ for (var i = 0; i < 40; i++) {
   const uuid = randomString();
   randomQuestionPreviews.push({
     uuid: uuid,
-    title: `Question ${uuid}`,
+    title: `Question ${uuid} is a question???`,
     description: null,
     site: example_site1,
     is_placed_at_home: false,
@@ -406,6 +406,22 @@ app.get('/api/v1/search/questions/', (req, res) => {
   } else {
     res.json([]);
   }
+});
+
+app.get('/api/v1/search/answers/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/search/sites/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/search/users/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/search/submissions/', (req, res) => {
+  res.json([]);
 });
 
 app.post('/api/v1/ws/token', (req, res) => {
