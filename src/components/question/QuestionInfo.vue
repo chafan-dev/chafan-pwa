@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-2">
     <div class="headline primary--text">{{ $t('问题信息') }}</div>
     <div class="my-2">
       {{ $t('提问者：') }}
