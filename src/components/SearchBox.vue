@@ -28,8 +28,12 @@
       v-model="searchInput"
       :placeholder="$t('Search')"
       @keydown.enter="search"
+      @input="searchDebounced"
     >
-      <template v-slot:append><SearchIcon @click="search" /></template>
+      <template v-slot:append>
+        <v-progress-circular size="25" width="2" indeterminate v-if="loading" />
+        <SearchIcon @click="search" v-else />
+      </template>
     </v-text-field>
   </div>
 </template>
@@ -65,21 +69,20 @@ export default class SearchBox extends Vue {
       val = val.substring(1);
     }
     if (val) {
-      this.querySelectionsDebounced(val);
+      this.querySelections(val);
     }
   }
 
-  private querySelectionsDebounced(v: string) {
+  private searchDebounced() {
     if (this.timerId !== null) {
       clearTimeout(this.timerId);
     }
-    this.timerId = setTimeout(() => {
-      this.querySelections(v);
-    }, 500);
+    this.timerId = setTimeout(this.search, 1000);
   }
 
   private async querySelections(v) {
     const items: any[] = [];
+    this.loading = true;
 
     (await apiSearch.searchUsers(this.token, v)).data.forEach((user) => {
       items.push({
