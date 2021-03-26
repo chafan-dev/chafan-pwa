@@ -117,6 +117,12 @@ export default class QuestionInfo extends Vue {
           this.question.keywords.join(' ')
         )
       ).data;
+      const i = this.relatedQuestions?.findIndex((questionPreview) => {
+        return questionPreview.uuid === this.question.uuid;
+      });
+      if (i >= 0) {
+        this.relatedQuestions.splice(i, 1);
+      }
       this.relatedQuestionsSubset = this.relatedQuestions!.slice(0, 5);
     }
   }
