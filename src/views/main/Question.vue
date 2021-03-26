@@ -391,7 +391,7 @@
         v-if="$vuetify.breakpoint.mdAndUp"
         :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
-        <QuestionCard
+        <QuestionInfo
           :question="question"
           :questionSubscription="questionSubscription"
           :site="questionSite"
