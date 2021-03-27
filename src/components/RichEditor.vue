@@ -10,7 +10,7 @@
       <v-progress-circular indeterminate />
     </v-overlay>
 
-    <Tiptap
+    <ChafanTiptap
       ref="tiptap"
       class="mb-2 mx-2"
       :class="{ 'mt-2': focusMode }"
@@ -224,15 +224,15 @@ import { apiArticle } from '@/api/article';
 import { env } from '@/env';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import Tiptap from '@/components/editor/Tiptap.vue';
 import VditorComponent from '@/components/editor/VditorComponent.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 
 @Component({
   components: {
+    ChafanTiptap,
     EditIcon,
-    Tiptap,
     VditorComponent,
     HistoryIcon,
     DeleteIcon,
@@ -347,7 +347,7 @@ export default class RichEditor extends Vue {
 
   private getContent() {
     if (this.topLevelEditor === 'tiptap') {
-      return JSON.stringify((this.$refs.tiptap as Tiptap).getJSON());
+      return JSON.stringify((this.$refs.tiptap as ChafanTiptap).getJSON());
     } else if (this.topLevelEditor === 'vditor') {
       return (this.$refs.vditor as VditorComponent).getContent();
     }
@@ -360,7 +360,7 @@ export default class RichEditor extends Vue {
 
   private getTextContent() {
     if (this.topLevelEditor === 'tiptap') {
-      return (this.$refs.tiptap as Tiptap).getText();
+      return (this.$refs.tiptap as ChafanTiptap).getText();
     } else if (this.topLevelEditor === 'vditor') {
       return (this.$refs.vditor as VditorComponent).getText();
     }
@@ -388,7 +388,7 @@ export default class RichEditor extends Vue {
     if (editor === 'tiptap') {
       this.topLevelEditor = 'tiptap';
       if (body) {
-        (this.$refs.tiptap as Tiptap).loadJSON(JSON.parse(body));
+        (this.$refs.tiptap as ChafanTiptap).loadJSON(JSON.parse(body));
       }
     } else {
       this.topLevelEditor = 'vditor';
@@ -539,9 +539,9 @@ export default class RichEditor extends Vue {
   private onChangeTopLevelEditor() {
     if (this.topLevelEditor === 'tiptap') {
       const oldContent = (this.$refs.vditor as VditorComponent).getHTML();
-      (this.$refs.tiptap as Tiptap).loadHTML(oldContent);
+      (this.$refs.tiptap as ChafanTiptap).loadHTML(oldContent);
     } else if (this.topLevelEditor === 'vditor') {
-      const oldContent = (this.$refs.tiptap as Tiptap).getHTML();
+      const oldContent = (this.$refs.tiptap as ChafanTiptap).getHTML();
       (this.$refs.vditor as VditorComponent).init('wysiwyg', undefined, oldContent);
     }
   }
