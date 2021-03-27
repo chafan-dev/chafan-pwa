@@ -352,6 +352,12 @@ export interface ReplyComment {
   parent_comment: IComment;
 }
 
+export interface MentionedInComment {
+  verb: 'mentioned_in_comment';
+  subject: IUserPreview;
+  comment: IComment;
+}
+
 export interface InviteAnswer {
   verb: 'invite_answer';
   subject: IUserPreview;
@@ -463,6 +469,7 @@ export interface IEvent {
     | AnswerQuestion
     | CommentQuestion
     | ReplyComment
+    | MentionedInComment
     | InviteAnswer
     | InviteJoinSite
     | ApplyJoinSite
