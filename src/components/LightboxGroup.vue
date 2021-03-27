@@ -1,19 +1,8 @@
 <template>
   <v-sheet>
-    <v-dialog
-      v-for="(imgObject, idx) in imgObjects"
-      :key="idx"
-      v-model="imgObject.showDialog"
-      width="90vw"
-    >
-      <v-card>
-        <div class="lightbox-wrapper">
-          <div class="lightbox-img">
-            <img :src="imgObject.url" draggable="false" />
-          </div>
-        </div>
-      </v-card>
-    </v-dialog>
+    <v-overlay v-for="(imgObject, idx) in imgObjects" :key="idx" :value="overlayModel">
+      <img v-click-outside="{ handler: onClickOutside }" :src="imgObject.url" />
+    </v-overlay>
   </v-sheet>
 </template>
 
@@ -22,6 +11,7 @@ import { Component, Vue } from 'vue-property-decorator';
 
 @Component
 export default class LightboxGroup extends Vue {
+  protected overlayModel = false;
   private imgObjects: { url: string; showDialog: boolean }[] = [];
 
   public loadImagesFrom(container: HTMLElement) {
@@ -32,10 +22,14 @@ export default class LightboxGroup extends Vue {
       };
       this.imgObjects.push(imgObject);
       img.onclick = () => {
-        imgObject.showDialog = true;
+        this.overlayModel = true;
       };
       img.style.cursor = 'pointer';
     }
+  }
+
+  protected onClickOutside() {
+    this.overlayModel = false;
   }
 }
 </script>
