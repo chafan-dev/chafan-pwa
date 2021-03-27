@@ -6,7 +6,7 @@
       :initial-value="initialValue"
       :placeholder="placeholder"
     />
-    <Tiptap
+    <ChafanTiptap
       :initial-value="initialValue"
       :placeholder="placeholder"
       :comment-mode="true"
@@ -20,12 +20,12 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import SimpleVditor from '@/components/editor/SimpleVditor.vue';
 import { readUserProfile } from '@/store/main/getters';
-import Tiptap from '@/components/editor/Tiptap.vue';
+import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { commitAddNotification } from '@/store/main/mutations';
 import { editor_T } from '@/interfaces';
 
 @Component({
-  components: { Tiptap, SimpleVditor },
+  components: { ChafanTiptap, SimpleVditor },
 })
 export default class SimpleEditor extends Vue {
   @Prop({ default: '' }) public readonly initialValue!: string;
@@ -46,7 +46,7 @@ export default class SimpleEditor extends Vue {
   }
 
   get tiptap() {
-    return this.$refs.tiptap as Tiptap;
+    return this.$refs.tiptap as ChafanTiptap;
   }
 
   private mounted() {

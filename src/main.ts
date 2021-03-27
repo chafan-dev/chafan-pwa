@@ -12,6 +12,10 @@ import './styles/app.scss';
 import vuetify from './plugins/vuetify';
 import './plugins/vee-validate';
 
+import ChafanVueEditors from 'chafan-vue-editors';
+
+Vue.use(ChafanVueEditors);
+
 import Dayjs from '@/dayjsPlugin';
 import editorPlugins from '@/editorPlugins';
 import VueI18n from 'vue-i18n';

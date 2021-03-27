@@ -1,6 +1,11 @@
 <template>
   <div class="simple-viewer">
-    <Tiptap ref="tiptapViewer" v-if="editor === 'tiptap'" :editable="false" :initial-value="body" />
+    <ChafanTiptap
+      ref="tiptapViewer"
+      v-if="editor === 'tiptap'"
+      :editable="false"
+      :initial-value="body"
+    />
     <div ref="vditorViewer" v-else />
     <LightboxGroup ref="lightbox" />
   </div>
@@ -12,10 +17,10 @@ import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/LightboxGroup.vue';
 import { postProcessViewerDOM, vditorCDN } from '@/common';
 import { editor_T } from '@/interfaces';
-import Tiptap from '@/components/editor/Tiptap.vue';
+import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 
 @Component({
-  components: { Tiptap, LightboxGroup },
+  components: { ChafanTiptap, LightboxGroup },
 })
 export default class SimpleViewer extends Vue {
   @Prop() public readonly body!: string;
