@@ -1,7 +1,14 @@
 <template>
   <v-sheet>
     <v-overlay v-for="(imgObject, idx) in imgObjects" :key="idx" :value="overlayModel">
-      <img v-click-outside="{ handler: onClickOutside }" :src="imgObject.url" />
+      <v-img
+        @click-outside="onClickOutside"
+        @click="onClickOutside"
+        :src="imgObject.url"
+        max-height="90vh"
+        max-width="90vw"
+        contain
+      />
     </v-overlay>
   </v-sheet>
 </template>
