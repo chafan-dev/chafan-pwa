@@ -2,7 +2,7 @@
   <div ref="viewer" class="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }">
     <template v-if="editor === 'tiptap'">
       <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
-      <Tiptap
+      <ChafanTiptap
         ref="tiptapViewer"
         v-else-if="!bodyFormat || bodyFormat === 'tiptap_json'"
         :editable="false"
@@ -23,10 +23,10 @@ import LightboxGroup from '@/components/LightboxGroup.vue';
 import { vditorCDN, postProcessViewerDOM } from '@/common';
 import DOMPurify from 'dompurify';
 import { body_format_T, editor_T } from '@/interfaces';
-import Tiptap from '@/components/editor/Tiptap.vue';
+import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 
 @Component({
-  components: { Tiptap, LightboxGroup },
+  components: { ChafanTiptap, LightboxGroup },
 })
 export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
@@ -39,7 +39,7 @@ export default class Viewer extends Vue {
 
   private mounted() {
     if (this.editor === 'tiptap') {
-      const tiptapViewer = this.$refs.tiptapViewer as Tiptap;
+      const tiptapViewer = this.$refs.tiptapViewer as ChafanTiptap;
       if (!this.bodyFormat || this.bodyFormat === 'tiptap_json') {
         tiptapViewer.loadJSON(JSON.parse(this.body));
       } else if (this.bodyFormat === 'html') {
