@@ -1,14 +1,7 @@
 <template>
-  <v-sheet>
-    <v-overlay v-for="(imgObject, idx) in imgObjects" :key="idx" :value="overlayModel">
-      <v-img
-        @click-outside="onClickOutside"
-        @click="onClickOutside"
-        :src="imgObject.url"
-        max-height="90vh"
-        max-width="90vw"
-        contain
-      />
+  <v-sheet @click="close">
+    <v-overlay v-for="(imgObject, idx) in imgObjects" :key="idx" v-model="overlayModel">
+      <v-img @click="close" :src="imgObject.url" max-height="90vh" max-width="90vw" contain />
     </v-overlay>
   </v-sheet>
 </template>
@@ -35,7 +28,7 @@ export default class LightboxGroup extends Vue {
     }
   }
 
-  protected onClickOutside() {
+  protected close() {
     this.overlayModel = false;
   }
 }
