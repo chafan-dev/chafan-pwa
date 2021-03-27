@@ -19,7 +19,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
-import LightboxGroup from '@/components/LightboxGroup.vue';
+import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { vditorCDN, postProcessViewerDOM } from '@/common';
 import DOMPurify from 'dompurify';
 import { body_format_T, editor_T } from '@/interfaces';

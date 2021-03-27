@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
-import LightboxGroup from '@/components/LightboxGroup.vue';
+import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { postProcessViewerDOM, vditorCDN } from '@/common';
 import { editor_T } from '@/interfaces';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
