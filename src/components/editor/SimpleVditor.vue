@@ -11,7 +11,7 @@ import { vditorCDN } from '@/common';
 
 @Component
 export default class SimpleVditor extends Vue {
-  @Prop({ default: '' }) public readonly initialValue!: string;
+  @Prop() public readonly initialValue: string | undefined;
   @Prop() public readonly placeholder: string | undefined;
 
   private vditor: Vditor | null = null;

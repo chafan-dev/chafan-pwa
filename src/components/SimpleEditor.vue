@@ -28,7 +28,7 @@ import { editor_T } from '@/interfaces';
   components: { ChafanTiptap, SimpleVditor },
 })
 export default class SimpleEditor extends Vue {
-  @Prop({ default: '' }) public readonly initialValue!: string;
+  @Prop() public readonly initialValue: string | undefined;
   @Prop() public readonly placeholder: string | undefined;
   @Prop() public readonly editorProp: editor_T | undefined;
   private isVditor = false;
