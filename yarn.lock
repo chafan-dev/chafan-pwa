@@ -3530,10 +3530,10 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.1.4.tgz#a1db07e1331eae76c34cd92a51b26195f185168f"
-  integrity sha512-27mBRlq11KeKvDHmc+IYnE/1SV2DMOEd/gh1OuTnHWoRMnNdWQnphN/gxwOLsdzKpN5+ebCRUEB8kh16US2UZg==
+chafan-vue-editors@^0.1.7:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.1.7.tgz#47e7a0c8e0b6ad5ea34f5ab6c2eb5326d32b1bec"
+  integrity sha512-1Gr3P8279ka/QS92+BxNdDVGt8EhL8yclp6lzVmtkruR4N54gbBwB5Y6K7Xe/J8d8hbpQJIEYvMlp/fzp7bA8Q==
   dependencies:
     "@chafan/vditor" "3.8.2-chafan.3"
     tippy.js "^6.3.1"
