@@ -1,11 +1,6 @@
 <template>
   <div class="simple-viewer">
-    <ChafanTiptap
-      ref="tiptapViewer"
-      v-if="editor === 'tiptap'"
-      :editable="false"
-      :initial-value="body"
-    />
+    <ChafanTiptap v-if="editor === 'tiptap'" :editable="false" :initial-value="body" />
     <div ref="vditorViewer" v-else />
     <LightboxGroup :container="contentElem" v-if="contentElem" />
   </div>
