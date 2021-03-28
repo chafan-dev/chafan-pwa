@@ -2,6 +2,7 @@
 
 [![CodeQL](https://github.com/chafan-dev/frontend/actions/workflows/codeql-analysis.yml/badge.svg?branch=prod)](https://github.com/chafan-dev/frontend/actions/workflows/codeql-analysis.yml)
 [![CI](https://github.com/chafan-dev/frontend/actions/workflows/main.yml/badge.svg)](https://github.com/chafan-dev/frontend/actions/workflows/main.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/2eaac29c-b2e4-4d0f-85af-1eb464e9447c/deploy-status)](https://app.netlify.com/sites/chafan-test/deploys)
 
 ## Project setup
 
@@ -67,16 +68,16 @@ node e2e_tests/server.js --secure
 # Open https://localhost:8080
 ```
 
-### Vercel builds
+### Preview builds
 
-`master` branch is continuously integrated to https://chafan-frontend-git-master-chafan.vercel.app which uses
+`master` branch is continuously integrated to https://chafan-test.netlify.app which uses
 a test-only API server at http://chafan-test.herokuapp.com/ that runs the same code as production server.
 
-You need to ask @izgzhen for an invitation link to sign up for a account. When signing up, you need to flow
-normal registration flow but you don't have to fill in a correct verification code for email verification
+You need to ask @izgzhen for an invitation link to sign up for a test account. When signing up, you need to follow
+normal registration flow, but you don't have to fill in a correct verification code for email verification
 (just fill in a few random numbers).
 
-Other Vercel branch preview builds will use the same test API server as well.
+Any PR against `master` will have a Netlify preview build that uses the same test API server as well.
 
 ### Analyze production build
 
