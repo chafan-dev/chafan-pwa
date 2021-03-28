@@ -12,7 +12,7 @@
       <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
       <div ref="vditorViewer" v-else-if="!bodyFormat || bodyFormat === 'markdown'" />
     </template>
-    <LightboxGroup ref="lightbox" />
+    <LightboxGroup :container="contentElem" v-if="contentElem" />
   </div>
 </template>
 
@@ -33,6 +33,8 @@ export default class Viewer extends Vue {
   @Prop() public readonly bodyFormat: body_format_T | undefined;
   @Prop() public readonly editor!: editor_T;
 
+  private contentElem: HTMLElement | null = null;
+
   get sanitizedBody() {
     return DOMPurify.sanitize(this.body);
   }
@@ -48,16 +50,14 @@ export default class Viewer extends Vue {
     } else {
       const viewer = this.$refs.viewer as HTMLElement;
       if (this.bodyFormat === 'html') {
-        const lightbox = this.$refs.lightbox as LightboxGroup;
-        lightbox.loadImagesFrom(viewer);
+        this.contentElem = viewer;
         postProcessViewerDOM(this.$store.state.main.token, viewer);
       } else if (!this.bodyFormat || this.bodyFormat === 'markdown') {
         Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
           mode: 'light',
           cdn: vditorCDN,
           after: () => {
-            const lightbox = this.$refs.lightbox as LightboxGroup;
-            lightbox.loadImagesFrom(viewer);
+            this.contentElem = viewer;
             postProcessViewerDOM(this.$store.state.main.token, viewer);
           },
         });
