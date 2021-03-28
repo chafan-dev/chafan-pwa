@@ -18,6 +18,8 @@ import {
   ISubmission,
   IAnswerPreview,
   IUserAnswerBookmark,
+  IArticlePreview,
+  IUserArticleBookmark,
 } from '../interfaces';
 
 export const apiMe = {
@@ -164,6 +166,34 @@ export const apiMe = {
   async bookmarkAnswer(token: string, answerUUID: string) {
     return axios.post<IUserAnswerBookmark>(
       `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
+      null,
+      authHeaders(token)
+    );
+  },
+  async getArticleBookmarks(token: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<IArticlePreview[]>(
+      `${apiUrl}/api/v1/me/article-bookmarks/`,
+      authHeadersWithParams(token, params)
+    );
+  },
+  async getArticleBookmark(token: string, articleUUID: string) {
+    return axios.get<IUserArticleBookmark>(
+      `${apiUrl}/api/v1/me/article-bookmarks/${articleUUID}`,
+      authHeaders(token)
+    );
+  },
+  async unbookmarkArticle(token: string, articleUUID: string) {
+    return axios.delete<IUserArticleBookmark>(
+      `${apiUrl}/api/v1/me/article-bookmarks/${articleUUID}`,
+      authHeaders(token)
+    );
+  },
+  async bookmarkArticle(token: string, articleUUID: string) {
+    return axios.post<IUserArticleBookmark>(
+      `${apiUrl}/api/v1/me/article-bookmarks/${articleUUID}`,
       null,
       authHeaders(token)
     );

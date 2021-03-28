@@ -199,48 +199,6 @@
             <v-progress-linear indeterminate v-else />
           </v-tab-item>
 
-          <v-tab-item value="bookmarked_answers">
-            <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('收藏的答案') }}</div>
-            </v-card-title>
-            <DynamicItemList
-              emptyItemsText="暂无"
-              nullItemsText=""
-              :loadItems="loadBookmarkedAnswers"
-              v-slot="{ item }"
-            >
-              <Answer :answer-preview="item" />
-            </DynamicItemList>
-          </v-tab-item>
-
-          <v-tab-item value="subscribed_questions">
-            <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('关注的问题') }}</div>
-            </v-card-title>
-            <DynamicItemList
-              emptyItemsText="暂无"
-              nullItemsText=""
-              :loadItems="loadSubscribedQuestions"
-              v-slot="{ item }"
-            >
-              <QuestionPreview :question-preview="item" />
-            </DynamicItemList>
-          </v-tab-item>
-
-          <v-tab-item value="subscribed_submissions">
-            <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('收藏的分享') }}</div>
-            </v-card-title>
-            <DynamicItemList
-              emptyItemsText="暂无"
-              nullItemsText=""
-              :loadItems="loadSubscribedSubmissions"
-              v-slot="{ item }"
-            >
-              <SubmissionCard :submission="item" />
-            </DynamicItemList>
-          </v-tab-item>
-
           <v-tab-item value="coins">
             <div class="d-flex ma-2">
               <div>
@@ -364,6 +322,62 @@
               </template>
             </v-data-table>
           </v-tab-item>
+
+          <v-tab-item value="bookmarked_answers">
+            <v-card-title primary-title>
+              <div class="headline primary--text">{{ $t('收藏的答案') }}</div>
+            </v-card-title>
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadBookmarkedAnswers"
+              v-slot="{ item }"
+            >
+              <Answer :answer-preview="item" />
+            </DynamicItemList>
+          </v-tab-item>
+
+          <v-tab-item value="subscribed_questions">
+            <v-card-title primary-title>
+              <div class="headline primary--text">{{ $t('关注的问题') }}</div>
+            </v-card-title>
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadSubscribedQuestions"
+              v-slot="{ item }"
+            >
+              <QuestionPreview :question-preview="item" />
+            </DynamicItemList>
+          </v-tab-item>
+
+          <v-tab-item value="subscribed_submissions">
+            <v-card-title primary-title>
+              <div class="headline primary--text">{{ $t('收藏的分享') }}</div>
+            </v-card-title>
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadSubscribedSubmissions"
+              v-slot="{ item }"
+            >
+              <SubmissionCard :submission="item" />
+            </DynamicItemList>
+          </v-tab-item>
+
+          <v-tab-item value="bookmarked_articles">
+            <v-card-title primary-title>
+              <div class="headline primary--text">{{ $t('收藏的文章') }}</div>
+            </v-card-title>
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadBookmarkedArticles"
+              v-slot="{ item }"
+            >
+              <ArticlePreview :article-preview="item" />
+            </DynamicItemList>
+          </v-tab-item>
         </v-tabs>
       </v-col>
     </v-row>
@@ -425,14 +439,11 @@ export default class Dashboard extends Vue {
   get userProfile() {
     return readUserProfile(this.$store);
   }
-  private askedQuestions: IQuestionPreview[] = [];
-  private authoredAnswers: IAnswerPreview[] = [];
   private coinPayments: ICoinPayment[] = [];
   private myChannels: IChannel[] = [];
   private myRewards: IReward[] = [];
   private myArticleColumns: IArticleColumn[] = [];
 
-  private dialogNewChannel: boolean = false;
   private dialogNewArticleColumn: boolean = false;
   private newArticleColumn: IArticleColumnCreate = { name: '' };
 
@@ -477,6 +488,10 @@ export default class Dashboard extends Vue {
       code: 'joined_channels',
     },
     {
+      text: '硬币',
+      code: 'coins',
+    },
+    {
       text: '收藏的答案',
       code: 'bookmarked_answers',
     },
@@ -489,8 +504,8 @@ export default class Dashboard extends Vue {
       code: 'subscribed_submissions',
     },
     {
-      text: '硬币',
-      code: 'coins',
+      text: '收藏的文章',
+      code: 'bookmarked_articles',
     },
   ];
 
@@ -603,6 +618,14 @@ export default class Dashboard extends Vue {
     let items: (IAnswerPreview | null)[] | null = null;
     await dispatchCaptureApiError(this.$store, async () => {
       items = (await apiMe.getAnswerBookmarks(this.$store.state.main.token, skip, limit)).data;
+    });
+    return items;
+  }
+
+  private async loadBookmarkedArticles(skip: number, limit: number) {
+    let items: (IArticlePreview | null)[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      items = (await apiMe.getArticleBookmarks(this.$store.state.main.token, skip, limit)).data;
     });
     return items;
   }

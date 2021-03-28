@@ -224,6 +224,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
 import { readNarrowUI } from '@/store/main/getters';
+import { apiMe } from '@/api/me';
 
 @Component({
   components: {
@@ -323,7 +324,7 @@ export default class Article extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
         this.bookmarkIntermediate = true;
-        this.userBookmark = (await apiArticle.bookmarkArticle(this.token, this.article.uuid)).data;
+        this.userBookmark = (await apiMe.bookmarkArticle(this.token, this.article.uuid)).data;
         this.bookmarkIntermediate = false;
       }
     });
@@ -332,9 +333,7 @@ export default class Article extends Vue {
     this.unbookmarkIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
-        this.userBookmark = (
-          await apiArticle.unbookmarkArticle(this.token, this.article.uuid)
-        ).data;
+        this.userBookmark = (await apiMe.unbookmarkArticle(this.token, this.article.uuid)).data;
         this.unbookmarkIntermediate = false;
       }
     });

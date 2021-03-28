@@ -11,7 +11,6 @@ import {
   IArticleColumn,
   IArticleColumnUpdate,
   IArticlePreview,
-  IUserArticleBookmark,
   IArticleDraft,
   IUserArticleColumnSubscription,
 } from '@/interfaces';
@@ -86,31 +85,6 @@ export const apiArticle = {
     return axios.put<IArticleColumn>(
       `${apiUrl}/api/v1/article-columns/${articleColumnUUID}`,
       data,
-      authHeaders(token)
-    );
-  },
-  async getArticleBookmarks(token: string) {
-    return axios.get<IArticlePreview[]>(
-      `${apiUrl}/api/v1/me/article-bookmarks/`,
-      authHeaders(token)
-    );
-  },
-  async getArticleBookmark(token: string, articleUUID: string) {
-    return axios.get<IUserArticleBookmark>(
-      `${apiUrl}/api/v1/me/article-bookmarks/${articleUUID}`,
-      authHeaders(token)
-    );
-  },
-  async unbookmarkArticle(token: string, articleUUID: string) {
-    return axios.delete<IUserArticleBookmark>(
-      `${apiUrl}/api/v1/me/article-bookmarks/${articleUUID}`,
-      authHeaders(token)
-    );
-  },
-  async bookmarkArticle(token: string, articleUUID: string) {
-    return axios.post<IUserArticleBookmark>(
-      `${apiUrl}/api/v1/me/article-bookmarks/${articleUUID}`,
-      null,
       authHeaders(token)
     );
   },
