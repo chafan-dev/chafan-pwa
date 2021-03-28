@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { authHeaders } from '../utils';
+import { authHeaders, authHeadersWithParams } from '../utils';
 import {
   IChannel,
   ISite,
@@ -16,6 +16,8 @@ import {
   IUserUpdatePrimaryEmail,
   IUserSubmissionSubscription,
   ISubmission,
+  IAnswerPreview,
+  IUserAnswerBookmark,
 } from '../interfaces';
 
 export const apiMe = {
@@ -120,15 +122,49 @@ export const apiMe = {
   async getModeratedSites(token: string) {
     return axios.get<ISite[]>(`${apiUrl}/api/v1/me/moderated-sites/`, authHeaders(token));
   },
-  async getSubscribedQuestions(token: string) {
-    return axios.get<IQuestionPreview[]>(
+  async getSubscribedQuestions(token: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<(IQuestionPreview | null)[]>(
       `${apiUrl}/api/v1/me/question-subscriptions/`,
+      authHeadersWithParams(token, params)
+    );
+  },
+  async getSubscribedSubmissions(token: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<(ISubmission | null)[]>(
+      `${apiUrl}/api/v1/me/submission-subscriptions/`,
+      authHeadersWithParams(token, params)
+    );
+  },
+  async getAnswerBookmarks(token: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<(IAnswerPreview | null)[]>(
+      `${apiUrl}/api/v1/me/answer-bookmarks/`,
+      authHeadersWithParams(token, params)
+    );
+  },
+  async getAnswerBookmark(token: string, answerUUID: string) {
+    return axios.get<IUserAnswerBookmark>(
+      `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
       authHeaders(token)
     );
   },
-  async getSubscribedSubmissions(token: string) {
-    return axios.get<ISubmission[]>(
-      `${apiUrl}/api/v1/me/submission-subscriptions/`,
+  async unbookmarkAnswer(token: string, answerUUID: string) {
+    return axios.delete<IUserAnswerBookmark>(
+      `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
+      authHeaders(token)
+    );
+  },
+  async bookmarkAnswer(token: string, answerUUID: string) {
+    return axios.post<IUserAnswerBookmark>(
+      `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
+      null,
       authHeaders(token)
     );
   },

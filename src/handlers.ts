@@ -15,14 +15,14 @@ class AnswerEditHandler {
   private answerUUID: string | null;
   private questionUUID: string;
   private updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void;
-  private newAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void;
+  private newAnswerCallback?: (answer: IAnswer, isAutoSaved: boolean) => void;
 
   constructor(
     vueInstance: any,
     answerUUID: string | null,
     questionUUID: string,
     updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void,
-    newAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void
+    newAnswerCallback?: (answer: IAnswer, isAutoSaved: boolean) => void
   ) {
     this.vueInstance = vueInstance;
     this.answerUUID = answerUUID;
@@ -73,7 +73,9 @@ class AnswerEditHandler {
         if (answer) {
           this.answerUUID = answer.uuid;
           payload.saveCallback(answer);
-          this.newAnswerCallback(answer, payload.isAutosaved);
+          if (this.newAnswerCallback) {
+            this.newAnswerCallback(answer, payload.isAutosaved);
+          }
           if (!payload.isAutosaved) {
             commitAddNotification(this.vueInstance.$store, {
               content: this.vueInstance

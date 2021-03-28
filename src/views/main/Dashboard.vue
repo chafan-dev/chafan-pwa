@@ -8,7 +8,7 @@
           <span class="text-caption grey--text">{{ $t('本页中的信息只有自己可见') }}</span>
         </div>
 
-        <v-tabs :vertical="$vuetify.breakpoint.mdAndUp" v-model="currentTabItem">
+        <v-tabs :vertical="$vuetify.breakpoint.mdAndUp" v-model="currentTabItem" show-arrows>
           <v-tabs-slider />
           <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
             {{ $t(item.text) }}
@@ -203,45 +203,42 @@
             <v-card-title primary-title>
               <div class="headline primary--text">{{ $t('收藏的答案') }}</div>
             </v-card-title>
-            <div v-if="!answerBookmarksIntermediate">
-              <Answer
-                :answerPreview="answer"
-                v-for="answer in answerBookmarks"
-                :key="answer.uuid"
-                class="ma-3"
-              />
-            </div>
-            <v-progress-linear indeterminate v-else />
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadBookmarkedAnswers"
+              v-slot="{ item }"
+            >
+              <Answer :answer-preview="item" />
+            </DynamicItemList>
           </v-tab-item>
 
           <v-tab-item value="subscribed_questions">
             <v-card-title primary-title>
               <div class="headline primary--text">{{ $t('关注的问题') }}</div>
             </v-card-title>
-            <div v-if="!subscribedQuestionsIntermediate">
-              <QuestionPreview
-                :questionPreview="question"
-                v-for="question in subscribedQuestions"
-                :key="question.uuid"
-                class="ma-3"
-              />
-            </div>
-            <v-progress-linear indeterminate v-else />
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadSubscribedQuestions"
+              v-slot="{ item }"
+            >
+              <QuestionPreview :question-preview="item" />
+            </DynamicItemList>
           </v-tab-item>
 
           <v-tab-item value="subscribed_submissions">
             <v-card-title primary-title>
               <div class="headline primary--text">{{ $t('收藏的分享') }}</div>
             </v-card-title>
-            <div v-if="!subscribedSubmissionsIntermediate">
-              <SubmissionCard
-                :submission="submission"
-                class="ma-3"
-                v-for="submission in subscribedSubmissions"
-                :key="submission.uuid"
-              />
-            </div>
-            <v-progress-linear indeterminate v-else />
+            <DynamicItemList
+              emptyItemsText="暂无"
+              nullItemsText=""
+              :loadItems="loadSubscribedSubmissions"
+              v-slot="{ item }"
+            >
+              <SubmissionCard :submission="item" />
+            </DynamicItemList>
           </v-tab-item>
 
           <v-tab-item value="coins">
@@ -390,7 +387,6 @@ import {
 } from '@/interfaces';
 import { api } from '@/api';
 import { api2 } from '@/api2';
-import { apiAnswer } from '@/api/answer';
 import { apiArticle } from '@/api/article';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
@@ -407,9 +403,11 @@ import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import DynamicItemList from '@/components/DynamicItemList.vue';
 
 @Component({
   components: {
+    DynamicItemList,
     QuestionPreview,
     Answer,
     ArticleColumnCard,
@@ -429,9 +427,6 @@ export default class Dashboard extends Vue {
   }
   private askedQuestions: IQuestionPreview[] = [];
   private authoredAnswers: IAnswerPreview[] = [];
-  private answerBookmarks: IAnswerPreview[] = [];
-  private subscribedQuestions: IQuestionPreview[] = [];
-  private subscribedSubmissions: ISubmission[] = [];
   private coinPayments: ICoinPayment[] = [];
   private myChannels: IChannel[] = [];
   private myRewards: IReward[] = [];
@@ -456,12 +451,8 @@ export default class Dashboard extends Vue {
   private channelsIntermediate = true;
   private rewardsIntermediate = true;
   private articleColumnsIntermediate = true;
-  private answerBookmarksIntermediate = true;
   private coinPaymentsIntermediate = true;
-  private subscribedQuestionsIntermediate = true;
-  private subscribedSubmissionsIntermediate = true;
 
-  private commitNewChannelIntermediate = false;
   private commitNewArticleColumnIntermediate = false;
 
   private showExportDialog = false;
@@ -576,24 +567,9 @@ export default class Dashboard extends Vue {
           this.rewardsIntermediate = false;
         });
 
-        apiAnswer.getAnswerBookmarks(this.$store.state.main.token).then((r) => {
-          this.answerBookmarks = r.data;
-          this.answerBookmarksIntermediate = false;
-        });
-
         api2.getCoinPayments(this.$store.state.main.token).then((r) => {
           this.coinPayments = r.data;
           this.coinPaymentsIntermediate = false;
-        });
-
-        apiMe.getSubscribedQuestions(this.$store.state.main.token).then((r) => {
-          this.subscribedQuestions = r.data;
-          this.subscribedQuestionsIntermediate = false;
-        });
-
-        apiMe.getSubscribedSubmissions(this.$store.state.main.token).then((r) => {
-          this.subscribedSubmissions = r.data;
-          this.subscribedSubmissionsIntermediate = false;
         });
 
         api.getAnswerDrafts(this.$store.state.main.token).then((r) => {
@@ -604,6 +580,31 @@ export default class Dashboard extends Vue {
         });
       }
     });
+  }
+
+  private async loadSubscribedQuestions(skip: number, limit: number) {
+    let items: (IQuestionPreview | null)[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      items = (await apiMe.getSubscribedQuestions(this.$store.state.main.token, skip, limit)).data;
+    });
+    return items;
+  }
+
+  private async loadSubscribedSubmissions(skip: number, limit: number) {
+    let items: (ISubmission | null)[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      items = (await apiMe.getSubscribedSubmissions(this.$store.state.main.token, skip, limit))
+        .data;
+    });
+    return items;
+  }
+
+  private async loadBookmarkedAnswers(skip: number, limit: number) {
+    let items: (IAnswerPreview | null)[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      items = (await apiMe.getAnswerBookmarks(this.$store.state.main.token, skip, limit)).data;
+    });
+    return items;
   }
 
   private async commitNewArticleColumn() {

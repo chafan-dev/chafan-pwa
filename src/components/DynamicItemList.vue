@@ -24,7 +24,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 export default class DynamicItemList<T> extends Vue {
   @Prop({ default: 20 }) public readonly pageLimit!: number;
   @Prop() public readonly emptyItemsText!: string;
-  @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<T[] | null>;
+  @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<(T | null)[] | null>;
 
   private items: T[] | null = null;
 
@@ -54,10 +54,16 @@ export default class DynamicItemList<T> extends Vue {
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
     if (newItems) {
+      const newItemsNotNull: T[] = [];
+      for (const item of newItems) {
+        if (item) {
+          newItemsNotNull.push(item);
+        }
+      }
       if (this.items) {
-        this.items.push(...newItems);
+        this.items.push(...newItemsNotNull);
       } else {
-        this.items = newItems;
+        this.items = newItemsNotNull;
       }
       if (newItems.length < this.pageLimit) {
         this.noMore = true;
