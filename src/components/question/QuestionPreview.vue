@@ -5,7 +5,10 @@
         {{ questionPreview.title }}
       </a>
     </div>
-    <div class="grey--text subtitle-2" v-if="questionPreview.description">
+    <div
+      class="grey--text subtitle-2"
+      v-if="questionPreview.description_text && questionPreview.description_text.trim()"
+    >
       {{ shortDesc }}
     </div>
     <div class="d-flex">
@@ -48,7 +51,7 @@ export default class QuestionPreview extends Vue {
   @Prop({ default: false }) private readonly embedded!: false;
 
   get shortDesc() {
-    const d = this.questionPreview.description_text || this.questionPreview.description!;
+    const d = this.questionPreview.description_text!;
     if (d.length > 60) {
       return d.substring(0, 60) + '..';
     } else {

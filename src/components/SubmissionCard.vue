@@ -30,7 +30,7 @@
     </div>
     <div
       class="grey--text subtitle-2"
-      v-if="submission.description && submission.description.trim()"
+      v-if="submission.description_text && submission.description_text.trim()"
     >
       {{ shortDesc }}
     </div>
@@ -53,7 +53,7 @@ export default class submission extends Vue {
   @Prop() private readonly submission!: ISubmission;
 
   get shortDesc() {
-    const d = this.submission.description_text || this.submission.description!;
+    const d = this.submission.description_text!;
     if (d.length > 60) {
       return d.substring(0, 60) + '..';
     } else {

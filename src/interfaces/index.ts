@@ -1014,7 +1014,7 @@ export interface ISubmission {
   uuid: string;
   title: string;
   description?: string;
-  description_text?: string;
+  description_text: string;
   description_editor: editor_T;
   url?: string;
   created_at: string;
