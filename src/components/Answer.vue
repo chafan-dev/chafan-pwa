@@ -303,7 +303,6 @@ import {
   IUserAnswerBookmark,
   IUserProfile,
   IUserSiteProfile,
-  editor_T,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import { readUserMode, readUserProfile } from '@/store/main/getters';
@@ -327,6 +326,7 @@ import {
   commitSetWorkingDraft,
 } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
+import { apiMe } from '@/api/me';
 
 @Component({
   components: {
@@ -394,8 +394,7 @@ export default class Answer extends Vue {
     this,
     this.answerPreview.uuid,
     this.answerPreview.question.uuid,
-    this.updatedAnswerCallback,
-    (answer, isAutoSaved) => {}
+    this.updatedAnswerCallback
   );
 
   private editButtonText = '编辑';
@@ -462,7 +461,7 @@ export default class Answer extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
         this.bookmarkIntermediate = true;
-        this.userBookmark = (await apiAnswer.bookmarkAnswer(this.token, this.answer.uuid)).data;
+        this.userBookmark = (await apiMe.bookmarkAnswer(this.token, this.answer.uuid)).data;
         this.bookmarkIntermediate = false;
       }
     });
@@ -472,7 +471,7 @@ export default class Answer extends Vue {
     this.unbookmarkIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
-        this.userBookmark = (await apiAnswer.unbookmarkAnswer(this.token, this.answer.uuid)).data;
+        this.userBookmark = (await apiMe.unbookmarkAnswer(this.token, this.answer.uuid)).data;
         this.unbookmarkIntermediate = false;
       }
     });

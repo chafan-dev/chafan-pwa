@@ -4,11 +4,9 @@ import {
   IAnswerDraft,
   IAnswer,
   IAnswerCreate,
-  IAnswerPreview,
   IAnswerUpdate,
   IArchive,
   IAnswerUpvotes,
-  IUserAnswerBookmark,
   IMsg,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
@@ -39,28 +37,6 @@ export const apiAnswer = {
   },
   async deleteAnswer(token: string, answerUUID: string) {
     return axios.delete<IMsg>(`${apiUrl}/api/v1/answers/${answerUUID}`, authHeaders(token));
-  },
-  async getAnswerBookmarks(token: string) {
-    return axios.get<IAnswerPreview[]>(`${apiUrl}/api/v1/me/answer-bookmarks/`, authHeaders(token));
-  },
-  async getAnswerBookmark(token: string, answerUUID: string) {
-    return axios.get<IUserAnswerBookmark>(
-      `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
-      authHeaders(token)
-    );
-  },
-  async unbookmarkAnswer(token: string, answerUUID: string) {
-    return axios.delete<IUserAnswerBookmark>(
-      `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
-      authHeaders(token)
-    );
-  },
-  async bookmarkAnswer(token: string, answerUUID: string) {
-    return axios.post<IUserAnswerBookmark>(
-      `${apiUrl}/api/v1/me/answer-bookmarks/${answerUUID}`,
-      null,
-      authHeaders(token)
-    );
   },
   async getAnswer(token: string, answerUUID: string) {
     return axios.get<IAnswer>(`${apiUrl}/api/v1/answers/${answerUUID}`, authHeaders(token));
