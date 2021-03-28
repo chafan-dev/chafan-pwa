@@ -1,4 +1,5 @@
 import { apiQuestion } from '@/api/question';
+import { apiUrl } from '@/env';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 export const vditorCDN = 'https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chafan.3';
@@ -27,4 +28,17 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement) =
       }
     }
   }
+};
+
+export const vditorUploadConfig = (token: string) => {
+  return {
+    max: 5 * 1024 * 1024,
+    // TODO: token for CORS validation
+    accept: 'image/png, image/jpeg, image/bmp, image/gif',
+    fieldName: 'files',
+    url: `${apiUrl}/api/v1/upload/vditor/`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
 };

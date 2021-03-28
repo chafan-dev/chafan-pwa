@@ -6,8 +6,8 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 import Vditor from '@chafan/vditor';
-import { vditorCDN } from '@/common';
-import { apiUrl, env } from '@/env';
+import { vditorCDN, vditorUploadConfig } from '@/common';
+import { env } from '@/env';
 import { editor_T } from '@/interfaces';
 
 @Component
@@ -114,16 +114,7 @@ export default class VditorComponent extends Vue {
       input: (value: string) => {
         this.onEditorChange(value);
       },
-      upload: {
-        max: 5 * 1024 * 1024,
-        // TODO: token for CORS validation
-        accept: 'image/png, image/jpeg, image/bmp, image/gif',
-        fieldName: 'files',
-        url: `${apiUrl}/api/v1/upload/vditor/`,
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-      },
+      upload: vditorUploadConfig(this.token),
       value: markdownBody,
       mode: this.translateMode(editorMode),
       cache: {

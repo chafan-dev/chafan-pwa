@@ -1,5 +1,5 @@
 <template>
-  <div class="simple-vditor" />
+  <div class="simple-vditor" :class="{ 'vditor-without-menu': !showMenu }" />
 </template>
 
 <script lang="ts">
@@ -7,12 +7,13 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { env } from '@/env';
 
 import Vditor from '@chafan/vditor';
-import { vditorCDN } from '@/common';
+import { vditorCDN, vditorUploadConfig } from '@/common';
 
 @Component
 export default class SimpleVditor extends Vue {
   @Prop() public readonly initialValue: string | undefined;
   @Prop() public readonly placeholder: string | undefined;
+  @Prop({ default: false }) public readonly showMenu!: boolean;
 
   private vditor: Vditor | null = null;
 
@@ -26,13 +27,24 @@ export default class SimpleVditor extends Vue {
       placeholder: this.placeholder ? this.placeholder : '',
       value: this.initialValue,
       mode: 'wysiwyg',
-      toolbarConfig: {
-        hide: true,
-      },
-      toolbar: ['bold', 'italic', 'link', 'list', 'line', 'strike', 'undo', 'redo'],
+      toolbar: [
+        'bold',
+        'italic',
+        'link',
+        'list',
+        'line',
+        'strike',
+        'undo',
+        'redo',
+        {
+          name: 'upload',
+          tip: '上传图片',
+        },
+      ],
       cache: {
         enable: false,
       },
+      upload: vditorUploadConfig(this.$store.state.main.token),
       counter: {
         enable: false,
       },
@@ -69,7 +81,7 @@ export default class SimpleVditor extends Vue {
   padding-right: 8px !important;
 }
 
-.simple-vditor .vditor-toolbar {
+.vditor-without-menu .vditor-toolbar {
   height: 0px;
   border-bottom: 0px;
 }

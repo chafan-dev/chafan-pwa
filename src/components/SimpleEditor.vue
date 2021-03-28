@@ -5,6 +5,7 @@
       ref="simpleVditor"
       :initial-value="initialValue"
       :placeholder="placeholder"
+      :showMenu="showMenu"
     />
     <ChafanTiptap
       :initial-value="initialValue"
@@ -31,6 +32,7 @@ export default class SimpleEditor extends Vue {
   @Prop() public readonly initialValue: string | undefined;
   @Prop() public readonly placeholder: string | undefined;
   @Prop() public readonly editorProp: editor_T | undefined;
+  @Prop({ default: false }) public readonly showMenu!: boolean;
   private isVditor = false;
   private isTiptap = false;
 
