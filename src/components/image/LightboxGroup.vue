@@ -15,15 +15,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class LightboxGroup extends Vue {
+  @Prop() public readonly container!: HTMLElement;
+
   private imgObjects: { url: string; showDialog: boolean }[] = [];
   private openedImgObject: { url: string; showDialog: boolean } | null = null;
 
-  public loadImagesFrom(container: HTMLElement) {
-    for (const img of container.getElementsByTagName('img')) {
+  public mounted() {
+    for (const img of this.container.getElementsByTagName('img')) {
       const imgObject = {
         url: img.src,
         showDialog: false,

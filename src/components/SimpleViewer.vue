@@ -7,7 +7,7 @@
       :initial-value="body"
     />
     <div ref="vditorViewer" v-else />
-    <LightboxGroup ref="lightbox" />
+    <LightboxGroup :container="contentElem" v-if="contentElem" />
   </div>
 </template>
 
@@ -26,14 +26,15 @@ export default class SimpleViewer extends Vue {
   @Prop() public readonly body!: string;
   @Prop() public readonly editor: editor_T | undefined;
 
+  private contentElem: HTMLElement | null = null;
+
   private mounted() {
     if (this.editor !== 'tiptap') {
       Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
         mode: 'light',
         cdn: vditorCDN,
         after: () => {
-          const lightbox = this.$refs.lightbox as LightboxGroup;
-          lightbox.loadImagesFrom(this.$refs.vditorViewer as HTMLElement);
+          this.contentElem = this.$refs.vditorViewer as HTMLElement;
           postProcessViewerDOM(
             this.$store.state.main.token,
             this.$refs.vditorViewer as HTMLElement
