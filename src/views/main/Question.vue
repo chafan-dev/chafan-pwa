@@ -64,6 +64,7 @@
               ref="descEditor"
               :initialValue="question.description"
               :placeholder="$t('描述（选填）')"
+              :show-menu="true"
               class="mb-2"
             />
           </div>
