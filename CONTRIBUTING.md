@@ -20,10 +20,12 @@ Please simply fork this repo and open a PR with description of the changes again
 
 ### Internal Branch Management
 
-- `master` is the development integration branch. It _might_ be push-forced to rebase against `prod/stag` branches.
+- `master` is the development integration branch.
+- `dev` is a branch used by @izgzhen for regular development. Its changes will be frequently integrated into `master`.
 - Other feature/bug-fixes should be first pushed to a feature branch.
-  - When the code is ready for review, open a PR from this branch against `master`. Remember to rebase against `master` and fix all conflicts.
-- `stag/prod` are branchs that will be deployed to staging/production environments.
+  - When the code is ready for review, open a PR from this branch against `master`.
+  - Remember to rebase against `master` and fix all conflicts.
+- `stag/prod` are branchs that will be deployed to staging/production environments. Please don't open PRs against them.
 
 ### Tips:
 
