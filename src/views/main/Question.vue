@@ -762,7 +762,7 @@ export default class Question extends Vue {
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
-        const response = await api.updateQuestion(this.token, this.question.uuid, {
+        const response = await apiQuestion.updateQuestion(this.token, this.question.uuid, {
           title: this.newQuestionTitle,
           description: descEditor.content,
           description_text: descEditor.getTextContent(),

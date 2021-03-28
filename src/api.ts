@@ -5,13 +5,10 @@ import {
   IUserProfileUpdate,
   IUserProfileCreate,
   ISite,
-  IQuestion,
   IAnswer,
-  IQuestionCreate,
   IActivity,
   IAuditLog,
   IAnswerPreview,
-  IQuestionUpdate,
   ISiteUpdate,
   IUserSiteProfile,
   IChannel,
@@ -124,13 +121,6 @@ export const api = {
     return axios.get<IActivity[]>(
       `${apiUrl}/api/v1/activities/new/`,
       authHeadersWithParams(token, params)
-    );
-  },
-  async updateQuestion(token: string, questionUUID: string, payload: IQuestionUpdate) {
-    return axios.put<IQuestion>(
-      `${apiUrl}/api/v1/questions/${questionUUID}`,
-      payload,
-      authHeaders(token)
     );
   },
   async updateSiteConfig(token: string, siteUUID: string, payload: ISiteUpdate) {
