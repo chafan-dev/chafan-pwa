@@ -1,12 +1,7 @@
 <template>
   <div ref="viewer" class="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }">
     <template v-if="editor === 'tiptap'">
-      <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
-      <ChafanTiptap
-        ref="tiptapViewer"
-        v-else-if="!bodyFormat || bodyFormat === 'tiptap_json'"
-        :editable="false"
-      />
+      <ChafanTiptap :body="body" :bodyFormat="bodyFormat" :editable="false" />
     </template>
     <template v-else>
       <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
@@ -40,14 +35,7 @@ export default class Viewer extends Vue {
   }
 
   private mounted() {
-    if (this.editor === 'tiptap') {
-      const tiptapViewer = this.$refs.tiptapViewer as ChafanTiptap;
-      if (!this.bodyFormat || this.bodyFormat === 'tiptap_json') {
-        tiptapViewer.loadJSON(JSON.parse(this.body));
-      } else if (this.bodyFormat === 'html') {
-        tiptapViewer.loadHTML(this.sanitizedBody);
-      }
-    } else {
+    if (this.editor !== 'tiptap') {
       const viewer = this.$refs.viewer as HTMLElement;
       if (this.bodyFormat === 'html') {
         this.contentElem = viewer;

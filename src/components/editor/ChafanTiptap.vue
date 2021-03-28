@@ -14,9 +14,9 @@
 
 <script lang="ts">
 import { Tiptap } from 'chafan-vue-editors';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { apiSearch } from '../../api/search';
-import { IUserPreview } from '../../interfaces';
+import { body_format_T, IUserPreview } from '../../interfaces';
 import 'tippy.js/dist/tippy.css';
 
 @Component({
@@ -25,6 +25,19 @@ import 'tippy.js/dist/tippy.css';
   },
 })
 export default class ChafanTiptap extends Vue {
+  @Prop() public readonly bodyFormat: body_format_T | undefined;
+  @Prop() public readonly body: string | undefined;
+
+  public mounted() {
+    if (this.body) {
+      if (!this.bodyFormat || this.bodyFormat === 'tiptap_json') {
+        this.base.loadJSON(JSON.parse(this.body));
+      } else if (this.bodyFormat === 'html') {
+        this.base.loadHTML(this.body);
+      }
+    }
+  }
+
   private async searchUsers(query: string) {
     return (await apiSearch.searchUsers(this.$store.state.main.token, query)).data;
   }
