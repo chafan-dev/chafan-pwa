@@ -16,6 +16,7 @@
           <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
         </template>
       </v-banner>
+      <v-progress-linear indeterminate v-if="loading" />
       <router-view />
       <NotificationsManager />
       <v-snackbar bottom right :value="updateExists" :timeout="-1" color="primary">
@@ -75,6 +76,7 @@ export default class App extends Vue {
   private registration: ServiceWorkerRegistration | null = null;
   private updateExists = false;
   private refreshing = false;
+  private loading = true;
 
   public async created() {
     document.addEventListener(
@@ -102,6 +104,7 @@ export default class App extends Vue {
       });
     }
     await dispatchCheckLoggedIn(this.$store);
+    this.loading = false;
     const pref = readLocalePreference(this.$store);
     if (pref) {
       setAppLocale(this, pref);
