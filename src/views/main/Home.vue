@@ -472,9 +472,6 @@ export default class Home extends Vue {
 
   private async mounted() {
     if (this.userProfile) {
-      if (this.userProfile.locale_preference) {
-        setAppLocale(this, this.userProfile.locale_preference);
-      }
       if (this.userProfile.flag_list.includes(this.YES_FLAG)) {
         this.showUserAgreement = false;
       } else {

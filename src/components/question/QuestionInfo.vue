@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { IQuestion, IQuestionPreview, ISite, IUserQuestionSubscription } from '@/interfaces';
+import { IQuestion, IQuestionPreview, IUserQuestionSubscription } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -82,7 +82,6 @@ import { readUserProfile } from '@/store/main/getters';
   components: { RotationList, RefreshIcon, QuestionLink, UserLink, UserSearch },
 })
 export default class QuestionInfo extends Vue {
-  @Prop() public readonly site!: ISite;
   @Prop() public readonly question!: IQuestion;
   @Prop() public readonly questionSubscription!: IUserQuestionSubscription;
 

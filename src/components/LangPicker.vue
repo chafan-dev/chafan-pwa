@@ -63,10 +63,10 @@ export default class LangPicker extends Vue {
     if (readIsLoggedIn(this.$store)) {
       const pref = readLocalePreference(this.$store);
       if (pref) {
+        setAppLocale(this, pref);
         this.selectedLang = pref;
         this.selectedLangIdx = availableLocales.indexOf(this.selectedLang);
       } else {
-        // Use and commit default from browser locale -- FIXME: is this too late?
         dispatchUpdateUserProfile(this.$store, {
           locale_preference: this.selectedLang,
         });

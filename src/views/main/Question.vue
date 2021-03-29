@@ -392,11 +392,7 @@
         v-if="$vuetify.breakpoint.mdAndUp"
         :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
-        <QuestionInfo
-          :question="question"
-          :questionSubscription="questionSubscription"
-          :site="questionSite"
-        />
+        <QuestionInfo :question="question" :questionSubscription="questionSubscription" />
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
@@ -405,11 +401,7 @@
           </v-btn>
         </template>
         <v-sheet class="pa-2">
-          <QuestionInfo
-            :question="question"
-            :questionSubscription="questionSubscription"
-            :site="questionSite"
-          />
+          <QuestionInfo :question="question" :questionSubscription="questionSubscription" />
         </v-sheet>
       </v-bottom-sheet>
     </v-row>
@@ -467,6 +459,8 @@ import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { AnswerEditHandler } from '@/handlers';
+import { Route } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: {
@@ -491,12 +485,39 @@ export default class Question extends Vue {
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
+  private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    if (from.name === 'question' && !_.isEqual(to.params, from.params)) {
+      this.loading = true;
+      this.loadingProgress = 0;
+      this.showEditor = false;
+      this.showComments = false;
+      this.answerWritable = false;
+      this.commentWritable = false;
+      this.answerPreviews = null;
+      this.loadedFullAnswers = [];
+      this.editable = false;
+      this.canHide = false;
+      this.showConfirmHideQuestionDialog = false;
+      this.loadingFullAnswer = true;
+      this.isModerator = false;
+      this.isShowInHome = false;
+      this.savedNewAnswer = null;
+      this.upvotes = null;
+      this.archives = [];
+      this.siteProfiles = [];
+      this.currentUserAnswerUUID = null;
+
+      this.loadQuestion(to.params.id);
+      next();
+    }
+  }
+
   private question: IQuestion | null = null;
   private showEditor: boolean = false;
   private newQuestionTitle: string = '';
   private showQuestionEditor: boolean = false;
   private showComments: boolean = false;
-  private questionSite: ISite | null = null;
   private userSiteProfile: IUserSiteProfile | null = null;
   private questionSubscription: IUserQuestionSubscription | null = null;
   private newQuestionTopicNames: string[] = [];
@@ -573,17 +594,10 @@ export default class Question extends Vue {
     return readToken(this.$store);
   }
 
-  private async mounted() {
-    try {
-      if (localStorage.getItem('new-question')) {
-        this.showQuestionEditor = true;
-        localStorage.removeItem('new-question');
-      }
-    } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
-
+  private async loadQuestion(questionUUID: string) {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const response = await apiQuestion.getQuestion(this.token, this.id);
+        const response = await apiQuestion.getQuestion(this.token, questionUUID);
         this.question = response.data;
         if (!this.$route.query.title) {
           this.$router.replace({
@@ -677,22 +691,18 @@ export default class Question extends Vue {
           this.loadingProgress = 66;
 
           if (this.userProfile) {
-            this.questionSite = (await api.getSite(this.token, this.question!.site.subdomain)).data;
+            const questionSite = this.question!.site;
 
             this.userSiteProfile = (
-              await api.getUserSiteProfile(
-                this.token,
-                this.questionSite.uuid,
-                this.userProfile.uuid
-              )
+              await api.getUserSiteProfile(this.token, questionSite.uuid, this.userProfile.uuid)
             ).data;
             if (this.userSiteProfile) {
               this.editable = true;
             }
-            if (this.userSiteProfile !== null || this.questionSite.public_writable_answer) {
+            if (this.userSiteProfile !== null || questionSite.public_writable_answer) {
               this.answerWritable = true;
             }
-            if (this.userSiteProfile !== null || this.questionSite.public_writable_comment) {
+            if (this.userSiteProfile !== null || questionSite.public_writable_comment) {
               this.commentWritable = true;
             }
             this.questionSubscription = (
@@ -705,6 +715,17 @@ export default class Question extends Vue {
         });
       }
     });
+  }
+
+  private async mounted() {
+    try {
+      if (localStorage.getItem('new-question')) {
+        this.showQuestionEditor = true;
+        localStorage.removeItem('new-question');
+      }
+    } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
+
+    this.loadQuestion(this.id);
   }
 
   private async newEditHandler(payload: INewEditEvent) {
