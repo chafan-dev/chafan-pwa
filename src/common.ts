@@ -6,6 +6,9 @@ export const vditorCDN = 'https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chaf
 
 export const NARROW_FEED_UI_KEY = 'narrowFeedUI';
 export const LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
+export const YES_FLAG = 'user-agreement-yes';
+export const FAB_FLAG = 'webfront-fab-clicked';
+export const EXPLORE_SITES = 'closed-explore-sites-in-home';
 
 export const getDefaultNarrowFeedUI = () => {
   try {
