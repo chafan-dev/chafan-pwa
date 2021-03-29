@@ -9,7 +9,7 @@
       </div>
       <v-card-actions class="ma-2">
         <v-spacer />
-        <v-btn color="primary" @click="$emit('continue-user-agreement')">同意</v-btn>
+        <v-btn color="primary" @click="continueUserAgreement">同意</v-btn>
       </v-card-actions>
     </base-card>
     <v-card v-show="showFabHint" color="white" elevation="2" rounded>
@@ -21,13 +21,45 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
+import { dispatchAddFlag } from '@/store/main/actions';
+import { FAB_FLAG, YES_FLAG } from '@/common';
+import { IUserProfile } from '@/interfaces';
 
 @Component({
   components: { BaseCard },
 })
 export default class UserAgreement extends Vue {
-  @Prop() private readonly overlay!: boolean;
-  @Prop() private readonly showUserAgreement!: boolean;
-  @Prop() private readonly showFabHint!: boolean;
+  @Prop() public readonly userProfile!: IUserProfile;
+
+  private showFabHint = false;
+  private showUserAgreement = false;
+  public overlay = false;
+
+  mounted() {
+    if (this.userProfile) {
+      if (this.userProfile.flag_list.includes(YES_FLAG)) {
+        this.showUserAgreement = false;
+      } else {
+        this.showUserAgreement = true;
+        this.overlay = true;
+      }
+    }
+  }
+
+  private async continueUserAgreement() {
+    this.showUserAgreement = false;
+    await dispatchAddFlag(this.$store, YES_FLAG);
+    if (this.userProfile) {
+      if (!this.$vuetify.breakpoint.mdAndUp) {
+        if (this.userProfile.flag_list.includes(FAB_FLAG)) {
+          this.overlay = false;
+        } else {
+          this.showFabHint = true;
+        }
+      } else {
+        this.overlay = false;
+      }
+    }
+  }
 }
 </script>

@@ -14,5 +14,5 @@ import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 @Component({
   components: { ExploreSitesGrid },
 })
-export default class UserWelcome extends Vue {}
+export default class UserLogoutWelcome extends Vue {}
 </script>
