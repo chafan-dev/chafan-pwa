@@ -228,7 +228,7 @@ export default class Comment extends Vue {
   }
 
   get answerCommentId() {
-    const acid = this.$router.currentRoute.params.acid;
+    const acid = this.$route.params.acid;
     if (acid) {
       return acid;
     } else {
@@ -236,7 +236,7 @@ export default class Comment extends Vue {
     }
   }
   get articleCommentId() {
-    const acid = this.$router.currentRoute.params.article_comment_id;
+    const acid = this.$route.params.article_comment_id;
     if (acid) {
       return acid;
     } else {
@@ -244,7 +244,7 @@ export default class Comment extends Vue {
     }
   }
   get submissionCommentId() {
-    const scid = this.$router.currentRoute.params.submission_comment_id;
+    const scid = this.$route.params.submission_comment_id;
     if (scid) {
       return scid;
     } else {
@@ -252,7 +252,7 @@ export default class Comment extends Vue {
     }
   }
   get questionCommentId() {
-    const qcid = this.$router.currentRoute.params.qcid;
+    const qcid = this.$route.params.qcid;
     if (qcid) {
       return qcid;
     } else {

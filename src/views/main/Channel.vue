@@ -49,7 +49,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 })
 export default class Channel extends Vue {
   get id() {
-    return parseInt(this.$router.currentRoute.params.id, 10);
+    return parseInt(this.$route.params.id, 10);
   }
   get currentUserId() {
     return this.$store.state.main.userProfile.uuid;

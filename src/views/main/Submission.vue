@@ -354,7 +354,7 @@ export default class Submission extends Vue {
     return readUserMode(this.$store);
   }
   get id() {
-    return this.$router.currentRoute.params.id;
+    return this.$route.params.id;
   }
   get userProfile() {
     return readUserProfile(this.$store);
@@ -587,7 +587,7 @@ export default class Submission extends Vue {
   }
 
   private async cancelSubmissionUpdate() {
-    this.$router.push(this.$router.currentRoute.path);
+    this.$router.push(this.$route.path);
     this.showSubmissionEditor = false;
   }
 

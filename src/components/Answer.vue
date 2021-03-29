@@ -205,12 +205,12 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <div v-bind="attrs" v-on="on">
-                      <a
-                        :href="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                      <router-link
+                        :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
                         class="text-decoration-none"
                       >
                         <LinkIcon class="pl-1 pr-1" />
-                      </a>
+                      </router-link>
                     </div>
                   </template>
                   <span>{{ $t('Link') }}</span>

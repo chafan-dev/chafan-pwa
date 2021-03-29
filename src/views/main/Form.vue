@@ -64,7 +64,7 @@ import { commitAddNotification } from '@/store/main/mutations';
 })
 export default class Form extends Vue {
   get uuid() {
-    return this.$router.currentRoute.params.uuid;
+    return this.$route.params.uuid;
   }
   private form: IForm | null = null;
   private formResponseCreate: IFormResponseCreate | null = null;

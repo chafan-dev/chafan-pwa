@@ -75,7 +75,7 @@ import { readIsLoggedIn } from '@/store/main/getters';
 })
 export default class InvitationLink extends Vue {
   get uuid() {
-    return this.$router.currentRoute.params.uuid;
+    return this.$route.params.uuid;
   }
   get loggedIn() {
     return readIsLoggedIn(this.$store);

@@ -53,7 +53,7 @@ export default class Topic extends Vue {
   private loading = true;
   private loadingProgress = 0;
   get id() {
-    return this.$router.currentRoute.params.id;
+    return this.$route.params.id;
   }
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {

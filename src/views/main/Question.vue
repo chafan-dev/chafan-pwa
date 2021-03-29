@@ -459,7 +459,7 @@ import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { AnswerEditHandler } from '@/handlers';
-import { Route } from 'vue-router';
+import { Route, RouteRecord } from 'vue-router';
 import * as _ from 'lodash';
 
 @Component({
@@ -487,7 +487,8 @@ export default class Question extends Vue {
   }
 
   private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    if (from.name === 'question' && !_.isEqual(to.params, from.params)) {
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
+    if (matched && !_.isEqual(to.params, from.params)) {
       this.loading = true;
       this.loadingProgress = 0;
       this.showEditor = false;
@@ -509,8 +510,8 @@ export default class Question extends Vue {
       this.currentUserAnswerUUID = null;
 
       this.loadQuestion(to.params.id);
-      next();
     }
+    next();
   }
 
   private question: IQuestion | null = null;
@@ -560,11 +561,11 @@ export default class Question extends Vue {
   }
 
   get id() {
-    return this.$router.currentRoute.params.id;
+    return this.$route.params.id;
   }
 
   get answerUUID() {
-    const aid = this.$router.currentRoute.params.aid;
+    const aid = this.$route.params.aid;
     if (aid) {
       return aid;
     } else {
@@ -573,7 +574,7 @@ export default class Question extends Vue {
   }
 
   get answerCommentId() {
-    const acid = this.$router.currentRoute.params.acid;
+    const acid = this.$route.params.acid;
     if (acid) {
       return acid;
     } else {
@@ -582,7 +583,7 @@ export default class Question extends Vue {
   }
 
   get questionCommentId() {
-    const qcid = this.$router.currentRoute.params.qcid;
+    const qcid = this.$route.params.qcid;
     if (qcid) {
       return qcid;
     } else {
@@ -967,9 +968,12 @@ export default class Question extends Vue {
 
   private async goToCurrentUserAnswer() {
     if (this.currentUserAnswerUUID) {
-      this.$router.push(`/questions/${this.question?.uuid}/answers/${this.currentUserAnswerUUID}`);
-      this.removeAnswer(this.currentUserAnswerUUID);
-      const answer = (await apiAnswer.getAnswer(this.token, this.currentUserAnswerUUID)).data;
+      const UUID = this.currentUserAnswerUUID;
+      this.$router.replace(
+        `/questions/${this.question?.uuid}/answers/${this.currentUserAnswerUUID}`
+      );
+      this.removeAnswer(UUID);
+      const answer = (await apiAnswer.getAnswer(this.token, UUID)).data;
       this.loadedFullAnswers.unshift(answer);
     }
   }
