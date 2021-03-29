@@ -161,7 +161,9 @@ export const actions = {
             commitSetUserProfile(context, response.data);
           }
           if (readModeratedSites(context) === null) {
-            commitSetModeratedSites(context, (await apiMe.getModeratedSites(token)).data);
+            apiMe.getModeratedSites(token).then((r) => {
+              commitSetModeratedSites(context, r.data);
+            });
           }
         } catch (error) {
           await dispatchCheckApiError(context, error);
