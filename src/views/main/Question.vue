@@ -437,7 +437,13 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
 import { apiAnswer } from '@/api/answer';
-import { readIsLoggedIn, readNarrowUI, readUserMode, readUserProfile } from '@/store/main/getters';
+import {
+  readIsLoggedIn,
+  readNarrowUI,
+  readToken,
+  readUserMode,
+  readUserProfile,
+} from '@/store/main/getters';
 import {
   IAnswer,
   IAnswerPreview,
@@ -488,7 +494,6 @@ export default class Question extends Vue {
   private newQuestionTitle: string = '';
   private showQuestionEditor: boolean = false;
   private showComments: boolean = false;
-  private newAnswerBody: string = '';
   private questionSite: ISite | null = null;
   private userSiteProfile: IUserSiteProfile | null = null;
   private questionSubscription: IUserQuestionSubscription | null = null;
@@ -505,8 +510,6 @@ export default class Question extends Vue {
   private loadingProgress = 0;
   private loading = true;
   private isModerator = false;
-  private toggleShowInHomeIntermediate = false;
-  private isTopQuestionInSite = false;
   private isShowInHome = false;
   private userProfile: IUserProfile | null = null;
   private commitQuestionEditIntermediate = false;
@@ -566,7 +569,7 @@ export default class Question extends Vue {
   }
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   private async mounted() {

@@ -212,7 +212,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
 import { IUserUpdateMe } from '@/interfaces';
-import { readUserProfile } from '@/store/main/getters';
+import { readToken, readUserProfile } from '@/store/main/getters';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
@@ -238,6 +238,9 @@ interface IUserEducationExperienceInput {
 export default class UserProfileEdit extends Vue {
   get userProfile() {
     return readUserProfile(this.$store);
+  }
+  get token() {
+    return readToken(this.$store);
   }
   public valid = true;
   private newResidencyTopicNames: string[] = [];
@@ -303,10 +306,7 @@ export default class UserProfileEdit extends Vue {
       }
 
       await dispatchCaptureApiError(this.$store, async () => {
-        const response = await apiPeople.getUserEducationExperiences(
-          this.$store.state.main.token,
-          userProfile.uuid
-        );
+        const response = await apiPeople.getUserEducationExperiences(this.token, userProfile.uuid);
         if (response.data) {
           this.eduExps = response.data.map((e) => {
             return {
@@ -315,10 +315,7 @@ export default class UserProfileEdit extends Vue {
             };
           });
         }
-        const response2 = await apiPeople.getUserWorkExperiences(
-          this.$store.state.main.token,
-          userProfile.uuid
-        );
+        const response2 = await apiPeople.getUserWorkExperiences(this.token, userProfile.uuid);
         if (response2.data) {
           this.workExps = response2.data.map((e) => {
             return {
@@ -349,15 +346,13 @@ export default class UserProfileEdit extends Vue {
     this.submitIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       const responses = await Promise.all(
-        this.newResidencyTopicNames.map((name) =>
-          apiTopic.createTopic(this.$store.state.main.token, { name })
-        )
+        this.newResidencyTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
       );
       const topicsIds = responses.map((r) => r.data.uuid);
       this.userUpdateMe.residency_topic_uuids = topicsIds;
 
       if (this.newProfessionTopicName) {
-        const r = await apiTopic.createTopic(this.$store.state.main.token, {
+        const r = await apiTopic.createTopic(this.token, {
           name: this.newProfessionTopicName,
         });
         this.userUpdateMe.profession_topic_uuid = r.data.uuid;
@@ -365,10 +360,10 @@ export default class UserProfileEdit extends Vue {
 
       this.userUpdateMe.work_experiences = await Promise.all(
         this.workExps.map(async (e) => {
-          const r1 = await apiTopic.createTopic(this.$store.state.main.token, {
+          const r1 = await apiTopic.createTopic(this.token, {
             name: e.company_topic_name,
           });
-          const r2 = await apiTopic.createTopic(this.$store.state.main.token, {
+          const r2 = await apiTopic.createTopic(this.token, {
             name: e.position_topic_name,
           });
           return {
@@ -380,7 +375,7 @@ export default class UserProfileEdit extends Vue {
 
       this.userUpdateMe.education_experiences = await Promise.all(
         this.eduExps.map(async (e) => {
-          const r1 = await apiTopic.createTopic(this.$store.state.main.token, {
+          const r1 = await apiTopic.createTopic(this.token, {
             name: e.school_topic_name,
           });
           return {
@@ -390,7 +385,7 @@ export default class UserProfileEdit extends Vue {
         })
       );
 
-      const response = await apiMe.updateMe(this.$store.state.main.token, this.userUpdateMe);
+      const response = await apiMe.updateMe(this.token, this.userUpdateMe);
       if (response) {
         commitSetUserProfile(this.$store, response.data);
         commitAddNotification(this.$store, {
@@ -468,7 +463,7 @@ export default class UserProfileEdit extends Vue {
             formData.append('file', resized.blob);
           }
           this.avatarURL = resized.dataUrl;
-          const response = await api2.uploadFile(this.$store.state.main.token, formData);
+          const response = await api2.uploadFile(this.token, formData);
           this.userUpdateMe.avatar_url = response.data.msg;
         }
       }
@@ -499,7 +494,7 @@ export default class UserProfileEdit extends Vue {
           fileReader.onload = () => {
             this.gifAvatarURL = fileReader.result as string;
           };
-          const response = await api2.uploadFile(this.$store.state.main.token, formData);
+          const response = await api2.uploadFile(this.token, formData);
           this.userUpdateMe.gif_avatar_url = response.data.msg;
         }
       }

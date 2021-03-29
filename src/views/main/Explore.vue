@@ -60,6 +60,7 @@ import { IQuestionPreview, IUserPreview } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import UserGrid from '@/components/UserGrid.vue';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { UserGrid, QuestionPreview, ExploreSitesGrid },
@@ -68,7 +69,7 @@ export default class Explore extends Vue {
   private interestingQuestions: IQuestionPreview[] | null = null;
   private interestingUsers: IUserPreview[] | null = null;
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
   get currentTabItem() {
     return this.$route.query.tab ? this.$route.query.tab : 'questions';
