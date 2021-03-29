@@ -340,7 +340,7 @@ export default class User extends Vue {
   }
 
   get handle() {
-    return this.$router.currentRoute.params.handle;
+    return this.$route.params.handle;
   }
 
   get currentTabItem() {

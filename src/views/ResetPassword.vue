@@ -94,7 +94,7 @@ export default class UserProfileEdit extends Vue {
   }
 
   public checkToken() {
-    const token = this.$router.currentRoute.query.token as string;
+    const token = this.$route.query.token as string;
     if (!token) {
       commitAddNotification(this.$store, {
         content: this.$t('No token provided in the URL, start a new password recovery').toString(),
@@ -113,7 +113,7 @@ export default class UserProfileEdit extends Vue {
         token,
         password: this.password,
       });
-      if (this.$router.currentRoute.path !== '/login') {
+      if (this.$route.path !== '/login') {
         this.$router.push('/login');
       }
     }

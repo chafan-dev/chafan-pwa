@@ -27,14 +27,14 @@ import { commitAddNotification, commitSetWorkingDraft } from '@/store/main/mutat
 @Component
 export default class ArticleEditor extends Vue {
   get articleColumnId() {
-    const id = this.$router.currentRoute.query.articleColumnId;
+    const id = this.$route.query.articleColumnId;
     if (id) {
       return id.toString();
     }
     return null;
   }
   get articleId() {
-    const id = this.$router.currentRoute.query.articleId;
+    const id = this.$route.query.articleId;
     if (id !== undefined) {
       return id.toString();
     }

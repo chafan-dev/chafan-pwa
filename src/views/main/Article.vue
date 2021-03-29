@@ -251,10 +251,10 @@ export default class Article extends Vue {
     return readNarrowUI(this.$store);
   }
   get id() {
-    return this.$router.currentRoute.params.id;
+    return this.$route.params.id;
   }
   get articleCommentId() {
-    const acid = this.$router.currentRoute.params.article_comment_id;
+    const acid = this.$route.params.article_comment_id;
     if (acid) {
       return acid;
     } else {

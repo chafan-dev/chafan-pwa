@@ -148,8 +148,8 @@ export default class Signup extends Vue {
 
   private mounted() {
     commitSetShowLoginPrompt(this.$store, false);
-    if (this.$router.currentRoute.query.invitation_link_uuid) {
-      this.invitationToken = this.$router.currentRoute.query.invitation_link_uuid.toString();
+    if (this.$route.query.invitation_link_uuid) {
+      this.invitationToken = this.$route.query.invitation_link_uuid.toString();
     }
   }
 

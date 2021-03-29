@@ -54,7 +54,7 @@ export default class ArticleColumn extends Vue {
   private articles: IArticlePreview[] | null = null;
 
   get id() {
-    return this.$router.currentRoute.params.id;
+    return this.$route.params.id;
   }
 
   get userProfile() {
