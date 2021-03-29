@@ -452,7 +452,6 @@ import {
   IQuestionArchive,
   IQuestionUpvotes,
   ISite,
-  IUserProfile,
   IUserQuestionSubscription,
   IUserSiteProfile,
 } from '@/interfaces';
@@ -489,6 +488,9 @@ import { AnswerEditHandler } from '@/handlers';
   },
 })
 export default class Question extends Vue {
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
   private question: IQuestion | null = null;
   private showEditor: boolean = false;
   private newQuestionTitle: string = '';
@@ -511,7 +513,6 @@ export default class Question extends Vue {
   private loading = true;
   private isModerator = false;
   private isShowInHome = false;
-  private userProfile: IUserProfile | null = null;
   private commitQuestionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
@@ -628,7 +629,6 @@ export default class Question extends Vue {
 
           this.newQuestionTitle = this.question.title;
           this.newQuestionTopicNames = this.question.topics.map((topic) => topic.name);
-          this.userProfile = readUserProfile(this.$store);
           if (this.userProfile) {
             if (this.userProfile.uuid === this.question.author.uuid) {
               this.editable = true;
