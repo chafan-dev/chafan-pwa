@@ -8,7 +8,7 @@
     <div class="my-2" v-if="questionSubscription">
       {{ $t('关注人数：') }} {{ questionSubscription.subscription_count }}
     </div>
-    <div class="my-2" v-if="myToken">
+    <div class="my-2" v-if="userProfile">
       <v-btn depressed small color="primary" @click="showInviteToAnswerDialog = true">{{
         $t('邀请回答')
       }}</v-btn>
@@ -19,7 +19,7 @@
             <div class="headline primary--text">{{ $t('邀请回答') }}</div>
           </v-card-title>
           <v-card-text>
-            <UserSearch :token="myToken" v-model="invitedUserId" />
+            <UserSearch v-model="invitedUserId" />
             <v-slider
               :label="$t('Reward')"
               v-model="inviteToAnswerRewardCoinAmount"
@@ -76,6 +76,7 @@ import { apiSearch } from '@/api/search';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import RotationList from '@/components/base/RotationList.vue';
+import { readUserProfile } from '@/store/main/getters';
 
 @Component({
   components: { RotationList, RefreshIcon, QuestionLink, UserLink, UserSearch },
@@ -89,11 +90,13 @@ export default class QuestionInfo extends Vue {
   private inviteToAnswerRewardCoinAmount = 0;
 
   private invitedUserId: string | null = null;
-  private myToken: string | null = null;
   private relatedQuestions: IQuestionPreview[] | null = null;
 
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
   public async mounted() {
-    this.myToken = this.$store.state.main.token;
     if (this.question.keywords) {
       this.relatedQuestions = (
         await apiSearch.searchQuestions(

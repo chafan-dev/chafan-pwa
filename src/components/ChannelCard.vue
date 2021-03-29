@@ -1,16 +1,14 @@
 <template>
   <div>
     <div class="headline primary--text">
-      <!-- FIXME: deprecate this -->
       {{ $t('私信') }}
       <MessageTextLockIcon class="ml-1" small />
-      <!-- {{ channel.name }} -->
     </div>
     <div v-if="members">
       {{ $t('Members:') }}
       <ul>
         <li v-for="member in members" :key="member.uuid">
-          <UserLink :userPreview="member" v-if="member.uuid !== currentUserId" />
+          <UserLink :userPreview="member" v-if="member.uuid !== userProfile.uuid" />
           <span v-else>{{ $t('我') }}</span>
         </li>
       </ul>
@@ -27,6 +25,7 @@ import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import { readToken, readUserProfile } from '@/store/main/getters';
 
 @Component({
   components: { UserLink, UserSearch, MessageTextLockIcon },
@@ -35,16 +34,14 @@ export default class ChannelCard extends Vue {
   @Prop() private readonly channel!: IChannel;
   private members: IUserPreview[] = [];
   private newMemberUUID: string | null = null;
-  private myToken: string | null = null;
 
-  get currentUserId() {
-    return this.$store.state.main.userProfile.uuid;
+  get userProfile() {
+    return readUserProfile(this.$store);
   }
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
   private async mounted() {
-    this.myToken = this.$store.state.main.token;
     this.members = [this.channel.admin];
     if (this.channel.private_with_user) {
       // FIXME: deprecate
@@ -52,7 +49,7 @@ export default class ChannelCard extends Vue {
     }
   }
   private async commitNewMember() {
-    if (this.newMemberUUID === this.currentUserId) {
+    if (this.newMemberUUID === this.userProfile?.uuid) {
       commitAddNotification(this.$store, {
         content: this.$t("You can't add yourself.").toString(),
         color: 'error',

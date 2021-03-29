@@ -58,7 +58,6 @@ export default class ReactionBlock extends Vue {
   private myReactionChoices: string[] = [];
   private reactions: IReactions | null = null;
   private reactionIntermediate = false;
-  private selectedReactionsIdx = [];
 
   get loggedIn() {
     return readIsLoggedIn(this.$store);

@@ -95,7 +95,7 @@
         </div>
 
         <div class="d-flex align-center search-box" v-if="userProfile">
-          <SearchBox :token="myToken" />
+          <SearchBox />
         </div>
 
         <div>
@@ -424,7 +424,6 @@ export default class Main extends Vue {
     return readHasModeratedSites(this.$store);
   }
   private appName = appName;
-  private myToken = null;
   private unreadNotifications: INotification[] = [];
   private wsConnection: WebSocket | null = null;
 
@@ -433,20 +432,21 @@ export default class Main extends Vue {
   private readNotificationsIntermediate = false;
   private showReadNotifications = false;
   private readNotifications: INotification[] | null = null;
-  private userProfile: IUserProfile | null = null;
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
 
   private isModerator = false;
 
-  private userMode = true;
+  get userMode() {
+    return readUserMode(this.$store);
+  }
 
   private showLoginPrompt() {
     commitSetShowLoginPrompt(this.$store, true);
   }
 
   private async mounted() {
-    this.myToken = this.$store.state.main.token;
-    this.userProfile = readUserProfile(this.$store);
-    this.userMode = readUserMode(this.$store);
     if (this.userProfile) {
       const sites = readModeratedSites(this.$store);
       this.isModerator = sites !== null && sites.length > 0;

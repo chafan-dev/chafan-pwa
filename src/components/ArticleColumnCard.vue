@@ -81,16 +81,20 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
 import EditIcon from '@/components/icons/EditIcon.vue';
+import { readToken, readUserProfile } from '@/store/main/getters';
 
 @Component({
   components: { EditIcon },
 })
 export default class ArticleColumnCard extends Vue {
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
   get currentUserId() {
-    if (!this.$store.state.main.userProfile) {
+    if (!this.userProfile) {
       return undefined;
     }
-    return this.$store.state.main.userProfile.uuid;
+    return this.userProfile.uuid;
   }
 
   @Prop({ default: false }) private readonly embedded!: false;
@@ -123,7 +127,7 @@ export default class ArticleColumnCard extends Vue {
   }
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   private async subscribe() {

@@ -125,7 +125,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiDiscovery } from '@/api/discovery';
 import { apiMe } from '@/api/me';
-import { readIsLoggedIn } from '@/store/main/getters';
+import { readIsLoggedIn, readToken } from '@/store/main/getters';
 
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { buildInfo } from '@/env';
@@ -157,8 +157,9 @@ export default class HomeSideCard extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.questions = (await apiDiscovery.getPinnedQuestions()).data;
       this.loadingPinnedQuestions = false;
-      if (this.$store.state.main.token) {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;
+      const token = readToken(this.$store);
+      if (token) {
+        this.siteProfiles = (await apiMe.getUserSiteProfiles(token)).data;
         if (!this.$vuetify.breakpoint.mdAndUp) {
           this.visibleSiteProfiles = this.siteProfiles.slice(0, 9);
           if (this.visibleSiteProfiles.length < this.siteProfiles.length) {

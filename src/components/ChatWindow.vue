@@ -12,9 +12,12 @@
           <v-card
             class="blue-grey lighten-5 pa-2"
             min-width="40%"
-            v-bind:class="[message.author.uuid === currentUserId ? 'float-right' : 'float-left']"
+            v-bind:class="[message.author.uuid === userProfile.uuid ? 'float-right' : 'float-left']"
           >
-            <UserLink :userPreview="message.author" v-if="message.author.uuid !== currentUserId" />
+            <UserLink
+              :userPreview="message.author"
+              v-if="message.author.uuid !== userProfile.uuid"
+            />
             <span v-else>{{ $t('我') }}</span
             >:
             <SimpleViewer :body="message.body" />
@@ -52,16 +55,17 @@ import UserLink from '@/components/UserLink.vue';
 import SimpleViewer from '@/components/SimpleViewer.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import { readToken, readUserProfile } from '@/store/main/getters';
 
 @Component({
   components: { UserLink, ChannelCard, ChannelIcon, SimpleViewer },
 })
 export default class ChatWindow extends Vue {
-  get currentUserId() {
-    return this.$store.state.main.userProfile.uuid;
+  get userProfile() {
+    return readUserProfile(this.$store);
   }
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
   @Prop() public readonly channel!: IChannel;
 

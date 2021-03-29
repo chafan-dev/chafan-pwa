@@ -16,10 +16,10 @@
           <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
         </template>
       </v-banner>
-      <v-overlay :value="showOverlay" :opacity="0.1">
-        <v-progress-circular size="100" indeterminate color="primary" />
-      </v-overlay>
-      <router-view v-if="!showOverlay" />
+      <!--      <v-overlay :value="showOverlay" :opacity="0.1">-->
+      <!--        <v-progress-circular size="100" indeterminate color="primary" />-->
+      <!--      </v-overlay>-->
+      <router-view />
       <NotificationsManager />
       <v-snackbar bottom right :value="updateExists" :timeout="-1" color="primary">
         {{ $t('App update is available') }}

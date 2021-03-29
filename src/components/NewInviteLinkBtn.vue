@@ -74,7 +74,6 @@ export default class NewInviteLinkBtn extends Vue {
   private invitedSiteId: string | null = null;
   private showDialog = false;
   private intermediate = false;
-  private myToken: string | null = null;
 
   private invitedPersonalRelation: string = 'unknown';
   private readonly invitedPersonalRelationItems = [
@@ -93,7 +92,6 @@ export default class NewInviteLinkBtn extends Vue {
   ];
 
   private async mounted() {
-    this.myToken = this.$store.state.main.token;
     if (this.site === undefined) {
       await dispatchCaptureApiError(this.$store, async () => {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;

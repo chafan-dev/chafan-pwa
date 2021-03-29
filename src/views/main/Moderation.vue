@@ -197,9 +197,7 @@
 
           <v-card class="ma-3">
             <v-card-title>转移管理权限</v-card-title>
-            <v-card-text>
-              转移给：<UserSearch :token="myToken" v-model="transferToNewAdminUUID" />
-            </v-card-text>
+            <v-card-text> 转移给：<UserSearch v-model="transferToNewAdminUUID" /> </v-card-text>
             <v-card-actions>
               <v-spacer />
               <v-btn small depressed color="warning" @click="submitTransferToNewAdmin"
@@ -281,7 +279,6 @@ export default class Moderation extends Vue {
   private siteConfigUpdate: ISiteUpdate = {};
 
   private broadcastSubmissionLink = '';
-  private myToken: string | null = null;
   private transferToNewAdminUUID: string | null = null;
 
   get token() {
@@ -305,7 +302,6 @@ export default class Moderation extends Vue {
       }
     }
     this.onSiteSelected();
-    this.myToken = this.$store.state.main.token;
     this.loading = false;
   }
 

@@ -69,6 +69,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
 import { Component, Vue } from 'vue-property-decorator';
 import RotationList from '@/components/base/RotationList.vue';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { RotationList, QuestionLink, CreateSubmissionForm, CreateQuestionForm },
@@ -87,7 +88,7 @@ export default class NewContentActionBar extends Vue {
 
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const token = this.$store.state.main.token;
+      const token = readToken(this.$store);
       if (token) {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(token)).data;
         this.myArticleColumns = (await api.getMyArticleColumns(token)).data;
