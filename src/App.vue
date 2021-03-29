@@ -78,7 +78,7 @@ export default class App extends Vue {
   private refreshing = false;
   private loading = true;
 
-  public async created() {
+  public async mounted() {
     document.addEventListener(
       'swUpdated',
       (event) => {

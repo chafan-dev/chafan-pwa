@@ -1,6 +1,6 @@
 <template>
   <v-container :class="{ 'pa-1': !$vuetify.breakpoint.mdAndUp }" fluid>
-    <user-agreement ref="userAgreement" />
+    <user-agreement v-if="userProfile" :user-profile="userProfile" ref="userAgreement" />
 
     <v-row class="pa-3" justify="center">
       <!-- Feed column -->

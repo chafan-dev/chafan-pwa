@@ -36,29 +36,25 @@ export default class UserAgreement extends Vue {
   public overlay = false;
 
   mounted() {
-    if (this.userProfile) {
-      if (this.userProfile.flag_list.includes(YES_FLAG)) {
-        this.showUserAgreement = false;
-      } else {
-        this.showUserAgreement = true;
-        this.overlay = true;
-      }
+    if (this.userProfile.flag_list.includes(YES_FLAG)) {
+      this.showUserAgreement = false;
+    } else {
+      this.showUserAgreement = true;
+      this.overlay = true;
     }
   }
 
   private async continueUserAgreement() {
     this.showUserAgreement = false;
     await dispatchAddFlag(this.$store, YES_FLAG);
-    if (this.userProfile) {
-      if (!this.$vuetify.breakpoint.mdAndUp) {
-        if (this.userProfile.flag_list.includes(FAB_FLAG)) {
-          this.overlay = false;
-        } else {
-          this.showFabHint = true;
-        }
-      } else {
+    if (!this.$vuetify.breakpoint.mdAndUp) {
+      if (this.userProfile.flag_list.includes(FAB_FLAG)) {
         this.overlay = false;
+      } else {
+        this.showFabHint = true;
       }
+    } else {
+      this.overlay = false;
     }
   }
 }
