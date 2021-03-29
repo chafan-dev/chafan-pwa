@@ -400,6 +400,46 @@ app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
   });
 });
 
+for (const randomQuestion of randomQuestionPreviews) {
+  app.get(`/api/v1/questions/${randomQuestion.uuid}`, (req, res) => {
+    res.json({
+      uuid: randomQuestion.uuid,
+      site: randomQuestion.site,
+      author: example_user1_preview,
+      created_at: '2021-02-02T20:02:56.170487+00:00',
+      updated_at: '2021-02-02T20:02:56.170487+00:00',
+      title: randomQuestion.title,
+      topics: [],
+      comments: [],
+      keywords: ['test'],
+      view_times: 10,
+      is_placed_at_home: false,
+      upvoted: false,
+      upvotes_count: 0,
+      answers_count: 0,
+    });
+  });
+  app.post(`/api/v1/questions/${randomQuestion.uuid}/views/`, (req, res) => {
+    res.json({ msg: '' });
+  });
+  app.get(`/api/v1/questions/${randomQuestion.uuid}/answers/`, (req, res) => {
+    res.json([]);
+  });
+  app.get(`/api/v1/me/question-subscriptions/${randomQuestion.uuid}`, (req, res) => {
+    res.json({
+      question_uuid: randomQuestion.uuid,
+      subscription_count: 10,
+      subscribed_by_me: false,
+    });
+  });
+  app.get(`/api/v1/reactions/question/${randomQuestion.uuid}`, (req, res) => {
+    res.json({
+      counters: {},
+      my_reactions: [],
+    });
+  });
+}
+
 app.get('/api/v1/search/questions/', (req, res) => {
   if (req.query.q === 'test') {
     res.json(randomQuestionPreviews);
