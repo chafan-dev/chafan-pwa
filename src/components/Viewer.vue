@@ -7,7 +7,9 @@
       <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
       <div ref="vditorViewer" v-else-if="!bodyFormat || bodyFormat === 'markdown'" />
     </template>
-    <LightboxGroup :container="contentElem" v-if="contentElem" />
+    <template v-if="contentElem">
+      <LightboxGroup :container="contentElem" />
+    </template>
   </div>
 </template>
 

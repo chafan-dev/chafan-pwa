@@ -264,7 +264,6 @@ export default class Article extends Vue {
   private article: IArticle | null = null;
   private upvotes: IArticleUpvotes | null = null;
   private showComments: boolean = false;
-  private newArticleCommentBody: string = '';
 
   private userBookmark: IUserArticleBookmark | null = null;
   private showCancelUpvoteDialog: boolean = false;
