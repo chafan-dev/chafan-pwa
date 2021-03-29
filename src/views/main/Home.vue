@@ -380,7 +380,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { api } from '@/api';
 import { combinedActivities } from '@/home';
-import { IActivity, ISubmission, IUserPreview, IUserProfile } from '@/interfaces';
+import { IActivity, ISubmission, IUserPreview } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import UserLink from '@/components/UserLink.vue';
 import UserCard from '@/components/UserCard.vue';
@@ -442,7 +442,6 @@ export default class Home extends Vue {
   private activities: IActivity[] = [];
   private loadingActivities = true;
   private loadingSubmissions = false;
-  private userProfile: IUserProfile | null = null;
   private overlay = false;
   private showFabHint = false;
   private showUserAgreement = false;
@@ -467,8 +466,11 @@ export default class Home extends Vue {
     return readNarrowUI(this.$store);
   }
 
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
   private async mounted() {
-    this.userProfile = readUserProfile(this.$store);
     if (this.userProfile) {
       if (this.userProfile.locale_preference) {
         setAppLocale(this, this.userProfile.locale_preference);

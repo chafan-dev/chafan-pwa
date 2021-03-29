@@ -315,7 +315,6 @@ import {
   ISite,
   IUserSiteProfile,
   ISubmissionUpvotes,
-  IUserProfile,
   ISubmissionArchive,
   IComment,
   IUserSubmissionSubscription,
@@ -357,7 +356,9 @@ export default class Submission extends Vue {
   get id() {
     return this.$router.currentRoute.params.id;
   }
-
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
   get token() {
     return readToken(this.$store);
   }
@@ -379,15 +380,10 @@ export default class Submission extends Vue {
   private loading = true;
 
   private isModerator = false;
-  private userProfile: IUserProfile | null = null;
 
   private commitSubmissionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
-
-  private showMoveSubmissionDialog = false;
-
-  private handlingNewEdit = false;
 
   private showCancelUpvoteDialog: boolean = false;
   private upvoteIntermediate: boolean = false;
@@ -397,9 +393,6 @@ export default class Submission extends Vue {
   private archives: ISubmissionArchive[] = [];
   private historyDialog = false;
 
-  private siteProfiles: IUserSiteProfile[] = [];
-  private newSubmissionSite: ISite | null = null;
-  private currentUserAnswerUUID: string | null = null;
   private comments: IComment[] = [];
 
   private commentSubmitIntermediate = false;
@@ -452,7 +445,6 @@ export default class Submission extends Vue {
         this.newSubmissionTitle = this.submission.title;
         this.newSubmissionUrl = this.submission.url;
         this.newSubmissionTopicNames = this.submission.topics.map((topic) => topic.name);
-        this.userProfile = readUserProfile(this.$store);
         if (this.userProfile) {
           if (this.userProfile.uuid === this.submission.author.uuid) {
             this.editable = true;

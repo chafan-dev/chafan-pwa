@@ -116,7 +116,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { api } from '@/api';
-import { IQuestionPreview, ISite, ISubmission, IUserProfile, IUserSiteProfile } from '@/interfaces';
+import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interfaces';
 
 import SiteCard from '@/components/SiteCard.vue';
 import UserCard from '@/components/UserCard.vue';
@@ -143,13 +143,15 @@ export default class Site extends Vue {
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);
   }
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
 
   private questions: IQuestionPreview[] | null = null;
   private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
 
   private showComments: boolean = false;
   private site: ISite | null = null;
-  private userProfile: IUserProfile | null = null;
   private siteProfile: IUserSiteProfile | null = null;
   private siteProfiles: IUserSiteProfile[] | null = null;
   private submissions: ISubmission[] | null = [];
@@ -199,7 +201,6 @@ export default class Site extends Vue {
 
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.userProfile = readUserProfile(this.$store);
       this.site = (await api.getSite(this.token, this.$router.currentRoute.params.subdomain)).data;
 
       if (this.userProfile) {

@@ -16,9 +16,6 @@
           <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
         </template>
       </v-banner>
-      <!--      <v-overlay :value="showOverlay" :opacity="0.1">-->
-      <!--        <v-progress-circular size="100" indeterminate color="primary" />-->
-      <!--      </v-overlay>-->
       <router-view />
       <NotificationsManager />
       <v-snackbar bottom right :value="updateExists" :timeout="-1" color="primary">
@@ -62,20 +59,15 @@ import { getDefaultNarrowFeedUI } from '@/common';
   },
 })
 export default class App extends Vue {
-  private showOverlay = true;
-
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
-
   get showLoginPrompt() {
     return readShowLoginPrompt(this.$store);
   }
-
   set showLoginPrompt(value: boolean) {
     commitSetShowLoginPrompt(this.$store, value);
   }
-
   get topBanner() {
     return readTopBanner(this.$store);
   }
@@ -110,7 +102,6 @@ export default class App extends Vue {
       });
     }
     await dispatchCheckLoggedIn(this.$store);
-    this.showOverlay = false;
     const pref = readLocalePreference(this.$store);
     if (pref) {
       setAppLocale(this, pref);

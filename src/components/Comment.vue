@@ -259,9 +259,14 @@ export default class Comment extends Vue {
       return null;
     }
   }
-
   get token() {
     return readToken(this.$store);
+  }
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+  get currentUserIsAuthor() {
+    return this.userProfile?.uuid === this.comment.author.uuid;
   }
   @Prop() private readonly comment!: IComment;
   @Prop() private readonly writable!: boolean;
@@ -272,7 +277,6 @@ export default class Comment extends Vue {
   private showEditor: boolean = false;
   private showUpdateEditor: boolean = false;
   private childComments: IComment[] | null = null;
-  private currentUserIsAuthor = false;
   private sharedToTimeline = false;
   private isDeleted = false;
   private childCommentsExpanded = false;
@@ -307,11 +311,6 @@ export default class Comment extends Vue {
     }
     this.sharedToTimeline = this.comment.shared_to_timeline;
     this.isDeleted = this.comment.is_deleted;
-
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile) {
-      this.currentUserIsAuthor = userProfile.uuid === this.comment.author.uuid;
-    }
   }
 
   private async submitNewReplyBody() {
