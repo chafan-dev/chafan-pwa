@@ -435,21 +435,19 @@ export default class Main extends Vue {
   get userProfile() {
     return readUserProfile(this.$store);
   }
-
-  private isModerator = false;
-
+  get isModerator() {
+    const sites = readModeratedSites(this.$store);
+    return sites !== null && sites.length > 0;
+  }
   get userMode() {
     return readUserMode(this.$store);
   }
-
   private showLoginPrompt() {
     commitSetShowLoginPrompt(this.$store, true);
   }
 
   private async mounted() {
     if (this.userProfile) {
-      const sites = readModeratedSites(this.$store);
-      this.isModerator = sites !== null && sites.length > 0;
       await dispatchCaptureApiError(this.$store, async () => {
         const notifs = (await api.getUnreadNotifications(this.$store.state.main.token)).data;
         if (notifs) {
