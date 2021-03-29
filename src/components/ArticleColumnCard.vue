@@ -116,10 +116,7 @@ export default class ArticleColumnCard extends Vue {
     if (this.currentUserId) {
       await dispatchCaptureApiError(this.$store, async () => {
         this.subscription = (
-          await apiArticle.getArticleColumnSubscription(
-            this.$store.state.main.token,
-            this.articleColumn.uuid
-          )
+          await apiArticle.getArticleColumnSubscription(this.token, this.articleColumn.uuid)
         ).data;
       });
     }

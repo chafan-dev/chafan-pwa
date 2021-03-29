@@ -309,7 +309,7 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
-import { readNarrowUI, readUserMode, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 import {
   ISubmission,
   ISite,
@@ -359,7 +359,7 @@ export default class Submission extends Vue {
   }
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
   private showHelp: boolean = false;
   private submission: ISubmission | null = null;

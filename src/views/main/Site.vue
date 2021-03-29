@@ -126,7 +126,7 @@ import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 
-import { readNarrowUI, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
 @Component({
@@ -194,7 +194,7 @@ export default class Site extends Vue {
   private loading = true;
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   public async mounted() {

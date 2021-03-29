@@ -309,7 +309,7 @@ import GithubIcon from '@/components/icons/GithubIcon.vue';
 import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readIsLoggedIn } from '@/store/main/getters';
+import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
 
 @Component({
@@ -336,7 +336,7 @@ export default class User extends Vue {
   }
 
   get currentUserId() {
-    return this.$store.state.main.userProfile.uuid;
+    return readUserProfile(this.$store)?.uuid;
   }
 
   get handle() {
@@ -441,7 +441,7 @@ export default class User extends Vue {
   }
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   private async loadAnswers(skip: number, limit: number) {

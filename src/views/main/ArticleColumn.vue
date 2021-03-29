@@ -13,7 +13,7 @@
               small
               depressed
               color="primary"
-              v-if="articleColumn && articleColumn.owner.uuid === currentUserId"
+              v-if="articleColumn && articleColumn.owner.uuid === userProfile.uuid"
               :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
               class="mt-2"
             >
@@ -27,7 +27,7 @@
               }}</a>
               <v-chip small class="ml-2" v-if="!article.is_published">{{ $t('初稿') }}</v-chip>
             </li>
-            <div v-if="!currentUserId" class="text-center grey--text">
+            <div v-if="!userProfile" class="text-center grey--text">
               {{ $t('登录后查看更多') }}
             </div>
           </ul>
@@ -44,6 +44,7 @@ import { apiArticle } from '@/api/article';
 import { IArticleColumn, IArticlePreview } from '@/interfaces';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import { readUserProfile } from '@/store/main/getters';
 
 @Component({
   components: { ArticleColumnCard },
@@ -56,11 +57,8 @@ export default class ArticleColumn extends Vue {
     return this.$router.currentRoute.params.id;
   }
 
-  get currentUserId() {
-    if (!this.$store.state.main.userProfile) {
-      return undefined;
-    }
-    return this.$store.state.main.userProfile.uuid;
+  get userProfile() {
+    return readUserProfile(this.$store);
   }
 
   private async mounted() {

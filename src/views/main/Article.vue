@@ -223,7 +223,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
-import { readNarrowUI } from '@/store/main/getters';
+import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
 
 @Component({
@@ -242,14 +242,10 @@ import { apiMe } from '@/api/me';
 })
 export default class Article extends Vue {
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
-
-  get currentUserId() {
-    if (!this.$store.state.main.userProfile) {
-      return null;
-    }
-    return this.$store.state.main.userProfile.uuid;
+  get userProfile() {
+    return readUserProfile(this.$store);
   }
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);
@@ -364,7 +360,7 @@ export default class Article extends Vue {
     if (this.token) {
       apiArticle.bumpViewsCounter(this.token, article.uuid);
     }
-    this.currentUserIsAuthor = this.currentUserId === article.author.uuid;
+    this.currentUserIsAuthor = this.userProfile?.uuid === article.author.uuid;
     if (this.currentUserIsAuthor) {
       apiArticle.getArticleDraft(this.token, article.uuid).then((response) => {
         const draft = response.data;
@@ -401,7 +397,7 @@ export default class Article extends Vue {
   }
 
   private toggleShowComments() {
-    if (!this.currentUserId && this.article!.comments.length === 0) {
+    if (!this.userProfile?.uuid && this.article!.comments.length === 0) {
       commitSetShowLoginPrompt(this.$store, true);
       return;
     }
