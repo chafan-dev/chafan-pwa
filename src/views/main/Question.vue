@@ -968,13 +968,9 @@ export default class Question extends Vue {
 
   private async goToCurrentUserAnswer() {
     if (this.currentUserAnswerUUID) {
-      const UUID = this.currentUserAnswerUUID;
       this.$router.replace(
         `/questions/${this.question?.uuid}/answers/${this.currentUserAnswerUUID}`
       );
-      this.removeAnswer(UUID);
-      const answer = (await apiAnswer.getAnswer(this.token, UUID)).data;
-      this.loadedFullAnswers.unshift(answer);
     }
   }
 
