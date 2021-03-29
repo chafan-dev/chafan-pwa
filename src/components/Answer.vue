@@ -299,13 +299,10 @@ import {
   IAnswerPreview,
   IAnswerUpvotes,
   INewEditEvent,
-  ISite,
   IUserAnswerBookmark,
-  IUserProfile,
-  IUserSiteProfile,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
-import { readUserMode, readUserProfile } from '@/store/main/getters';
+import { readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
@@ -346,9 +343,8 @@ export default class Answer extends Vue {
   get isUserMode() {
     return readUserMode(this.$store);
   }
-
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
   @Prop({ default: false }) private readonly embedded!: false;
   @Prop() private readonly answerPreview!: IAnswerPreview;
@@ -359,16 +355,12 @@ export default class Answer extends Vue {
   @Prop() private readonly showCommentId: number | undefined;
   @Prop({ default: true }) private readonly showQuestionInCard!: boolean;
 
-  private site: ISite | null = null;
   private answer: IAnswer | null = null;
   private upvotes: IAnswerUpvotes | null = null;
   private showComments: boolean = false;
-  private newAnswerCommentBody: string = '';
-  private userProfile: IUserProfile | null = null;
   private isHiddenByMod: boolean = false;
   private isModerator = false;
   private commentWritable = false;
-  private userSiteProfile: IUserSiteProfile | null = null;
   private userBookmark: IUserAnswerBookmark | null = null;
   private showEditor: boolean = false;
   private showCancelUpvoteDialog: boolean = false;
@@ -403,13 +395,16 @@ export default class Answer extends Vue {
 
   private commentSubmitIntermediate = false;
 
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
   private async mounted() {
     if (this.showCommentId) {
       this.showComments = true;
     }
 
     this.isHiddenByMod = this.answerPreview.is_hidden_by_moderator;
-    this.userProfile = readUserProfile(this.$store);
     if (this.userProfile) {
       const mod = this.answerPreview.question.site.moderator;
       if (mod) {

@@ -1,3 +1,4 @@
+]
 <template>
   <div>
     <v-menu
@@ -41,13 +42,16 @@
 <script lang="ts">
 import { apiSearch } from '@/api/search';
 import SearchIcon from '@/components/icons/SearchIcon.vue';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { SearchIcon },
 })
 export default class SearchBox extends Vue {
-  @Prop() public readonly token!: string;
+  get token() {
+    return readToken(this.$store);
+  }
   private loading = false;
   private items: any[] = [];
   private timerId: any = null;

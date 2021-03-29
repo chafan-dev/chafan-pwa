@@ -9,7 +9,7 @@
           <span class="headline">{{ $t('添加站内用户') }}</span>
         </v-card-title>
         <v-card-text>
-          <UserSearch :token="myToken" v-model="friendId" />
+          <UserSearch v-model="friendId" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -39,6 +39,7 @@ import SiteIcon from '@/components/icons/SiteIcon.vue';
 import ShieldCheckIcon from '@/components/icons/ShieldCheckIcon.vue';
 import { ISite, IUserInvite } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { UserSearch, AccountIcon, ShieldCheckIcon, SiteIcon },
@@ -49,11 +50,6 @@ export default class Invite extends Vue {
   private friendId: string | null = null;
   private showDialog = false;
   private intermediate = false;
-  private myToken: string | null = null;
-
-  private async mounted() {
-    this.myToken = this.$store.state.main.token;
-  }
 
   private async submitInviteFriends() {
     this.intermediate = true;
@@ -67,7 +63,7 @@ export default class Invite extends Vue {
         return;
       }
       payload.user_uuid = this.friendId;
-      const response = await api2.inviteUser(this.$store.state.main.token, payload);
+      const response = await api2.inviteUser(readToken(this.$store), payload);
       if (response) {
         commitAddNotification(this.$store, {
           content: this.$t(response.data.msg).toString(),

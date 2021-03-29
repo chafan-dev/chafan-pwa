@@ -94,7 +94,6 @@ export default class CreateSite extends Vue {
     permission_type: 'public',
   };
 
-  private myToken: string | null = null;
   private readonly permissionTypeItems = ['public', 'private'];
 
   get canCreateSite() {
@@ -177,10 +176,6 @@ export default class CreateSite extends Vue {
       });
       this.intermediate = false;
     }
-  }
-
-  private mounted() {
-    this.myToken = this.$store.state.main.token;
   }
 }
 </script>

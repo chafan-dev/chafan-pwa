@@ -36,8 +36,8 @@ import UserLink from '@/components/UserLink.vue';
 import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
-import { api } from '@/api';
 import { apiQuestion } from '@/api/question';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { UserLink, Invite },
@@ -52,7 +52,7 @@ export default class CreateQuestionForm extends Vue {
   private selectedSite: ISite | null = null;
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   private async mounted() {

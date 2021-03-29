@@ -16,9 +16,9 @@
 
 <script>
 import { apiSearch } from '@/api/search';
+import { readToken } from '@/store/main/getters';
 
 export default {
-  props: ['token'],
   data() {
     return {
       loading: false,
@@ -36,6 +36,11 @@ export default {
       if (val && val !== this.selectedUserUUID) {
         this.querySelections(val);
       }
+    },
+  },
+  computed: {
+    token() {
+      return readToken(this.$store);
     },
   },
   methods: {

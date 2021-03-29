@@ -205,7 +205,7 @@ import { api2 } from '@/api2';
 import { apiComment } from '@/api/comment';
 import { rankComments } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readIsLoggedIn, readUserProfile } from '@/store/main/getters';
+import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 
 @Component({
   name: 'Comment',
@@ -261,7 +261,7 @@ export default class Comment extends Vue {
   }
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
   @Prop() private readonly comment!: IComment;
   @Prop() private readonly writable!: boolean;

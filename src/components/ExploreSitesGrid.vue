@@ -18,6 +18,7 @@ import SiteBtn from '@/components/SiteBtn.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import BaseCard from '@/components/base/BaseCard.vue';
+import { readToken } from '@/store/main/getters';
 
 function uniqBy(a, key) {
   const seen = new Set();
@@ -49,7 +50,7 @@ export default class ExploreSitesGrid extends Vue {
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const siteMaps = (await api.getSiteMaps(this.$store.state.main.token)).data;
+      const siteMaps = (await api.getSiteMaps(readToken(this.$store))).data;
 
       for (const rootSiteMap of siteMaps.site_maps) {
         if (this.blocks2Weight >= this.blocks1Weight) {

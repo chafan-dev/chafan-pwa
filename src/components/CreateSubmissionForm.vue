@@ -44,6 +44,7 @@ import UserLink from '@/components/UserLink.vue';
 import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { UserLink, Invite },
@@ -62,13 +63,13 @@ export default class CreateSubmissionForm extends Vue {
     // FIXME: Cache user's site profile on the client side
     if (this.site === undefined && this.token) {
       await dispatchCaptureApiError(this.$store, async () => {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;
+        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
       });
     }
   }
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   private async postNewSubmission() {
@@ -97,7 +98,7 @@ export default class CreateSubmissionForm extends Vue {
     }
     await dispatchCaptureApiError(this.$store, async () => {
       this.postNewSubmissionIntermediate = true;
-      const response = await apiSubmission.postSubmission(this.$store.state.main.token, {
+      const response = await apiSubmission.postSubmission(this.token, {
         site_uuid: siteUUID,
         title: this.newSubmissionTitle,
         url: this.newSubmissionURL ? this.newSubmissionURL : undefined,

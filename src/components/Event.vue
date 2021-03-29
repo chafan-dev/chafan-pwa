@@ -122,6 +122,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import UserLink from '@/components/UserLink.vue';
 import CommentPreview from '@/components/CommentPreview.vue';
 import SimpleViewer from '@/components/SimpleViewer.vue';
+import { readUserProfile } from '@/store/main/getters';
 
 @Component({
   components: { UserLink, CommentPreview, SimpleViewer },
@@ -130,7 +131,7 @@ export default class Event extends Vue {
   @Prop() public readonly event!: IEvent;
 
   get currentUserId() {
-    return this.$store.state.main.userProfile.uuid;
+    return readUserProfile(this.$store)?.uuid;
   }
 }
 </script>

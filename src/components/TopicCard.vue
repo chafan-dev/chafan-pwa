@@ -40,13 +40,9 @@ export default class TopicCard extends Vue {
   private topicSubscription: IUserTopicSubscription | null = null;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
-  private myToken: string | null = null;
   private parentTopic: ITopic | null = null;
-  private newParentTopicId: string | null = null;
-  private newTopicName: string | null = null;
 
   public async mounted() {
-    this.myToken = this.$store.state.main.token;
     await dispatchCaptureApiError(this.$store, async () => {
       const response3 = await apiMe.getTopicSubscription(
         this.$store.state.main.token,
