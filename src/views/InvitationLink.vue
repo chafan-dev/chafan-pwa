@@ -1,21 +1,21 @@
 <template>
   <v-main>
-    <v-container fluid fill-height>
+    <v-container fill-height fluid>
       <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md6>
-          <v-card class="elevation-12" v-if="invitationLink || errorMsg">
+        <v-flex md6 sm8 xs12>
+          <v-card v-if="invitationLink || errorMsg" class="elevation-12">
             <v-card-title v-if="invitationLink">
               <UserLink :userPreview="invitationLink.inviter" />
               <span class="ml-1"
                 >邀请你加入
-                <router-link class="text-decoration-none" to="/" target="_blank">{{
+                <router-link class="text-decoration-none" target="_blank" to="/">{{
                   appName
                 }}</router-link>
               </span>
               <span v-if="invitationLink.invited_to_site">
                 「<router-link
-                  class="text-decoration-none"
                   :to="`/sites/${invitationLink.invited_to_site.subdomain}`"
+                  class="text-decoration-none"
                   target="_blank"
                   >{{ invitationLink.invited_to_site.name }}</router-link
                 >」圈子
@@ -38,21 +38,21 @@
               </div>
             </v-card-text>
             <v-card-actions v-if="invitationLink">
-              <span class="grey--text" v-if="!loggedIn"
+              <span v-if="!loggedIn" class="grey--text"
                 >已注册？ 请<a class="text-decoration-none" href="/login">登录</a>后刷新本页面
               </span>
               <v-spacer />
               <template v-if="loggedIn">
-                <v-btn color="primary" @click="joinSite" v-if="invitationLink.invited_to_site">
+                <v-btn v-if="invitationLink.invited_to_site" color="primary" @click="joinSite">
                   {{ $t('加入') }}
                 </v-btn>
               </template>
-              <v-btn color="primary" :to="`/signup?invitation_link_uuid=${uuid}`" v-else>
+              <v-btn v-else :to="`/signup?invitation_link_uuid=${uuid}`" color="primary">
                 {{ $t('前往注册') }}
               </v-btn>
             </v-card-actions>
           </v-card>
-          <v-skeleton-loader type="card" v-else />
+          <v-skeleton-loader v-else type="card" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -76,16 +76,21 @@ import { readIsLoggedIn } from '@/store/main/getters';
   components: { UserLink },
 })
 export default class InvitationLink extends Vue {
+  private appName = appName;
+  private invitationLink: IInvitationLink | null = null;
+  private errorMsg: string | null = null;
+
   get uuid() {
     return this.$route.params.uuid;
   }
+
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
 
-  private appName = appName;
-  private invitationLink: IInvitationLink | null = null;
-  private errorMsg: string | null = null;
+  get token() {
+    return this.$store.state.main.token;
+  }
 
   private async mounted() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
@@ -100,10 +105,6 @@ export default class InvitationLink extends Vue {
         return false;
       },
     });
-  }
-
-  get token() {
-    return this.$store.state.main.token;
   }
 
   private async joinSite() {

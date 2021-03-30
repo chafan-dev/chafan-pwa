@@ -8,7 +8,7 @@
       {{ $t('Members:') }}
       <ul>
         <li v-for="member in members" :key="member.uuid">
-          <UserLink :userPreview="member" v-if="member.uuid !== userProfile.uuid" />
+          <UserLink v-if="member.uuid !== userProfile.uuid" :userPreview="member" />
           <span v-else>{{ $t('我') }}</span>
         </li>
       </ul>
@@ -38,9 +38,11 @@ export default class ChannelCard extends Vue {
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
   get token() {
     return readToken(this.$store);
   }
+
   private async mounted() {
     this.members = [this.channel.admin];
     if (this.channel.private_with_user) {
@@ -48,6 +50,7 @@ export default class ChannelCard extends Vue {
       this.members.push(this.channel.private_with_user);
     }
   }
+
   private async commitNewMember() {
     if (this.newMemberUUID === this.userProfile?.uuid) {
       commitAddNotification(this.$store, {

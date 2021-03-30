@@ -5,29 +5,29 @@
       <v-list-item-content>
         <Comment
           :comment="comment"
-          :writable="writable"
-          :siteId="siteId"
           :enableUpvotes="enableUpvotes"
+          :siteId="siteId"
+          :writable="writable"
         />
       </v-list-item-content>
     </v-list-item>
     <div v-if="writable">
-      <SimpleEditor ref="simpleEditor" class="mb-1" :placeholder="$t('评论')" />
+      <SimpleEditor ref="simpleEditor" :placeholder="$t('评论')" class="mb-1" />
       <div class="d-flex">
         <v-spacer />
         <v-btn
-          small
-          depressed
-          @click="submitNewComment"
-          color="primary"
           :disabled="commentSubmitIntermediate"
+          color="primary"
+          depressed
+          small
+          @click="submitNewComment"
         >
           {{ $t('提交评论') }}
-          <v-progress-circular :size="20" v-show="commentSubmitIntermediate" indeterminate />
+          <v-progress-circular v-show="commentSubmitIntermediate" :size="20" indeterminate />
         </v-btn>
       </div>
     </div>
-    <div class="text-caption grey--text pl-2" v-else-if="loggedIn">
+    <div v-else-if="loggedIn" class="text-caption grey--text pl-2">
       {{ $t('Only site member can comment') }}
     </div>
   </div>

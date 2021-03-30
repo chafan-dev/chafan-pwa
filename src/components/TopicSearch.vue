@@ -1,15 +1,15 @@
 <template>
   <v-autocomplete
     v-model="selectedTopicId"
-    :loading="loading"
-    :items="topics"
     :item-text="getItemText"
-    item-value="uuid"
+    :items="topics"
+    :label="$t('Topic name')"
+    :loading="loading"
     :search-input.sync="search"
     cache-items
-    hide-no-data
     hide-details
-    :label="$t('Topic name')"
+    hide-no-data
+    item-value="uuid"
     @input="$emit('input', selectedTopicId)"
   ></v-autocomplete>
 </template>

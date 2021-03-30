@@ -45,7 +45,8 @@
                     class="text-decoration-none"
                     target="_blank"
                   >
-                    <WebIcon /> {{ $t('个人主页') }}
+                    <WebIcon />
+                    {{ $t('个人主页') }}
                   </a>
                   <a
                     v-if="userPublic.github_username"
@@ -53,7 +54,8 @@
                     class="text-decoration-none"
                     target="_blank"
                   >
-                    <GithubIcon /> Github
+                    <GithubIcon />
+                    Github
                   </a>
                   <a
                     v-if="userPublic.twitter_username"
@@ -61,7 +63,8 @@
                     class="text-decoration-none"
                     target="_blank"
                   >
-                    <TwitterIcon /> Twitter
+                    <TwitterIcon />
+                    Twitter
                   </a>
                   <a
                     v-if="userPublic.linkedin_url"
@@ -69,7 +72,8 @@
                     class="text-decoration-none"
                     target="_blank"
                   >
-                    <LinkedinIcon /> Linkedin
+                    <LinkedinIcon />
+                    Linkedin
                   </a>
                 </div>
               </template>
@@ -86,8 +90,8 @@
                         v-for="topic in userPublic.residency_topics"
                         :key="topic.uuid"
                         :to="'/topics/' + topic.uuid"
-                        >{{ topic.name }}</v-chip
-                      >
+                        >{{ topic.name }}
+                      </v-chip>
                     </v-chip-group>
                   </div>
                 </div>
@@ -100,9 +104,9 @@
                     {{ $t('所在行业') }}
                   </div>
                   <div class="title primary--text text--darken-2">
-                    <v-chip :to="'/topics/' + userPublic.profession_topic.uuid">{{
-                      userPublic.profession_topic.name
-                    }}</v-chip>
+                    <v-chip :to="'/topics/' + userPublic.profession_topic.uuid"
+                      >{{ userPublic.profession_topic.name }}
+                    </v-chip>
                   </div>
                 </div>
               </template>
@@ -190,8 +194,8 @@
                     :to="'/topics/' + topic.uuid"
                     class="mr-1 mb-1"
                     small
-                    >{{ topic.name }}</v-chip
-                  >
+                    >{{ topic.name }}
+                  </v-chip>
                 </div>
               </template>
               <v-skeleton-loader v-else type="text" />
@@ -273,7 +277,8 @@
         </div>
         <div v-else class="ml-7 mr-7">
           <div class="text-center">
-            <RegisteredUserOnlyIcon class="mr-2" /><span>{{ $t('登录后查看更多') }}</span>
+            <RegisteredUserOnlyIcon class="mr-2" />
+            <span>{{ $t('登录后查看更多') }}</span>
           </div>
         </div>
       </v-col>
@@ -376,22 +381,6 @@ export default class User extends Vue {
       render: this.renderFollowed,
     },
   ];
-
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'user');
-    if (matched && !_.isEqual(to.params, from.params)) {
-      this.userPublic = null;
-      this.userPublicForVisitor = null;
-      this.followers = null;
-      this.followed = null;
-      this.eduExps = null;
-      this.workExps = null;
-      this.sites = null;
-      this.load();
-    }
-  }
-
   private userPublic: IUserPublic | null = null;
   private userPublicForVisitor: IUserPublicForVisitor | null = null;
   private followers: IUserPreview[] | null = null;
@@ -426,6 +415,21 @@ export default class User extends Vue {
 
   get token() {
     return readToken(this.$store);
+  }
+
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'user');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.userPublic = null;
+      this.userPublicForVisitor = null;
+      this.followers = null;
+      this.followed = null;
+      this.eduExps = null;
+      this.workExps = null;
+      this.sites = null;
+      this.load();
+    }
   }
 
   public async mounted() {
@@ -514,6 +518,7 @@ export default class User extends Vue {
   private async renderFollowers(userPublic: IUserPublic) {
     this.followers = (await apiPeople.getUserFollowers(this.token, userPublic.uuid)).data;
   }
+
   private async renderFollowed(userPublic: IUserPublic) {
     this.followed = (await apiPeople.getUserFollowed(this.token, userPublic.uuid)).data;
   }

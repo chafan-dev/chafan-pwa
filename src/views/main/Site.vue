@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-row justify="center" v-else>
+    <v-row v-else justify="center">
       <v-col
         :class="{
           'col-8': $vuetify.breakpoint.mdAndUp,
@@ -13,9 +13,9 @@
       >
         <v-tabs
           v-model="currentTabItem"
-          show-arrows
           :align-with-title="$vuetify.breakpoint.mdAndUp"
           :fixed-tabs="$vuetify.breakpoint.mdAndUp"
+          show-arrows
         >
           <v-tabs-slider />
           <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
@@ -28,16 +28,16 @@
           <v-tab-item value="questions">
             <DynamicItemList
               v-if="readable"
-              emptyItemsText="No questions for now"
-              :loadItems="loadQuestions"
               v-slot="{ item }"
+              :loadItems="loadQuestions"
+              emptyItemsText="No questions for now"
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
-            <div class="my-4 text-center" v-else-if="userProfile">
+            <div v-else-if="userProfile" class="my-4 text-center">
               {{ $t('Only site members can view its content.') }}
             </div>
-            <div class="my-4 text-center" v-else>
+            <div v-else class="my-4 text-center">
               {{ $t('登录后查看更多') }}
             </div>
           </v-tab-item>
@@ -45,16 +45,16 @@
           <v-tab-item value="submissions">
             <DynamicItemList
               v-if="readable"
-              emptyItemsText="No submissions for now"
-              :loadItems="loadSubmissions"
               v-slot="{ item }"
+              :loadItems="loadSubmissions"
+              emptyItemsText="No submissions for now"
             >
               <SubmissionCard :submission="item" />
             </DynamicItemList>
-            <div class="my-4 text-center" v-else-if="userProfile">
+            <div v-else-if="userProfile" class="my-4 text-center">
               {{ $t('Only site members can view its content.') }}
             </div>
-            <div class="my-4 text-center" v-else>
+            <div v-else class="my-4 text-center">
               {{ $t('登录后查看更多') }}
             </div>
           </v-tab-item>
@@ -66,17 +66,17 @@
                   <template v-for="j in memberCols">
                     <v-col :key="(i - 1) * memberCols + (j - 1)">
                       <UserCard
-                        :userPreview="siteProfiles[(i - 1) * memberCols + (j - 1)].owner"
+                        v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length"
                         :compactMode="true"
                         :siteKarmas="siteProfiles[(i - 1) * memberCols + (j - 1)].karma"
-                        v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length"
+                        :userPreview="siteProfiles[(i - 1) * memberCols + (j - 1)].owner"
                       />
                     </v-col>
                   </template>
                 </v-row>
               </template>
             </div>
-            <div class="my-4 text-center" v-else>
+            <div v-else class="my-4 text-center">
               {{ $t('Only site members can view its content.') }}
             </div>
           </v-tab-item>
@@ -84,28 +84,30 @@
       </v-col>
 
       <v-col
-        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
         v-if="$vuetify.breakpoint.mdAndUp"
+        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
         <SiteCard
           :compactMode="false"
-          :site="site"
           :isMember="siteProfile !== null"
           :showQuestionEditor="showQuestionEditor"
           :showSubmissionEditor="showSubmissionEditor"
+          :site="site"
         />
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab fixed right bottom v-bind="attrs" v-on="on"><InfoIcon /></v-btn>
+          <v-btn v-bind="attrs" v-on="on" bottom fab fixed right>
+            <InfoIcon />
+          </v-btn>
         </template>
         <v-sheet class="pa-2">
           <SiteCard
             :compactMode="false"
-            :site="site"
             :isMember="siteProfile !== null"
             :showQuestionEditor="showQuestionEditor"
             :showSubmissionEditor="showSubmissionEditor"
+            :site="site"
           />
         </v-sheet>
       </v-bottom-sheet>
@@ -142,25 +144,6 @@ import * as _ from 'lodash';
   },
 })
 export default class Site extends Vue {
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'site');
-    if (matched && !_.isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.site = null;
-      this.siteProfile = null;
-      this.siteProfiles = null;
-      this.load();
-    }
-  }
-
   private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
   private site: ISite | null = null;
   private siteProfile: IUserSiteProfile | null = null;
@@ -168,11 +151,6 @@ export default class Site extends Vue {
   private showQuestionEditor = false;
   private showSubmissionEditor = false;
   private loading = true;
-
-  get readable() {
-    return this.site && (this.siteProfile !== null || this.site.public_readable);
-  }
-
   private tabItems = [
     {
       code: 'questions',
@@ -190,6 +168,18 @@ export default class Site extends Vue {
       tabExtraCount: (site: ISite) => site.members_count,
     },
   ];
+
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
+  }
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
+  get readable() {
+    return this.site && (this.siteProfile !== null || this.site.public_readable);
+  }
 
   get currentTabItem() {
     return this.$route.query.tab ? this.$route.query.tab : 'questions';
@@ -209,6 +199,18 @@ export default class Site extends Vue {
 
   get subdomain() {
     return this.$route.params.subdomain;
+  }
+
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'site');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.loading = true;
+      this.site = null;
+      this.siteProfile = null;
+      this.siteProfiles = null;
+      this.load();
+    }
   }
 
   public async mounted() {

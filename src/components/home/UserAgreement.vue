@@ -30,10 +30,9 @@ import { IUserProfile } from '@/interfaces';
 })
 export default class UserAgreement extends Vue {
   @Prop() public readonly userProfile!: IUserProfile;
-
+  public overlay = false;
   private showFabHint = false;
   private showUserAgreement = false;
-  public overlay = false;
 
   mounted() {
     if (this.userProfile.flag_list.includes(YES_FLAG)) {

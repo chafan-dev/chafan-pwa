@@ -13,19 +13,19 @@
               <template>
                 <v-form>
                   <ValidationProvider
-                    rules="required|password|password1:@confirm"
                     v-slot="{ errors }"
                     name="password"
+                    rules="required|password|password1:@confirm"
                   >
-                    <v-text-field :label="$t('Password')" type="password" v-model="password" />
+                    <v-text-field v-model="password" :label="$t('Password')" type="password" />
                     <span class="error--text">{{ $t(errors[0]) }}</span>
                   </ValidationProvider>
 
-                  <ValidationProvider rules="required" v-slot="{ errors }" name="confirm">
+                  <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
                     <v-text-field
+                      v-model="confirmation"
                       :label="$t('Password confirmation')"
                       type="password"
-                      v-model="confirmation"
                     />
                     <span class="error--text">{{ $t(errors[0]) }}</span>
                   </ValidationProvider>
@@ -35,42 +35,44 @@
             <v-card-actions>
               <v-spacer />
               <v-btn
+                :disabled="intermediate"
+                color="primary"
                 depressed
                 small
-                color="primary"
                 @click="
                   () => {
                     handleSubmit(submit);
                     reset();
                   }
                 "
-                :disabled="intermediate"
               >
                 {{ $t('Save') }}
-                <v-progress-circular size="20" indeterminate v-if="intermediate" />
+                <v-progress-circular v-if="intermediate" indeterminate size="20" />
               </v-btn>
             </v-card-actions>
           </v-card>
         </ValidationObserver>
 
         <ValidationObserver v-slot="{ handleSubmit }">
-          <v-card class="ma-3 pa-3" :loading="!userProfile">
+          <v-card :loading="!userProfile" class="ma-3 pa-3">
             <v-card-title primary-title>
               <div class="headline primary--text">
                 {{ $t('Manage logins') }}
               </div>
             </v-card-title>
-            <div class="pa-4" v-if="userProfile">
+            <div v-if="userProfile" class="pa-4">
               <div>
                 <div v-if="phoneNumber" class="mb-2">
-                  <CellphoneIcon /> {{ $t('Cellphone number') }}:
+                  <CellphoneIcon />
+                  {{ $t('Cellphone number') }}:
                   {{ phoneNumber }}
                   <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'cellphone'" />
                 </div>
                 <div class="mb-2">
                   <div>
-                    <EmailIcon /> {{ $t('Email') }}: {{ userProfile.email }}
-                    <v-chip small color="primary">{{ $t('primary') }}</v-chip>
+                    <EmailIcon />
+                    {{ $t('Email') }}: {{ userProfile.email }}
+                    <v-chip color="primary" small>{{ $t('primary') }}</v-chip>
                     <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'email'" />
                   </div>
                   <div
@@ -78,13 +80,14 @@
                     :key="secondaryEmail"
                     class="mt-1"
                   >
-                    <EmailIcon /> {{ $t('Email') }}: {{ secondaryEmail }}
+                    <EmailIcon />
+                    {{ $t('Email') }}: {{ secondaryEmail }}
                     <v-chip small>{{ $t('secondary') }}</v-chip>
                     <DeleteIcon
                       v-if="!editLoginMode || !intermediate"
                       @click="removeSecondaryEmail(secondaryEmail)"
                     />
-                    <v-progress-circular size="20" indeterminate v-if="intermediate" />
+                    <v-progress-circular v-if="intermediate" indeterminate size="20" />
                   </div>
                 </div>
               </div>
@@ -92,106 +95,114 @@
               <v-divider v-if="editLoginMode" class="mt-3 mb-2" />
               <v-form v-if="editLoginMode === 'cellphone'">
                 <ValidationProvider
-                  rules="phone_number_e164"
                   v-slot="{ errors }"
                   name="phone-number"
+                  rules="phone_number_e164"
                 >
-                  <v-text-field :label="$t('Phone number')" type="text" v-model="phoneNumber">
-                    <template v-slot:prepend><CellphoneIcon /></template>
+                  <v-text-field v-model="phoneNumber" :label="$t('Phone number')" type="text">
+                    <template v-slot:prepend>
+                      <CellphoneIcon />
+                    </template>
                   </v-text-field>
                   <span class="error--text">{{ $t(errors[0]) }}</span>
                 </ValidationProvider>
 
                 <v-text-field
-                  v-model="verificationCode"
-                  name="verification-code"
-                  :label="$t('验证码')"
-                  type="text"
                   v-show="showCodeInput"
+                  v-model="verificationCode"
+                  :label="$t('验证码')"
+                  name="verification-code"
+                  type="text"
                 >
-                  <template v-slot:prepend><VerifyCodeIcon /></template>
+                  <template v-slot:prepend>
+                    <VerifyCodeIcon />
+                  </template>
                 </v-text-field>
               </v-form>
 
               <v-form v-if="editLoginMode === 'email' || editLoginMode === 'add_secondary_email'">
-                <ValidationProvider rules="email" v-slot="{ errors }" name="email">
-                  <v-text-field :label="$t('Email')" type="text" v-model="newEmail">
-                    <template v-slot:prepend><EmailIcon /></template>
+                <ValidationProvider v-slot="{ errors }" name="email" rules="email">
+                  <v-text-field v-model="newEmail" :label="$t('Email')" type="text">
+                    <template v-slot:prepend>
+                      <EmailIcon />
+                    </template>
                   </v-text-field>
                   <span class="error--text">{{ $t(errors[0]) }}</span>
                 </ValidationProvider>
 
                 <v-text-field
-                  v-model="verificationCode"
-                  name="verification-code"
-                  :label="$t('验证码')"
-                  type="text"
                   v-show="showCodeInput"
+                  v-model="verificationCode"
+                  :label="$t('验证码')"
+                  name="verification-code"
+                  type="text"
                 >
-                  <template v-slot:prepend><VerifyCodeIcon /></template>
+                  <template v-slot:prepend>
+                    <VerifyCodeIcon />
+                  </template>
                 </v-text-field>
               </v-form>
             </div>
             <v-card-actions>
               <v-spacer />
               <v-btn
-                small
-                depressed
-                @click="editLoginMode = 'add_secondary_email'"
                 v-show="!editLoginMode"
+                depressed
+                small
+                @click="editLoginMode = 'add_secondary_email'"
               >
                 {{ $t('Add secondary email') }}
               </v-btn>
               <v-btn
-                small
-                depressed
-                @click="editLoginMode = 'cellphone'"
                 v-show="!editLoginMode && !phoneNumber"
+                depressed
+                small
+                @click="editLoginMode = 'cellphone'"
               >
                 {{ $t('Add phone number') }}
               </v-btn>
-              <v-btn small depressed @click="editLoginMode = null" v-show="editLoginMode">
+              <v-btn v-show="editLoginMode" depressed small @click="editLoginMode = null">
                 {{ $t('Cancel') }}
               </v-btn>
 
               <v-btn
-                small
-                depressed
+                v-show="editLoginMode"
                 :color="!showVerifyCodeBtn ? 'primary' : undefined"
                 :disabled="verificationCodeDisabled || intermediate"
+                depressed
+                small
                 @click="handleSubmit(sendVerificationCode)"
-                v-show="editLoginMode"
               >
                 {{ $t('Send me verification code') }}
-                <v-progress-circular size="20" indeterminate v-if="intermediate" />
+                <v-progress-circular v-if="intermediate" indeterminate size="20" />
               </v-btn>
 
               <v-btn
-                small
-                depressed
-                color="primary"
-                @click="handleSubmit(verifyCode)"
-                :disabled="intermediate"
                 v-show="showVerifyCodeBtn && editLoginMode"
+                :disabled="intermediate"
+                color="primary"
+                depressed
+                small
+                @click="handleSubmit(verifyCode)"
               >
                 {{ $t('Verify and save') }}
-                <v-progress-circular size="20" indeterminate v-if="intermediate" />
+                <v-progress-circular v-if="intermediate" indeterminate size="20" />
               </v-btn>
             </v-card-actions>
           </v-card>
         </ValidationObserver>
 
-        <v-card class="ma-3 pa-3" :loading="!userProfile">
+        <v-card :loading="!userProfile" class="ma-3 pa-3">
           <v-card-title>{{ $t('Others') }}</v-card-title>
           <v-card-actions>
-            <v-btn small depressed @click="showSecurityLogs">{{ $t('查看安全日志') }}</v-btn>
+            <v-btn depressed small @click="showSecurityLogs">{{ $t('查看安全日志') }}</v-btn>
           </v-card-actions>
         </v-card>
         <v-dialog v-model="showSecurityLogsDialog" max-width="600">
           <v-card :loading="auditLogs === null">
             <v-card-title>{{ $t('安全日志') }}</v-card-title>
             <v-card-text v-if="auditLogs">
-              <v-data-table :items="auditLogs" :headers="auditLogHeaders" :items-per-page="10">
+              <v-data-table :headers="auditLogHeaders" :items="auditLogs" :items-per-page="10">
                 <template v-slot:item.created_at="{ item }">
                   <span v-if="item.created_at">{{
                     $dayjs.utc(item.created_at).local().fromNow()
@@ -241,31 +252,27 @@ import DeleteIcon from '@/components/icons/DeleteIcon.vue';
   },
 })
 export default class Security extends Vue {
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
   private password: string | null = null;
   private confirmation: string | null = null;
   private phoneNumber: string | null = null;
   private newEmail: string | null = null;
   private showCodeInput = false;
-
   private verificationCodeDisabled = false;
   private showSecurityLogsDialog = false;
-
   private showVerifyCodeBtn = false;
   private editLoginMode: 'cellphone' | 'email' | 'add_secondary_email' | null = null;
-
   private intermediate = false;
   private verificationCode: string = '';
-
   private readonly auditLogHeaders = [
     { text: this.$t('Created at'), value: 'created_at' },
     { text: this.$t('API'), value: 'api' },
     { text: this.$t('IP'), value: 'ipaddr' },
   ];
-
   private auditLogs: IAuditLog[] | null = null;
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
 
   private async sendVerificationCode() {
     if (!this.editLoginMode) {
@@ -403,6 +410,7 @@ export default class Security extends Vue {
       this.intermediate = false;
     });
   }
+
   private async showSecurityLogs() {
     this.showSecurityLogsDialog = true;
     this.auditLogs = (await api.getAuditLogs(this.$store.state.main.token)).data;

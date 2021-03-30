@@ -1,9 +1,9 @@
 <template>
   <span>
     <router-link
-      class="text-decoration-none"
-      :to="comment.root_route + `/comments/${comment.uuid}`"
       v-if="comment.root_route"
+      :to="comment.root_route + `/comments/${comment.uuid}`"
+      class="text-decoration-none"
     >
       {{ shortComment }}
     </router-link>

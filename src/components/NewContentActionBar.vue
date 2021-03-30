@@ -1,30 +1,30 @@
 <template>
   <div class="d-flex d-none">
     <div>
-      <v-btn small depressed class="primary darken-2 mr-1" @click="showAskActionDialog = true">
+      <v-btn class="primary darken-2 mr-1" depressed small @click="showAskActionDialog = true">
         {{ $t('提问') }}
       </v-btn>
 
-      <v-dialog max-width="500" v-model="showAskActionDialog">
+      <v-dialog v-model="showAskActionDialog" max-width="500">
         <CreateQuestionForm :showTitle="true" />
       </v-dialog>
     </div>
 
-    <v-btn small depressed class="mr-1" @click="showArticleActionDialog = true">{{
-      $t('写文章')
-    }}</v-btn>
-    <v-dialog max-width="500" v-model="showArticleActionDialog">
+    <v-btn class="mr-1" depressed small @click="showArticleActionDialog = true"
+      >{{ $t('写文章') }}
+    </v-btn>
+    <v-dialog v-model="showArticleActionDialog" max-width="500">
       <v-card>
         <v-card-title primary-title>
           <div class="headline primary--text">{{ $t('写文章') }}</div>
         </v-card-title>
         <div class="ma-4 pa-2">
           <v-select
-            :label="$t('专栏')"
+            v-model="newArticleColumnUUID"
             :items="myArticleColumns"
+            :label="$t('专栏')"
             item-text="name"
             item-value="uuid"
-            v-model="newArticleColumnUUID"
           />
         </div>
         <v-card-text>
@@ -37,21 +37,21 @@
       </v-card>
     </v-dialog>
 
-    <v-btn small depressed class="mr-1" @click="showAnswerActionDialog = true">{{
-      $t('回答')
-    }}</v-btn>
-    <v-dialog max-width="500" v-model="showAnswerActionDialog">
+    <v-btn class="mr-1" depressed small @click="showAnswerActionDialog = true"
+      >{{ $t('回答') }}
+    </v-btn>
+    <v-dialog v-model="showAnswerActionDialog" max-width="500">
       <v-sheet class="pa-4">
-        <RotationList :items="questionsToAnswer" :title="$t('等待回答的问题')" v-slot="{ item }">
+        <RotationList v-slot="{ item }" :items="questionsToAnswer" :title="$t('等待回答的问题')">
           <QuestionLink :questionPreview="item" />
         </RotationList>
       </v-sheet>
     </v-dialog>
 
-    <v-btn small depressed class="mr-1" @click="showSubmissionActionDialog = true">{{
-      $t('Share')
-    }}</v-btn>
-    <v-dialog max-width="500" v-model="showSubmissionActionDialog">
+    <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true"
+      >{{ $t('Share') }}
+    </v-btn>
+    <v-dialog v-model="showSubmissionActionDialog" max-width="500">
       <CreateSubmissionForm :showTitle="true" />
     </v-dialog>
   </div>

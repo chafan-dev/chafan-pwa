@@ -1,28 +1,28 @@
 <template>
   <div>
-    <v-btn-toggle dense v-if="reactions" multiple>
+    <v-btn-toggle v-if="reactions" dense multiple>
       <v-btn
-        small
         v-for="(count, reaction) in reactions.counters"
         :key="reaction"
+        :class="{ 'v-btn--active': reactions.my_reactions.includes(reaction) }"
+        small
         @click="
           updateReaction(reaction, reactions.my_reactions.includes(reaction) ? 'cancel' : 'add')
         "
-        :class="{ 'v-btn--active': reactions.my_reactions.includes(reaction) }"
       >
         {{ reaction }} {{ count }}
       </v-btn>
     </v-btn-toggle>
-    <v-menu offset-x v-if="loggedIn">
+    <v-menu v-if="loggedIn" offset-x>
       <template v-slot:activator="{ on, attrs }">
-        <ReactionIcon class="ml-2 mr-2" v-on="on" v-bind="attrs" />
+        <ReactionIcon v-bind="attrs" v-on="on" class="ml-2 mr-2" />
       </template>
       <v-list>
         <v-list-item v-for="(reaction, index) in myReactionChoices" :key="index">
           <v-list-item-content
+            class="pr-1"
             style="cursor: pointer"
             @click="updateReaction(reaction, 'add')"
-            class="pr-1"
           >
             {{ reaction }}
           </v-list-item-content>
@@ -30,11 +30,11 @@
       </v-list>
     </v-menu>
     <v-progress-circular
+      v-if="reactionIntermediate"
       class="ml-2"
       color="primary"
       indeterminate
       size="20"
-      v-if="reactionIntermediate"
     />
   </div>
 </template>
@@ -77,6 +77,7 @@ export default class ReactionBlock extends Vue {
       );
     }
   }
+
   private async updateReaction(
     reaction: '👍' | '👎' | '👀' | '❤️' | '😂' | '🙏',
     action: 'add' | 'cancel'

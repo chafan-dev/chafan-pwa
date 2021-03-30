@@ -1,11 +1,11 @@
 <template>
   <v-sheet @click="close">
     <template v-for="(imgObject, idx) in imgObjects">
-      <v-overlay :key="idx" v-if="imgObject === openedImgObject">
-        <v-img @click="close" :src="imgObject.url" max-height="90vh" max-width="90vw" contain>
+      <v-overlay v-if="imgObject === openedImgObject" :key="idx">
+        <v-img :src="imgObject.url" contain max-height="90vh" max-width="90vw" @click="close">
           <template v-slot:placeholder>
-            <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+            <v-row align="center" class="fill-height ma-0" justify="center">
+              <v-progress-circular color="grey lighten-5" indeterminate></v-progress-circular>
             </v-row>
           </template>
         </v-img>

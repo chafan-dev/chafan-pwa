@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-snackbar :color="currentNotificationColor" v-model="show">
-      <v-progress-circular class="ma-2" indeterminate v-show="showProgress"></v-progress-circular>
+    <v-snackbar v-model="show" :color="currentNotificationColor">
+      <v-progress-circular v-show="showProgress" class="ma-2" indeterminate></v-progress-circular>
       {{ currentNotificationContent }}
       <v-btn text @click.native="close">{{ $t('Close') }}</v-btn>
     </v-snackbar>
@@ -21,6 +21,18 @@ export default class NotificationsManager extends Vue {
   public showProgress: boolean = false;
   public currentNotification: AppNotification | false = false;
 
+  public get firstNotification() {
+    return readFirstNotification(this.$store);
+  }
+
+  public get currentNotificationContent() {
+    return (this.currentNotification && this.currentNotification.content) || '';
+  }
+
+  public get currentNotificationColor() {
+    return (this.currentNotification && this.currentNotification.color) || 'info';
+  }
+
   public async hide() {
     this.show = false;
     await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 500));
@@ -35,10 +47,6 @@ export default class NotificationsManager extends Vue {
     if (this.currentNotification) {
       commitRemoveNotification(this.$store, this.currentNotification);
     }
-  }
-
-  public get firstNotification() {
-    return readFirstNotification(this.$store);
   }
 
   public async setNotification(notification: AppNotification | false) {
@@ -68,14 +76,6 @@ export default class NotificationsManager extends Vue {
         });
       }
     }
-  }
-
-  public get currentNotificationContent() {
-    return (this.currentNotification && this.currentNotification.content) || '';
-  }
-
-  public get currentNotificationColor() {
-    return (this.currentNotification && this.currentNotification.color) || 'info';
   }
 }
 </script>

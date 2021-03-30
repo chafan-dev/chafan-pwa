@@ -20,21 +20,21 @@
     <div class="d-flex mt-1 align-center">
       <!-- Part I -->
       <template v-if="enableUpvotes && upvotes && !isDeleted">
-        <span class="text-caption d-flex align-center mr-2" v-if="currentUserIsAuthor">
+        <span v-if="currentUserIsAuthor" class="text-caption d-flex align-center mr-2">
           <UpvoteIcon /> {{ upvotes.count }}
         </span>
         <span
           v-else
-          @click="toggleUpvote"
-          style="cursor: pointer"
           class="text-caption d-flex align-center mr-2"
+          style="cursor: pointer"
+          @click="toggleUpvote"
         >
           <UpvoteIcon :color="upvotes.upvoted ? 'primary' : undefined" />
           {{ upvotes.count }}
         </span>
       </template>
 
-      <v-tooltip bottom v-if="childComments && childComments.length > 0">
+      <v-tooltip v-if="childComments && childComments.length > 0" bottom>
         <template v-slot:activator="{ on, attrs }">
           <div
             v-bind="attrs"
@@ -52,29 +52,29 @@
 
       <template v-if="!isDeleted && !currentUserIsAuthor">
         <span
-          @click="showEditor = true"
-          style="cursor: pointer"
           v-if="writable && !showEditor"
           class="text-caption d-flex align-center"
+          style="cursor: pointer"
+          @click="showEditor = true"
         >
           <ReplyIcon /> {{ $t('回复') }}
         </span>
         <v-spacer />
-        <ReactionBlock objectType="comment" :objectId="comment.uuid" />
+        <ReactionBlock :objectId="comment.uuid" objectType="comment" />
       </template>
 
       <!-- Part II -->
       <template v-if="!isDeleted && currentUserIsAuthor && !showUpdateEditor">
         <v-divider
+          v-if="(childComments && childComments.length > 0) || enableUpvotes"
           class="mr-2"
           vertical
-          v-if="(childComments && childComments.length > 0) || enableUpvotes"
         />
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
-              <EditIcon @click="showUpdateEditor = true" class="mr-2" />
+              <EditIcon class="mr-2" @click="showUpdateEditor = true" />
             </div>
           </template>
           <span>{{ $t('编辑') }}</span>
@@ -84,8 +84,8 @@
             <div v-bind="attrs" v-on="on">
               <BroadcastIcon
                 :color="sharedToTimeline ? 'primary' : undefined"
-                @click="broadcastComment"
                 class="mr-2"
+                @click="broadcastComment"
               />
             </div>
           </template>
@@ -94,19 +94,19 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
-              <DeleteIcon @click="showDeleteConfirm = true" class="mr-2" />
+              <DeleteIcon class="mr-2" @click="showDeleteConfirm = true" />
             </div>
           </template>
           <span>{{ $t('删除') }}</span>
         </v-tooltip>
-        <v-dialog max-width="300" v-model="showDeleteConfirm">
+        <v-dialog v-model="showDeleteConfirm" max-width="300">
           <v-card>
             <v-card-title primary-title>
               <div class="headline primary--text">{{ $t('确定删除？') }}</div>
             </v-card-title>
             <v-card-actions>
               <v-spacer />
-              <v-btn small depressed color="warning" @click="deleteComment">{{ $t('Yes') }}</v-btn>
+              <v-btn color="warning" depressed small @click="deleteComment">{{ $t('Yes') }}</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -116,21 +116,21 @@
     <!-- Editor -->
     <div v-if="writable && !isDeleted">
       <div v-if="showUpdateEditor">
-        <SimpleEditor class="mt-2 mb-2" ref="commentUpdateEditor" :initialValue="comment.body" />
+        <SimpleEditor ref="commentUpdateEditor" :initialValue="comment.body" class="mt-2 mb-2" />
         <div class="d-flex">
           <v-spacer />
           <v-btn
-            small
-            depressed
+            :disabled="submitIntermediate"
             class="mr-2"
             color="primary"
+            depressed
+            small
             @click="submitUpdateCommentBody"
-            :disabled="submitIntermediate"
           >
             {{ $t('提交') }}
-            <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
+            <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
           </v-btn>
-          <v-btn small depressed @click="showUpdateEditor = false">
+          <v-btn depressed small @click="showUpdateEditor = false">
             {{ $t('Cancel') }}
           </v-btn>
         </div>
@@ -138,21 +138,21 @@
 
       <v-expand-transition>
         <div v-show="showEditor" class="ml-4">
-          <SimpleEditor class="mt-2 mb-2" ref="commentReplyEditor" :placeholder="$t('回复')" />
+          <SimpleEditor ref="commentReplyEditor" :placeholder="$t('回复')" class="mt-2 mb-2" />
           <div class="d-flex">
             <v-spacer />
             <v-btn
-              small
-              depressed
+              :disabled="submitIntermediate"
               class="mr-2"
               color="primary"
+              depressed
+              small
               @click="submitNewReplyBody"
-              :disabled="submitIntermediate"
             >
               {{ $t('发送回复') }}
-              <v-progress-circular :size="20" v-show="submitIntermediate" indeterminate />
+              <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
             </v-btn>
-            <v-btn small depressed @click="showEditor = false">
+            <v-btn depressed small @click="showEditor = false">
               {{ $t('Cancel') }}
             </v-btn>
           </div>
@@ -170,18 +170,18 @@
         >
           <v-list-item-content class="comment-reply mb-3 pl-3">
             <Comment
-              :enableUpvotes="enableUpvotes"
-              :depth="depth + 1"
               :comment="childComment"
-              :writable="writable"
+              :depth="depth + 1"
+              :enableUpvotes="enableUpvotes"
               :siteId="siteId"
+              :writable="writable"
             />
           </v-list-item-content>
         </v-list-item>
       </div>
     </v-expand-transition>
 
-    <div class="pl-2 text-caption grey--text" v-else-if="!writable && !isDeleted && loggedIn">
+    <div v-else-if="!writable && !isDeleted && loggedIn" class="pl-2 text-caption grey--text">
       {{ $t('Only site member can reply') }}
     </div>
   </div>
@@ -223,6 +223,24 @@ import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters
   },
 })
 export default class Comment extends Vue {
+  @Prop() private readonly comment!: IComment;
+  @Prop() private readonly writable!: boolean;
+  @Prop({ default: 0 }) private readonly depth!: number;
+  @Prop() private readonly siteId: string | undefined;
+  @Prop({ default: false }) private readonly enableUpvotes!: boolean;
+  private showEditor: boolean = false;
+  private showUpdateEditor: boolean = false;
+  private childComments: IComment[] | null = null;
+  private sharedToTimeline = false;
+  private isDeleted = false;
+  private childCommentsExpanded = false;
+  private submitIntermediate = false;
+  private showDeleteConfirm = false;
+  private upvotes: ICommentUpvotes | null = null;
+  private upvoteIntermediate: boolean = false;
+  private cancelUpvoteIntermediate: boolean = false;
+  private showCancelUpvoteDialog: boolean = false;
+
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
@@ -235,6 +253,7 @@ export default class Comment extends Vue {
       return null;
     }
   }
+
   get articleCommentId() {
     const acid = this.$route.params.article_comment_id;
     if (acid) {
@@ -243,6 +262,7 @@ export default class Comment extends Vue {
       return null;
     }
   }
+
   get submissionCommentId() {
     const scid = this.$route.params.submission_comment_id;
     if (scid) {
@@ -251,6 +271,7 @@ export default class Comment extends Vue {
       return null;
     }
   }
+
   get questionCommentId() {
     const qcid = this.$route.params.qcid;
     if (qcid) {
@@ -259,36 +280,18 @@ export default class Comment extends Vue {
       return null;
     }
   }
+
   get token() {
     return readToken(this.$store);
   }
+
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
   get currentUserIsAuthor() {
     return this.userProfile?.uuid === this.comment.author.uuid;
   }
-  @Prop() private readonly comment!: IComment;
-  @Prop() private readonly writable!: boolean;
-  @Prop({ default: 0 }) private readonly depth!: number;
-  @Prop() private readonly siteId: string | undefined;
-  @Prop({ default: false }) private readonly enableUpvotes!: boolean;
-
-  private showEditor: boolean = false;
-  private showUpdateEditor: boolean = false;
-  private childComments: IComment[] | null = null;
-  private sharedToTimeline = false;
-  private isDeleted = false;
-  private childCommentsExpanded = false;
-
-  private submitIntermediate = false;
-
-  private showDeleteConfirm = false;
-
-  private upvotes: ICommentUpvotes | null = null;
-  private upvoteIntermediate: boolean = false;
-  private cancelUpvoteIntermediate: boolean = false;
-  private showCancelUpvoteDialog: boolean = false;
 
   private async mounted() {
     // FIX: make this more precise

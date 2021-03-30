@@ -3,12 +3,12 @@
     <div class="d-flex">
       <span class="title">{{ title }}</span>
       <v-spacer />
-      <v-btn small outlined color="secondary" @click="rotate">
+      <v-btn color="secondary" outlined small @click="rotate">
         <span class="mr-1">{{ $t('换一批') }}</span>
         <RefreshIcon />
       </v-btn>
     </div>
-    <div class="pt-1" v-for="item in itemsSubset" :key="item.uuid">
+    <div v-for="item in itemsSubset" :key="item.uuid" class="pt-1">
       <slot :item="item"></slot>
     </div>
   </div>

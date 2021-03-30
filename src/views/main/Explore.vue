@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row justify="center" fluid>
+    <v-row fluid justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
         <div class="mb-1">
           <div class="headline primary--text mb-3">
@@ -22,7 +22,6 @@
                 <QuestionPreview
                   v-for="questionPreview in interestingQuestions"
                   :key="questionPreview.uuid"
-                  class="mx-2 my-4"
                   :class="{
                     'px-3': $vuetify.breakpoint.mdAndUp,
                     'py-4': $vuetify.breakpoint.mdAndUp,
@@ -30,9 +29,10 @@
                     'py-3': !$vuetify.breakpoint.mdAndUp,
                   }"
                   :questionPreview="questionPreview"
+                  class="mx-2 my-4"
                 />
               </div>
-              <v-skeleton-loader type="paragraph" v-else />
+              <v-skeleton-loader v-else type="paragraph" />
               <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
             <v-tab-item value="sites">
@@ -42,7 +42,7 @@
               <div v-if="interestingUsers !== null">
                 <UserGrid :users="interestingUsers" />
               </div>
-              <v-skeleton-loader type="paragraph" v-else />
+              <v-skeleton-loader v-else type="paragraph" />
               <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
           </v-tabs>
@@ -68,9 +68,11 @@ import { readToken } from '@/store/main/getters';
 export default class Explore extends Vue {
   private interestingQuestions: IQuestionPreview[] | null = null;
   private interestingUsers: IUserPreview[] | null = null;
+
   get token() {
     return readToken(this.$store);
   }
+
   get currentTabItem() {
     return this.$route.query.tab ? this.$route.query.tab : 'questions';
   }

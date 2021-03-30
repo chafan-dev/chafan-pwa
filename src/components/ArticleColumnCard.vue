@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
+  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
     <v-row justify="center">
       <v-col align-self="center">
         <div
@@ -8,18 +8,18 @@
             'mb-2': currentUserId !== articleColumn.owner.uuid && !compactMode,
           }"
         >
-          <div class="mb-1" :class="{ headline: !compactMode, 'text-center': !compactMode }">
+          <div :class="{ headline: !compactMode, 'text-center': !compactMode }" class="mb-1">
             <router-link
+              v-if="!showColumnEditor"
               :to="'/article-columns/' + articleColumn.uuid"
               class="text-decoration-none title"
-              v-if="!showColumnEditor"
             >
               {{ name }}
             </router-link>
-            <span class="grey--text ml-2" v-if="compactMode && desc && !showColumnEditor">
+            <span v-if="compactMode && desc && !showColumnEditor" class="grey--text ml-2">
               {{ desc }}
             </span>
-            <v-text-field :label="$t('专栏名称')" v-model="name" v-if="showColumnEditor" />
+            <v-text-field v-if="showColumnEditor" v-model="name" :label="$t('专栏名称')" />
           </div>
           <div v-if="!compactMode && !showColumnEditor" class="secondary--text text-center">
             <span v-if="desc">{{ desc }}</span>
@@ -28,12 +28,12 @@
               @click="showColumnEditor = true"
             />
           </div>
-          <v-textarea :label="$t('专栏描述')" v-model="desc" v-if="showColumnEditor" />
-          <div class="d-flex" v-if="showColumnEditor">
+          <v-textarea v-if="showColumnEditor" v-model="desc" :label="$t('专栏描述')" />
+          <div v-if="showColumnEditor" class="d-flex">
             <v-spacer />
-            <v-btn small @click="updateArticleColumn" class="mr-2" color="primary">{{
-              $t('提交')
-            }}</v-btn>
+            <v-btn class="mr-2" color="primary" small @click="updateArticleColumn"
+              >{{ $t('提交') }}
+            </v-btn>
             <v-btn small @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
           </div>
         </div>
@@ -41,31 +41,31 @@
         <v-row v-if="subscription && !showColumnEditor">
           <v-col :class="{ 'text-center': !compactMode }">
             <v-btn
-              small
-              @click="cancelSubscribe"
               v-if="subscription.subscribed_by_me"
               :disabled="cancelSubscribeIntermediate"
+              small
+              @click="cancelSubscribe"
             >
               {{ $t('取消关注') }} ({{ subscription.subscription_count }})
               <v-progress-circular
+                v-show="cancelSubscribeIntermediate"
                 :size="20"
                 indeterminate
-                v-show="cancelSubscribeIntermediate"
               ></v-progress-circular>
             </v-btn>
             <v-btn
-              small
-              @click="subscribe"
+              v-else-if="currentUserId !== articleColumn.owner.uuid"
               :disabled="subscribeIntermediate"
               color="primary"
-              v-else-if="currentUserId !== articleColumn.owner.uuid"
+              small
+              @click="subscribe"
             >
               {{ $t('关注') }} ({{ subscription.subscription_count }})
               <v-progress-circular
-                :size="20"
-                indeterminate
-                color="primary"
                 v-show="subscribeIntermediate"
+                :size="20"
+                color="primary"
+                indeterminate
               ></v-progress-circular>
             </v-btn>
           </v-col>
@@ -87,9 +87,21 @@ import { readToken, readUserProfile } from '@/store/main/getters';
   components: { EditIcon },
 })
 export default class ArticleColumnCard extends Vue {
+  @Prop() public readonly articleColumn!: IArticleColumn;
+  @Prop({ default: false }) public readonly compactMode!: boolean;
+  @Prop({ default: false }) private readonly embedded!: false;
+  private loading = true;
+  private subscription: IUserArticleColumnSubscription | null = null;
+  private subscribeIntermediate = false;
+  private cancelSubscribeIntermediate = false;
+  private showColumnEditor = false;
+  private name = '';
+  private desc = '';
+
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
   get currentUserId() {
     if (!this.userProfile) {
       return undefined;
@@ -97,18 +109,9 @@ export default class ArticleColumnCard extends Vue {
     return this.userProfile.uuid;
   }
 
-  @Prop({ default: false }) private readonly embedded!: false;
-  @Prop() public readonly articleColumn!: IArticleColumn;
-  @Prop({ default: false }) public readonly compactMode!: boolean;
-
-  private loading = true;
-  private subscription: IUserArticleColumnSubscription | null = null;
-
-  private subscribeIntermediate = false;
-  private cancelSubscribeIntermediate = false;
-  private showColumnEditor = false;
-  private name = '';
-  private desc = '';
+  get token() {
+    return readToken(this.$store);
+  }
 
   private async mounted() {
     this.name = this.articleColumn.name;
@@ -123,10 +126,6 @@ export default class ArticleColumnCard extends Vue {
     this.loading = false;
   }
 
-  get token() {
-    return readToken(this.$store);
-  }
-
   private async subscribe() {
     this.subscribeIntermediate = true;
     if (this.articleColumn !== null) {
@@ -136,6 +135,7 @@ export default class ArticleColumnCard extends Vue {
       this.subscribeIntermediate = false;
     }
   }
+
   private async cancelSubscribe() {
     if (this.articleColumn !== null) {
       this.cancelSubscribeIntermediate = true;

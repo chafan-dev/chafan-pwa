@@ -5,7 +5,7 @@
       v-model="loadingProgress"
       :indeterminate="loadingProgress === 0"
     />
-    <v-row class="px-2" v-else justify="center">
+    <v-row v-else class="px-2" justify="center">
       <v-col
         :class="{
           'col-8': $vuetify.breakpoint.mdAndUp,
@@ -482,37 +482,6 @@ import * as _ from 'lodash';
   },
 })
 export default class Question extends Vue {
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
-    if (matched && !_.isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.loadingProgress = 0;
-      this.showEditor = false;
-      this.showComments = false;
-      this.answerWritable = false;
-      this.commentWritable = false;
-      this.answerPreviews = null;
-      this.loadedFullAnswers = [];
-      this.editable = false;
-      this.canHide = false;
-      this.showConfirmHideQuestionDialog = false;
-      this.loadingFullAnswer = true;
-      this.isModerator = false;
-      this.isShowInHome = false;
-      this.savedNewAnswer = null;
-      this.upvotes = null;
-      this.archives = [];
-      this.siteProfiles = [];
-      this.currentUserAnswerUUID = null;
-      this.loadQuestion();
-    }
-  }
-
   private question: IQuestion | null = null;
   private showEditor: boolean = false;
   private newQuestionTitle: string = '';
@@ -550,6 +519,10 @@ export default class Question extends Vue {
   private newQuestionSite: ISite | null = null;
   private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -592,6 +565,33 @@ export default class Question extends Vue {
 
   get token() {
     return readToken(this.$store);
+  }
+
+  private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.loading = true;
+      this.loadingProgress = 0;
+      this.showEditor = false;
+      this.showComments = false;
+      this.answerWritable = false;
+      this.commentWritable = false;
+      this.answerPreviews = null;
+      this.loadedFullAnswers = [];
+      this.editable = false;
+      this.canHide = false;
+      this.showConfirmHideQuestionDialog = false;
+      this.loadingFullAnswer = true;
+      this.isModerator = false;
+      this.isShowInHome = false;
+      this.savedNewAnswer = null;
+      this.upvotes = null;
+      this.archives = [];
+      this.siteProfiles = [];
+      this.currentUserAnswerUUID = null;
+      this.loadQuestion();
+    }
   }
 
   private async loadQuestion() {

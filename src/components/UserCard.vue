@@ -1,27 +1,27 @@
 <template>
   <v-card
-    class="pa-3"
     :class="{ 'c-card': !embedded && !hoverMode }"
     :flat="embedded"
     :max-width="hoverMode ? 400 : undefined"
+    class="pa-3"
   >
-    <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
+    <div v-if="!compactMode && avatarURL" class="mb-1 text-center mt-2">
       <router-link :to="`/users/${userPreview.handle}`">
-        <v-avatar size="100" tile class="avatarDiv">
+        <v-avatar class="avatarDiv" size="100" tile>
           <v-img :src="avatarURL" alt="Avatar" />
         </v-avatar>
       </router-link>
     </div>
     <v-row justify="center">
-      <v-col v-if="compactMode && avatarURL" style="max-width: 110px" align-self="center">
+      <v-col v-if="compactMode && avatarURL" align-self="center" style="max-width: 110px">
         <router-link :to="`/users/${userPreview.handle}`">
-          <v-avatar size="100" tile class="avatarDiv">
+          <v-avatar class="avatarDiv" size="100" tile>
             <v-img :src="avatarURL" alt="Avatar" />
           </v-avatar>
         </router-link>
       </v-col>
       <v-col align-self="center">
-        <div class="mb-1 mt-1" :class="{ headline: !compactMode, 'text-center': !compactMode }">
+        <div :class="{ headline: !compactMode, 'text-center': !compactMode }" class="mb-1 mt-1">
           <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none">
             <span v-if="userPreview.full_name">
               {{ userPreview.full_name }}
@@ -34,8 +34,8 @@
 
         <div
           v-if="userPreview.personal_introduction"
-          class="secondary--text"
           :class="{ 'text-center': !compactMode, 'text-caption': compactMode }"
+          class="secondary--text"
         >
           <span v-if="hoverMode">{{ shortIntro(userPreview.personal_introduction) }}</span>
           <span v-else>{{ userPreview.personal_introduction }}</span>
@@ -45,24 +45,24 @@
           <v-row v-if="compactMode">
             <v-col>
               <router-link
-                class="text-decoration-none text-caption mr-2"
-                :to="`/users/${userPreview.handle}?tab=followers`"
                 v-if="loggedIn && !compactMode"
+                :to="`/users/${userPreview.handle}?tab=followers`"
+                class="text-decoration-none text-caption mr-2"
               >
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
               </router-link>
-              <span class="text-caption mr-2" v-else>
+              <span v-else class="text-caption mr-2">
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
               </span>
 
               <router-link
-                class="text-decoration-none text-caption mr-2"
-                :to="`/users/${userPreview.handle}?tab=followed`"
                 v-if="loggedIn && !compactMode"
+                :to="`/users/${userPreview.handle}?tab=followed`"
+                class="text-decoration-none text-caption mr-2"
               >
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
               </router-link>
-              <span class="text-caption mr-2" v-else>
+              <span v-else class="text-caption mr-2">
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
               </span>
 
@@ -74,9 +74,9 @@
           <v-row v-else class="mt-3">
             <v-col class="text-center">
               <router-link
-                class="text-decoration-none"
-                :to="`/users/${userPreview.handle}?tab=followers`"
                 v-if="loggedIn"
+                :to="`/users/${userPreview.handle}?tab=followers`"
+                class="text-decoration-none"
               >
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
               </router-link>
@@ -86,9 +86,9 @@
             </v-col>
             <v-col class="text-center">
               <router-link
-                class="text-decoration-none"
-                :to="`/users/${userPreview.handle}?tab=followed`"
                 v-if="loggedIn"
+                :to="`/users/${userPreview.handle}?tab=followed`"
+                class="text-decoration-none"
               >
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
               </router-link>
@@ -110,40 +110,40 @@
               }"
             >
               <v-btn
-                small
-                depressed
-                class="mt-1 mr-1"
-                @click="cancelFollow"
                 v-if="follows.followed_by_me"
                 :disabled="cancelFollowIntermediate"
+                class="mt-1 mr-1"
+                depressed
+                small
+                @click="cancelFollow"
               >
                 {{ $t('取消关注') }}
-                <v-progress-circular :size="20" indeterminate v-show="cancelFollowIntermediate" />
+                <v-progress-circular v-show="cancelFollowIntermediate" :size="20" indeterminate />
               </v-btn>
               <v-btn
-                small
-                depressed
-                class="mt-1 mr-1"
-                @click="follow"
-                :disabled="followIntermediate"
-                color="primary"
                 v-else
+                :disabled="followIntermediate"
+                class="mt-1 mr-1"
+                color="primary"
+                depressed
+                small
+                @click="follow"
               >
                 {{ $t('关注') }}
                 <v-progress-circular
-                  :size="20"
-                  indeterminate
-                  color="primary"
                   v-show="followIntermediate"
+                  :size="20"
+                  color="primary"
+                  indeterminate
                 />
               </v-btn>
 
               <v-btn
-                small
-                depressed
-                class="mt-1 mr-1"
-                @click="privateMessage"
                 :disabled="privateMessageIntermediate"
+                class="mt-1 mr-1"
+                depressed
+                small
+                @click="privateMessage"
               >
                 {{ $t('私信') }}
               </v-btn>
@@ -151,10 +151,10 @@
             <div v-else class="mb-2" />
           </v-row>
         </template>
-        <v-skeleton-loader type="text" v-else />
+        <v-skeleton-loader v-else type="text" />
       </v-col>
     </v-row>
-    <div class="text-center mt-5" v-if="userPublic && userPublic.profile_view_times">
+    <div v-if="userPublic && userPublic.profile_view_times" class="text-center mt-5">
       <span class="text-caption grey--text ma-2">
         {{ $t('这个主页被浏览了n次', { times: userPublic.profile_view_times }) }}
       </span>
@@ -175,6 +175,19 @@ import { readIsLoggedIn } from '@/store/main/getters';
   name: 'UserCard',
 })
 export default class UserCard extends Vue {
+  @Prop() public readonly userPreview!: IUserPreview;
+  @Prop() public readonly userPublic: IUserPublic | undefined;
+  @Prop({ default: false }) public readonly compactMode!: boolean;
+  @Prop({ default: false }) public readonly hoverMode!: boolean;
+  @Prop({ default: false }) private readonly embedded!: false;
+  @Prop() private readonly siteKarmas: number | undefined;
+  private loading = true;
+  private follows: IUserFollows | null = null;
+  private followIntermediate = false;
+  private cancelFollowIntermediate = false;
+  private privateMessageIntermediate = false;
+  private avatarURL: string | null = null;
+
   get currentUserId() {
     if (!this.$store.state.main.userProfile) {
       return null;
@@ -185,21 +198,6 @@ export default class UserCard extends Vue {
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
-
-  @Prop() public readonly userPreview!: IUserPreview;
-  @Prop() public readonly userPublic: IUserPublic | undefined;
-  @Prop({ default: false }) public readonly compactMode!: boolean;
-  @Prop({ default: false }) public readonly hoverMode!: boolean;
-  @Prop({ default: false }) private readonly embedded!: false;
-  @Prop() private readonly siteKarmas: number | undefined;
-
-  private loading = true;
-  private follows: IUserFollows | null = null;
-
-  private followIntermediate = false;
-  private cancelFollowIntermediate = false;
-  private privateMessageIntermediate = false;
-  private avatarURL: string | null = null;
 
   private shortIntro(intro: string) {
     if (!intro) {
@@ -226,6 +224,7 @@ export default class UserCard extends Vue {
     });
     this.loading = false;
   }
+
   private async follow() {
     if (!this.currentUserId) {
       commitSetShowLoginPrompt(this.$store, true);

@@ -7,26 +7,26 @@
       <v-card-text>
         <template>
           <v-form>
-            <ValidationProvider :name="$t('显示名')" rules="required" v-slot="{ errors }">
-              <v-text-field :label="$t('显示名') + '*'" v-model="siteCreate.name" />
+            <ValidationProvider v-slot="{ errors }" :name="$t('显示名')" rules="required">
+              <v-text-field v-model="siteCreate.name" :label="$t('显示名') + '*'" />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
             <ValidationProvider
+              v-slot="{ errors }"
               :name="$t('Unique sub-domain name')"
               rules="required|subdomain"
-              v-slot="{ errors }"
             >
               <v-text-field
-                :label="$t('Unique sub-domain name') + '*'"
                 v-model="siteCreate.subdomain"
+                :label="$t('Unique sub-domain name') + '*'"
                 required
               />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
             <v-select
-              :label="$t('Permission type') + '*'"
               v-model="siteCreate.permission_type"
               :items="permissionTypeItems"
+              :label="$t('Permission type') + '*'"
             />
             <div v-if="siteCreate.permission_type === 'public'">
               {{
@@ -42,20 +42,20 @@
                 )
               }}
             </div>
-            <v-textarea :label="$t('Description')" n-n v-model="siteCreate.description" />
+            <v-textarea v-model="siteCreate.description" :label="$t('Description')" n-n />
           </v-form>
         </template>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn small depressed @click="cancel">{{ $t('Cancel') }}</v-btn>
-        <v-btn small depressed @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+        <v-btn depressed small @click="cancel">{{ $t('Cancel') }}</v-btn>
+        <v-btn depressed small @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
         <v-btn
-          small
-          depressed
-          @click="handleSubmit(submit)"
-          color="primary"
           :disabled="intermediate || !valid"
+          color="primary"
+          depressed
+          small
+          @click="handleSubmit(submit)"
         >
           <template v-if="canCreateSite">
             {{ $t('创建') }}
@@ -63,7 +63,7 @@
           <template v-else>
             {{ $t('提交申请') }}
           </template>
-          <v-progress-circular size="20" color="primary" indeterminate v-if="intermediate" />
+          <v-progress-circular v-if="intermediate" color="primary" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
     </ValidationObserver>
@@ -95,6 +95,7 @@ export default class CreateSite extends Vue {
   };
 
   private readonly permissionTypeItems = ['public', 'private'];
+  private intermediate = false;
 
   get canCreateSite() {
     if (env !== 'production') {
@@ -125,7 +126,6 @@ export default class CreateSite extends Vue {
     this.$router.back();
   }
 
-  private intermediate = false;
   private async submit() {
     this.intermediate = true;
     if (this.canCreateSite) {

@@ -15,8 +15,8 @@
             v-bind:class="[message.author.uuid === userProfile.uuid ? 'float-right' : 'float-left']"
           >
             <UserLink
-              :userPreview="message.author"
               v-if="message.author.uuid !== userProfile.uuid"
+              :userPreview="message.author"
             />
             <span v-else>{{ $t('我') }}</span
             >:
@@ -30,16 +30,16 @@
     </v-list-item>
     <div class="ma-4">
       <v-textarea
-        outlined
-        :label="$t('新消息')"
         v-model="messageCreate.body"
         :disabled="sendMsgIntermediate"
+        :label="$t('新消息')"
+        outlined
       />
       <div class="d-flex">
         <v-spacer />
-        <v-btn @click="commitNewMessage" color="primary" :disabled="sendMsgIntermediate">
+        <v-btn :disabled="sendMsgIntermediate" color="primary" @click="commitNewMessage">
           发送
-          <v-progress-circular indeterminate size="20" v-show="sendMsgIntermediate" />
+          <v-progress-circular v-show="sendMsgIntermediate" indeterminate size="20" />
         </v-btn>
       </div>
     </div>
@@ -61,23 +61,22 @@ import { readToken, readUserProfile } from '@/store/main/getters';
   components: { UserLink, ChannelCard, ChannelIcon, SimpleViewer },
 })
 export default class ChatWindow extends Vue {
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-  get token() {
-    return readToken(this.$store);
-  }
   @Prop() public readonly channel!: IChannel;
-
   private messages: IMessage[] = [];
   private messageCreate: IMessageCreate = {
     channel_id: this.channel.id,
     body: '',
   };
-
   private loading = true;
-
   private sendMsgIntermediate = false;
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -85,6 +84,7 @@ export default class ChatWindow extends Vue {
       this.loading = false;
     });
   }
+
   private async commitNewMessage() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.sendMsgIntermediate = true;

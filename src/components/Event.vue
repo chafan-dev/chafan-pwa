@@ -2,64 +2,64 @@
   <span class="event-span body-2">
     <i18n :path="'verb.' + event.content.verb">
       <UserLink
-        place="who"
         v-if="event.content.subject && event.content.subject.uuid != currentUserId"
         :userPreview="event.content.subject"
+        place="who"
       />
       <span
-        place="who"
         v-if="event.content.subject && event.content.subject.uuid == currentUserId"
+        place="who"
         >{{ $t('I') }}</span
       >
 
       <UserLink
-        place="user"
         v-if="event.content.user && event.content.user.uuid !== currentUserId"
         :userPreview="event.content.user"
+        place="user"
       />
       <span
-        place="user"
         v-else-if="event.content.user && event.content.user.uuid === currentUserId"
+        place="user"
         >{{ $t('me') }}</span
       >
 
-      <span place="invited_email" v-if="event.content.invited_email">{{
+      <span v-if="event.content.invited_email" place="invited_email">{{
         event.content.invited_email
       }}</span>
 
-      <a place="reward_coin_amount" v-if="event.content.reward" href="/dashboard?tab=coins">{{
+      <a v-if="event.content.reward" href="/dashboard?tab=coins" place="reward_coin_amount">{{
         event.content.reward.coin_amount
       }}</a>
 
-      <span place="comment" v-if="event.content.comment">
+      <span v-if="event.content.comment" place="comment">
         <CommentPreview :comment="event.content.comment" />
       </span>
 
       <router-link
-        place="article"
         v-if="event.content.article"
         :to="`/articles/${event.content.article.uuid}`"
+        place="article"
         >{{ event.content.article.title }}</router-link
       >
 
       <router-link
-        place="article_column"
         v-if="event.content.article_column"
         :to="`/article-columns/${event.content.article_column.uuid}`"
+        place="article_column"
         >{{ event.content.article_column.name }}</router-link
       >
 
-      <span place="message" v-if="event.content.message">
+      <span v-if="event.content.message" place="message">
         <SimpleViewer :body="event.content.message" />
       </span>
 
-      <span place="reply" v-if="event.content.reply">
+      <span v-if="event.content.reply" place="reply">
         <CommentPreview :comment="event.content.reply" />
       </span>
 
       <span
-        place="remark"
         v-if="event.content.payment_amount && event.content.verb === 'invited_user_activated'"
+        place="remark"
       >
         {{
           $t('verb.remark.invited_user_activated', {
@@ -68,49 +68,49 @@
         }}
       </span>
 
-      <span place="parent_comment" v-if="event.content.parent_comment">
+      <span v-if="event.content.parent_comment" place="parent_comment">
         <CommentPreview :comment="event.content.parent_comment" />
       </span>
 
       <router-link
-        place="question"
         v-if="event.content.question"
         :to="`/questions/${event.content.question.uuid}`"
+        place="question"
         >{{ event.content.question.title }}</router-link
       >
 
       <router-link
-        place="submission"
         v-if="event.content.submission"
         :to="`/submissions/${event.content.submission.uuid}`"
+        place="submission"
         >{{ event.content.submission.title }}</router-link
       >
 
       <router-link
-        place="site"
         v-if="event.content.site"
         :to="`/sites/${event.content.site.subdomain}`"
+        place="site"
         >{{ event.content.site.name }}</router-link
       >
 
       <router-link
-        place="question"
         v-if="event.content.answer"
         :to="`/questions/${event.content.answer.question.uuid}`"
+        place="question"
         >{{ event.content.answer.question.title }}</router-link
       >
 
       <router-link
-        place="answer"
         v-if="event.content.answer"
         :to="`/questions/${event.content.answer.question.uuid}/answers/${event.content.answer.uuid}`"
+        place="answer"
         >{{ event.content.answer.body }}</router-link
       >
 
       <router-link
-        place="channel_message"
         v-if="event.content.channel"
         :to="`/channels/${event.content.channel.id}`"
+        place="channel_message"
       >
         {{ $t('私信') }}
       </router-link>

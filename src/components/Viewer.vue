@@ -1,11 +1,11 @@
 <template>
-  <div ref="viewer" class="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }">
+  <div ref="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }" class="viewer">
     <template v-if="editor === 'tiptap'">
       <ChafanTiptap :body="body" :bodyFormat="bodyFormat" :editable="false" />
     </template>
     <template v-else>
-      <div v-html="sanitizedBody" v-if="bodyFormat === 'html'" />
-      <div ref="vditorViewer" v-else-if="!bodyFormat || bodyFormat === 'markdown'" />
+      <div v-if="bodyFormat === 'html'" v-html="sanitizedBody" />
+      <div v-else-if="!bodyFormat || bodyFormat === 'markdown'" ref="vditorViewer" />
     </template>
     <template v-if="contentElem">
       <LightboxGroup :container="contentElem" />
@@ -61,14 +61,14 @@ export default class Viewer extends Vue {
 @import '~vuetify/src/styles/styles.sass'
 
 .viewer-desktop img
-    max-height: 500px
+  max-height: 500px
 
 .viewer img
   max-width: 100%
 
 .viewer
-    font-family: $body-font-family
-    font-size: $font-size-root
+  font-family: $body-font-family
+  font-size: $font-size-root
 </style>
 
 <style scoped>

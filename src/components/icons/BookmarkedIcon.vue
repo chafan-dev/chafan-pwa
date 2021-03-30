@@ -1,5 +1,5 @@
 <template>
-  <v-icon v-on="$listeners" v-bind="$attrs" color="primary">{{ svgPath }}</v-icon>
+  <v-icon v-bind="$attrs" v-on="$listeners" color="primary">{{ svgPath }}</v-icon>
 </template>
 
 <script>

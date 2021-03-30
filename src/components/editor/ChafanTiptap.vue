@@ -1,12 +1,12 @@
 <template>
   <Tiptap
-    v-on="$listeners"
+    ref="base"
+    v-slot="{ user }"
     v-bind="$attrs"
+    v-on="$listeners"
     :search-users="searchUsers"
     :user-href="userHref"
     :user-label="userLabel"
-    v-slot="{ user }"
-    ref="base"
   >
     {{ user.full_name }} (@{{ user.handle }})
   </Tiptap>
@@ -25,35 +25,44 @@ import 'tippy.js/dist/tippy.css';
   },
 })
 export default class ChafanTiptap extends Vue {
-  private async searchUsers(query: string) {
-    return (await apiSearch.searchUsers(this.$store.state.main.token, query)).data;
-  }
-  private userHref(user: IUserPreview) {
-    return `/users/${user.handle}`;
-  }
-  private userLabel(user: IUserPreview) {
-    return `${user.full_name} (${user.handle})`;
-  }
   get base() {
     return this.$refs.base as any;
   }
+
   public getJSON() {
     return this.base.getJSON();
   }
+
   public getText() {
     return this.base.getText();
   }
+
   public getHTML() {
     return this.base.getHTML();
   }
+
   public loadHTML(html: string) {
     return this.base.loadHTML(html);
   }
+
   public loadJSON(json: any) {
     return this.base.loadJSON(json);
   }
+
   public reset() {
     this.base.reset();
+  }
+
+  private async searchUsers(query: string) {
+    return (await apiSearch.searchUsers(this.$store.state.main.token, query)).data;
+  }
+
+  private userHref(user: IUserPreview) {
+    return `/users/${user.handle}`;
+  }
+
+  private userLabel(user: IUserPreview) {
+    return `${user.full_name} (${user.handle})`;
   }
 }
 </script>

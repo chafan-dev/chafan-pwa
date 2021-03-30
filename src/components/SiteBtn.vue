@@ -1,27 +1,27 @@
 <template>
-  <v-menu :open-on-hover="!$vuetify.breakpoint.mobile" top right offset-y open-delay="400">
+  <v-menu :open-on-hover="!$vuetify.breakpoint.mobile" offset-y open-delay="400" right top>
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        class="mr-1 mt-1"
-        small
-        depressed
-        :to="'/sites/' + site.subdomain"
-        :color="color"
         v-bind="attrs"
         v-on="on"
+        :color="color"
+        :to="'/sites/' + site.subdomain"
+        class="mr-1 mt-1"
+        depressed
+        small
       >
         {{ site.name }}
-        <PrivateSiteIcon class="ml-1" v-if="site.permission_type === 'private'" />
+        <PrivateSiteIcon v-if="site.permission_type === 'private'" class="ml-1" />
         <span v-if="showHotness" class="ml-1">({{ hotness }})</span>
       </v-btn>
     </template>
     <v-lazy>
       <v-card max-width="400">
         <SiteCard
-          :site="site"
+          :compactMode="true"
           :showQuestionEditor="false"
           :showSubmissionEditor="false"
-          :compactMode="true"
+          :site="site"
           class="px-3 py-2"
         />
       </v-card>

@@ -1,6 +1,6 @@
 <template>
   <v-container :class="{ 'pa-1': !$vuetify.breakpoint.mdAndUp }" fluid>
-    <user-agreement v-if="userProfile" :user-profile="userProfile" ref="userAgreement" />
+    <user-agreement v-if="userProfile" ref="userAgreement" :user-profile="userProfile" />
 
     <v-row class="pa-3" justify="center">
       <!-- Feed column -->
@@ -9,19 +9,19 @@
           <NewContentActionBar />
           <v-spacer />
           <div class="d-flex align-center">
-            <SharingIcon v-if="!showSharing" class="mr-2" @click="toggleSharing" color="primary" />
-            <FeedIcon v-else class="mr-2" @click="toggleSharing" color="primary" />
+            <SharingIcon v-if="!showSharing" class="mr-2" color="primary" @click="toggleSharing" />
+            <FeedIcon v-else class="mr-2" color="primary" @click="toggleSharing" />
 
-            <router-link to="/explore" class="mr-2 mb-1"
-              ><ExploreIcon color="yellow darken-3"
-            /></router-link>
+            <router-link class="mr-2 mb-1" to="/explore">
+              <ExploreIcon color="yellow darken-3" />
+            </router-link>
             <UIStyleControllers />
           </div>
         </div>
 
         <template v-if="userProfile">
           <UserSubmissionsRankedFeed v-show="showSharing" />
-          <UserFeed :user-profile="userProfile" v-show="!showSharing" />
+          <UserFeed v-show="!showSharing" :user-profile="userProfile" />
         </template>
         <user-logout-welcome v-else />
       </v-col>

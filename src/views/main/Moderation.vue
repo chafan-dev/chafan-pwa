@@ -8,21 +8,21 @@
       <v-tab>{{ $t('运营') }}</v-tab>
       <v-spacer />
       <v-autocomplete
-        :items="moderatedSites"
         v-model="selectedSiteUUID"
-        clearable
-        outlined
-        class="mt-2"
-        dense
+        :items="moderatedSites"
         :label="$t('Circle')"
+        class="mt-2"
+        clearable
+        dense
         item-text="name"
         item-value="uuid"
+        outlined
         @change="onSiteSelected"
       />
 
       <!-- Applications -->
       <v-tab-item>
-        <v-data-table :headers="applicationHeaders" item-key="id" :items="applications">
+        <v-data-table :headers="applicationHeaders" :items="applications" item-key="id">
           <template v-slot:top>
             <v-toolbar flat>
               <v-toolbar-title>Pending applications</v-toolbar-title>
@@ -38,7 +38,7 @@
           </template>
 
           <template v-slot:item.actions="{ item }">
-            <v-btn small depressed @click="approveApplication(item)" color="primary">Approve</v-btn>
+            <v-btn color="primary" depressed small @click="approveApplication(item)">Approve</v-btn>
           </template>
         </v-data-table>
       </v-tab-item>
@@ -68,46 +68,46 @@
                   <span class="black--text mr-1">Name:</span>
                   <span>{{ selectedSite.name }}</span>
                 </template>
-                <v-text-field v-model="siteConfigUpdate.name" label="Name" v-else />
+                <v-text-field v-else v-model="siteConfigUpdate.name" label="Name" />
               </div>
 
               <div>
                 <template v-if="!showSiteConfigEditor">
-                  <span class="black--text mr-1" v-if="!showSiteConfigEditor">Description:</span>
+                  <span v-if="!showSiteConfigEditor" class="black--text mr-1">Description:</span>
                   <span>{{ selectedSite.description }}</span>
                 </template>
-                <v-text-field v-model="siteConfigUpdate.description" label="Description" v-else />
+                <v-text-field v-else v-model="siteConfigUpdate.description" label="Description" />
               </div>
 
               <div>
                 <v-chip-group v-if="!showSiteConfigEditor">
                   <span class="black--text mr-1">Topics:</span>
                   <v-chip
-                    small
-                    :to="'/topics/' + topic.uuid"
                     v-for="topic in siteTopics"
                     :key="topic.uuid"
+                    :to="'/topics/' + topic.uuid"
+                    small
                   >
                     {{ topic.name }}
                   </v-chip>
                 </v-chip-group>
 
                 <v-combobox
+                  v-if="showSiteConfigEditor"
+                  v-model="newSiteTopicNames"
+                  :delimiters="[',', '，', '、']"
+                  :label="$t('Topics')"
                   hide-selected
                   multiple
                   small-chips
-                  :label="$t('Topics')"
-                  :delimiters="[',', '，', '、']"
-                  v-if="showSiteConfigEditor"
-                  v-model="newSiteTopicNames"
                 />
               </div>
 
               <div v-if="showSiteConfigEditor">
                 <span class="black--text mr-1">{{ $t('加入申请处理方式：') }}</span>
                 <v-radio-group v-model="autoApproval">
-                  <v-radio label="自动审核" :value="true" />
-                  <v-radio label="人工审核" :value="false" />
+                  <v-radio :value="true" label="自动审核" />
+                  <v-radio :value="false" label="人工审核" />
                 </v-radio-group>
               </div>
               <div v-else>
@@ -117,49 +117,49 @@
               </div>
 
               <div>
-                <span class="black--text mr-1" v-if="autoApproval">{{
+                <span v-if="autoApproval" class="black--text mr-1">{{
                   $t('自动通过应满足的所有条件：')
                 }}</span>
-                <span class="black--text mr-1" v-else>{{
+                <span v-else class="black--text mr-1">{{
                   $t('提交申请给人工审核前应满足的所有条件：')
                 }}</span>
                 <div class="ma-2">
                   <v-text-field
-                    label="Min karma"
                     v-if="showSiteConfigEditor"
-                    type="number"
-                    clearable
                     v-model="siteConfigUpdate.min_karma_for_application"
+                    clearable
+                    label="Min karma"
+                    type="number"
                   />
                   <v-text-field
-                    label="Min karma"
                     v-else
-                    disabled
                     :value="
                       selectedSite.min_karma_for_application
                         ? selectedSite.min_karma_for_application
                         : 'any'
                     "
+                    disabled
+                    label="Min karma"
                   />
 
                   <v-combobox
+                    v-if="showSiteConfigEditor"
+                    v-model="emailSuffixes"
+                    :delimiters="[',', '，', '、']"
+                    clearable
+                    label="Email domain suffixes (e.g. '@harvard.edu'), ENTER to confirm each one"
                     multiple
                     small-chips
-                    :delimiters="[',', '，', '、']"
-                    label="Email domain suffixes (e.g. '@harvard.edu'), ENTER to confirm each one"
-                    v-if="showSiteConfigEditor"
-                    clearable
-                    v-model="emailSuffixes"
                   />
                   <v-text-field
-                    label="Email domain suffixes (e.g. '@harvard.edu')"
                     v-else
-                    disabled
                     :value="
                       selectedSite.email_domain_suffix_for_application
                         ? selectedSite.email_domain_suffix_for_application
                         : 'any'
                     "
+                    disabled
+                    label="Email domain suffixes (e.g. '@harvard.edu')"
                   />
                 </div>
               </div>
@@ -167,46 +167,49 @@
             <v-card-actions>
               <v-spacer />
               <v-btn
-                small
-                depressed
-                class="mr-2"
-                @click="showSiteConfigEditor = true"
-                color="primary"
                 v-show="!showSiteConfigEditor"
-                >Edit</v-btn
-              >
-              <v-btn
-                small
-                depressed
                 class="mr-2"
-                @click="commitSiteConfig"
                 color="primary"
-                v-show="showSiteConfigEditor"
-                >{{ $t('提交') }}</v-btn
-              >
-              <v-btn
-                small
                 depressed
-                class="mr-2"
-                @click="showSiteConfigEditor = false"
+                small
+                @click="showSiteConfigEditor = true"
+                >Edit
+              </v-btn>
+              <v-btn
                 v-show="showSiteConfigEditor"
-                >{{ $t('Cancel') }}</v-btn
-              >
+                class="mr-2"
+                color="primary"
+                depressed
+                small
+                @click="commitSiteConfig"
+                >{{ $t('提交') }}
+              </v-btn>
+              <v-btn
+                v-show="showSiteConfigEditor"
+                class="mr-2"
+                depressed
+                small
+                @click="showSiteConfigEditor = false"
+                >{{ $t('Cancel') }}
+              </v-btn>
             </v-card-actions>
           </v-card>
 
           <v-card class="ma-3">
             <v-card-title>转移管理权限</v-card-title>
-            <v-card-text> 转移给：<UserSearch v-model="transferToNewAdminUUID" /> </v-card-text>
+            <v-card-text>
+              转移给：
+              <UserSearch v-model="transferToNewAdminUUID" />
+            </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn small depressed color="warning" @click="submitTransferToNewAdmin"
-                >确认（不可撤销）</v-btn
-              >
+              <v-btn color="warning" depressed small @click="submitTransferToNewAdmin"
+                >确认（不可撤销）
+              </v-btn>
             </v-card-actions>
           </v-card>
         </template>
-        <div class="mt-2 text-center" v-else>Please select a circle.</div>
+        <div v-else class="mt-2 text-center">Please select a circle.</div>
       </v-tab-item>
 
       <!-- Operation -->
@@ -224,7 +227,7 @@
             }}
             <v-text-field v-model="broadcastSubmissionLink" label="「分享」链接" />
           </v-card-text>
-          <v-card-text v-else> Please select a circle. </v-card-text>
+          <v-card-text v-else> Please select a circle.</v-card-text>
           <v-card-actions v-if="selectedSite !== null">
             <v-spacer />
             <v-btn color="primary" @click="submitNewSubmissionBroadcast">{{ $t('Send') }}</v-btn>
@@ -280,12 +283,12 @@ export default class Moderation extends Vue {
 
   private broadcastSubmissionLink = '';
   private transferToNewAdminUUID: string | null = null;
+  private loading = true;
 
   get token() {
     return this.$store.state.main.token;
   }
 
-  private loading = true;
   private async mounted() {
     this.moderatedSites = readModeratedSites(this.$store);
     if (this.moderatedSites) {

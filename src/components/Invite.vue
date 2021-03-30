@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-btn small depressed @click="showDialog = true" color="primary">{{
-      $t('添加站内用户')
-    }}</v-btn>
+    <v-btn color="primary" depressed small @click="showDialog = true"
+      >{{ $t('添加站内用户') }}
+    </v-btn>
     <v-dialog v-model="showDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -14,14 +14,14 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            small
-            depressed
-            @click="submitInviteFriends"
             :disabled="intermediate"
             color="primary"
+            depressed
+            small
+            @click="submitInviteFriends"
           >
             {{ $t('确认添加') }}
-            <v-progress-circular size="20" v-if="intermediate" indeterminate />
+            <v-progress-circular v-if="intermediate" indeterminate size="20" />
           </v-btn>
         </v-card-actions>
       </v-card>

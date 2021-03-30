@@ -1,8 +1,8 @@
 <template>
-  <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
+  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
     <div class="d-flex mb-2">
       <SimpleViewer :body="comment.body" />
-      <router-link class="ml-1" :to="comment.root_route + `/comments/${comment.uuid}`">
+      <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
         <OpenInNewIcon />
       </router-link>
     </div>
@@ -43,13 +43,13 @@ import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
   },
 })
 export default class CommentCard extends Vue {
-  @Prop({ default: true }) private readonly embedded!: false;
   @Prop() public readonly comment!: IComment;
   @Prop() public readonly submission: ISubmission | undefined;
   @Prop() public readonly questionPreview: IQuestionPreview | undefined;
   @Prop() public readonly articlePreview: IArticlePreview | undefined;
   @Prop() public readonly answerPreview: IAnswerPreview | undefined;
   @Prop() public readonly parentComment: IComment | undefined;
+  @Prop({ default: true }) private readonly embedded!: false;
 }
 </script>
 

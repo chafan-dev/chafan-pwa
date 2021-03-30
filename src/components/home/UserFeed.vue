@@ -16,7 +16,7 @@
 
       <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
 
-      <v-card flat v-touch="{ down: () => onSwipeDown() }">
+      <v-card v-touch="{ down: () => onSwipeDown() }" flat>
         <div v-for="activity in activities" :key="activity.id">
           <v-card
             :class="{

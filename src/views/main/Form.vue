@@ -6,17 +6,17 @@
           <h2 class="ml-2">{{ form.title }}</h2>
           <div>
             <v-card
-              flat
-              outlined
               v-for="field in form.form_fields"
               :key="field.unique_name"
               class="ma-2 pa-4"
+              flat
+              outlined
             >
               <span>{{ field.field_type.desc }}</span>
               <div v-if="field.field_type.field_type_name === 'text_field'">
                 <v-textarea
-                  :label="$t('Content')"
                   v-model="responseFields.get(field.unique_name).field_content.text"
+                  :label="$t('Content')"
                 />
               </div>
               <div v-else-if="field.field_type.field_type_name === 'single_choice_field'">
@@ -33,19 +33,19 @@
               </div>
               <div v-else-if="field.field_type.field_type_name === 'multiple_choices_field'">
                 <v-select
-                  :items="field.field_type.choices"
-                  multiple
-                  chips
                   v-model="responseFields.get(field.unique_name).field_content.selected_choices"
+                  :items="field.field_type.choices"
+                  chips
+                  multiple
                 />
               </div>
             </v-card>
           </div>
           <div class="ma-2 text-center">
-            <v-btn depressed color="primary" @click="submitResponse">{{ $t('提交') }}</v-btn>
+            <v-btn color="primary" depressed @click="submitResponse">{{ $t('提交') }}</v-btn>
           </div>
         </div>
-        <FormResponseCard :formResponse="formResponse" v-else />
+        <FormResponseCard v-else :formResponse="formResponse" />
       </v-col>
     </v-row>
   </v-container>
@@ -63,16 +63,16 @@ import { commitAddNotification } from '@/store/main/mutations';
   components: { FormResponseCard },
 })
 export default class Form extends Vue {
-  get uuid() {
-    return this.$route.params.uuid;
-  }
   private form: IForm | null = null;
   private formResponseCreate: IFormResponseCreate | null = null;
   private responseFields = new Map<string, IFormResponseField>();
   private loading = true;
-
   private showResponse = false;
   private formResponse: IFormResponse | null = null;
+
+  get uuid() {
+    return this.$route.params.uuid;
+  }
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -114,6 +114,7 @@ export default class Form extends Vue {
       this.loading = false;
     });
   }
+
   private async submitResponse() {
     for (const responseField of this.responseFields.values()) {
       if (responseField.field_content.field_type_name === 'single_choice_response_field') {

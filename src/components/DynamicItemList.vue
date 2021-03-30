@@ -8,11 +8,11 @@
         <span v-if="noMore">{{ $t('没有更多了') }}</span>
       </div>
     </div>
-    <div class="my-4 text-center" v-else-if="items !== null">
+    <div v-else-if="items !== null" class="my-4 text-center">
       {{ $t(emptyItemsText) }}
     </div>
-    <div class="my-4 text-center" v-if="!noMore">
-      <v-progress-circular size="20" color="primary" indeterminate />
+    <div v-if="!noMore" class="my-4 text-center">
+      <v-progress-circular color="primary" indeterminate size="20" />
     </div>
   </div>
 </template>

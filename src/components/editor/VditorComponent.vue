@@ -71,6 +71,11 @@ export default class VditorComponent extends Vue {
   private vditor: Vditor | null = null;
 
   private toolBar: any[] = [];
+
+  get token() {
+    return this.$store.state.main.token;
+  }
+
   public mounted() {
     if (this.$vuetify.breakpoint.mdAndUp) {
       this.toolBar = this.allToolbarItems.slice(0, this.allToolbarItems.length - 7).concat([
@@ -128,25 +133,11 @@ export default class VditorComponent extends Vue {
     });
   }
 
-  private translateMode(editor: editor_T): 'wysiwyg' | 'sv' | 'ir' {
-    if (editor === 'markdown' || editor == 'markdown_realtime_rendering') {
-      return 'ir';
-    } else if (editor === 'wysiwyg') {
-      return 'wysiwyg';
-    } else {
-      return 'sv';
-    }
-  }
-
   public getText() {
     return (
       this.$el.querySelectorAll(`.vditor-${this.translateMode(this.getMode())}`)[0].textContent ||
       ''
     );
-  }
-
-  get token() {
-    return this.$store.state.main.token;
   }
 
   public getContent() {
@@ -164,6 +155,16 @@ export default class VditorComponent extends Vue {
       return 'markdown_realtime_rendering';
     } else {
       return 'markdown_splitview';
+    }
+  }
+
+  private translateMode(editor: editor_T): 'wysiwyg' | 'sv' | 'ir' {
+    if (editor === 'markdown' || editor == 'markdown_realtime_rendering') {
+      return 'ir';
+    } else if (editor === 'wysiwyg') {
+      return 'wysiwyg';
+    } else {
+      return 'sv';
     }
   }
 }

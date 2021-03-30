@@ -3,10 +3,10 @@
     <v-row class="mb-12" justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <RichEditor
-          class="ma-1"
-          :focusMode="true"
           :articleIdProp="articleId !== null ? articleId : undefined"
+          :focusMode="true"
           :hasTitle="true"
+          class="ma-1"
           @submit-edit="newEditHandler"
           @delete-draft="deleteDraft"
           @cancel-edit="cancelHandler"
@@ -26,6 +26,10 @@ import { commitAddNotification, commitSetWorkingDraft } from '@/store/main/mutat
 
 @Component
 export default class ArticleEditor extends Vue {
+  private newArticleId: string | null = null;
+  private loading = true;
+  private handlingNewEdit = false;
+
   get articleColumnId() {
     const id = this.$route.query.articleColumnId;
     if (id) {
@@ -33,6 +37,7 @@ export default class ArticleEditor extends Vue {
     }
     return null;
   }
+
   get articleId() {
     const id = this.$route.query.articleId;
     if (id !== undefined) {
@@ -43,10 +48,6 @@ export default class ArticleEditor extends Vue {
     }
     return null;
   }
-  private newArticleId: string | null = null;
-  private loading = true;
-
-  private handlingNewEdit = false;
 
   public async mounted() {
     if (this.articleId) {
@@ -76,6 +77,7 @@ export default class ArticleEditor extends Vue {
     }
     this.loading = false;
   }
+
   public async newEditHandler(payload: {
     edit: IRichEditorState;
     isAutosaved: boolean;

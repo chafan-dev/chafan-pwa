@@ -7,34 +7,35 @@
         </div>
 
         <div class="d-flex mt-1">
-          <v-btn small depressed @click="showCreateSiteDialog = true">{{ $t('创建圈子') }}</v-btn>
+          <v-btn depressed small @click="showCreateSiteDialog = true">{{ $t('创建圈子') }}</v-btn>
 
-          <v-dialog max-width="500" v-model="showCreateSiteDialog">
+          <v-dialog v-model="showCreateSiteDialog" max-width="500">
             <CreateSiteCard />
           </v-dialog>
         </div>
       </div>
 
-      <v-skeleton-loader type="paragraph" v-if="loadingSites" />
+      <v-skeleton-loader v-if="loadingSites" type="paragraph" />
       <div v-else>
         <!-- TODO: rank/compute recently used sites. -->
         <div>
           <SiteBtn
-            :site="profile.site"
             v-for="profile in visibleSiteProfiles"
             :key="profile.site.uuid"
+            :site="profile.site"
           />
           <v-btn
-            small
+            v-if="showAllSiteProfilesDialogButton"
+            class="mt-1 mr-1"
             color="info"
             depressed
-            class="mt-1 mr-1"
-            v-if="showAllSiteProfilesDialogButton"
+            small
             @click="showAllSiteProfilesDialog = true"
           >
-            <MoreIcon />{{ $t('More') }}
+            <MoreIcon />
+            {{ $t('More') }}
           </v-btn>
-          <v-btn small depressed outlined color="info" class="mt-1" to="/explore?tab=sites">
+          <v-btn class="mt-1" color="info" depressed outlined small to="/explore?tab=sites">
             {{ $t('所有圈子') }}
           </v-btn>
         </div>
@@ -43,9 +44,9 @@
             <v-card-title>{{ $t('My Circles') }}</v-card-title>
             <v-card-text>
               <SiteBtn
-                :site="profile.site"
                 v-for="profile in siteProfiles"
                 :key="profile.site.uuid"
+                :site="profile.site"
               />
             </v-card-text>
           </v-card>
@@ -56,7 +57,7 @@
     <v-divider />
     <div class="my-3">
       <div class="headline">{{ $t('Pinned questions') }}</div>
-      <v-skeleton-loader type="paragraph" v-if="loadingPinnedQuestions" />
+      <v-skeleton-loader v-if="loadingPinnedQuestions" type="paragraph" />
       <ul v-else class="my-3">
         <li v-for="question in questions" :key="question.uuid">
           <QuestionLink :questionPreview="question" />
@@ -87,7 +88,7 @@
           >Discord 闲聊群</a
         >
       </div>
-      <div class="caption grey--text" v-if="buildInfo">
+      <div v-if="buildInfo" class="caption grey--text">
         <pre style="cursor: pointer" @click="expandDebugInfo = !expandDebugInfo">
 v{{ buildInfo.commitHashShort }}</pre
         >
@@ -95,16 +96,16 @@ v{{ buildInfo.commitHashShort }}</pre
           <div v-show="expandDebugInfo">
             Commit:
             <a
-              class="grey--text text-decoration-none"
               :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.commitHash"
+              class="grey--text text-decoration-none"
               target="blank"
               ><code>{{ buildInfo.commitHashShort }}</code></a
             >
             <br />
             Branch:
             <a
-              class="grey--text text-decoration-none"
               :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.branch"
+              class="grey--text text-decoration-none"
               >{{ buildInfo.branch }}</a
             >
             <br />

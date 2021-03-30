@@ -1,29 +1,29 @@
 <template>
   <v-menu
+    v-if="clickable"
     :open-on-hover="!$vuetify.breakpoint.mobile"
     bottom
-    right
     offset-y
-    v-if="clickable"
     open-delay="400"
+    right
   >
     <template v-slot:activator="{ on, attrs }">
       <span v-bind="attrs" v-on="on">
         <router-link
-          class="text-decoration-none grey--text text--darken-2"
           v-if="userPreview"
           :to="'/users/' + userPreview.handle"
+          class="text-decoration-none grey--text text--darken-2"
         >
-          <Avatar :userPreview="userPreview" v-if="showAvatar" />
+          <Avatar v-if="showAvatar" :userPreview="userPreview" />
           {{ name }}
         </router-link>
       </span>
     </template>
     <v-lazy>
-      <UserCard :userPreview="userPreview" :compactMode="true" :hoverMode="true" />
+      <UserCard :compactMode="true" :hoverMode="true" :userPreview="userPreview" />
     </v-lazy>
   </v-menu>
-  <span v-else> <Avatar :userPreview="userPreview" v-if="showAvatar" /> {{ name }} </span>
+  <span v-else> <Avatar v-if="showAvatar" :userPreview="userPreview" /> {{ name }} </span>
 </template>
 
 <script lang="ts">
@@ -40,6 +40,7 @@ export default class UserLink extends Vue {
   @Prop() public readonly userPreview!: IUserPreview;
   @Prop({ default: false }) public readonly showAvatar!: boolean;
   @Prop({ default: true }) public readonly clickable!: boolean;
+
   get name() {
     if (this.userPreview.full_name) {
       return this.userPreview.full_name;

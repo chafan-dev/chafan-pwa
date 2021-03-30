@@ -1,11 +1,11 @@
 <template>
   <v-main>
-    <v-container fluid fill-height>
+    <v-container fill-height fluid>
       <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md6>
+        <v-flex md6 sm8 xs12>
           <ValidationObserver v-slot="{ handleSubmit, valid }">
             <v-card class="elevation-12">
-              <v-toolbar dark color="primary">
+              <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} 注册</v-toolbar-title>
                 <v-spacer />
                 <LangPicker />
@@ -32,8 +32,8 @@
                 </div>
                 <v-form autocomplete="off">
                   <h3>{{ $t('请先填入邀请码（20位）') }}</h3>
-                  <ValidationProvider name="邀请码" rules="required" v-slot="{ errors }">
-                    <v-text-field v-model="invitationToken" name="邀请码" type="text" required />
+                  <ValidationProvider v-slot="{ errors }" name="邀请码" rules="required">
+                    <v-text-field v-model="invitationToken" name="邀请码" required type="text" />
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
@@ -41,45 +41,53 @@
 
                   <h3>{{ $t('注册信息') }}</h3>
 
-                  <ValidationProvider name="email" rules="required|email" v-slot="{ errors }">
-                    <v-text-field v-model="email" name="login" :label="$t('Email')" type="text">
-                      <template v-slot:prepend><AccountIcon /></template>
+                  <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
+                    <v-text-field v-model="email" :label="$t('Email')" name="login" type="text">
+                      <template v-slot:prepend>
+                        <AccountIcon />
+                      </template>
                     </v-text-field>
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
                   <v-text-field
                     v-model="verificationCode"
-                    name="verification-code"
                     :label="$t('验证码')"
+                    name="verification-code"
                     type="text"
                   >
-                    <template v-slot:prepend><VerifyCodeIcon /></template>
+                    <template v-slot:prepend>
+                      <VerifyCodeIcon />
+                    </template>
                   </v-text-field>
 
-                  <ValidationProvider name="password" rules="required|password" v-slot="{ errors }">
+                  <ValidationProvider v-slot="{ errors }" name="password" rules="required|password">
                     <v-text-field
                       v-model="password"
-                      name="new-password"
                       :label="$t('Password')"
                       autocomplete="new-password"
-                      type="password"
+                      name="new-password"
                       required
+                      type="password"
                     >
-                      <template v-slot:prepend><PasswordIcon /></template>
+                      <template v-slot:prepend>
+                        <PasswordIcon />
+                      </template>
                     </v-text-field>
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
-                  <ValidationProvider name="handle" rules="required" v-slot="{ errors }">
+                  <ValidationProvider v-slot="{ errors }" name="handle" rules="required">
                     <v-text-field
                       v-model="handle"
-                      name="handle"
                       :label="$t('Unique username (you can change this later)')"
-                      type="text"
+                      name="handle"
                       required
+                      type="text"
                     >
-                      <template v-slot:prepend><HandleIcon /></template>
+                      <template v-slot:prepend>
+                        <HandleIcon />
+                      </template>
                     </v-text-field>
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
@@ -88,21 +96,21 @@
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  small
-                  depressed
-                  color="primary"
-                  @click="sendVerificationCode"
                   :disabled="intermediate || verificationCodeSent"
-                  >{{ $t('Send me verification code') }}</v-btn
-                >
-                <v-btn
-                  small
-                  depressed
                   color="primary"
-                  @click="handleSubmit(openAccount)"
+                  depressed
+                  small
+                  @click="sendVerificationCode"
+                  >{{ $t('Send me verification code') }}
+                </v-btn>
+                <v-btn
                   :disabled="intermediate || !valid"
-                  >{{ $t('Verify code and open account') }}</v-btn
-                >
+                  color="primary"
+                  depressed
+                  small
+                  @click="handleSubmit(openAccount)"
+                  >{{ $t('Verify code and open account') }}
+                </v-btn>
               </v-card-actions>
             </v-card>
           </ValidationObserver>
@@ -167,6 +175,7 @@ export default class Signup extends Vue {
       this.intermediate = false;
     });
   }
+
   private async openAccount() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;

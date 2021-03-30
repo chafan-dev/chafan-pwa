@@ -51,6 +51,7 @@ export interface IAnswerUpvotes {
   count: number;
   upvoted: boolean;
 }
+
 export interface IQuestionUpvotes {
   question_uuid: string;
   count: number;
@@ -633,6 +634,7 @@ export interface IMessageCreate {
 export interface IMsg {
   msg: string;
 }
+
 export interface SiteModeratorBroadcastTaskDefinition {
   task_type: 'site_broadcast';
   to_members_of_site_uuid: string;
