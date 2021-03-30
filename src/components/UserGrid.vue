@@ -6,8 +6,8 @@
           <v-col :key="(i - 1) * memberCols + (j - 1)">
             <UserCard
               v-if="(i - 1) * memberCols + (j - 1) < users.length"
-              :userPreview="users[(i - 1) * memberCols + (j - 1)]"
               :compactMode="true"
+              :userPreview="users[(i - 1) * memberCols + (j - 1)]"
             />
           </v-col>
         </template>

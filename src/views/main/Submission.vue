@@ -5,7 +5,7 @@
       v-model="loadingProgress"
       :indeterminate="loadingProgress === 0"
     />
-    <v-row justify="center" v-else>
+    <v-row v-else justify="center">
       <v-col
         :class="{ 'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI }"
         fluid
@@ -16,43 +16,44 @@
             <!-- Submission topics display/editor -->
             <v-chip-group v-if="!showSubmissionEditor">
               <v-chip
-                :to="'/topics/' + topic.uuid"
                 v-for="topic in submission.topics"
                 :key="topic.uuid"
+                :to="'/topics/' + topic.uuid"
               >
                 {{ topic.name }}
               </v-chip>
             </v-chip-group>
             <v-combobox
+              v-if="showSubmissionEditor"
+              v-model="newSubmissionTopicNames"
+              :delimiters="[',', '，', '、']"
+              :items="hintTopicNames"
+              :label="$t('Topics')"
               hide-selected
               multiple
               small-chips
-              :label="$t('Topics')"
-              :items="hintTopicNames"
-              :delimiters="[',', '，', '、']"
-              v-if="showSubmissionEditor"
-              v-model="newSubmissionTopicNames"
             />
 
             <!-- Submission title display/editor -->
             <div>
-              <div class="text-h5 mb-2" v-if="!showSubmissionEditor">
+              <div v-if="!showSubmissionEditor" class="text-h5 mb-2">
                 {{ submission.title }}
               </div>
               <v-textarea
+                v-else
+                v-model="newSubmissionTitle"
+                :label="$t('Title')"
                 auto-grow
                 dense
                 rows="1"
-                :label="$t('Title')"
-                v-model="newSubmissionTitle"
-                v-else
               />
             </div>
 
             <!-- Submission URL display -->
             <div v-if="submission.url">
-              <LinkIcon /> {{ $t('源链接（选填）') }}:
-              <a class="text-decoration-none" :href="submission.url" target="_blank">
+              <LinkIcon />
+              {{ $t('源链接（选填）') }}:
+              <a :href="submission.url" class="text-decoration-none" target="_blank">
                 {{ submission.url }}
               </a>
             </div>
@@ -65,10 +66,10 @@
             />
             <div v-else-if="showSubmissionEditor">
               <SimpleEditor
-                :placeholder="$t('描述（选填）')"
                 ref="descEditor"
-                :initialValue="submission.description"
                 :editorProp="submission.description_editor"
+                :initialValue="submission.description"
+                :placeholder="$t('描述（选填）')"
                 class="mb-2"
               />
             </div>
@@ -76,8 +77,8 @@
 
           <!-- Submission control -->
           <v-row justify="space-between">
-            <v-col class="ml-1 mr-1 d-flex less-left-right-padding" v-if="!showSubmissionEditor">
-              <v-dialog max-width="300" v-model="showCancelUpvoteDialog">
+            <v-col v-if="!showSubmissionEditor" class="ml-1 mr-1 d-flex less-left-right-padding">
+              <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
                 <v-card>
                   <v-card-title primary-title>
                     <div class="headline primary--text">
@@ -86,42 +87,42 @@
                   </v-card-title>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn small depressed @click="showCancelUpvoteDialog = false">{{
-                      $t('No')
-                    }}</v-btn>
+                    <v-btn depressed small @click="showCancelUpvoteDialog = false"
+                      >{{ $t('No') }}
+                    </v-btn>
                     <v-btn
-                      small
-                      depressed
-                      color="warning"
-                      @click="cancelUpvote"
                       :disabled="cancelUpvoteIntermediate"
-                      >{{ $t('Yes') }}</v-btn
-                    >
+                      color="warning"
+                      depressed
+                      small
+                      @click="cancelUpvote"
+                      >{{ $t('Yes') }}
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
               <v-btn
-                small
-                depressed
-                @click="showCancelUpvoteDialog = true"
+                v-if="upvotes && upvotes.upvoted"
                 class="mr-1"
                 color="primary lighten-2"
-                v-if="upvotes && upvotes.upvoted"
+                depressed
+                small
+                @click="showCancelUpvoteDialog = true"
               >
                 <UpvoteIcon />
                 <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('赞') }}</span>
                 ({{ upvotes.count }})
               </v-btn>
               <v-btn
-                small
-                depressed
-                class="mr-1"
-                color="primary"
-                @click="upvote"
                 v-else-if="upvotes"
                 :disabled="
                   !userProfile || userProfile.uuid === submission.author.uuid || upvoteIntermediate
                 "
+                class="mr-1"
+                color="primary"
+                depressed
+                small
+                @click="upvote"
               >
                 <UpvoteIcon />
                 <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('赞') }}</span>
@@ -129,22 +130,22 @@
               </v-btn>
 
               <BookmarkedIcon
+                v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
+                :disabled="cancelSubscriptionIntermediate"
                 class="mr-1"
                 @click="cancelSubscription"
-                :disabled="cancelSubscriptionIntermediate"
-                v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
               />
               <ToBookmarkIcon
-                class="mr-1"
-                @click="subscribe"
                 v-else
                 :disabled="subscribeIntermediate"
+                class="mr-1"
+                @click="subscribe"
               />
 
               <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
                   <div v-bind="attrs" v-on="on" align-self="center" class="d-flex">
-                    <EditIcon @click="showSubmissionEditor = true" v-show="editable" />
+                    <EditIcon v-show="editable" @click="showSubmissionEditor = true" />
                   </div>
                 </template>
                 <span>{{ $t('编辑分享') }}</span>
@@ -152,63 +153,63 @@
             </v-col>
             <v-col
               v-if="!showSubmissionEditor"
-              class="d-flex less-left-right-padding"
               align-self="center"
+              class="d-flex less-left-right-padding"
             >
               <v-spacer />
               <SiteBtn :site="submission.site" class="elevation-0" />
-              <HistoryIcon @click="showHistoryDialog" v-if="editable" />
+              <HistoryIcon v-if="editable" @click="showHistoryDialog" />
             </v-col>
             <v-col v-if="showSubmissionEditor" class="d-flex">
               <v-btn
-                small
-                depressed
-                class="mr-1"
-                @click="handleSubmit(commitSubmissionEdit)"
-                color="primary"
                 v-show="editable"
                 :disabled="commitSubmissionEditIntermediate"
-                >{{ $t('更新分享') }}</v-btn
-              >
-              <v-btn
-                small
-                depressed
                 class="mr-1"
-                @click="cancelSubmissionUpdate"
-                color="warning"
+                color="primary"
+                depressed
+                small
+                @click="handleSubmit(commitSubmissionEdit)"
+                >{{ $t('更新分享') }}
+              </v-btn>
+              <v-btn
                 v-show="editable"
-                >{{ $t('取消更新') }}</v-btn
-              >
+                class="mr-1"
+                color="warning"
+                depressed
+                small
+                @click="cancelSubmissionUpdate"
+                >{{ $t('取消更新') }}
+              </v-btn>
               <v-spacer />
 
               <v-btn
-                small
-                depressed
                 v-if="showSubmissionEditor & canHide"
-                color="warning"
                 class="ml-2"
+                color="warning"
+                depressed
+                small
                 @click="showConfirmHideSubmissionDialog = true"
               >
                 {{ $t('隐藏分享') }}
               </v-btn>
-              <v-dialog max-width="600" v-model="showConfirmHideSubmissionDialog">
+              <v-dialog v-model="showConfirmHideSubmissionDialog" max-width="600">
                 <v-card>
                   <v-card-title primary-title>
                     <div class="headline primary--text">
                       {{ $t('确认隐藏分享？') }}
                     </div>
                   </v-card-title>
-                  <v-card-text> 隐藏后分享将对所有用户不可见。 </v-card-text>
+                  <v-card-text> 隐藏后分享将对所有用户不可见。</v-card-text>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn small mr-1 color="warning" @click="confirmHideSubmission">{{
-                      $t('确认隐藏')
-                    }}</v-btn>
+                    <v-btn color="warning" mr-1 small @click="confirmHideSubmission"
+                      >{{ $t('确认隐藏') }}
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
             </v-col>
-            <v-dialog max-width="900" v-model="historyDialog">
+            <v-dialog v-model="historyDialog" max-width="900">
               <v-card>
                 <v-card-title primary-title>
                   <div class="headline primary--text">{{ $t('分享历史') }}</div>
@@ -237,17 +238,17 @@
             <span class="mr-1">{{ $t('Submitted by') }}</span>
             <UserLink :userPreview="submission.author" />
             <v-spacer />
-            <ReactionBlock objectType="submission" :objectId="submission.uuid" />
+            <ReactionBlock :objectId="submission.uuid" objectType="submission" />
           </div>
 
           <!-- Comments -->
           <CommentBlock
-            :siteId="submission.site ? submission.site.uuid : undefined"
-            commentLabel="评论"
             :commentSubmitIntermediate="commentSubmitIntermediate"
             :comments="comments"
-            :writable="commentWritable"
             :enableUpvotes="true"
+            :siteId="submission.site ? submission.site.uuid : undefined"
+            :writable="commentWritable"
+            commentLabel="评论"
             @submit-new-comment="submitNewSubmissionCommentBody"
           />
 
@@ -350,17 +351,51 @@ import * as _ from 'lodash';
   },
 })
 export default class Submission extends Vue {
+  private showHelp: boolean = false;
+  private submission: ISubmission | null = null;
+  private newSubmissionTitle: string = '';
+  private newSubmissionUrl: string | undefined = undefined;
+  private showSubmissionEditor: boolean = false;
+  private newSubmissionTopicNames: string[] = [];
+  private hintTopicNames: string[] = []; // TODO
+  private commentWritable = false;
+  private editable = false;
+  private canHide = false;
+  private showConfirmHideSubmissionDialog = false;
+  private loadingProgress = 0;
+  private loading = true;
+  private isModerator = false;
+  private commitSubmissionEditIntermediate = false;
+  private cancelSubscriptionIntermediate = false;
+  private subscribeIntermediate = false;
+  private showCancelUpvoteDialog: boolean = false;
+  private upvoteIntermediate: boolean = false;
+  private cancelUpvoteIntermediate = false;
+  private upvotes: ISubmissionUpvotes | null = null;
+  private archives: ISubmissionArchive[] = [];
+  private historyDialog = false;
+  private comments: IComment[] = [];
+  private commentSubmitIntermediate = false;
+  private submissionSubscription: IUserSubmissionSubscription | null = null;
+
   get isUserMode() {
     return readUserMode(this.$store);
   }
+
   get id() {
     return this.$route.params.id;
   }
+
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
   get token() {
     return readToken(this.$store);
+  }
+
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
   }
 
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
@@ -381,39 +416,6 @@ export default class Submission extends Vue {
       this.load();
     }
   }
-
-  private showHelp: boolean = false;
-  private submission: ISubmission | null = null;
-  private newSubmissionTitle: string = '';
-  private newSubmissionUrl: string | undefined = undefined;
-  private showSubmissionEditor: boolean = false;
-  private newSubmissionTopicNames: string[] = [];
-  private hintTopicNames: string[] = []; // TODO
-  private commentWritable = false;
-  private editable = false;
-  private canHide = false;
-  private showConfirmHideSubmissionDialog = false;
-
-  private loadingProgress = 0;
-  private loading = true;
-
-  private isModerator = false;
-
-  private commitSubmissionEditIntermediate = false;
-  private cancelSubscriptionIntermediate = false;
-  private subscribeIntermediate = false;
-
-  private showCancelUpvoteDialog: boolean = false;
-  private upvoteIntermediate: boolean = false;
-  private cancelUpvoteIntermediate = false;
-  private upvotes: ISubmissionUpvotes | null = null;
-
-  private archives: ISubmissionArchive[] = [];
-  private historyDialog = false;
-
-  private comments: IComment[] = [];
-
-  private commentSubmitIntermediate = false;
 
   private async mounted() {
     try {
@@ -586,10 +588,6 @@ export default class Submission extends Vue {
     }
   }
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
-
   private async confirmHideSubmission() {
     await dispatchCaptureApiError(this.$store, async () => {
       await apiSubmission.hideSubmission(this.$store.state.main.token, this.submission!.uuid);
@@ -605,8 +603,6 @@ export default class Submission extends Vue {
     this.$router.push(this.$route.path);
     this.showSubmissionEditor = false;
   }
-
-  private submissionSubscription: IUserSubmissionSubscription | null = null;
 
   private async cancelSubscription() {
     await dispatchCaptureApiError(this.$store, async () => {

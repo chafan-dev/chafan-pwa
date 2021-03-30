@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-navigation-drawer
-      temporary
-      :mini-variant="miniDrawer"
-      v-model="showDrawer"
-      fixed
-      app
       v-if="userProfile"
+      v-model="showDrawer"
+      :mini-variant="miniDrawer"
+      app
+      fixed
+      temporary
     >
       <v-layout column fill-height>
         <v-list>
@@ -49,7 +49,7 @@
 
         <v-divider />
 
-        <v-list subheader v-show="hasModeratedSites">
+        <v-list v-show="hasModeratedSites" subheader>
           <v-subheader>Moderation</v-subheader>
           <v-list-item to="/moderation">
             <v-list-item-content>
@@ -59,7 +59,7 @@
         </v-list>
 
         <div v-if="isModerator" class="ma-2">
-          <v-switch :label="$t('普通用户模式')" @change="switchUseMode" v-model="userMode" />
+          <v-switch v-model="userMode" :label="$t('普通用户模式')" @change="switchUseMode" />
         </div>
 
         <v-spacer />
@@ -75,26 +75,26 @@
         </v-list>
       </v-layout>
     </v-navigation-drawer>
-    <v-app-bar dark color="primary">
+    <v-app-bar color="primary" dark>
       <div class="d-flex justify-space-between app-bar-inner">
         <div class="d-flex align-center">
           <v-app-bar-nav-icon
-            @click="switchShowDrawer"
-            :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
             v-if="userProfile"
+            :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+            @click="switchShowDrawer"
           />
           <div v-if="$vuetify.breakpoint.mdAndUp">
-            <router-link class="white--text title text-decoration-none" to="/">{{
-              appName
-            }}</router-link>
+            <router-link class="white--text title text-decoration-none" to="/"
+              >{{ appName }}
+            </router-link>
           </div>
 
-          <v-btn icon v-else to="/" active-class="opacity-none">
+          <v-btn v-else active-class="opacity-none" icon to="/">
             <HomeIcon />
           </v-btn>
         </div>
 
-        <div class="d-flex align-center search-box" v-if="userProfile">
+        <div v-if="userProfile" class="d-flex align-center search-box">
           <SearchBox />
         </div>
 
@@ -103,26 +103,26 @@
 
           <!-- Notifications -->
           <v-menu
+            v-if="userProfile"
             :close-on-content-click="false"
-            left
             :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
             :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
-            v-if="userProfile"
+            left
             offset-y
             transition="slide-x-transition"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                dark
-                icon
                 v-bind="attrs"
                 v-on="on"
                 :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+                dark
+                icon
               >
                 <v-badge
-                  color="green"
-                  :content="unreadNotifications.length"
                   v-if="unreadNotifications.length > 0"
+                  :content="unreadNotifications.length"
+                  color="green"
                 >
                   <NotificationIcon />
                 </v-badge>
@@ -139,28 +139,29 @@
                 </v-subheader>
 
                 <div class="mr-1">
-                  <v-btn depressed small @click="readAllNotifs"
-                    ><MuteNotificationIcon /> {{ $t('Read all') }}</v-btn
-                  >
+                  <v-btn depressed small @click="readAllNotifs">
+                    <MuteNotificationIcon />
+                    {{ $t('Read all') }}
+                  </v-btn>
                 </div>
               </v-sheet>
 
               <div style="max-height: 300px; overflow: auto">
                 <v-list>
                   <template v-for="(notif, idx) in unreadNotifications">
-                    <v-divider :key="'divider-' + notif.id" class="ma-1" v-if="idx" />
+                    <v-divider v-if="idx" :key="'divider-' + notif.id" class="ma-1" />
 
                     <v-list-item :key="notif.id">
-                      <Event :event="notif.event" v-if="notif.event" />
+                      <Event v-if="notif.event" :event="notif.event" />
                       <v-spacer />
                       <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
                     </v-list-item>
                   </template>
                   <div class="text-center mt-2">
                     <v-btn
-                      small
-                      depressed
                       :disabled="readNotificationsIntermediate"
+                      depressed
+                      small
                       @click="expandReadNotifications"
                     >
                       {{ $t('已读通知') }}
@@ -177,14 +178,14 @@
                 <div class="headline primary--text">{{ $t('已读通知') }}</div>
               </v-card-title>
               <v-list-item v-for="notif in readNotifications" :key="notif.id">
-                <Event :event="notif.event" v-if="notif.event" />
+                <Event v-if="notif.event" :event="notif.event" />
               </v-list-item>
             </v-list>
           </v-dialog>
 
           <template v-if="!userProfile">
-            <FeedbackIcon @click="prepareFeedbackForm" class="ml-1" />
-            <v-btn @click="showLoginPrompt" depressed outlined class="ml-2">
+            <FeedbackIcon class="ml-1" @click="prepareFeedbackForm" />
+            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt">
               {{ $t('Login') }}
             </v-btn>
           </template>
@@ -198,37 +199,37 @@
                 <v-card-text>
                   <div>
                     <div v-if="feedbackScreenshotUrl">
-                      <ValidationProvider name="description" rules="required" v-slot="{ errors }">
-                        <v-textarea label="问题/建议描述（必填）" v-model="feedbackText" rows="3" />
+                      <ValidationProvider v-slot="{ errors }" name="description" rules="required">
+                        <v-textarea v-model="feedbackText" label="问题/建议描述（必填）" rows="3" />
                         <span class="error--text">{{ errors[0] }}</span>
                       </ValidationProvider>
                       <template v-if="userProfile === null">
-                        <ValidationProvider name="email" rules="required|email" v-slot="{ errors }">
-                          <v-text-field label="Email（必填）" v-model="feedbackEmail" />
+                        <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
+                          <v-text-field v-model="feedbackEmail" label="Email（必填）" />
                           <span class="error--text">{{ errors[0] }}</span>
                         </ValidationProvider>
                       </template>
-                      <v-switch label="包含截图？" v-model="feedbackIncludesScreenshot" />
+                      <v-switch v-model="feedbackIncludesScreenshot" label="包含截图？" />
                       <v-btn
-                        small
                         depressed
                         info
                         outlined
+                        small
                         @click="showFeedbackScreenshot = !showFeedbackScreenshot"
                       >
                         {{ $t('截图预览') }}
                       </v-btn>
                       <v-expand-transition>
                         <v-img
-                          :src="feedbackScreenshotUrl"
                           v-show="showFeedbackScreenshot"
+                          :src="feedbackScreenshotUrl"
                           class="ma-2"
                         />
                       </v-expand-transition>
                     </div>
                     <span v-else>
                       {{ $t('生成截图中...') }}
-                      <v-progress-circular size="20" indeterminate />
+                      <v-progress-circular indeterminate size="20" />
                     </span>
                   </div>
                 </v-card-text>
@@ -241,15 +242,15 @@
                     常见问题及解决方法
                   </a>
                   <v-spacer />
-                  <v-btn small depressed @click="cancelFeedbackForm(reset)">
+                  <v-btn depressed small @click="cancelFeedbackForm(reset)">
                     {{ $t('取消') }}
                   </v-btn>
                   <v-btn
-                    small
-                    depressed
-                    color="primary"
-                    @click="handleSubmit(submitFeedbackForm)"
                     :disabled="!valid || sendingFeedback"
+                    color="primary"
+                    depressed
+                    small
+                    @click="handleSubmit(submitFeedbackForm)"
                   >
                     {{ $t('提交') }}
                   </v-btn>
@@ -260,11 +261,11 @@
 
           <!-- ... menu -->
           <v-menu
-            left
             v-if="userProfile"
+            v-model="showTopMenu"
+            left
             offset-y
             transition="slide-x-transition"
-            v-model="showTopMenu"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -408,6 +409,35 @@ const routeGuardMain = async (to, from, next) => {
   },
 })
 export default class Main extends Vue {
+  private appName = appName;
+  private unreadNotifications: INotification[] = [];
+  private wsConnection: WebSocket | null = null;
+  private readNotifIntermediate = false;
+  private readNotificationsIntermediate = false;
+  private showReadNotifications = false;
+  private readNotifications: INotification[] | null = null;
+  private readonly accountItems = [
+    {
+      icon: 'DashboardIcon',
+      text: this.$t('Dashboard'),
+      to: '/dashboard',
+    },
+    {
+      icon: 'ProfileIcon',
+      text: this.$t('个人资料'),
+      hrefRequiresUserProfile: true,
+      href: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
+    },
+  ];
+  private showTopMenu = false;
+  private showFeedbackForm = false;
+  private feedbackScreenshotUrl: string | null = null;
+  private feedbackIncludesScreenshot = true;
+  private showFeedbackScreenshot = false;
+  private feedbackText = '';
+  private feedbackEmail = '';
+  private sendingFeedback = false;
+
   get miniDrawer() {
     return readDashboardMiniDrawer(this.$store);
   }
@@ -420,28 +450,23 @@ export default class Main extends Vue {
     commitSetDashboardShowDrawer(this.$store, value);
   }
 
-  private get hasModeratedSites() {
-    return readHasModeratedSites(this.$store);
-  }
-  private appName = appName;
-  private unreadNotifications: INotification[] = [];
-  private wsConnection: WebSocket | null = null;
-
-  private readNotifIntermediate = false;
-
-  private readNotificationsIntermediate = false;
-  private showReadNotifications = false;
-  private readNotifications: INotification[] | null = null;
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
   get isModerator() {
     const sites = readModeratedSites(this.$store);
     return sites !== null && sites.length > 0;
   }
+
   get userMode() {
     return readUserMode(this.$store);
   }
+
+  private get hasModeratedSites() {
+    return readHasModeratedSites(this.$store);
+  }
+
   private showLoginPrompt() {
     commitSetShowLoginPrompt(this.$store, true);
   }
@@ -485,6 +510,7 @@ export default class Main extends Vue {
       }
     }
   }
+
   private async readNotif(notif: INotification) {
     this.readNotifIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
@@ -495,11 +521,13 @@ export default class Main extends Vue {
       this.readNotifIntermediate = false;
     });
   }
+
   private async readAllNotifs() {
     this.unreadNotifications.forEach((notif) => {
       this.readNotif(notif);
     });
   }
+
   private async expandReadNotifications() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.readNotifications === null) {
@@ -539,28 +567,6 @@ export default class Main extends Vue {
     commitSetUserMode(this.$store, this.userMode);
   }
 
-  private readonly accountItems = [
-    {
-      icon: 'DashboardIcon',
-      text: this.$t('Dashboard'),
-      to: '/dashboard',
-    },
-    {
-      icon: 'ProfileIcon',
-      text: this.$t('个人资料'),
-      hrefRequiresUserProfile: true,
-      href: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
-    },
-  ];
-
-  private showTopMenu = false;
-  private showFeedbackForm = false;
-  private feedbackScreenshotUrl: string | null = null;
-  private feedbackIncludesScreenshot = true;
-  private showFeedbackScreenshot = false;
-  private feedbackText = '';
-  private feedbackEmail = '';
-
   private prepareFeedbackForm() {
     this.showTopMenu = false;
     setTimeout(() => {
@@ -571,7 +577,6 @@ export default class Main extends Vue {
     }, 100);
   }
 
-  private sendingFeedback = false;
   private async submitFeedbackForm() {
     this.sendingFeedback = true;
     const formData = new FormData();

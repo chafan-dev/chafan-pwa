@@ -9,7 +9,7 @@
         <div v-if="site.topics.length > 0">
           <b>{{ $t('话题：') }}</b>
           <v-chip-group>
-            <v-chip :to="'/topics/' + topic.uuid" v-for="topic in site.topics" :key="topic.uuid">
+            <v-chip v-for="topic in site.topics" :key="topic.uuid" :to="'/topics/' + topic.uuid">
               {{ topic.name }}
             </v-chip>
           </v-chip-group>
@@ -26,36 +26,35 @@
 
       <SiteJoinConditions :site="site" />
 
-      <div class="mt-2" v-if="notMember">
-        <v-skeleton-loader type="button" v-if="loading" />
+      <div v-if="notMember" class="mt-2">
+        <v-skeleton-loader v-if="loading" type="button" />
         <template v-else>
-          <v-btn small depressed v-if="siteApplied" disabled>{{ $t('申请审核中') }}</v-btn>
+          <v-btn v-if="siteApplied" depressed disabled small>{{ $t('申请审核中') }}</v-btn>
           <v-btn
-            small
-            depressed
-            color="primary"
             v-else
             :disabled="applyToJoinIntermediate"
+            color="primary"
+            depressed
+            small
             @click="applyToJoin"
-            >{{ $t('加入') }}</v-btn
-          >
+            >{{ $t('加入') }}
+          </v-btn>
         </template>
       </div>
     </div>
 
-    <div class="d-flex mt-1 mb-1" v-if="!notMember">
+    <div v-if="!notMember" class="d-flex mt-1 mb-1">
       <Invite :site="site" />
       <NewInviteLinkBtn :site="site" class="ml-2" />
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn small depressed v-bind="attrs" v-on="on" class="ml-2">
-            <SettingsIcon small /><span class="ml-1" v-if="!$vuetify.breakpoint.mobile">{{
-              $t('设置')
-            }}</span>
+          <v-btn v-bind="attrs" v-on="on" class="ml-2" depressed small>
+            <SettingsIcon small />
+            <span v-if="!$vuetify.breakpoint.mobile" class="ml-1">{{ $t('设置') }}</span>
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="leaveSite" :disabled="intermediate">
+          <v-list-item :disabled="intermediate" @click="leaveSite">
             <v-list-item-icon>
               <DoorIcon />
             </v-list-item-icon>
@@ -71,11 +70,11 @@
       <v-tabs-slider />
 
       <v-tab-item v-if="showQuestionEditor">
-        <CreateQuestionForm class="ma-1" :site="site" />
+        <CreateQuestionForm :site="site" class="ma-1" />
       </v-tab-item>
 
       <v-tab-item v-if="showSubmissionEditor">
-        <CreateSubmissionForm class="ma-1" :site="site" />
+        <CreateSubmissionForm :site="site" class="ma-1" />
       </v-tab-item>
     </v-tabs>
 
@@ -85,7 +84,7 @@
           {{ $t('申请加入圈子的条件') }}
         </v-card-title>
         <v-card-text>
-          <SiteJoinConditions :site="site" :showHint="true" />
+          <SiteJoinConditions :showHint="true" :site="site" />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -128,22 +127,21 @@ import SettingsIcon from '@/components/icons/SettingsIcon.vue';
   },
 })
 export default class SiteCard extends Vue {
-  get token() {
-    return this.$store.state.main.token;
-  }
   @Prop() private readonly site!: ISite;
   @Prop() private readonly isMember: boolean | undefined;
   @Prop() private readonly showQuestionEditor!: boolean;
   @Prop() private readonly showSubmissionEditor!: boolean;
   @Prop({ default: true }) private readonly compactMode!: boolean;
-
   private notMember = true;
   private siteApplied = false;
   private applyToJoinIntermediate = false;
   private loading = true;
   private showJoinConditionsDialog = false;
-
   private intermediate = false;
+
+  get token() {
+    return this.$store.state.main.token;
+  }
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -211,6 +209,7 @@ export default class SiteCard extends Vue {
       },
     });
   }
+
   private async leaveSite() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;

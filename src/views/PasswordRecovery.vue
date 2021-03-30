@@ -1,11 +1,11 @@
 <template>
   <v-main>
-    <v-container fluid fill-height>
+    <v-container fill-height fluid>
       <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
+        <v-flex md4 sm8 xs12>
           <ValidationObserver v-slot="{ handleSubmit }">
             <v-card class="elevation-12">
-              <v-toolbar dark color="primary">
+              <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} - {{ $t('Password Recovery') }}</v-toolbar-title>
                 <v-spacer />
                 <LangPicker />
@@ -15,21 +15,23 @@
                   {{ $t('A password recovery email will be sent to the registered account') }}
                 </p>
                 <v-form
-                  @keyup.enter="submit"
-                  v-model="valid"
                   ref="form"
-                  @submit.prevent=""
+                  v-model="valid"
                   lazy-validation
+                  @keyup.enter="submit"
+                  @submit.prevent=""
                 >
-                  <ValidationProvider name="email" rules="required|email" v-slot="{ errors }">
+                  <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
                     <v-text-field
-                      @keyup.enter="handleSubmit(submit)"
-                      :label="$t('Email')"
-                      type="text"
                       v-model="email"
+                      :label="$t('Email')"
                       required
+                      type="text"
+                      @keyup.enter="handleSubmit(submit)"
                     >
-                      <template v-slot:prepend><AccountIcon /></template>
+                      <template v-slot:prepend>
+                        <AccountIcon />
+                      </template>
                     </v-text-field>
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
@@ -38,7 +40,7 @@
               <v-card-actions>
                 <v-spacer />
                 <v-btn @click="cancel">{{ $t('Cancel') }}</v-btn>
-                <v-btn @click.prevent="handleSubmit(submit)" :disabled="!valid" color="primary">
+                <v-btn :disabled="!valid" color="primary" @click.prevent="handleSubmit(submit)">
                   {{ $t('Send') }}
                 </v-btn>
               </v-card-actions>

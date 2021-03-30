@@ -1,5 +1,5 @@
 <template>
-  <router-link class="text-decoration-none" :to="'/questions/' + id">
+  <router-link :to="'/questions/' + id" class="text-decoration-none">
     {{ title }}
   </router-link>
 </template>

@@ -16,10 +16,10 @@
           <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
         </template>
       </v-banner>
-      <v-progress-linear indeterminate v-if="loading" />
+      <v-progress-linear v-if="loading" indeterminate />
       <router-view v-else />
       <NotificationsManager />
-      <v-snackbar bottom right :value="updateExists" :timeout="-1" color="primary">
+      <v-snackbar :timeout="-1" :value="updateExists" bottom color="primary" right>
         {{ $t('App update is available') }}
         <v-btn text @click="refreshApp">
           {{ $t('Update') }}
@@ -60,23 +60,26 @@ import { getDefaultNarrowFeedUI } from '@/common';
   },
 })
 export default class App extends Vue {
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-  get showLoginPrompt() {
-    return readShowLoginPrompt(this.$store);
-  }
-  set showLoginPrompt(value: boolean) {
-    commitSetShowLoginPrompt(this.$store, value);
-  }
-  get topBanner() {
-    return readTopBanner(this.$store);
-  }
-
   private registration: ServiceWorkerRegistration | null = null;
   private updateExists = false;
   private refreshing = false;
   private loading = true;
+
+  get loggedIn() {
+    return readIsLoggedIn(this.$store);
+  }
+
+  get showLoginPrompt() {
+    return readShowLoginPrompt(this.$store);
+  }
+
+  set showLoginPrompt(value: boolean) {
+    commitSetShowLoginPrompt(this.$store, value);
+  }
+
+  get topBanner() {
+    return readTopBanner(this.$store);
+  }
 
   public async mounted() {
     document.addEventListener(

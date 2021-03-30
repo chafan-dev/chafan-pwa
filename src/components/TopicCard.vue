@@ -10,13 +10,13 @@
       </div>
       <div class="mt-2">
         <v-btn
-          @click="cancelSubscription"
-          :disabled="cancelSubscriptionIntermediate"
           v-if="topicSubscription.subscribed_by_me"
+          :disabled="cancelSubscriptionIntermediate"
+          @click="cancelSubscription"
         >
           {{ $t('已关注') }} ({{ topicSubscription.subscription_count }})
         </v-btn>
-        <v-btn @click="subscribe" :disabled="subscribeIntermediate" color="primary" v-else>
+        <v-btn v-else :disabled="subscribeIntermediate" color="primary" @click="subscribe">
           {{ $t('关注') }} ({{ topicSubscription.subscription_count }})
         </v-btn>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-row class="mb-12" justify="center" v-else>
+    <v-row v-else class="mb-12" justify="center">
       <v-col :class="{ 'col-6': $vuetify.breakpoint.mdAndUp }" fluid>
         <v-expansion-panels>
           <v-expansion-panel>
@@ -17,12 +17,12 @@
         <ChatWindow :channel="channel" />
       </v-col>
 
-      <v-col class="col-3" v-if="$vuetify.breakpoint.mdAndUp">
+      <v-col v-if="$vuetify.breakpoint.mdAndUp" class="col-3">
         <ChannelCard :channel="channel" />
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab fixed right bottom v-bind="attrs" v-on="on">
+          <v-btn v-bind="attrs" v-on="on" bottom fab fixed right>
             <ChannelIcon />
           </v-btn>
         </template>
@@ -50,15 +50,21 @@ import * as _ from 'lodash';
   components: { UserLink, ChannelCard, ChannelIcon, ChatWindow },
 })
 export default class Channel extends Vue {
+  private channel: IChannel | null = null;
+  private loading = true;
+
   get id() {
     return parseInt(this.$route.params.id, 10);
   }
+
   get currentUserId() {
     return this.$store.state.main.userProfile.uuid;
   }
+
   get token() {
     return this.$store.state.main.token;
   }
+
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'channel');
@@ -67,8 +73,7 @@ export default class Channel extends Vue {
       this.load();
     }
   }
-  private channel: IChannel | null = null;
-  private loading = true;
+
   private async mounted() {
     await this.load();
   }

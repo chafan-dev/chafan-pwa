@@ -2,36 +2,36 @@
   <v-container fluid>
     <v-row class="mb-12" justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
-        <ArticleColumnCard :articleColumn="articleColumn" v-if="articleColumn" />
-        <v-skeleton-loader type="card" v-else />
+        <ArticleColumnCard v-if="articleColumn" :articleColumn="articleColumn" />
+        <v-skeleton-loader v-else type="card" />
 
         <div class="ma-2">
           <div class="d-flex">
             <span class="title">{{ $t('文章列表') }}</span>
             <v-spacer />
             <v-btn
-              small
-              depressed
-              color="primary"
               v-if="articleColumn && articleColumn.owner.uuid === userProfile.uuid"
               :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
               class="mt-2"
+              color="primary"
+              depressed
+              small
             >
               {{ $t('写文章') }}
             </v-btn>
           </div>
           <ul v-if="articles">
             <li v-for="article in articles" :key="article.uuid">
-              <router-link class="text-decoration-none" :to="`/articles/${article.uuid}`">{{
-                article.title
-              }}</router-link>
-              <v-chip small class="ml-2" v-if="!article.is_published">{{ $t('初稿') }}</v-chip>
+              <router-link :to="`/articles/${article.uuid}`" class="text-decoration-none"
+                >{{ article.title }}
+              </router-link>
+              <v-chip v-if="!article.is_published" class="ml-2" small>{{ $t('初稿') }}</v-chip>
             </li>
           </ul>
           <div v-if="!userProfile" class="text-center grey--text">
             {{ $t('登录后查看更多') }}
           </div>
-          <v-skeleton-loader type="paragraph" v-else />
+          <v-skeleton-loader v-else type="paragraph" />
         </div>
       </v-col>
     </v-row>
@@ -55,20 +55,20 @@ export default class ArticleColumn extends Vue {
   private articleColumn: IArticleColumn | null = null;
   private articles: IArticlePreview[] | null = null;
 
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'article-column');
-    if (matched && !_.isEqual(to.params, from.params)) {
-      this.load();
-    }
-  }
-
   get id() {
     return this.$route.params.id;
   }
 
   get userProfile() {
     return readUserProfile(this.$store);
+  }
+
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'article-column');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.load();
+    }
   }
 
   private async load() {

@@ -1,13 +1,13 @@
 <template>
-  <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
+  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
     <div class="title" style="word-break: normal">
-      <router-link class="text-decoration-none" :to="'/questions/' + questionPreview.uuid">
+      <router-link :to="'/questions/' + questionPreview.uuid" class="text-decoration-none">
         {{ questionPreview.title }}
       </router-link>
     </div>
     <div
-      class="grey--text subtitle-2"
       v-if="questionPreview.description_text && questionPreview.description_text.trim()"
+      class="grey--text subtitle-2"
     >
       {{ shortDesc }}
     </div>
@@ -19,17 +19,17 @@
         }"
       >
         <CommentsIcon class="mr-1" small />
-        <span class="text-caption" v-if="!$vuetify.breakpoint.mobile">
+        <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
           {{ $t('n条评论', { n: questionPreview.comments_count }) }}</span
         >
-        <span class="text-caption" v-else>{{ questionPreview.comments_count }}</span>
+        <span v-else class="text-caption">{{ questionPreview.comments_count }}</span>
       </div>
       <div>
         <AnswerIcon class="mr-1" small />
-        <span class="text-caption" v-if="!$vuetify.breakpoint.mobile">
+        <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
           {{ $t('n个回答', { n: questionPreview.answers_count }) }}</span
         >
-        <span class="text-caption" v-else>{{ questionPreview.answers_count }}</span>
+        <span v-else class="text-caption">{{ questionPreview.answers_count }}</span>
       </div>
     </div>
   </v-card>

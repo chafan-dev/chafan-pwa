@@ -1,34 +1,34 @@
 <template>
   <v-card>
     <ValidationObserver v-slot="{ handleSubmit }">
-      <v-card-title class="primary--text headline" v-if="showTitle">
+      <v-card-title v-if="showTitle" class="primary--text headline">
         {{ $t('分享') }}
       </v-card-title>
       <v-card-text>
         <v-autocomplete
-          :label="$t('Circle')"
-          :items="siteProfiles"
-          item-value="site"
-          item-text="site.name"
-          v-model="selectedSite"
           v-if="site === undefined"
+          v-model="selectedSite"
+          :items="siteProfiles"
+          :label="$t('Circle')"
+          item-text="site.name"
+          item-value="site"
         />
-        <v-textarea :label="$t('Title')" auto-grow dense rows="1" v-model="newSubmissionTitle" />
-        <ValidationProvider name="URL" rules="url" v-slot="{ errors }">
-          <v-text-field :label="$t('URL (optional)')" v-model="newSubmissionURL" />
+        <v-textarea v-model="newSubmissionTitle" :label="$t('Title')" auto-grow dense rows="1" />
+        <ValidationProvider v-slot="{ errors }" name="URL" rules="url">
+          <v-text-field v-model="newSubmissionURL" :label="$t('URL (optional)')" />
           <span class="error--text">{{ errors[0] }}</span>
         </ValidationProvider>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn
-          small
-          color="primary"
-          @click="handleSubmit(postNewSubmission)"
           :disabled="postNewSubmissionIntermediate"
+          color="primary"
+          small
+          @click="handleSubmit(postNewSubmission)"
         >
           {{ $t('提交') }}
-          <v-progress-circular size="20" intermediate v-if="postNewSubmissionIntermediate" />
+          <v-progress-circular v-if="postNewSubmissionIntermediate" intermediate size="20" />
         </v-btn>
       </v-card-actions>
     </ValidationObserver>
@@ -59,6 +59,10 @@ export default class CreateSubmissionForm extends Vue {
   private siteProfiles: IUserSiteProfile[] = [];
   private selectedSite: ISite | null = null;
 
+  get token() {
+    return readToken(this.$store);
+  }
+
   public async mounted() {
     // FIXME: Cache user's site profile on the client side
     if (this.site === undefined && this.token) {
@@ -66,10 +70,6 @@ export default class CreateSubmissionForm extends Vue {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
       });
     }
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   private async postNewSubmission() {

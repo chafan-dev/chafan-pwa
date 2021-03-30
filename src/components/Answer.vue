@@ -16,9 +16,9 @@
       <div v-if="showQuestionInCard" class="title mb-2 d-flex">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
-      <div v-if="preview || !answer" @click="expandDown" style="cursor: pointer">
+      <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
         <span v-show="showAuthor">
-          <UserLink :userPreview="answerPreview.author" :showAvatar="true" />:
+          <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
         </span>
         {{ answerPreviewBody }}
         <a @click="expandDown">
@@ -27,11 +27,11 @@
       </div>
       <div v-if="answer" :hidden="preview">
         <div v-if="showAuthor" class="d-flex align-center">
-          <UserLink :userPreview="answer.author" :showAvatar="true" v-show="!preview" />
+          <UserLink v-show="!preview" :showAvatar="true" :userPreview="answer.author" />
           <span
-            class="grey--text ml-2"
             v-if="answer.author.personal_introduction"
             :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+            class="grey--text ml-2"
           >
             {{ truncatedIntro(answer.author.personal_introduction) }}
           </span>
@@ -44,7 +44,7 @@
 
         <div class="mt-2 mb-1">
           <template v-if="draftMode">
-            <v-chip small color="info" v-if="answer">
+            <v-chip v-if="answer" color="info" small>
               {{ $t('草稿') }}
             </v-chip>
             <Viewer
@@ -55,26 +55,26 @@
             />
           </template>
           <template v-else>
-            <v-chip small color="warning" v-if="answer && !answer.is_published">
+            <v-chip v-if="answer && !answer.is_published" color="warning" small>
               {{ $t('此为初稿仅自己可见') }}
             </v-chip>
-            <v-chip small color="info" v-else-if="showHasDraftBadge">
+            <v-chip v-else-if="showHasDraftBadge" color="info" small>
               {{ $t('编辑器中有未发表的草稿') }}
             </v-chip>
             <Viewer
+              v-intersect.once="onReadFullAnswer"
               :body="answer.body"
               :bodyFormat="answer.body_format"
               :editor="answer.editor"
               class="vditor-preview"
-              v-intersect.once="onReadFullAnswer"
             />
           </template>
         </div>
 
         <div v-if="userBookmark" fluid>
           <v-row>
-            <v-col class="d-flex" align-self="end">
-              <v-dialog max-width="400" v-model="showCancelUpvoteDialog">
+            <v-col align-self="end" class="d-flex">
+              <v-dialog v-model="showCancelUpvoteDialog" max-width="400">
                 <v-card>
                   <v-card-title primary-title>
                     <div class="headline">{{ $t('确定收回点赞？') }}</div>
@@ -82,43 +82,43 @@
 
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn small outlined @click="showCancelUpvoteDialog = false">{{
-                      $t('No')
-                    }}</v-btn>
+                    <v-btn outlined small @click="showCancelUpvoteDialog = false"
+                      >{{ $t('No') }}
+                    </v-btn>
                     <v-btn
-                      small
-                      color="error"
-                      @click="cancelUpvote"
                       :disabled="cancelUpvoteIntermediate"
-                      >{{ $t('Yes') }}</v-btn
-                    >
+                      color="error"
+                      small
+                      @click="cancelUpvote"
+                      >{{ $t('Yes') }}
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
 
               <div class="d-flex mt-2">
                 <v-btn
-                  small
-                  depressed
-                  @click="showCancelUpvoteDialog = true"
-                  color="primary lighten-2"
                   v-if="upvotes && upvotes.upvoted"
+                  color="primary lighten-2"
+                  depressed
+                  small
+                  @click="showCancelUpvoteDialog = true"
                 >
                   {{ $t('已赞') }} ({{ upvotes.count }})
                 </v-btn>
                 <v-btn
-                  small
-                  depressed
-                  class="slim-btn mx-1"
-                  color="primary"
-                  @click="upvote"
                   v-else
                   :disabled="currentUserIsAuthor || upvoteIntermediate"
+                  class="slim-btn mx-1"
+                  color="primary"
+                  depressed
+                  small
+                  @click="upvote"
                 >
                   {{ $t('赞') }} ({{ upvotes.count }})
                 </v-btn>
 
-                <v-btn small depressed class="mx-1" @click="toggleShowComments">
+                <v-btn class="mx-1" depressed small @click="toggleShowComments">
                   {{
                     answer.comments.length == 0
                       ? $t('评论')
@@ -128,20 +128,20 @@
 
                 <template v-if="userProfile">
                   <v-btn
-                    small
-                    depressed
-                    class="slim-btn mx-1"
-                    @click="loadEditor"
                     v-show="currentUserIsAuthor"
+                    class="slim-btn mx-1"
+                    depressed
+                    small
+                    @click="loadEditor"
                   >
                     {{ $t(editButtonText) }}
                   </v-btn>
 
-                  <v-menu offset-y v-if="currentUserIsAuthor">
+                  <v-menu v-if="currentUserIsAuthor" offset-y>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn depressed v-bind="attrs" v-on="on" class="slim-btn mx-1" small>{{
-                        $t('设置')
-                      }}</v-btn>
+                      <v-btn v-bind="attrs" v-on="on" class="slim-btn mx-1" depressed small
+                        >{{ $t('设置') }}
+                      </v-btn>
                     </template>
                     <v-list>
                       <v-list-item @click="confirmDeleteDialog = true">
@@ -153,7 +153,7 @@
                     </v-list>
                   </v-menu>
 
-                  <v-dialog max-width="400" v-model="confirmDeleteDialog">
+                  <v-dialog v-model="confirmDeleteDialog" max-width="400">
                     <v-card>
                       <v-card-title primary-title>
                         <div class="headline primary--text">
@@ -166,15 +166,15 @@
                       </v-card-title>
                       <v-card-actions>
                         <v-spacer />
-                        <v-btn depressed small @click="confirmDeleteDialog = false">{{
-                          $t('No')
-                        }}</v-btn>
+                        <v-btn depressed small @click="confirmDeleteDialog = false"
+                          >{{ $t('No') }}
+                        </v-btn>
                         <v-btn
+                          :disabled="deleteAnswerIntermediate"
+                          color="warning"
                           depressed
                           small
-                          color="warning"
                           @click="deleteAnswer"
-                          :disabled="deleteAnswerIntermediate"
                         >
                           {{ $t('Yes') }}
                         </v-btn>
@@ -184,23 +184,23 @@
 
                   <span
                     v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                    @click="unbookmark"
                     style="cursor: pointer"
+                    @click="unbookmark"
                   >
                     <BookmarkedIcon :disabled="unbookmarkIntermediate" />
                     <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
                   </span>
                   <span
                     v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                    @click="bookmark"
                     style="cursor: pointer"
+                    @click="bookmark"
                   >
                     <ToBookmarkIcon :disabled="bookmarkIntermediate" />
                     <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
                   </span>
                 </template>
 
-                <CollapseUpIcon @click="preview = true" class="pl-1 pr-1" />
+                <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
 
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
@@ -219,7 +219,7 @@
             </v-col>
 
             <!-- Column of variable width -->
-            <v-col md="auto" v-if="$vuetify.breakpoint.mdAndUp & !preview && userProfile">
+            <v-col v-if="$vuetify.breakpoint.mdAndUp & !preview && userProfile" md="auto">
               <span class="text-caption grey--text ma-2">{{
                 $t('已被阅读n次', { times: answer.view_times })
               }}</span>
@@ -231,18 +231,18 @@
                         Let's fix them later.
                      -->
           <div class="d-flex justify-end mt-1">
-            <ReactionBlock objectType="answer" class="ml-1" :objectId="answer.uuid" />
+            <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
           </div>
 
           <!-- Comments -->
           <v-expand-transition v-if="!preview">
             <CommentBlock
               v-show="showComments"
-              :siteId="answer.site ? answer.site.uuid : undefined"
-              commentLabel="评论答案"
               :commentSubmitIntermediate="commentSubmitIntermediate"
               :comments="answer.comments"
+              :siteId="answer.site ? answer.site.uuid : undefined"
               :writable="commentWritable"
+              commentLabel="评论答案"
               @submit-new-comment="submitNewAnswerCommentBody"
             >
             </CommentBlock>
@@ -256,15 +256,15 @@
           {{ $t('管理：') }}
           <!-- Moderator -->
           <v-btn
-            small
-            depressed
-            class="slim-btn ma-1"
-            @click="toggleHideAnswer"
-            color="warning"
-            :disabled="toggleHideAnswerIntermediate"
             v-if="isHiddenByMod"
-            >{{ $t('取消隐藏') }}</v-btn
-          >
+            :disabled="toggleHideAnswerIntermediate"
+            class="slim-btn ma-1"
+            color="warning"
+            depressed
+            small
+            @click="toggleHideAnswer"
+            >{{ $t('取消隐藏') }}
+          </v-btn>
           <v-btn
             v-else
             :disabled="toggleHideAnswerIntermediate"
@@ -282,9 +282,9 @@
   <RichEditor
     v-else-if="answer && showEditor"
     :answerIdProp="answer.uuid"
-    publishText="发表答案"
-    :inPrivateSite="!answer.site.public_readable"
     :archivesCount="answer.archives_count"
+    :inPrivateSite="!answer.site.public_readable"
+    publishText="发表答案"
     @submit-edit="newEditHandler"
     @cancel-edit="onCancelEdit"
     @delete-draft="deleteDraft"
@@ -340,12 +340,6 @@ import { apiMe } from '@/api/me';
   },
 })
 export default class Answer extends Vue {
-  get isUserMode() {
-    return readUserMode(this.$store);
-  }
-  get token() {
-    return readToken(this.$store);
-  }
   @Prop({ default: false }) private readonly embedded!: false;
   @Prop() private readonly answerPreview!: IAnswerPreview;
   @Prop() private readonly answerProp: IAnswer | undefined;
@@ -354,7 +348,6 @@ export default class Answer extends Vue {
   @Prop({ default: false }) private readonly draftMode!: boolean;
   @Prop() private readonly showCommentId: number | undefined;
   @Prop({ default: true }) private readonly showQuestionInCard!: boolean;
-
   private answer: IAnswer | null = null;
   private upvotes: IAnswerUpvotes | null = null;
   private showComments: boolean = false;
@@ -365,35 +358,35 @@ export default class Answer extends Vue {
   private showEditor: boolean = false;
   private showCancelUpvoteDialog: boolean = false;
   private confirmDeleteDialog = false;
-
   private loading = true;
   private preview = true;
-
   private upvoteIntermediate = false;
-
   private cancelUpvoteIntermediate = false;
   private deleteAnswerIntermediate = false;
-
   private bookmarkIntermediate = false;
-
   private unbookmarkIntermediate = false;
-
   private toggleHideAnswerIntermediate = false;
   private answerPreviewBody: string = this.answerPreview.body;
   private currentUserIsAuthor = false;
-
   private answerEditHandler: AnswerEditHandler = new AnswerEditHandler(
     this,
     this.answerPreview.uuid,
     this.answerPreview.question.uuid,
     this.updatedAnswerCallback
   );
-
   private editButtonText = '编辑';
   private showHasDraftBadge = false;
   private draftPromise: Promise<IAnswerDraft> | null = null;
-
   private commentSubmitIntermediate = false;
+  private bodyDraft: string | null = null;
+
+  get isUserMode() {
+    return readUserMode(this.$store);
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
 
   get userProfile() {
     return readUserProfile(this.$store);
@@ -514,8 +507,6 @@ export default class Answer extends Vue {
     }
   }
 
-  private bodyDraft: string | null = null;
-
   private updateStateWithLoadedAnswer(answer: IAnswer) {
     this.$emit('load');
     this.answer = answer;
@@ -589,6 +580,7 @@ export default class Answer extends Vue {
       this.showEditor = true;
     }
   }
+
   private onCancelEdit() {
     this.showEditor = false;
     apiAnswer.getAnswer(this.token, this.answerPreview.uuid).then((response) => {
@@ -653,10 +645,10 @@ export default class Answer extends Vue {
 
 <style lang="sass">
 .slim-btn
-    padding: 0 8px !important
+  padding: 0 8px !important
 
 .vditor-preview
-    padding: 0px 1px
+  padding: 0px 1px
 </style>
 
 <style scoped>

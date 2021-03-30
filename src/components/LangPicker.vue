@@ -1,5 +1,5 @@
 <template>
-  <v-menu offset-y transition="slide-x-transition" left>
+  <v-menu left offset-y transition="slide-x-transition">
     <template v-slot:activator="{ on, attrs }">
       <v-btn
         v-bind="attrs"
@@ -14,9 +14,9 @@
 
     <v-list dense>
       <v-list-item-group
-        color="indigo"
-        active-class="border"
         v-model="selectedLangIdx"
+        active-class="border"
+        color="indigo"
         mandatory
         @change="onChange"
       >

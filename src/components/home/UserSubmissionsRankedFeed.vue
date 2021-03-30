@@ -21,6 +21,7 @@ import { ISubmission, IUserProfile } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import SubmissionCard from '@/components/SubmissionCard.vue';
+
 @Component({
   components: { SubmissionCard },
 })

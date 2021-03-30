@@ -3,78 +3,78 @@
     <v-row justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <ValidationObserver v-slot="{ handleSubmit, reset }">
-          <div class="ma-3" v-if="userProfile">
+          <div v-if="userProfile" class="ma-3">
             <v-card-title primary-title>
               <div class="headline primary--text">
                 {{ $t('Edit User Profile') }}
               </div>
-              <v-spacer></v-spacer
-              ><v-btn depressed small :to="`/users/${userProfile.handle}`">{{
-                $t('个人资料')
-              }}</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn :to="`/users/${userProfile.handle}`" depressed small
+                >{{ $t('个人资料') }}
+              </v-btn>
             </v-card-title>
             <div class="pa-4">
               <template>
-                <v-form v-model="valid" ref="form" lazy-validation>
+                <v-form ref="form" v-model="valid" lazy-validation>
                   <v-row>
                     <v-col class="avatar-col">
-                      <v-avatar size="150" class="avatarDiv" tile>
+                      <v-avatar class="avatarDiv" size="150" tile>
                         <v-progress-circular
                           v-if="uploadAvatarIntermediate"
-                          indeterminate
                           color="primary"
+                          indeterminate
                         ></v-progress-circular>
                         <v-img :src="avatarURL" alt="Avatar" @click="showFilePicker" />
                       </v-avatar>
                       <input
-                        type="file"
                         id="fileInput"
                         accept="image/png, image/jpeg, image/bmp"
                         hidden
+                        type="file"
                         @change="uploadAvatar"
                       />
                       <input
-                        type="file"
                         id="gifFileInput"
                         accept="image/gif"
                         hidden
+                        type="file"
                         @change="uploadGifAvatar"
                       />
                       <div class="text-center">
                         <span class="text-caption">{{ $t('点击更改默认头像') }}</span>
-                        <v-btn x-small depressed @click="showGifAvatar = !showGifAvatar">{{
-                          $t('添加额外的 GIF 头像')
-                        }}</v-btn>
+                        <v-btn depressed x-small @click="showGifAvatar = !showGifAvatar"
+                          >{{ $t('添加额外的 GIF 头像') }}
+                        </v-btn>
                       </div>
                       <v-expand-transition>
-                        <v-avatar size="150" class="avatarDiv mt-2" tile v-show="showGifAvatar">
+                        <v-avatar v-show="showGifAvatar" class="avatarDiv mt-2" size="150" tile>
                           <v-progress-circular
                             v-if="uploadGifAvatarIntermediate"
-                            indeterminate
                             color="primary"
+                            indeterminate
                           ></v-progress-circular>
                           <v-img :src="gifAvatarURL" alt="GIF Avatar" @click="showGifFilePicker" />
                         </v-avatar>
                       </v-expand-transition>
                     </v-col>
                     <v-col>
-                      <v-text-field :label="$t('Full Name')" v-model="userUpdateMe.full_name" />
+                      <v-text-field v-model="userUpdateMe.full_name" :label="$t('Full Name')" />
                       <ValidationProvider
+                        v-slot="{ errors }"
                         :name="$t('Username')"
                         rules="required"
-                        v-slot="{ errors }"
                       >
                         <v-text-field
+                          v-model="userUpdateMe.handle"
                           :label="
                             $t('Username') + ' (' + $t('这是你的唯一标识符，请谨慎更改') + ')'
                           "
-                          v-model="userUpdateMe.handle"
                         />
                         <span class="error--text">{{ errors[0] }}</span>
                       </ValidationProvider>
                       <v-text-field
-                        :label="$t('个人简介')"
                         v-model="userUpdateMe.personal_introduction"
+                        :label="$t('个人简介')"
                       />
                     </v-col>
                   </v-row>
@@ -97,12 +97,12 @@
                       />
 
                       <v-combobox
+                        v-model="newResidencyTopicNames"
+                        :delimiters="[',', '，', '、']"
+                        :label="$t('居住过的地方')"
                         hide-selected
                         multiple
                         small-chips
-                        :delimiters="[',', '，', '、']"
-                        v-model="newResidencyTopicNames"
-                        :label="$t('居住过的地方')"
                       />
                       <v-text-field v-model="newProfessionTopicName" :label="$t('所在行业')" />
 
@@ -111,38 +111,38 @@
                         <v-row v-for="(exp, index) in eduExps" :key="index">
                           <v-col>{{ exp.school_topic_name }}</v-col>
                           <v-col>{{ $t(exp.level_name) }}</v-col>
-                          <v-col
-                            ><v-btn
+                          <v-col>
+                            <v-btn
                               class="ml-2"
-                              small
-                              depressed
                               color="warning"
+                              depressed
+                              small
                               @click="removeEduExp(index)"
-                              >{{ $t('删除') }}</v-btn
-                            ></v-col
-                          >
+                              >{{ $t('删除') }}
+                            </v-btn>
+                          </v-col>
                         </v-row>
                         <v-row>
-                          <v-col
-                            ><v-text-field v-model="newEduExpSchooolName" :label="$t('学校名')"
-                          /></v-col>
+                          <v-col>
+                            <v-text-field v-model="newEduExpSchooolName" :label="$t('学校名')" />
+                          </v-col>
                           <v-col>
                             <v-combobox
-                              :items="eduExpLeveNames"
                               v-model="newEduExpLevelName"
+                              :items="eduExpLeveNames"
                               :label="$t('教育水平')"
                             />
                           </v-col>
-                          <v-col align-self="center"
-                            ><v-btn
-                              small
-                              depressed
+                          <v-col align-self="center">
+                            <v-btn
                               class="ma-2"
                               color="primary"
+                              depressed
+                              small
                               @click="addNewEduExp"
-                              >{{ $t('确认添加') }}</v-btn
-                            ></v-col
-                          >
+                              >{{ $t('确认添加') }}
+                            </v-btn>
+                          </v-col>
                         </v-row>
                       </div>
 
@@ -151,34 +151,34 @@
                         <v-row v-for="(exp, index) in workExps" :key="index">
                           <v-col>{{ exp.company_topic_name }}</v-col>
                           <v-col>{{ exp.position_topic_name }}</v-col>
-                          <v-col
-                            ><v-btn
+                          <v-col>
+                            <v-btn
                               class="ma-2"
-                              small
-                              depressed
                               color="warning"
+                              depressed
+                              small
                               @click="removeWorkExp(index)"
-                              >{{ $t('删除') }}</v-btn
-                            ></v-col
-                          >
+                              >{{ $t('删除') }}
+                            </v-btn>
+                          </v-col>
                         </v-row>
                         <v-row>
-                          <v-col
-                            ><v-text-field v-model="newWorkExpCompanyName" :label="$t('机构名')"
-                          /></v-col>
-                          <v-col
-                            ><v-text-field v-model="newWorkExpPositionName" :label="$t('职位名')"
-                          /></v-col>
-                          <v-col align-self="center"
-                            ><v-btn
-                              small
-                              depressed
+                          <v-col>
+                            <v-text-field v-model="newWorkExpCompanyName" :label="$t('机构名')" />
+                          </v-col>
+                          <v-col>
+                            <v-text-field v-model="newWorkExpPositionName" :label="$t('职位名')" />
+                          </v-col>
+                          <v-col align-self="center">
+                            <v-btn
                               class="ma-2"
                               color="primary"
+                              depressed
+                              small
                               @click="addNewWorkExp"
-                              >{{ $t('确认添加') }}</v-btn
-                            ></v-col
-                          >
+                              >{{ $t('确认添加') }}
+                            </v-btn>
+                          </v-col>
                         </v-row>
                       </div>
                     </v-col>
@@ -188,14 +188,14 @@
             </div>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn smal depressed @click="cancel">{{ $t('Cancel') }}</v-btn>
-              <v-btn smal depressed @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+              <v-btn depressed smal @click="cancel">{{ $t('Cancel') }}</v-btn>
+              <v-btn depressed smal @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
               <v-btn
-                smal
-                depressed
-                color="primary"
-                @click="handleSubmit(submit)"
                 :disabled="!valid || submitIntermediate"
+                color="primary"
+                depressed
+                smal
+                @click="handleSubmit(submit)"
               >
                 {{ $t('Save') }}
               </v-btn>
@@ -236,12 +236,6 @@ interface IUserEducationExperienceInput {
   components: { ProfileIcon },
 })
 export default class UserProfileEdit extends Vue {
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-  get token() {
-    return readToken(this.$store);
-  }
   public valid = true;
   private newResidencyTopicNames: string[] = [];
   private newProfessionTopicName: string = '';
@@ -250,10 +244,8 @@ export default class UserProfileEdit extends Vue {
     handle: '',
     personal_introduction: '',
   };
-
   private newWorkExpCompanyName = '';
   private newWorkExpPositionName = '';
-
   private newEduExpSchooolName = '';
   private newEduExpLevelName = '';
   private readonly eduExpLeveNames = [
@@ -263,19 +255,22 @@ export default class UserProfileEdit extends Vue {
     this.$t('master'),
     this.$t('phd_or_higher'),
   ];
-
   private eduExps: IUserEducationExperienceInput[] = [];
   private workExps: IUserWorkExperienceInput[] = [];
-
   private submitIntermediate = false;
-
   private avatarURL = '#';
   private uploadAvatarIntermediate = false;
   private uploadGifAvatarIntermediate = false;
-
   private gifAvatarURL: string | null = null;
-
   private showGifAvatar = false;
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
 
   public async mounted() {
     const userProfile = readUserProfile(this.$store);
@@ -342,6 +337,7 @@ export default class UserProfileEdit extends Vue {
   public cancel() {
     this.$router.back();
   }
+
   public async submit() {
     this.submitIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
@@ -397,6 +393,7 @@ export default class UserProfileEdit extends Vue {
       this.submitIntermediate = false;
     });
   }
+
   public addNewWorkExp() {
     if (!this.newWorkExpCompanyName || !this.newWorkExpPositionName) {
       commitAddNotification(this.$store, {
@@ -412,9 +409,11 @@ export default class UserProfileEdit extends Vue {
     this.newWorkExpCompanyName = '';
     this.newWorkExpPositionName = '';
   }
+
   public removeWorkExp(index: number) {
     this.workExps.splice(index, 1);
   }
+
   public addNewEduExp() {
     if (!this.newEduExpSchooolName || !this.newEduExpLevelName) {
       commitAddNotification(this.$store, {
@@ -430,6 +429,7 @@ export default class UserProfileEdit extends Vue {
     this.newEduExpSchooolName = '';
     this.newEduExpLevelName = '';
   }
+
   public removeEduExp(index: number) {
     this.eduExps.splice(index, 1);
   }
@@ -470,6 +470,7 @@ export default class UserProfileEdit extends Vue {
       this.uploadAvatarIntermediate = false;
     });
   }
+
   private async uploadGifAvatar() {
     this.uploadGifAvatarIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
@@ -505,6 +506,7 @@ export default class UserProfileEdit extends Vue {
   private showFilePicker() {
     document.getElementById('fileInput')?.click();
   }
+
   private showGifFilePicker() {
     this.showGifAvatar = true;
     document.getElementById('gifFileInput')?.click();

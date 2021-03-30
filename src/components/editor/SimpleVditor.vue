@@ -1,5 +1,5 @@
 <template>
-  <div class="simple-vditor" :class="{ 'vditor-without-menu': !showMenu }" />
+  <div :class="{ 'vditor-without-menu': !showMenu }" class="simple-vditor" />
 </template>
 
 <script lang="ts">
@@ -16,6 +16,16 @@ export default class SimpleVditor extends Vue {
   @Prop({ default: false }) public readonly showMenu!: boolean;
 
   private vditor: Vditor | null = null;
+
+  get content() {
+    return this.vditor?.getValue() || '';
+  }
+
+  set content(value: string) {
+    if (this.vditor) {
+      this.vditor.setValue(value);
+    }
+  }
 
   public initVditor() {
     if (this.vditor !== null) {
@@ -51,25 +61,15 @@ export default class SimpleVditor extends Vue {
     });
   }
 
-  private mounted() {
-    this.initVditor();
-  }
-
-  get content() {
-    return this.vditor?.getValue() || '';
-  }
-
-  set content(value: string) {
-    if (this.vditor) {
-      this.vditor.setValue(value);
-    }
-  }
-
   public getText() {
     return this.$el.getElementsByClassName('vditor-wysiwyg')[0].textContent || '';
   }
 
   public reset() {
+    this.initVditor();
+  }
+
+  private mounted() {
     this.initVditor();
   }
 }

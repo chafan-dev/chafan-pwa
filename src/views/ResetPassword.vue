@@ -1,11 +1,11 @@
 <template>
   <v-main>
-    <v-container fluid fill-height>
+    <v-container fill-height fluid>
       <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
+        <v-flex md4 sm8 xs12>
           <ValidationObserver v-slot="{ handleSubmit, reset }">
             <v-card class="elevation-12">
-              <v-toolbar dark color="primary">
+              <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} - {{ $t('Reset Password') }}</v-toolbar-title>
                 <v-spacer />
                 <LangPicker></LangPicker>
@@ -15,32 +15,32 @@
                   {{ $t('Enter your new password below') }}
                 </p>
                 <v-form
-                  @keyup.enter="handleSubmit(submit)"
-                  v-model="valid"
                   ref="form"
-                  @submit.prevent=""
+                  v-model="valid"
                   lazy-validation
+                  @keyup.enter="handleSubmit(submit)"
+                  @submit.prevent=""
                 >
                   <ValidationProvider
-                    rules="required|min:3|password|password1:@confirm"
                     v-slot="{ errors }"
                     name="password"
+                    rules="required|min:3|password|password1:@confirm"
                   >
                     <v-text-field
-                      :label="$t('Password')"
-                      type="password"
                       v-model="password"
+                      :label="$t('Password')"
                       required
+                      type="password"
                     />
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
-                  <ValidationProvider rules="required" v-slot="{ errors }" name="confirm">
+                  <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
                     <v-text-field
-                      :label="$t('Password confirmation')"
-                      type="password"
                       v-model="confirmation"
+                      :label="$t('Password confirmation')"
                       required
+                      type="password"
                     />
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
@@ -50,9 +50,9 @@
                 <v-spacer />
                 <v-btn @click="cancel">{{ $t('Cancel') }}</v-btn>
                 <v-btn @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
-                <v-btn @click="handleSubmit(submit)" :disabled="!valid" color="primary">{{
-                  $t('Save')
-                }}</v-btn>
+                <v-btn :disabled="!valid" color="primary" @click="handleSubmit(submit)"
+                  >{{ $t('Save') }}
+                </v-btn>
               </v-card-actions>
             </v-card>
           </ValidationObserver>

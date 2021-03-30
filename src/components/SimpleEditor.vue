@@ -8,11 +8,11 @@
       :showMenu="showMenu"
     />
     <ChafanTiptap
-      :initial-value="initialValue"
-      :placeholder="placeholder"
-      :comment-mode="true"
       v-show="isTiptap"
       ref="tiptap"
+      :comment-mode="true"
+      :initial-value="initialValue"
+      :placeholder="placeholder"
     />
   </div>
 </template>
@@ -49,14 +49,6 @@ export default class SimpleEditor extends Vue {
 
   get tiptap() {
     return this.$refs.tiptap as ChafanTiptap;
-  }
-
-  private mounted() {
-    if (this.editor === 'tiptap') {
-      this.isTiptap = true;
-    } else {
-      this.isVditor = true;
-    }
   }
 
   get content() {
@@ -96,6 +88,14 @@ export default class SimpleEditor extends Vue {
       this.tiptap.reset();
     }
   }
+
+  private mounted() {
+    if (this.editor === 'tiptap') {
+      this.isTiptap = true;
+    } else {
+      this.isVditor = true;
+    }
+  }
 }
 </script>
 
@@ -103,15 +103,15 @@ export default class SimpleEditor extends Vue {
 @import '~vuetify/src/styles/styles.sass'
 
 .simple-editor h1, .simple-editor h2, .simple-editor h3
-    border-bottom: none !important
-    font-family: $body-font-family
-    font-size: $font-size-root
-    margin-top: 10px
-    margin-bottom: 10px
+  border-bottom: none !important
+  font-family: $body-font-family
+  font-size: $font-size-root
+  margin-top: 10px
+  margin-bottom: 10px
 
 .simple-editor img
-    max-height: 100px
+  max-height: 100px
 
 .simple-editor p
-    margin-bottom: 10px
+  margin-bottom: 10px
 </style>

@@ -1,36 +1,36 @@
 <template>
-  <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
+  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
     <div class="title" style="word-break: normal">
-      <router-link class="text-decoration-none" :to="'/submissions/' + submission.uuid">
+      <router-link :to="'/submissions/' + submission.uuid" class="text-decoration-none">
         {{ submission.title }}
       </router-link>
     </div>
     <div class="d-flex align-center">
       <router-link
-        class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
         :to="'/submissions/' + submission.uuid"
+        class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
       >
         <UpvoteIcon :color="submission.upvoted ? 'primary' : undefined" small />
         {{ submission.upvotes_count }}
       </router-link>
       <router-link
-        class="d-flex align-center black--text text-caption text-decoration-none"
         :to="'/submissions/' + submission.uuid"
+        class="d-flex align-center black--text text-caption text-decoration-none"
       >
-        <CommentsIcon small class="mr-1 mt-1" />
+        <CommentsIcon class="mr-1 mt-1" small />
         {{ submission.comments.length }}
       </router-link>
       <v-spacer />
       <div v-if="submission.url">
         <LinkIcon small />
-        <a class="text-decoration-none text-caption" :href="submission.url" target="_blank">
+        <a :href="submission.url" class="text-decoration-none text-caption" target="_blank">
           {{ shortUrl(submission.url) }}
         </a>
       </div>
     </div>
     <div
-      class="grey--text subtitle-2"
       v-if="submission.description_text && submission.description_text.trim()"
+      class="grey--text subtitle-2"
     >
       {{ shortDesc }}
     </div>

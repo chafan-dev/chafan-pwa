@@ -11,44 +11,44 @@
     </v-overlay>
 
     <ChafanTiptap
-      ref="tiptap"
-      class="mb-2 mx-2"
-      :class="{ 'mt-2': focusMode }"
       v-show="topLevelEditor === 'tiptap'"
+      ref="tiptap"
+      :class="{ 'mt-2': focusMode }"
       :onEditorChange="onEditorChange"
+      class="mb-2 mx-2"
     />
 
     <VditorComponent
-      ref="vditor"
-      class="mb-2"
-      :class="{ 'mt-2': focusMode }"
       v-show="topLevelEditor === 'vditor'"
+      ref="vditor"
+      :class="{ 'mt-2': focusMode }"
       :onEditorChange="onEditorChange"
+      class="mb-2"
     />
 
     <div class="d-flex align-center">
-      <v-btn small depressed color="slim-btn primary" @click="submitEdit(true)">
+      <v-btn color="slim-btn primary" depressed small @click="submitEdit(true)">
         {{ $t(publishText) }}
       </v-btn>
-      <v-btn small depressed color="slim-btn info ml-2" @click="submitEdit(false)">
+      <v-btn color="slim-btn info ml-2" depressed small @click="submitEdit(false)">
         {{ $t('Save draft') }}
       </v-btn>
-      <v-btn small depressed class="slim-btn ml-2" @click="$emit('cancel-edit')">{{
-        $t('Cancel')
-      }}</v-btn>
-      <v-btn small depressed class="slim-btn ml-2" @click="showHelp = !showHelp">{{
-        $t('Help')
-      }}</v-btn>
+      <v-btn class="slim-btn ml-2" depressed small @click="$emit('cancel-edit')"
+        >{{ $t('Cancel') }}
+      </v-btn>
+      <v-btn class="slim-btn ml-2" depressed small @click="showHelp = !showHelp"
+        >{{ $t('Help') }}
+      </v-btn>
       <v-spacer />
       <span
-        class="mr-2 text-caption grey--text"
         v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp"
+        class="mr-2 text-caption grey--text"
       >
         {{ $t('自动保存于') }}
         {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
       </span>
 
-      <v-tooltip bottom v-if="answerId || articleId">
+      <v-tooltip v-if="answerId || articleId" bottom>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" align-self="center" class="d-flex">
             <HistoryIcon class="ml-2" @click="showHistoryDialog" />
@@ -57,12 +57,12 @@
         <span>{{ $t('版本历史') }}</span>
       </v-tooltip>
 
-      <v-menu offset-y top :close-on-content-click="false">
+      <v-menu :close-on-content-click="false" offset-y top>
         <template v-slot:activator="{ on, attrs }">
-          <SettingsIcon class="ml-1" v-bind="attrs" v-on="on" />
+          <SettingsIcon v-bind="attrs" v-on="on" class="ml-1" />
         </template>
         <v-list dense>
-          <v-list-item @click="showDeleteDraftDialog = true" v-if="answerId || articleId">
+          <v-list-item v-if="answerId || articleId" @click="showDeleteDraftDialog = true">
             <v-list-item-icon>
               <DeleteIcon />
             </v-list-item-icon>
@@ -75,9 +75,9 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-select
-                dense
-                :items="visibilityItems"
                 v-model="visibility"
+                :items="visibilityItems"
+                dense
                 item-text="text"
                 item-value="value"
               />
@@ -89,9 +89,9 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-select
-                dense
-                :items="topLevelEditorItems"
                 v-model="topLevelEditor"
+                :items="topLevelEditorItems"
+                dense
                 item-text="text"
                 item-value="value"
                 @change="onChangeTopLevelEditor"
@@ -101,7 +101,7 @@
         </v-list>
       </v-menu>
 
-      <v-dialog max-width="400" v-model="showDeleteDraftDialog">
+      <v-dialog v-model="showDeleteDraftDialog" max-width="400">
         <v-card>
           <v-card-title primary-title>
             {{ $t('删除当前草稿？') }}
@@ -116,7 +116,7 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog max-width="900" v-model="historyDialog">
+      <v-dialog v-model="historyDialog" max-width="900">
         <v-card>
           <v-card-title primary-title>
             <div class="headline primary--text">{{ $t('版本历史') }}</div>
@@ -127,14 +127,9 @@
           <v-expansion-panels v-if="archives">
             <v-expansion-panel v-for="archive in archives" :key="archive.id">
               <v-expansion-panel-header>
-                <v-btn
-                  small
-                  depressed
-                  max-width="100px"
-                  class="mr-4"
-                  @click="loadArchive(archive)"
-                  >{{ $t('加载该版本') }}</v-btn
-                >
+                <v-btn class="mr-4" depressed max-width="100px" small @click="loadArchive(archive)"
+                  >{{ $t('加载该版本') }}
+                </v-btn>
                 {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                 <v-spacer />
               </v-expansion-panel-header>
@@ -148,13 +143,13 @@
             <v-expansion-panel v-for="archive in articleArchives" :key="archive.id">
               <v-expansion-panel-header>
                 <v-btn
-                  small
+                  class="mr-4"
                   depressed
                   max-width="100px"
-                  class="mr-4"
+                  small
                   @click="loadArticleArchive(archive)"
-                  >{{ $t('加载该版本') }}</v-btn
-                >
+                  >{{ $t('加载该版本') }}
+                </v-btn>
                 {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                 <v-spacer />
               </v-expansion-panel-header>
@@ -176,7 +171,7 @@
       </v-dialog>
     </div>
     <v-expand-transition>
-      <v-card class="ma-3 pa-3" v-show="showHelp">
+      <v-card v-show="showHelp" class="ma-3 pa-3">
         <div class="headline primary--text">{{ $t('Help') }}</div>
         <div>
           <ul>
@@ -189,12 +184,12 @@
     </v-expand-transition>
     <div v-if="hasTitle">
       <v-textarea
+        v-model="articleTitle"
         :label="$t('Title')"
         auto-grow
+        class="headline mt-2"
         dense
         rows="1"
-        class="headline mt-2"
-        v-model="articleTitle"
       />
     </div>
   </div>
@@ -242,9 +237,6 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
   },
 })
 export default class RichEditor extends Vue {
-  get token() {
-    return this.$store.state.main.token;
-  }
   @Prop({ default: false }) private readonly focusMode!: boolean;
   @Prop() private readonly answerIdProp: string | undefined;
   @Prop() private readonly articleIdProp: string | undefined;
@@ -253,7 +245,6 @@ export default class RichEditor extends Vue {
   @Prop({ default: false }) private readonly hasTitle!: boolean;
   @Prop({ default: 'Publish' }) private readonly publishText!: string;
   private topLevelEditorItems: { text: string; value: string }[] | null = null;
-
   private readonly visibilityItems = [
     {
       text: this.$t('仅注册用户可读').toString(),
@@ -276,26 +267,25 @@ export default class RichEditor extends Vue {
   private articleId: string | null = null;
   private overlay = false;
   private articleTitle: string | null = null;
-
   private archivePage = 1;
   private archivePagesLength = 1;
   private readonly archivePageLimit = 10;
-
   // prevent double-posting
   private writingSessionUUID = uuidv4();
-
   private lastAutoSavedAt: string | null = null;
-
   private lastSaveLength = 0;
   private lastSaveIntermediate = false;
   private lastSaveTimerId: any = null;
-
   private archives: IArchive[] = [];
   private selectedArchive: IArchive | null = null;
-
   private articleArchives: IArticleArchive[] = [];
   private selectedArticleArchive: IArticleArchive | null = null;
   private showDeleteDraftDialog = false;
+  private topLevelEditor: 'tiptap' | 'vditor' = 'vditor';
+
+  get token() {
+    return this.$store.state.main.token;
+  }
 
   private mounted() {
     this.answerId = this.answerIdProp ? this.answerIdProp : null;
@@ -381,8 +371,6 @@ export default class RichEditor extends Vue {
       editor: this.getEditorMode(),
     };
   }
-
-  private topLevelEditor: 'tiptap' | 'vditor' = 'vditor';
 
   private initEditor(body: string | null, editor: editor_T) {
     if (editor === 'tiptap') {
@@ -500,6 +488,7 @@ export default class RichEditor extends Vue {
     this.initEditor(archive.body, this.getEditorMode());
     this.historyDialog = false;
   }
+
   private loadArticleArchive(archive: IArticleArchive) {
     this.articleTitle = archive.title;
     this.initEditor(archive.body, this.getEditorMode());

@@ -1,5 +1,5 @@
 <template>
-  <v-avatar size="30" color="primary" tile v-if="userPreview">
+  <v-avatar v-if="userPreview" color="primary" size="30" tile>
     <v-img
       :src="userPreview.avatar_url ? userPreview.avatar_url : '/img/default-avatar.png'"
       alt="Avatar"

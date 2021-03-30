@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-btn small depressed @click="showDialog = true" color="primary">{{
-      $t('生成邀请链接')
-    }}</v-btn>
+    <v-btn color="primary" depressed small @click="showDialog = true"
+      >{{ $t('生成邀请链接') }}
+    </v-btn>
     <v-dialog v-model="showDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -11,36 +11,41 @@
         <v-card-text v-if="!invitationLinkHref">
           <div v-if="!site" class="mt-3">
             <v-autocomplete
-              :items="sites"
+              v-if="sites"
               v-model="invitedSiteId"
+              :items="sites"
               :label="`${$t('Circle')}` + ` (${$t('可选')})`"
               item-text="name"
               item-value="uuid"
-              v-if="sites"
             >
-              <template v-slot:prepend><SiteIcon /></template>
+              <template v-slot:prepend>
+                <SiteIcon />
+              </template>
             </v-autocomplete>
           </div>
-          <div v-else>{{ $t('加入圈子：') }} <SiteBtn :site="site" /></div>
+          <div v-else>
+            {{ $t('加入圈子：') }}
+            <SiteBtn :site="site" />
+          </div>
         </v-card-text>
         <div v-if="invitationLinkHref" class="body-1 mx-6">
           <p class="black--text">{{ $t('✅ 未注册用户可直接通过以下链接进入注册界面') }}:</p>
-          <a class="text-decoration-none ml-1" :href="invitationLinkHref" target="_blank"
+          <a :href="invitationLinkHref" class="text-decoration-none ml-1" target="_blank"
             >https://cha.fan{{ invitationLinkHref }}</a
           >
         </div>
         <v-card-actions>
           <v-spacer />
           <v-btn
-            small
-            depressed
-            @click="createInvitationLink"
+            v-if="!invitationLinkHref"
             :disabled="intermediate"
             color="primary"
-            v-if="!invitationLinkHref"
+            depressed
+            small
+            @click="createInvitationLink"
           >
             {{ $t('生成邀请链接') }}
-            <v-progress-circular size="20" v-if="intermediate" indeterminate />
+            <v-progress-circular v-if="intermediate" indeterminate size="20" />
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -90,6 +95,7 @@ export default class NewInviteLinkBtn extends Vue {
       code: 'unknown',
     },
   ];
+  private invitationLinkHref: string | null = null;
 
   private async mounted() {
     if (this.site === undefined) {
@@ -103,7 +109,6 @@ export default class NewInviteLinkBtn extends Vue {
     }
   }
 
-  private invitationLinkHref: string | null = null;
   private async createInvitationLink() {
     const payload: IInvitationLinkCreate = {};
     if (this.site !== undefined) {

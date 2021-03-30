@@ -8,7 +8,7 @@
           <span class="text-caption grey--text">{{ $t('本页中的信息只有自己可见') }}</span>
         </div>
 
-        <v-tabs :vertical="$vuetify.breakpoint.mdAndUp" v-model="currentTabItem" show-arrows>
+        <v-tabs v-model="currentTabItem" :vertical="$vuetify.breakpoint.mdAndUp" show-arrows>
           <v-tabs-slider />
           <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
             {{ $t(item.text) }}
@@ -21,7 +21,7 @@
               <NewInviteLinkBtn />
               <!-- Extra div wrapper to align the buttons -->
               <div v-if="userProfile">
-                <v-btn class="ml-2" depressed small :to="`/users/${userProfile.handle}`"
+                <v-btn :to="`/users/${userProfile.handle}`" class="ml-2" depressed small
                   >{{ $t('个人资料') }}
                 </v-btn>
               </div>
@@ -31,29 +31,29 @@
             </v-card-title>
             <div class="ma-3">
               <v-switch
-                :label="$t('发送邮件提醒未读通知')"
-                @change="onChangeEmailNotifications"
                 v-model="enableEmailNotifications"
                 :disabled="changingMySettings"
+                :label="$t('发送邮件提醒未读通知')"
+                @change="onChangeEmailNotifications"
               />
               <v-select
                 v-if="editorModeItems"
-                :label="$t('默认编辑器模式')"
+                v-model="selectedEditorMode"
+                :disabled="changingMySettings"
                 :items="editorModeItems"
+                :label="$t('默认编辑器模式')"
                 item-text="text"
                 item-value="value"
-                v-model="selectedEditorMode"
                 @change="onChangeEditorMode"
-                :disabled="changingMySettings"
               />
               <div>
                 <div class="d-flex">
-                  <v-btn class="mr-2" depressed small @click="showExportDialog = true">{{
-                    $t('导出')
-                  }}</v-btn>
-                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true">{{
-                    $t('Labs')
-                  }}</v-btn>
+                  <v-btn class="mr-2" depressed small @click="showExportDialog = true"
+                    >{{ $t('导出') }}
+                  </v-btn>
+                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true"
+                    >{{ $t('Labs') }}
+                  </v-btn>
                 </div>
 
                 <v-dialog v-model="showExportDialog" max-width="500px">
@@ -80,12 +80,12 @@
                       {{ $t('试验性功能：') }}
                       <div>
                         <v-switch
-                          label="Tiptap 编辑器选项"
                           v-model="tiptapEditorOptionOn"
+                          label="Tiptap 编辑器选项"
                           @change="updateLabs"
                         />
                       </div>
-                      <v-progress-circular indeterminate v-if="changingMySettings" />
+                      <v-progress-circular v-if="changingMySettings" indeterminate />
                     </v-card-text>
                   </v-card>
                 </v-dialog>
@@ -102,9 +102,9 @@
               <Answer
                 v-for="answer in myAnswerDrafts"
                 :key="answer.uuid"
-                class="ma-3"
-                :draftMode="true"
                 :answerPreview="answer"
+                :draftMode="true"
+                class="ma-3"
                 @delete-answer-draft="onDeleteAnswerDraft"
               />
 
@@ -115,13 +115,13 @@
                 class="ma-3"
               />
               <div
-                class="text-center"
                 v-if="myAnswerDrafts.length === 0 && myArticleDrafts.length === 0"
+                class="text-center"
               >
                 暂无草稿
               </div>
             </div>
-            <v-progress-linear indeterminate v-else />
+            <v-progress-linear v-else indeterminate />
           </v-tab-item>
 
           <v-tab-item value="my_columns">
@@ -138,13 +138,13 @@
                 <v-card-actions>
                   <v-spacer />
                   <v-btn
-                    small
-                    depressed
-                    color="primary"
-                    @click="commitNewArticleColumn"
                     :disabled="commitNewArticleColumnIntermediate"
-                    >{{ $t('创建') }}</v-btn
-                  >
+                    color="primary"
+                    depressed
+                    small
+                    @click="commitNewArticleColumn"
+                    >{{ $t('创建') }}
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -152,20 +152,20 @@
             <v-card-title primary-title>
               <div class="headline primary--text">{{ $t('我的专栏') }}</div>
               <v-spacer />
-              <v-btn small depressed color="primary" @click="dialogNewArticleColumn = true">{{
-                $t('创建新专栏')
-              }}</v-btn>
+              <v-btn color="primary" depressed small @click="dialogNewArticleColumn = true"
+                >{{ $t('创建新专栏') }}
+              </v-btn>
             </v-card-title>
             <div v-if="!articleColumnsIntermediate">
               <ArticleColumnCard
                 v-for="articleColumn in myArticleColumns"
                 :key="articleColumn.uuid"
                 :articleColumn="articleColumn"
-                class="ma-3"
                 :compactMode="true"
+                class="ma-3"
               />
             </div>
-            <v-progress-linear indeterminate v-else />
+            <v-progress-linear v-else indeterminate />
           </v-tab-item>
 
           <v-tab-item value="joined_channels">
@@ -181,14 +181,14 @@
                   style="justify-content: left"
                 >
                   <UserLink
+                    :clickable="false"
+                    :showAvatar="true"
                     :userPreview="
                       channel.private_with_user &&
                       channel.private_with_user.uuid !== userProfile.uuid
                         ? channel.private_with_user
                         : channel.admin
                     "
-                    :showAvatar="true"
-                    :clickable="false"
                   />
                 </v-tab>
                 <v-tab-item v-for="channel in myChannels" :key="channel.id">
@@ -196,7 +196,7 @@
                 </v-tab-item>
               </v-tabs>
             </div>
-            <v-progress-linear indeterminate v-else />
+            <v-progress-linear v-else indeterminate />
           </v-tab-item>
 
           <v-tab-item value="coins">
@@ -204,10 +204,10 @@
               <div>
                 <span class="subheading secondary--text text--lighten-3">{{ $t('硬币数量') }}</span
                 >:
-                <span class="title primary--text text--darken-2" v-if="userProfile">{{
+                <span v-if="userProfile" class="title primary--text text--darken-2">{{
                   userProfile.remaining_coins
                 }}</span>
-                <span class="title primary--text text--darken-2" v-else>-----</span>
+                <span v-else class="title primary--text text--darken-2">-----</span>
               </div>
             </div>
 
@@ -261,27 +261,27 @@
                 <span v-if="item.condition.content.condition_type === 'answered_question'">
                   {{ $t('回答问题') }}:
                   <router-link
-                    class="text-decoration-none"
                     :to="'/questions/' + item.condition.content.question_uuid"
+                    class="text-decoration-none"
                     >{{ $t('Link') }}</router-link
                   >
                 </span>
               </template>
               <template v-slot:item.action="{ item }">
                 <v-btn
-                  small
-                  depressed
-                  color="primary"
                   v-if="claimable(item)"
+                  color="primary"
+                  depressed
+                  small
                   @click="claimReward(item)"
                 >
                   {{ $t('Claim') }}
                 </v-btn>
                 <v-btn
-                  small
-                  depressed
-                  color="primary"
                   v-if="refundable(item)"
+                  color="primary"
+                  depressed
+                  small
                   @click="refundReward(item)"
                 >
                   {{ $t('Refund') }}
@@ -291,10 +291,10 @@
 
             <!-- Coin payments -->
             <v-data-table
-              :loading="coinPaymentsIntermediate"
               :headers="coinPaymentHeaders"
               :items="coinPayments"
               :items-per-page="10"
+              :loading="coinPaymentsIntermediate"
               class="elevation-1 ma-2"
             >
               <template v-slot:top>
@@ -318,7 +318,7 @@
                 ></UserLink>
               </template>
               <template v-slot:item.reference="{ item }">
-                <Event :event="item.event" :type="'payment'" v-if="item.event" />
+                <Event v-if="item.event" :event="item.event" :type="'payment'" />
               </template>
             </v-data-table>
           </v-tab-item>
@@ -328,10 +328,10 @@
               <div class="headline primary--text">{{ $t('收藏的答案') }}</div>
             </v-card-title>
             <DynamicItemList
+              v-slot="{ item }"
+              :loadItems="loadBookmarkedAnswers"
               emptyItemsText="暂无"
               nullItemsText=""
-              :loadItems="loadBookmarkedAnswers"
-              v-slot="{ item }"
             >
               <Answer :answer-preview="item" />
             </DynamicItemList>
@@ -342,10 +342,10 @@
               <div class="headline primary--text">{{ $t('关注的问题') }}</div>
             </v-card-title>
             <DynamicItemList
+              v-slot="{ item }"
+              :loadItems="loadSubscribedQuestions"
               emptyItemsText="暂无"
               nullItemsText=""
-              :loadItems="loadSubscribedQuestions"
-              v-slot="{ item }"
             >
               <QuestionPreview :question-preview="item" />
             </DynamicItemList>
@@ -356,10 +356,10 @@
               <div class="headline primary--text">{{ $t('收藏的分享') }}</div>
             </v-card-title>
             <DynamicItemList
+              v-slot="{ item }"
+              :loadItems="loadSubscribedSubmissions"
               emptyItemsText="暂无"
               nullItemsText=""
-              :loadItems="loadSubscribedSubmissions"
-              v-slot="{ item }"
             >
               <SubmissionCard :submission="item" />
             </DynamicItemList>
@@ -370,10 +370,10 @@
               <div class="headline primary--text">{{ $t('收藏的文章') }}</div>
             </v-card-title>
             <DynamicItemList
+              v-slot="{ item }"
+              :loadItems="loadBookmarkedArticles"
               emptyItemsText="暂无"
               nullItemsText=""
-              :loadItems="loadBookmarkedArticles"
-              v-slot="{ item }"
             >
               <ArticlePreview :article-preview="item" />
             </DynamicItemList>
@@ -436,40 +436,20 @@ import DynamicItemList from '@/components/DynamicItemList.vue';
   },
 })
 export default class Dashboard extends Vue {
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
   private coinPayments: ICoinPayment[] = [];
   private myChannels: IChannel[] = [];
   private myRewards: IReward[] = [];
   private myArticleColumns: IArticleColumn[] = [];
-
   private dialogNewArticleColumn: boolean = false;
   private newArticleColumn: IArticleColumnCreate = { name: '' };
-
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'settings';
-  }
-
-  set currentTabItem(tab) {
-    if (tab !== 'settings') {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
-    } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
-    }
-  }
-
   private channelsIntermediate = true;
   private rewardsIntermediate = true;
   private articleColumnsIntermediate = true;
   private coinPaymentsIntermediate = true;
-
   private commitNewArticleColumnIntermediate = false;
-
   private showExportDialog = false;
   private showLabsDialog = false;
   private tiptapEditorOptionOn = false;
-
   private tabItems = [
     {
       text: '我的设置',
@@ -508,14 +488,12 @@ export default class Dashboard extends Vue {
       code: 'bookmarked_articles',
     },
   ];
-
   private readonly coinPaymentHeaders = [
     { text: this.$t('Created at'), value: 'created_at' },
     { text: this.$t('Amount'), value: 'amount' },
     { text: this.$t('Type'), value: 'type' },
     { text: this.$t('Reference'), value: 'reference' },
   ];
-
   private readonly rewardHeaders = [
     { text: this.$t('Created at'), value: 'created_at' },
     { text: this.$t('Refunded at'), value: 'refunded_at' },
@@ -526,16 +504,28 @@ export default class Dashboard extends Vue {
     { text: this.$t('Condition'), value: 'condition' },
     { text: this.$t('Action'), value: 'action' },
   ];
-
   private myAnswerDrafts: IAnswerPreview[] | null = null;
   private myArticleDrafts: IArticlePreview[] | null = null;
-
   private enableEmailNotifications = false;
   private changingMySettings = false;
-
   private selectedEditorMode: editor_T = 'wysiwyg';
-
   private editorModeItems: { text: string; value: string }[] | null = null;
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+
+  get currentTabItem() {
+    return this.$route.query.tab ? this.$route.query.tab : 'settings';
+  }
+
+  set currentTabItem(tab) {
+    if (tab !== 'settings') {
+      this.$router.replace({ query: { ...this.$route.query, tab } });
+    } else {
+      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+    }
+  }
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {

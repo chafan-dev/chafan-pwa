@@ -1,18 +1,18 @@
 <template>
   <v-card>
-    <v-card-title class="primary--text headline" v-if="showTitle">
+    <v-card-title v-if="showTitle" class="primary--text headline">
       {{ $t('提问') }}
     </v-card-title>
     <v-card-text>
       <v-autocomplete
-        :label="$t('Circle')"
-        :items="siteProfiles"
         v-if="site === undefined"
-        item-value="site"
-        item-text="site.name"
         v-model="selectedSite"
+        :items="siteProfiles"
+        :label="$t('Circle')"
+        item-text="site.name"
+        item-value="site"
       />
-      <v-textarea :label="$t('Title')" auto-grow dense rows="3" v-model="newQuestionTitle" />
+      <v-textarea v-model="newQuestionTitle" :label="$t('Title')" auto-grow dense rows="3" />
       <div class="d-flex">
         <v-spacer />
         <span class="text-caption grey--text">{{ $t('创建后添加细节') }}</span>
@@ -20,9 +20,9 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn small color="primary" @click="postNewQuestion" :disabled="intermediate">
+      <v-btn :disabled="intermediate" color="primary" small @click="postNewQuestion">
         {{ $t('提交新问题') }}
-        <v-progress-circular size="20" intermediate v-if="intermediate" />
+        <v-progress-circular v-if="intermediate" intermediate size="20" />
       </v-btn>
     </v-card-actions>
   </v-card>

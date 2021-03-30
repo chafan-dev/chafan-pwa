@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" :loading="loading">
+  <v-row :loading="loading" justify="center">
     <v-col
       :class="{
         'col-8': $vuetify.breakpoint.mdAndUp,
@@ -9,19 +9,19 @@
     >
       <div v-if="article" class="my-4 px-2">
         <div class="d-flex align-center">
-          <UserLink :userPreview="article.author" :showAvatar="true" />
+          <UserLink :showAvatar="true" :userPreview="article.author" />
           <span
-            class="grey--text ml-2"
             v-if="article.author.personal_introduction && $vuetify.breakpoint.mdAndUp"
+            class="grey--text ml-2"
           >
             {{ article.author.personal_introduction }}
           </span>
           <v-spacer />
           <span class="mr-3">
             <router-link
+              :to="`/article-columns/${article.article_column.uuid}`"
               class="text-decoration-none"
               target="_blank"
-              :to="`/article-columns/${article.article_column.uuid}`"
             >
               {{ article.article_column.name }}
             </router-link>
@@ -36,12 +36,12 @@
           {{ article.title }}
         </div>
         <div class="ma-2">
-          <v-chip small class="ml-2" color="warning" v-if="article && !article.is_published">{{
-            $t('此为初稿仅自己可见')
-          }}</v-chip>
-          <v-chip small class="ml-2" color="info" v-else-if="showHasDraftBadge">{{
-            $t('编辑器中有未发表的草稿')
-          }}</v-chip>
+          <v-chip v-if="article && !article.is_published" class="ml-2" color="warning" small
+            >{{ $t('此为初稿仅自己可见') }}
+          </v-chip>
+          <v-chip v-else-if="showHasDraftBadge" class="ml-2" color="info" small
+            >{{ $t('编辑器中有未发表的草稿') }}
+          </v-chip>
           <Viewer :body="article.body" :bodyFormat="article.body_format" :editor="article.editor" />
         </div>
 
@@ -49,7 +49,7 @@
           <v-row>
             <v-col>
               <template v-if="token">
-                <v-dialog max-width="300" v-model="showCancelUpvoteDialog">
+                <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
                   <v-card>
                     <v-card-title primary-title>
                       <div class="headline primary--text">
@@ -58,45 +58,45 @@
                     </v-card-title>
                     <v-card-actions>
                       <v-spacer />
-                      <v-btn small depressed class="mr-1" @click="showCancelUpvoteDialog = false">{{
-                        $t('No')
-                      }}</v-btn>
+                      <v-btn class="mr-1" depressed small @click="showCancelUpvoteDialog = false"
+                        >{{ $t('No') }}
+                      </v-btn>
                       <v-btn
-                        small
-                        depressed
-                        color="warning"
-                        @click="cancelUpvote"
                         :disabled="cancelUpvoteIntermediate"
-                        >{{ $t('Yes') }}</v-btn
-                      >
+                        color="warning"
+                        depressed
+                        small
+                        @click="cancelUpvote"
+                        >{{ $t('Yes') }}
+                      </v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
 
                 <v-btn
-                  small
-                  depressed
-                  class="mr-1"
-                  @click="showCancelUpvoteDialog = true"
-                  color="primary lighten-2"
                   v-if="upvotes && upvotes.upvoted"
+                  class="mr-1"
+                  color="primary lighten-2"
+                  depressed
+                  small
+                  @click="showCancelUpvoteDialog = true"
                 >
                   {{ $t('已赞') }} ({{ upvotes.count }})
                 </v-btn>
                 <v-btn
-                  small
-                  depressed
-                  class="mr-1"
-                  color="primary"
-                  @click="upvote"
                   v-else
                   :disabled="currentUserIsAuthor || upvoteIntermediate"
+                  class="mr-1"
+                  color="primary"
+                  depressed
+                  small
+                  @click="upvote"
                 >
                   {{ $t('赞') }} ({{ upvotes.count }})
                 </v-btn>
               </template>
 
-              <v-btn small depressed class="mr-1" @click="toggleShowComments">
+              <v-btn class="mr-1" depressed small @click="toggleShowComments">
                 {{
                   article.comments.length == 0
                     ? $t('评论')
@@ -105,19 +105,19 @@
               </v-btn>
 
               <v-btn
-                small
-                depressed
-                class="mr-1"
-                :to="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
                 v-show="currentUserIsAuthor"
-                >{{ $t(editButtonText) }}</v-btn
-              >
+                :to="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
+                class="mr-1"
+                depressed
+                small
+                >{{ $t(editButtonText) }}
+              </v-btn>
 
-              <v-menu offset-y v-if="currentUserIsAuthor">
+              <v-menu v-if="currentUserIsAuthor" offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on" small depressed class="mr-1">{{
-                    $t('设置')
-                  }}</v-btn>
+                  <v-btn v-bind="attrs" v-on="on" class="mr-1" depressed small
+                    >{{ $t('设置') }}
+                  </v-btn>
                 </template>
                 <v-list>
                   <v-list-item @click="confirmDeleteDialog = true">
@@ -129,7 +129,7 @@
                 </v-list>
               </v-menu>
 
-              <v-dialog max-width="300" v-model="confirmDeleteDialog">
+              <v-dialog v-model="confirmDeleteDialog" max-width="300">
                 <v-card>
                   <v-card-title primary-title>
                     <div class="headline primary--text">
@@ -138,18 +138,18 @@
                   </v-card-title>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn small depressed class="mr-1" @click="confirmDeleteDialog = false">{{
-                      $t('No')
-                    }}</v-btn>
+                    <v-btn class="mr-1" depressed small @click="confirmDeleteDialog = false"
+                      >{{ $t('No') }}
+                    </v-btn>
                     <v-btn
-                      small
-                      depressed
+                      :disabled="deleteArticleIntermediate"
                       class="mr-1"
                       color="warning"
+                      depressed
+                      small
                       @click="deleteArticle"
-                      :disabled="deleteArticleIntermediate"
-                      >{{ $t('Yes') }}</v-btn
-                    >
+                      >{{ $t('Yes') }}
+                    </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -157,16 +157,16 @@
               <template v-if="token">
                 <span
                   v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                  @click="unbookmark"
                   style="cursor: pointer"
+                  @click="unbookmark"
                 >
                   <BookmarkedIcon :disabled="unbookmarkIntermediate" />
                   <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
                 </span>
                 <span
                   v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                  @click="bookmark"
                   style="cursor: pointer"
+                  @click="bookmark"
                 >
                   <ToBookmarkIcon :disabled="bookmarkIntermediate" />
                   <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
@@ -175,7 +175,7 @@
             </v-col>
 
             <!-- Column of variable width -->
-            <v-col md="auto" v-if="$vuetify.breakpoint.mdAndUp && article.view_times">
+            <v-col v-if="$vuetify.breakpoint.mdAndUp && article.view_times" md="auto">
               <span class="text-caption grey--text ma-2">{{
                 $t('已被阅读n次', { times: article.view_times })
               }}</span>
@@ -183,18 +183,18 @@
           </v-row>
 
           <div class="d-flex justify-end mt-1">
-            <ReactionBlock objectType="article" class="ml-1" :objectId="article.uuid" />
+            <ReactionBlock :objectId="article.uuid" class="ml-1" objectType="article" />
           </div>
 
           <!-- Comments -->
           <v-expand-transition>
             <CommentBlock
-              class="mt-6"
               v-show="showComments"
               :commentSubmitIntermediate="commentSubmitIntermediate"
-              commentLabel="评论文章"
               :comments="article.comments"
               :writable="token"
+              class="mt-6"
+              commentLabel="评论文章"
               @submit-new-comment="submitNewArticleCommentBody"
             >
             </CommentBlock>
@@ -243,18 +243,39 @@ import * as _ from 'lodash';
   },
 })
 export default class Article extends Vue {
+  private article: IArticle | null = null;
+  private upvotes: IArticleUpvotes | null = null;
+  private showComments: boolean = false;
+  private userBookmark: IUserArticleBookmark | null = null;
+  private showCancelUpvoteDialog: boolean = false;
+  private confirmDeleteDialog = false;
+  private loading = true;
+  private upvoteIntermediate = false;
+  private cancelUpvoteIntermediate = false;
+  private deleteArticleIntermediate = false;
+  private bookmarkIntermediate = false;
+  private unbookmarkIntermediate = false;
+  private currentUserIsAuthor = false;
+  private editButtonText = '编辑';
+  private showHasDraftBadge = false;
+  private commentSubmitIntermediate = false;
+
   get token() {
     return readToken(this.$store);
   }
+
   get userProfile() {
     return readUserProfile(this.$store);
   }
+
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);
   }
+
   get id() {
     return this.$route.params.id;
   }
+
   get articleCommentId() {
     const acid = this.$route.params.article_comment_id;
     if (acid) {
@@ -273,31 +294,6 @@ export default class Article extends Vue {
       this.load();
     }
   }
-
-  private article: IArticle | null = null;
-  private upvotes: IArticleUpvotes | null = null;
-  private showComments: boolean = false;
-
-  private userBookmark: IUserArticleBookmark | null = null;
-  private showCancelUpvoteDialog: boolean = false;
-  private confirmDeleteDialog = false;
-
-  private loading = true;
-
-  private upvoteIntermediate = false;
-
-  private cancelUpvoteIntermediate = false;
-  private deleteArticleIntermediate = false;
-
-  private bookmarkIntermediate = false;
-  private unbookmarkIntermediate = false;
-
-  private currentUserIsAuthor = false;
-
-  private editButtonText = '编辑';
-  private showHasDraftBadge = false;
-
-  private commentSubmitIntermediate = false;
 
   private async load() {
     if (this.articleCommentId) {
@@ -322,6 +318,7 @@ export default class Article extends Vue {
       }
     });
   }
+
   private async cancelUpvote() {
     this.cancelUpvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
@@ -332,6 +329,7 @@ export default class Article extends Vue {
       }
     });
   }
+
   private async bookmark() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
@@ -341,6 +339,7 @@ export default class Article extends Vue {
       }
     });
   }
+
   private async unbookmark() {
     this.unbookmarkIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
@@ -350,6 +349,7 @@ export default class Article extends Vue {
       }
     });
   }
+
   private async submitNewArticleCommentBody({ body, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {

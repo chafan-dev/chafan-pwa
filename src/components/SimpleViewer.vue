@@ -1,8 +1,8 @@
 <template>
   <div class="simple-viewer">
     <ChafanTiptap v-if="editor === 'tiptap'" :editable="false" :initial-value="body" />
-    <div ref="vditorViewer" v-else />
-    <LightboxGroup :container="contentElem" v-if="contentElem" />
+    <div v-else ref="vditorViewer" />
+    <LightboxGroup v-if="contentElem" :container="contentElem" />
   </div>
 </template>
 
@@ -45,22 +45,22 @@ export default class SimpleViewer extends Vue {
 @import '~vuetify/src/styles/styles.sass'
 
 .simple-viewer img
-    max-height: 100px
-    max-width: 100%
+  max-height: 100px
+  max-width: 100%
 
 .simple-viewer
-    font-family: $body-font-family
-    font-size: $font-size-root
+  font-family: $body-font-family
+  font-size: $font-size-root
 
 .simple-viewer h1, .simple-viewer h2, .simple-viewer h3
-    border-bottom: none !important
-    font-family: $body-font-family
-    font-size: $font-size-root
-    margin-top: 10px
-    margin-bottom: 10px
+  border-bottom: none !important
+  font-family: $body-font-family
+  font-size: $font-size-root
+  margin-top: 10px
+  margin-bottom: 10px
 
 .simple-viewer p
-    margin-bottom: 10px
+  margin-bottom: 10px
 </style>
 
 <style>

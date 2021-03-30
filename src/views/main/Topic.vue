@@ -24,7 +24,9 @@
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" bottom fab fixed right><InfoIcon /></v-btn>
+          <v-btn v-bind="attrs" v-on="on" bottom fab fixed right>
+            <InfoIcon />
+          </v-btn>
         </template>
         <v-sheet class="pa-2">
           <TopicCard :topic="topic" />
@@ -49,6 +51,15 @@ import * as _ from 'lodash';
   components: { QuestionLink, TopicCard, InfoIcon },
 })
 export default class Topic extends Vue {
+  private topic: ITopic | null = null;
+  private questions: IQuestionPreview[] = [];
+  private loading = true;
+  private loadingProgress = 0;
+
+  get id() {
+    return this.$route.params.id;
+  }
+
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'topic');
@@ -59,14 +70,7 @@ export default class Topic extends Vue {
       this.load();
     }
   }
-  private topic: ITopic | null = null;
-  private questions: IQuestionPreview[] = [];
-  private loading = true;
-  private loadingProgress = 0;
 
-  get id() {
-    return this.$route.params.id;
-  }
   public async mounted() {
     await this.load();
   }

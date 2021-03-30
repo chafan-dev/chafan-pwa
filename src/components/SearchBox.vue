@@ -2,18 +2,18 @@
 <template>
   <div>
     <v-menu
-      absolute
-      offset-y
+      v-model="showSearchResults"
       :position-x="menuX"
       :position-y="menuY"
-      v-model="showSearchResults"
-      max-height="600"
+      absolute
       allow-overflow
+      max-height="600"
+      offset-y
     >
       <v-list>
         <template v-for="(item, index) in items">
           <v-divider v-if="index" :key="index" class="ma-1" />
-          <v-list-item link target="_blank" :to="getItemLink(item)" :key="item.type + item.id">
+          <v-list-item :key="item.type + item.id" :to="getItemLink(item)" link target="_blank">
             {{ getItemText(item) }}
             <v-spacer />
             <span class="grey--text pl-1">{{ $t(item.type) }}</span>
@@ -22,18 +22,18 @@
       </v-list>
     </v-menu>
     <v-text-field
-      outlined
+      v-model="searchInput"
+      :placeholder="$t('Search')"
       dense
       filled
       hide-details
-      v-model="searchInput"
-      :placeholder="$t('Search')"
-      @keydown.enter="search"
+      outlined
       @input="searchDebounced"
+      @keydown.enter="search"
     >
       <template v-slot:append>
-        <v-progress-circular size="25" width="2" indeterminate v-if="loading" />
-        <SearchIcon @click="search" v-else />
+        <v-progress-circular v-if="loading" indeterminate size="25" width="2" />
+        <SearchIcon v-else @click="search" />
       </template>
     </v-text-field>
   </div>
@@ -49,9 +49,6 @@ import { readToken } from '@/store/main/getters';
   components: { SearchIcon },
 })
 export default class SearchBox extends Vue {
-  get token() {
-    return readToken(this.$store);
-  }
   private loading = false;
   private items: any[] = [];
   private timerId: any = null;
@@ -59,6 +56,10 @@ export default class SearchBox extends Vue {
   private showSearchResults = false;
   private menuX = 0;
   private menuY = 0;
+
+  get token() {
+    return readToken(this.$store);
+  }
 
   private mounted() {
     for (const e of this.$el.getElementsByTagName('input')) {

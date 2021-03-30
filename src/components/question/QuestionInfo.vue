@@ -5,15 +5,15 @@
       {{ $t('提问者：') }}
       <UserLink :userPreview="question.author"></UserLink>
     </div>
-    <div class="my-2" v-if="questionSubscription">
+    <div v-if="questionSubscription" class="my-2">
       {{ $t('关注人数：') }} {{ questionSubscription.subscription_count }}
     </div>
-    <div class="my-2" v-if="userProfile">
-      <v-btn depressed small color="primary" @click="showInviteToAnswerDialog = true">{{
-        $t('邀请回答')
-      }}</v-btn>
+    <div v-if="userProfile" class="my-2">
+      <v-btn color="primary" depressed small @click="showInviteToAnswerDialog = true"
+        >{{ $t('邀请回答') }}
+      </v-btn>
 
-      <v-dialog max-width="500" v-model="showInviteToAnswerDialog">
+      <v-dialog v-model="showInviteToAnswerDialog" max-width="500">
         <v-card>
           <v-card-title primary-title>
             <div class="headline primary--text">{{ $t('邀请回答') }}</div>
@@ -21,13 +21,13 @@
           <v-card-text>
             <UserSearch v-model="invitedUserId" />
             <v-slider
-              :label="$t('Reward')"
               v-model="inviteToAnswerRewardCoinAmount"
-              class="mt-2"
+              :label="$t('Reward')"
               :tick-labels="[0, 1, 2, 3, 4]"
-              step="1"
-              min="0"
+              class="mt-2"
               max="4"
+              min="0"
+              step="1"
               thumb-label
               ticks="always"
             />
@@ -47,17 +47,17 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn depressed small @click="inviteAnswer" color="primary">{{ $t('提交') }}</v-btn>
+            <v-btn color="primary" depressed small @click="inviteAnswer">{{ $t('提交') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </div>
-    <span class="text-caption grey--text" v-if="question.view_times">
+    <span v-if="question.view_times" class="text-caption grey--text">
       {{ $t('问题已经被浏览n次', { times: question.view_times }) }}
     </span>
     <template v-if="relatedQuestions !== null">
       <v-divider class="my-2" />
-      <RotationList :items="relatedQuestions" :title="$t('相关问题')" v-slot="{ item }">
+      <RotationList v-slot="{ item }" :items="relatedQuestions" :title="$t('相关问题')">
         <QuestionLink :question-preview="item" />
       </RotationList>
     </template>

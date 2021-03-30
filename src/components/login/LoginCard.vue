@@ -55,15 +55,15 @@
                       <span class="error--text">{{ errors[0] }}</span>
                     </ValidationProvider>
 
-                    <ValidationProvider rules="required" v-slot="{ errors }" name="password">
+                    <ValidationProvider v-slot="{ errors }" name="password" rules="required">
                       <v-text-field
                         id="password"
                         v-model="password"
                         :label="$t('Password')"
                         name="password"
+                        required
                         type="password"
                         @keyup.enter="submit"
-                        required
                       >
                         <template v-slot:prepend>
                           <LockOutlineIcon />
@@ -265,6 +265,8 @@ export default class LoginCard extends Vue {
   private sendVerificationCodeIntermediate = false;
   private verificationCodeDisabled = false;
   private verificationCode: string | null = null;
+  private captchaVerified = false;
+  private captchaToken: string | null = null;
 
   get hCaptchaSiteKey() {
     return hCaptchaSiteKey;
@@ -340,8 +342,6 @@ export default class LoginCard extends Vue {
     this.loginMethod = this.loginMethod === 'email' ? 'cellphone' : 'email';
   }
 
-  private captchaVerified = false;
-  private captchaToken: string | null = null;
   private verifiedCaptchaToken(token: string) {
     this.captchaVerified = true;
     this.captchaToken = token;
