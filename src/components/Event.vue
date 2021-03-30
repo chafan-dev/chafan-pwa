@@ -35,18 +35,18 @@
         <CommentPreview :comment="event.content.comment" />
       </span>
 
-      <a
+      <router-link
         place="article"
         v-if="event.content.article"
-        :href="`/articles/${event.content.article.uuid}`"
-        >{{ event.content.article.title }}</a
+        :to="`/articles/${event.content.article.uuid}`"
+        >{{ event.content.article.title }}</router-link
       >
 
-      <a
+      <router-link
         place="article_column"
         v-if="event.content.article_column"
-        :href="`/article-columns/${event.content.article_column.uuid}`"
-        >{{ event.content.article_column.name }}</a
+        :to="`/article-columns/${event.content.article_column.uuid}`"
+        >{{ event.content.article_column.name }}</router-link
       >
 
       <span place="message" v-if="event.content.message">
@@ -72,45 +72,48 @@
         <CommentPreview :comment="event.content.parent_comment" />
       </span>
 
-      <a
+      <router-link
         place="question"
         v-if="event.content.question"
-        :href="`/questions/${event.content.question.uuid}`"
-        >{{ event.content.question.title }}</a
+        :to="`/questions/${event.content.question.uuid}`"
+        >{{ event.content.question.title }}</router-link
       >
 
-      <a
+      <router-link
         place="submission"
         v-if="event.content.submission"
-        :href="`/submissions/${event.content.submission.uuid}`"
-        >{{ event.content.submission.title }}</a
+        :to="`/submissions/${event.content.submission.uuid}`"
+        >{{ event.content.submission.title }}</router-link
       >
 
-      <a place="site" v-if="event.content.site" :href="`/sites/${event.content.site.subdomain}`">{{
-        event.content.site.name
-      }}</a>
+      <router-link
+        place="site"
+        v-if="event.content.site"
+        :to="`/sites/${event.content.site.subdomain}`"
+        >{{ event.content.site.name }}</router-link
+      >
 
-      <a
+      <router-link
         place="question"
         v-if="event.content.answer"
-        :href="`/questions/${event.content.answer.question.uuid}`"
-        >{{ event.content.answer.question.title }}</a
+        :to="`/questions/${event.content.answer.question.uuid}`"
+        >{{ event.content.answer.question.title }}</router-link
       >
 
-      <a
+      <router-link
         place="answer"
         v-if="event.content.answer"
-        :href="`/questions/${event.content.answer.question.uuid}/answers/${event.content.answer.uuid}`"
-        >{{ event.content.answer.body }}</a
+        :to="`/questions/${event.content.answer.question.uuid}/answers/${event.content.answer.uuid}`"
+        >{{ event.content.answer.body }}</router-link
       >
 
-      <a
+      <router-link
         place="channel_message"
         v-if="event.content.channel"
-        :href="`/channels/${event.content.channel.id}`"
+        :to="`/channels/${event.content.channel.id}`"
       >
         {{ $t('私信') }}
-      </a>
+      </router-link>
     </i18n>
     ({{ $dayjs.utc(event.created_at).local().fromNow() }})
   </span>

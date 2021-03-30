@@ -18,13 +18,13 @@
           </span>
           <v-spacer />
           <span class="mr-3">
-            <a
+            <router-link
               class="text-decoration-none"
               target="_blank"
-              :href="`/article-columns/${article.article_column.uuid}`"
+              :to="`/article-columns/${article.article_column.uuid}`"
             >
               {{ article.article_column.name }}
-            </a>
+            </router-link>
           </span>
           <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text mr-3">
             {{ $t('上次发表：') }}
@@ -108,7 +108,7 @@
                 small
                 depressed
                 class="mr-1"
-                :href="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
+                :to="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
                 v-show="currentUserIsAuthor"
                 >{{ $t(editButtonText) }}</v-btn
               >
@@ -225,6 +225,8 @@ import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mu
 import { apiComment } from '@/api/comment';
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
+import { Route, RouteRecord } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: {
@@ -261,6 +263,17 @@ export default class Article extends Vue {
       return null;
     }
   }
+
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'article');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.showComments = false;
+      this.loading = true;
+      this.load();
+    }
+  }
+
   private article: IArticle | null = null;
   private upvotes: IArticleUpvotes | null = null;
   private showComments: boolean = false;
@@ -286,7 +299,7 @@ export default class Article extends Vue {
 
   private commentSubmitIntermediate = false;
 
-  private async mounted() {
+  private async load() {
     if (this.articleCommentId) {
       this.showComments = true;
     }
@@ -294,6 +307,10 @@ export default class Article extends Vue {
     this.article = (await apiArticle.getArticle(this.token, this.id)).data;
     this.updateStateWithLoadedArticle(this.article);
     this.loading = false;
+  }
+
+  private async mounted() {
+    await this.load();
   }
 
   private async upvote() {

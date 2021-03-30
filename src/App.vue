@@ -17,7 +17,7 @@
         </template>
       </v-banner>
       <v-progress-linear indeterminate v-if="loading" />
-      <router-view />
+      <router-view v-else />
       <NotificationsManager />
       <v-snackbar bottom right :value="updateExists" :timeout="-1" color="primary">
         {{ $t('App update is available') }}
@@ -97,14 +97,13 @@ export default class App extends Vue {
         window.location.reload();
       });
     }
-
+    await dispatchCheckLoggedIn(this.$store);
+    this.loading = false;
     if (prodStateJsonURL) {
       axios.get(prodStateJsonURL).then((response) => {
         commitSetTopBanner(this.$store, response.data['top-banner']);
       });
     }
-    await dispatchCheckLoggedIn(this.$store);
-    this.loading = false;
     const pref = readLocalePreference(this.$store);
     if (pref) {
       setAppLocale(this, pref);

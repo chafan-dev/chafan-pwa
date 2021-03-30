@@ -260,10 +260,10 @@
               <template v-slot:item.condition="{ item }">
                 <span v-if="item.condition.content.condition_type === 'answered_question'">
                   {{ $t('回答问题') }}:
-                  <a
+                  <router-link
                     class="text-decoration-none"
-                    :href="'/questions/' + item.condition.content.question_uuid"
-                    >{{ $t('Link') }}</a
+                    :to="'/questions/' + item.condition.content.question_uuid"
+                    >{{ $t('Link') }}</router-link
                   >
                 </span>
               </template>

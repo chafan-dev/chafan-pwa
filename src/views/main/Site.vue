@@ -128,6 +128,8 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import { Route, RouteRecord } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: {
@@ -147,16 +149,26 @@ export default class Site extends Vue {
     return readUserProfile(this.$store);
   }
 
-  private questions: IQuestionPreview[] | null = null;
-  private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'site');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.loading = true;
+      this.site = null;
+      this.siteProfile = null;
+      this.siteProfiles = null;
+      this.load();
+    }
+  }
 
-  private showComments: boolean = false;
+  private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
   private site: ISite | null = null;
   private siteProfile: IUserSiteProfile | null = null;
   private siteProfiles: IUserSiteProfile[] | null = null;
-  private submissions: ISubmission[] | null = [];
   private showQuestionEditor = false;
   private showSubmissionEditor = false;
+  private loading = true;
+
   get readable() {
     return this.site && (this.siteProfile !== null || this.site.public_readable);
   }
@@ -179,8 +191,6 @@ export default class Site extends Vue {
     },
   ];
 
-  private bottomNavValue = '';
-
   get currentTabItem() {
     return this.$route.query.tab ? this.$route.query.tab : 'questions';
   }
@@ -193,15 +203,21 @@ export default class Site extends Vue {
     }
   }
 
-  private loading = true;
-
   get token() {
     return readToken(this.$store);
   }
 
+  get subdomain() {
+    return this.$route.params.subdomain;
+  }
+
   public async mounted() {
+    await this.load();
+  }
+
+  private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.site = (await api.getSite(this.token, this.$route.params.subdomain)).data;
+      this.site = (await api.getSite(this.token, this.subdomain)).data;
 
       if (this.userProfile) {
         this.siteProfile = (

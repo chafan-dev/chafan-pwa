@@ -4,19 +4,19 @@
       <!-- Main panel -->
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <UserCard
+          v-if="userPublic || userPublicForVisitor"
           :userPreview="userPublic ? userPublic : userPublicForVisitor"
           :userPublic="userPublic ? userPublic : userPublicForVisitor"
-          v-if="userPublic || userPublicForVisitor"
           class="mb-4 mx-7 pb-7"
         />
-        <v-skeleton-loader type="card" v-else />
+        <v-skeleton-loader v-else type="card" />
 
         <div v-if="loggedIn" class="mx-7">
           <v-tabs
             v-model="currentTabItem"
-            show-arrows
             :align-with-title="$vuetify.breakpoint.mdAndUp"
             :fixed-tabs="$vuetify.breakpoint.mdAndUp"
+            show-arrows
           >
             <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
               {{ $t(item.text) }}
@@ -25,77 +25,77 @@
               </span>
             </v-tab>
 
-            <v-tab-item value="profile" class="pt-2">
+            <v-tab-item class="pt-2" value="profile">
               <template v-if="userPublic">
                 <div
-                  class="my-3"
                   v-if="
                     userPublic.homepage_url ||
                     userPublic.github_username ||
                     userPublic.twitter_username ||
                     userPublic.linkedin_url
                   "
+                  class="my-3"
                 >
                   <span class="subheading secondary--text text--lighten-3"
                     >{{ $t('Links') }}:
                   </span>
                   <a
-                    class="text-decoration-none"
                     v-if="userPublic.homepage_url"
                     :href="userPublic.homepage_url"
+                    class="text-decoration-none"
                     target="_blank"
                   >
                     <WebIcon /> {{ $t('个人主页') }}
                   </a>
                   <a
-                    class="text-decoration-none"
                     v-if="userPublic.github_username"
                     :href="canonicalURLfromUsername(userPublic.github_username, 'github.com')"
+                    class="text-decoration-none"
                     target="_blank"
                   >
                     <GithubIcon /> Github
                   </a>
                   <a
-                    class="text-decoration-none"
                     v-if="userPublic.twitter_username"
                     :href="canonicalURLfromUsername(userPublic.twitter_username, 'twitter.com')"
+                    class="text-decoration-none"
                     target="_blank"
                   >
                     <TwitterIcon /> Twitter
                   </a>
                   <a
-                    class="text-decoration-none"
                     v-if="userPublic.linkedin_url"
                     :href="userPublic.linkedin_url"
+                    class="text-decoration-none"
                     target="_blank"
                   >
                     <LinkedinIcon /> Linkedin
                   </a>
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
               <template v-if="userPublic">
-                <div class="my-3" v-if="userPublic.residency_topics.length > 0">
+                <div v-if="userPublic.residency_topics.length > 0" class="my-3">
                   <div class="subheading secondary--text text--lighten-3">
                     {{ $t('居住过的地方') }}
                   </div>
                   <div>
                     <v-chip-group :column="!$vuetify.breakpoint.mobile">
                       <v-chip
-                        :to="'/topics/' + topic.uuid"
                         v-for="topic in userPublic.residency_topics"
                         :key="topic.uuid"
+                        :to="'/topics/' + topic.uuid"
                         >{{ topic.name }}</v-chip
                       >
                     </v-chip-group>
                   </div>
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
               <template v-if="userPublic">
-                <div class="my-3" v-if="userPublic.profession_topic">
+                <div v-if="userPublic.profession_topic" class="my-3">
                   <div class="subheading secondary--text text--lighten-3">
                     {{ $t('所在行业') }}
                   </div>
@@ -106,51 +106,57 @@
                   </div>
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
               <template v-if="eduExps">
-                <div class="my-3" v-if="eduExps.length > 0">
+                <div v-if="eduExps.length > 0" class="my-3">
                   <div class="subheading secondary--text text--lighten-3">
                     {{ $t('教育经历') }}
                   </div>
                   <div
-                    class="title primary--text text--darken-2"
                     v-for="(eduExp, index) in eduExps"
                     :key="index"
+                    class="title primary--text text--darken-2"
                   >
-                    <a class="text-decoration-none" :href="'/topics/' + eduExp.school_topic.uuid">
+                    <router-link
+                      :to="'/topics/' + eduExp.school_topic.uuid"
+                      class="text-decoration-none"
+                    >
                       {{ eduExp.school_topic.name }}
-                    </a>
+                    </router-link>
                     ({{ $t(eduExp.level) }})
                   </div>
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
-              <template class="my-3" v-if="workExps">
-                <div class="my-3" v-if="workExps.length > 0">
+              <template v-if="workExps" class="my-3">
+                <div v-if="workExps.length > 0" class="my-3">
                   <div class="subheading secondary--text text--lighten-3">
                     {{ $t('工作经历') }}
                   </div>
                   <div
-                    class="title primary--text text--darken-2"
                     v-for="(workExp, index) in workExps"
                     :key="index"
+                    class="title primary--text text--darken-2"
                   >
-                    <a
+                    <router-link
+                      :to="'/topics/' + workExp.position_topic.uuid"
                       class="text-decoration-none"
-                      :href="'/topics/' + workExp.position_topic.uuid"
                     >
                       {{ workExp.position_topic.name }}
-                    </a>
+                    </router-link>
                     @
-                    <a class="text-decoration-none" :href="'/topics/' + workExp.company_topic.uuid">
+                    <router-link
+                      :to="'/topics/' + workExp.company_topic.uuid"
+                      class="text-decoration-none"
+                    >
                       {{ workExp.company_topic.name }}
-                    </a>
+                    </router-link>
                   </div>
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
               <template v-if="sites !== null">
                 <div v-if="sites.length > 0">
@@ -160,89 +166,89 @@
                   >
                     {{ $t('Circles') }}:
                     <span>
-                      <SiteBtn v-for="site in sites" :site="site" :key="site.uuid" />
+                      <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
                     </span>
                   </div>
                   <div v-else>
                     <span class="subheading secondary--text text--lighten-3 mr-2"
                       >{{ $t('Circles') }}:</span
                     >
-                    <SiteBtn :site="site" v-for="site in sites" :key="site.uuid" />
+                    <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
                   </div>
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
               <template v-if="userPublic">
-                <div class="my-3" v-if="userPublic.subscribed_topics.length > 0">
+                <div v-if="userPublic.subscribed_topics.length > 0" class="my-3">
                   <div class="subheading secondary--text text--lighten-3">
                     {{ $t('关注的话题') }}
                   </div>
                   <v-chip
-                    small
-                    class="mr-1 mb-1"
-                    :to="'/topics/' + topic.uuid"
                     v-for="topic in userPublic.subscribed_topics"
                     :key="topic.uuid"
+                    :to="'/topics/' + topic.uuid"
+                    class="mr-1 mb-1"
+                    small
                     >{{ topic.name }}</v-chip
                   >
                 </div>
               </template>
-              <v-skeleton-loader type="text" v-else />
+              <v-skeleton-loader v-else type="text" />
 
               <template v-if="userPublic">
-                <div class="text-center mt-2" v-if="currentUserId === userPublic.uuid">
-                  <v-btn to="/profile/edit" small color="primary">{{ $t('编辑个人页面') }}</v-btn>
+                <div v-if="currentUserId === userPublic.uuid" class="text-center mt-2">
+                  <v-btn color="primary" small to="/profile/edit">{{ $t('编辑个人页面') }}</v-btn>
                 </div>
               </template>
-              <div class="d-flex justify-center" v-else>
+              <div v-else class="d-flex justify-center">
                 <v-skeleton-loader type="button" />
               </div>
             </v-tab-item>
 
-            <v-tab-item value="answers" class="pt-2">
+            <v-tab-item class="pt-2" value="answers">
               <DynamicItemList
                 v-if="userPublic"
+                v-slot="{ item }"
+                :loadItems="loadAnswers"
                 emptyItemsText="暂无"
                 nullItemsText=""
-                :loadItems="loadAnswers"
-                v-slot="{ item }"
               >
                 <Answer :answerPreview="item" />
               </DynamicItemList>
             </v-tab-item>
 
-            <v-tab-item value="questions" class="pt-2">
+            <v-tab-item class="pt-2" value="questions">
               <DynamicItemList
                 v-if="userPublic"
+                v-slot="{ item }"
+                :loadItems="loadQuestions"
                 emptyItemsText="暂无"
                 nullItemsText=""
-                :loadItems="loadQuestions"
-                v-slot="{ item }"
               >
                 <QuestionPreview :questionPreview="item" />
               </DynamicItemList>
             </v-tab-item>
 
-            <v-tab-item value="articles" class="pt-2">
+            <v-tab-item class="pt-2" value="articles">
               <DynamicItemList
                 v-if="userPublic"
+                v-slot="{ item }"
+                :loadItems="loadArticles"
                 emptyItemsText="暂无"
                 nullItemsText=""
-                :loadItems="loadArticles"
-                v-slot="{ item }"
               >
                 <ArticlePreview :articlePreview="item" />
               </DynamicItemList>
             </v-tab-item>
 
-            <v-tab-item value="submissions" class="pt-2">
+            <v-tab-item class="pt-2" value="submissions">
               <DynamicItemList
                 v-if="userPublic"
+                v-slot="{ item }"
+                :loadItems="loadSubmissions"
                 emptyItemsText="暂无"
                 nullItemsText=""
-                :loadItems="loadSubmissions"
-                v-slot="{ item }"
               >
                 <SubmissionCard :submission="item" />
               </DynamicItemList>
@@ -253,7 +259,7 @@
                 <p v-if="followers.length === 0">{{ $t('暂无') }}</p>
                 <UserGrid :users="followers" />
               </div>
-              <v-skeleton-loader type="paragraph" v-else />
+              <v-skeleton-loader v-else type="paragraph" />
             </v-tab-item>
 
             <v-tab-item value="followed">
@@ -261,11 +267,11 @@
                 <p v-if="followed.length === 0">{{ $t('暂无') }}</p>
                 <UserGrid :users="followed" />
               </div>
-              <v-skeleton-loader type="paragraph" v-else />
+              <v-skeleton-loader v-else type="paragraph" />
             </v-tab-item>
           </v-tabs>
         </div>
-        <div class="ml-7 mr-7" v-else>
+        <div v-else class="ml-7 mr-7">
           <div class="text-center">
             <RegisteredUserOnlyIcon class="mr-2" /><span>{{ $t('登录后查看更多') }}</span>
           </div>
@@ -311,6 +317,8 @@ import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
+import { Route, RouteRecord } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: {
@@ -331,40 +339,6 @@ import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vu
   },
 })
 export default class User extends Vue {
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get currentUserId() {
-    return readUserProfile(this.$store)?.uuid;
-  }
-
-  get handle() {
-    return this.$route.params.handle;
-  }
-
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'profile';
-  }
-
-  set currentTabItem(tab) {
-    if (tab !== 'profile') {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
-    } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
-    }
-  }
-
-  private userPublic: IUserPublic | null = null;
-  private userPublicForVisitor: IUserPublicForVisitor | null = null;
-
-  private askedQuestions: IQuestionPreview[] | null = null;
-  private submissions: ISubmission[] | null = null;
-  private articles: IArticlePreview[] | null = null;
-  private authoredAnswers: IAnswerPreview[] | null = null;
-  private followers: IUserPreview[] | null = null;
-  private followed: IUserPreview[] | null = null;
-
   private tabItems = [
     {
       code: 'profile',
@@ -403,11 +377,62 @@ export default class User extends Vue {
     },
   ];
 
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'user');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.userPublic = null;
+      this.userPublicForVisitor = null;
+      this.followers = null;
+      this.followed = null;
+      this.eduExps = null;
+      this.workExps = null;
+      this.sites = null;
+      this.load();
+    }
+  }
+
+  private userPublic: IUserPublic | null = null;
+  private userPublicForVisitor: IUserPublicForVisitor | null = null;
+  private followers: IUserPreview[] | null = null;
+  private followed: IUserPreview[] | null = null;
   private eduExps: IUserEducationExperience[] | null = null;
   private workExps: IUserWorkExperience[] | null = null;
   private sites: ISite[] | null = null;
 
+  get loggedIn() {
+    return readIsLoggedIn(this.$store);
+  }
+
+  get currentUserId() {
+    return readUserProfile(this.$store)?.uuid;
+  }
+
+  get handle() {
+    return this.$route.params.handle;
+  }
+
+  get currentTabItem() {
+    return this.$route.query.tab ? this.$route.query.tab : 'profile';
+  }
+
+  set currentTabItem(tab) {
+    if (tab !== 'profile') {
+      this.$router.replace({ query: { ...this.$route.query, tab } });
+    } else {
+      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+    }
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
   public async mounted() {
+    await this.load();
+  }
+
+  private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.loggedIn) {
         this.userPublic = (await apiPeople.getUserPublic(this.token, this.handle)).data;
@@ -438,10 +463,6 @@ export default class User extends Vue {
     } else {
       return 'https://' + domain + '/' + username;
     }
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   private async loadAnswers(skip: number, limit: number) {

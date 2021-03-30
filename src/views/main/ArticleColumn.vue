@@ -22,15 +22,15 @@
           </div>
           <ul v-if="articles">
             <li v-for="article in articles" :key="article.uuid">
-              <a class="text-decoration-none" :href="`/articles/${article.uuid}`">{{
+              <router-link class="text-decoration-none" :to="`/articles/${article.uuid}`">{{
                 article.title
-              }}</a>
+              }}</router-link>
               <v-chip small class="ml-2" v-if="!article.is_published">{{ $t('初稿') }}</v-chip>
             </li>
-            <div v-if="!userProfile" class="text-center grey--text">
-              {{ $t('登录后查看更多') }}
-            </div>
           </ul>
+          <div v-if="!userProfile" class="text-center grey--text">
+            {{ $t('登录后查看更多') }}
+          </div>
           <v-skeleton-loader type="paragraph" v-else />
         </div>
       </v-col>
@@ -45,6 +45,8 @@ import { IArticleColumn, IArticlePreview } from '@/interfaces';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readUserProfile } from '@/store/main/getters';
+import { Route, RouteRecord } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: { ArticleColumnCard },
@@ -52,6 +54,14 @@ import { readUserProfile } from '@/store/main/getters';
 export default class ArticleColumn extends Vue {
   private articleColumn: IArticleColumn | null = null;
   private articles: IArticlePreview[] | null = null;
+
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'article-column');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.load();
+    }
+  }
 
   get id() {
     return this.$route.params.id;
@@ -61,7 +71,7 @@ export default class ArticleColumn extends Vue {
     return readUserProfile(this.$store);
   }
 
-  private async mounted() {
+  private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.articleColumn = (
         await apiArticle.getArticleColumn(this.$store.state.main.token, this.id)
@@ -70,6 +80,10 @@ export default class ArticleColumn extends Vue {
         await apiArticle.getArticlesOfColumn(this.$store.state.main.token, this.id)
       ).data;
     });
+  }
+
+  private async mounted() {
+    await this.load();
   }
 }
 </script>
