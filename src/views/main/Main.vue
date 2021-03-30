@@ -283,8 +283,7 @@
               <v-list-item
                 v-for="item in accountItems"
                 :key="item.text"
-                :href="item.hrefRequiresUserProfile ? item.href(userProfile) : item.href"
-                :to="item.to"
+                :to="item.toRequiresUserProfile ? item.to(userProfile) : item.to"
                 link
               >
                 <v-list-item-icon>
@@ -425,8 +424,8 @@ export default class Main extends Vue {
     {
       icon: 'ProfileIcon',
       text: this.$t('个人资料'),
-      hrefRequiresUserProfile: true,
-      href: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
+      toRequiresUserProfile: true,
+      to: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
     },
   ];
   private showTopMenu = false;
