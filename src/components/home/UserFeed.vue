@@ -1,22 +1,37 @@
 <template>
   <div>
-    <v-progress-linear v-if="loadingActivities" indeterminate />
-    <div v-else>
-      <v-dialog v-model="showSubjectDialog" max-width="600">
-        <v-card class="pt-6">
-          <v-card-text>
-            <UserGrid :users="subjectsInDialog" />
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn @click="showSubjectDialog = false">{{ $t('隐藏') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+    <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
 
-      <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
+    <v-dialog v-model="showSubjectDialog" max-width="600">
+      <v-card class="pt-6">
+        <v-card-text>
+          <UserGrid :users="subjectsInDialog" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn @click="showSubjectDialog = false">{{ $t('隐藏') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-      <v-card v-touch="{ down: () => onSwipeDown() }" flat>
+    <div>
+      <v-expand-transition>
+        <div v-show="showRefreshIndicator" class="text-center">
+          <v-progress-linear v-model="refreshWaitProgress" color="primary" />
+          <span>{{ $t('下拉刷新') }}</span>
+        </div>
+      </v-expand-transition>
+
+      <div v-if="loadingActivities" class="text-center">
+        <v-progress-circular size="20" color="primary" indeterminate />
+      </div>
+      <v-card
+        v-else
+        @touchstart="onTouchStart"
+        @touchend="onTouchEnd"
+        @touchmove="onTouchMove"
+        flat
+      >
         <div v-for="activity in activities" :key="activity.id">
           <v-card
             :class="{
@@ -419,10 +434,39 @@ export default class UserFeed extends Vue {
     }
   }
 
-  private async onSwipeDown() {
-    this.loadingActivities = true;
+  private touchStartTimestamp = 0;
+  private touchStartY = 0;
+  private showRefreshIndicator = false;
+  private refreshWaitProgress = 0;
+
+  private onTouchStart(event: TouchEvent) {
+    const touch = event.changedTouches[0];
+    this.touchStartTimestamp = event.timeStamp;
+    this.touchStartY = touch.clientY;
+  }
+
+  private onTouchMove(event: TouchEvent) {
+    const touch = event.changedTouches[0];
+    if (touch.clientY > this.touchStartY && event.timeStamp - this.touchStartTimestamp > 500) {
+      const k = Math.pow((touch.clientY - this.touchStartY) / 100, 2);
+      this.refreshWaitProgress = Math.min(
+        Math.max(this.refreshWaitProgress, Math.ceil(k * 100)),
+        100
+      );
+      if (this.refreshWaitProgress > 50) {
+        this.showRefreshIndicator = true;
+      }
+    }
+  }
+
+  private async onTouchEnd() {
     this.noMoreNewActivities = false;
-    await this.loadActivities();
+    this.showRefreshIndicator = false;
+    if (this.refreshWaitProgress === 100) {
+      this.loadingActivities = true;
+      this.refreshWaitProgress = 0;
+      await this.loadActivities();
+    }
   }
 }
 </script>
