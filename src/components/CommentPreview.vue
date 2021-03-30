@@ -25,9 +25,9 @@ export default class CommentPreview extends Vue {
   @Prop() public readonly comment!: IComment;
 
   get shortComment() {
-    return this.comment.body.length > 20
-      ? this.comment.body.substring(0, 20) + '...'
-      : this.comment.body;
+    return this.comment.body_text!.length > 20
+      ? this.comment.body_text!.substring(0, 20) + '...'
+      : this.comment.body_text!;
   }
 }
 </script>

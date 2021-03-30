@@ -64,6 +64,7 @@ export interface IComment {
   created_at: string;
   updated_at: string;
   body: string;
+  body_text?: string;
   editor: editor_T;
   root_route?: string;
   shared_to_timeline: boolean;
@@ -509,6 +510,7 @@ export interface IActivity {
 export interface ICommentCreate {
   site_uuid?: string;
   body: string;
+  body_text: string;
   editor: editor_T;
   question_uuid?: string;
   submission_uuid?: string;
@@ -520,6 +522,7 @@ export interface ICommentCreate {
 
 export interface ICommentUpdate {
   body?: string;
+  body_text?: string;
   shared_to_timeline?: true;
 }
 
