@@ -20,8 +20,8 @@
         </div>
 
         <template v-if="userProfile">
-          <UserSubmissionsRankedFeed v-if="showSharing" />
-          <UserFeed :user-profile="userProfile" v-else />
+          <UserSubmissionsRankedFeed v-show="showSharing" />
+          <UserFeed :user-profile="userProfile" v-show="!showSharing" />
         </template>
         <user-logout-welcome v-else />
       </v-col>

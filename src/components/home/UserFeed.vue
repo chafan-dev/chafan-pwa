@@ -16,7 +16,7 @@
 
       <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
 
-      <v-card flat>
+      <v-card flat v-touch="{ down: () => onSwipeDown() }">
         <div v-for="activity in activities" :key="activity.id">
           <v-card
             :class="{
@@ -359,7 +359,7 @@ export default class UserFeed extends Vue {
   private subjectsInDialog: IUserPreview[] = [];
   private showExploreSites = false;
 
-  private async mounted() {
+  private async loadActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
       const response = await api.getActivities(this.$store.state.main.token, {
         limit: this.loadingLimit,
@@ -374,6 +374,10 @@ export default class UserFeed extends Vue {
     });
 
     this.preloadMoreActivities();
+  }
+
+  private async mounted() {
+    await this.loadActivities();
 
     window.onscroll = () => {
       const bottomOfWindow =
@@ -413,6 +417,12 @@ export default class UserFeed extends Vue {
         this.preloadMoreActivitiesIntermediate = false;
       });
     }
+  }
+
+  private async onSwipeDown() {
+    this.loadingActivities = true;
+    this.noMoreNewActivities = false;
+    await this.loadActivities();
   }
 }
 </script>
