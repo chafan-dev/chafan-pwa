@@ -465,7 +465,7 @@ export default class Answer extends Vue {
     });
   }
 
-  private async submitNewAnswerCommentBody({ body, editor }) {
+  private async submitNewAnswerCommentBody({ body, body_text, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
         this.commentSubmitIntermediate = true;
@@ -474,6 +474,7 @@ export default class Answer extends Vue {
           answer_uuid: this.answer.uuid,
           body,
           editor,
+          body_text,
         });
         const comment = response.data;
         this.answer.comments.push(comment);

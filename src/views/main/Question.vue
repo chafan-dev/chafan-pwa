@@ -761,7 +761,7 @@ export default class Question extends Vue {
     await handler.newEditHandler(payload);
   }
 
-  private async submitNewQuestionCommentBody({ body, editor }) {
+  private async submitNewQuestionCommentBody({ body, body_text, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.commentSubmitIntermediate = true;
@@ -769,6 +769,7 @@ export default class Question extends Vue {
           site_uuid: this.question?.site.uuid,
           question_uuid: this.id,
           body,
+          body_text,
           editor,
         });
         const comment = response.data;

@@ -499,7 +499,7 @@ export default class Submission extends Vue {
     });
   }
 
-  private async submitNewSubmissionCommentBody({ body, editor }) {
+  private async submitNewSubmissionCommentBody({ body, body_text, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       this.commentSubmitIntermediate = true;
       if (this.submission) {
@@ -507,6 +507,7 @@ export default class Submission extends Vue {
           site_uuid: this.submission?.site.uuid,
           submission_uuid: this.id,
           body,
+          body_text,
           editor,
         });
         const comment = response.data;

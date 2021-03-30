@@ -331,6 +331,7 @@ export default class Comment extends Vue {
         site_uuid: this.siteId,
         parent_comment_uuid: this.comment.uuid,
         body: editor.content,
+        body_text: editor.getTextContent(),
         editor: editor.editor,
       });
       const comment = response.data;
@@ -358,6 +359,7 @@ export default class Comment extends Vue {
       this.submitIntermediate = true;
       await apiComment.updateComment(this.token, this.comment.uuid, {
         body: editor.content,
+        body_text: editor.getTextContent(),
       });
       commitAddNotification(this.$store, {
         content: this.$t('评论更新成功').toString(),
