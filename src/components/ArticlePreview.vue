@@ -1,19 +1,19 @@
 <template>
   <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
     <div class="title" style="word-break: normal">
-      <a class="text-decoration-none" :href="'/articles/' + articlePreview.uuid">
+      <router-link class="text-decoration-none" :to="'/articles/' + articlePreview.uuid">
         {{ articlePreview.title }}
-      </a>
+      </router-link>
     </div>
     <div class="d-flex">
       <span class="grey--text">
         {{ $t('发表于专栏：') }}
-        <a
+        <router-link
           class="text-decoration-none"
-          :href="`/article-columns/${articlePreview.article_column.uuid}`"
+          :to="`/article-columns/${articlePreview.article_column.uuid}`"
         >
           {{ articlePreview.article_column.name }}
-        </a>
+        </router-link>
       </span>
     </div>
   </v-card>

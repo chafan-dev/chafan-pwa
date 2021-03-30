@@ -487,6 +487,7 @@ export default class Question extends Vue {
   }
 
   private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
     if (matched && !_.isEqual(to.params, from.params)) {
       this.loading = true;
@@ -508,10 +509,8 @@ export default class Question extends Vue {
       this.archives = [];
       this.siteProfiles = [];
       this.currentUserAnswerUUID = null;
-
-      this.loadQuestion(to.params.id);
+      this.loadQuestion();
     }
-    next();
   }
 
   private question: IQuestion | null = null;
@@ -595,10 +594,10 @@ export default class Question extends Vue {
     return readToken(this.$store);
   }
 
-  private async loadQuestion(questionUUID: string) {
+  private async loadQuestion() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const response = await apiQuestion.getQuestion(this.token, questionUUID);
+        const response = await apiQuestion.getQuestion(this.token, this.id);
         this.question = response.data;
         if (!this.$route.query.title) {
           this.$router.replace({
@@ -726,7 +725,7 @@ export default class Question extends Vue {
       }
     } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
 
-    this.loadQuestion(this.id);
+    this.loadQuestion();
   }
 
   private async newEditHandler(payload: INewEditEvent) {

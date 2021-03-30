@@ -9,13 +9,13 @@
           }"
         >
           <div class="mb-1" :class="{ headline: !compactMode, 'text-center': !compactMode }">
-            <a
-              :href="'/article-columns/' + articleColumn.uuid"
+            <router-link
+              :to="'/article-columns/' + articleColumn.uuid"
               class="text-decoration-none title"
               v-if="!showColumnEditor"
             >
               {{ name }}
-            </a>
+            </router-link>
             <span class="grey--text ml-2" v-if="compactMode && desc && !showColumnEditor">
               {{ desc }}
             </span>

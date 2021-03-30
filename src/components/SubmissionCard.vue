@@ -1,25 +1,25 @@
 <template>
   <v-card class="pa-2" :class="{ 'c-card': !embedded }" :flat="embedded">
     <div class="title" style="word-break: normal">
-      <a class="text-decoration-none" :href="'/submissions/' + submission.uuid">
+      <router-link class="text-decoration-none" :to="'/submissions/' + submission.uuid">
         {{ submission.title }}
-      </a>
+      </router-link>
     </div>
     <div class="d-flex align-center">
-      <a
+      <router-link
         class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
-        :href="'/submissions/' + submission.uuid"
+        :to="'/submissions/' + submission.uuid"
       >
         <UpvoteIcon :color="submission.upvoted ? 'primary' : undefined" small />
         {{ submission.upvotes_count }}
-      </a>
-      <a
+      </router-link>
+      <router-link
         class="d-flex align-center black--text text-caption text-decoration-none"
-        :href="'/submissions/' + submission.uuid"
+        :to="'/submissions/' + submission.uuid"
       >
         <CommentsIcon small class="mr-1 mt-1" />
         {{ submission.comments.length }}
-      </a>
+      </router-link>
       <v-spacer />
       <div v-if="submission.url">
         <LinkIcon small />

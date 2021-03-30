@@ -312,8 +312,6 @@ import { api } from '@/api';
 import { readNarrowUI, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 import {
   ISubmission,
-  ISite,
-  IUserSiteProfile,
   ISubmissionUpvotes,
   ISubmissionArchive,
   IComment,
@@ -327,6 +325,8 @@ import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
+import { Route, RouteRecord } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: {
@@ -362,13 +362,31 @@ export default class Submission extends Vue {
   get token() {
     return readToken(this.$store);
   }
+
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'submission');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.loading = true;
+      this.loadingProgress = 0;
+      this.showHelp = false;
+      this.showSubmissionEditor = false;
+      this.commentWritable = false;
+      this.editable = false;
+      this.canHide = false;
+      this.isModerator = false;
+      this.upvotes = null;
+      this.archives = [];
+      this.comments = [];
+      this.load();
+    }
+  }
+
   private showHelp: boolean = false;
   private submission: ISubmission | null = null;
   private newSubmissionTitle: string = '';
   private newSubmissionUrl: string | undefined = undefined;
   private showSubmissionEditor: boolean = false;
-  private submissionSite: ISite | null = null;
-  private userSiteProfile: IUserSiteProfile | null = null;
   private newSubmissionTopicNames: string[] = [];
   private hintTopicNames: string[] = []; // TODO
   private commentWritable = false;
@@ -404,7 +422,10 @@ export default class Submission extends Vue {
         localStorage.removeItem('new-submission');
       }
     } catch (e) {}
+    await this.load();
+  }
 
+  private async load() {
     try {
       const response = await apiSubmission.getSubmission(this.token, this.id);
       this.submission = response.data;
@@ -458,20 +479,13 @@ export default class Submission extends Vue {
             this.canHide = true;
           }
           await dispatchCaptureApiError(this.$store, async () => {
-            this.submissionSite = (
-              await api.getSite(this.token, this.submission!.site.subdomain)
-            ).data;
-            this.loadingProgress = 66;
+            const submissionSite = this.submission!.site;
 
             if (this.userProfile) {
-              this.userSiteProfile = (
-                await api.getUserSiteProfile(
-                  this.token,
-                  this.submissionSite.uuid,
-                  this.userProfile.uuid
-                )
+              const userSiteProfile = (
+                await api.getUserSiteProfile(this.token, submissionSite.uuid, this.userProfile.uuid)
               ).data;
-              if (this.userSiteProfile !== null || this.submissionSite.public_writable_comment) {
+              if (userSiteProfile !== null || submissionSite.public_writable_comment) {
                 this.commentWritable = true;
               }
             }
@@ -482,6 +496,7 @@ export default class Submission extends Vue {
       }
     });
   }
+
   private async submitNewSubmissionCommentBody({ body, editor }) {
     await dispatchCaptureApiError(this.$store, async () => {
       this.commentSubmitIntermediate = true;

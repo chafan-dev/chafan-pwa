@@ -22,15 +22,18 @@ export default new Router({
           component: () => import(/* webpackChunkName: "main-sites" */ './views/main/Explore.vue'),
         },
         {
+          name: 'site',
           path: 'sites/:subdomain',
           component: () => import(/* webpackChunkName: "main-site" */ './views/main/Site.vue'),
         },
         {
+          name: 'article-column',
           path: 'article-columns/:id',
           component: () =>
             import(/* webpackChunkName: "main-article-columns" */ './views/main/ArticleColumn.vue'),
         },
         {
+          name: 'article',
           path: 'articles/:id',
           component: () =>
             import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
@@ -43,6 +46,7 @@ export default new Router({
           ],
         },
         {
+          name: 'submission',
           path: 'submissions/:id',
           component: () =>
             import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
@@ -85,6 +89,7 @@ export default new Router({
             import(/* webpackChunkName: "main-article-editor" */ './views/main/ArticleEditor.vue'),
         },
         {
+          name: 'topic',
           path: 'topics/:id',
           component: () => import(/* webpackChunkName: "main-topics" */ './views/main/Topic.vue'),
         },
@@ -98,6 +103,7 @@ export default new Router({
           component: () => import(/* webpackChunkName: "main-forms" */ './views/main/Form.vue'),
         },
         {
+          name: 'channel',
           path: 'channels/:id',
           component: () =>
             import(/* webpackChunkName: "main-channels" */ './views/main/Channel.vue'),

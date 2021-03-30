@@ -43,6 +43,8 @@ import ChatWindow from '@/components/ChatWindow.vue';
 import UserLink from '@/components/UserLink.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import { Route, RouteRecord } from 'vue-router';
+import * as _ from 'lodash';
 
 @Component({
   components: { UserLink, ChannelCard, ChannelIcon, ChatWindow },
@@ -57,9 +59,21 @@ export default class Channel extends Vue {
   get token() {
     return this.$store.state.main.token;
   }
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+    next();
+    const matched = from.matched.find((record: RouteRecord) => record.name === 'channel');
+    if (matched && !_.isEqual(to.params, from.params)) {
+      this.loading = true;
+      this.load();
+    }
+  }
   private channel: IChannel | null = null;
   private loading = true;
   private async mounted() {
+    await this.load();
+  }
+
+  private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.channel = (await api.getChannel(this.token, this.id)).data;
       this.loading = false;

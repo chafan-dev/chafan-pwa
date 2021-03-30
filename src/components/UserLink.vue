@@ -9,14 +9,14 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <span v-bind="attrs" v-on="on">
-        <a
+        <router-link
           class="text-decoration-none grey--text text--darken-2"
           v-if="userPreview"
-          :href="'/users/' + userPreview.handle"
+          :to="'/users/' + userPreview.handle"
         >
           <Avatar :userPreview="userPreview" v-if="showAvatar" />
           {{ name }}
-        </a>
+        </router-link>
       </span>
     </template>
     <v-lazy>

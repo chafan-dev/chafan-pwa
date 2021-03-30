@@ -8,14 +8,16 @@
               <UserLink :userPreview="invitationLink.inviter" />
               <span class="ml-1"
                 >邀请你加入
-                <a class="text-decoration-none" href="/" target="_blank">{{ appName }}</a>
+                <router-link class="text-decoration-none" to="/" target="_blank">{{
+                  appName
+                }}</router-link>
               </span>
               <span v-if="invitationLink.invited_to_site">
-                「<a
+                「<router-link
                   class="text-decoration-none"
-                  :href="`/sites/${invitationLink.invited_to_site.subdomain}`"
+                  :to="`/sites/${invitationLink.invited_to_site.subdomain}`"
                   target="_blank"
-                  >{{ invitationLink.invited_to_site.name }}</a
+                  >{{ invitationLink.invited_to_site.name }}</router-link
                 >」圈子
               </span>
             </v-card-title>

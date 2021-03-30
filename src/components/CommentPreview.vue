@@ -1,12 +1,12 @@
 <template>
   <span>
-    <a
+    <router-link
       class="text-decoration-none"
-      :href="comment.root_route + `/comments/${comment.uuid}`"
+      :to="comment.root_route + `/comments/${comment.uuid}`"
       v-if="comment.root_route"
     >
       {{ shortComment }}
-    </a>
+    </router-link>
     <span v-else>
       {{ shortComment }}
     </span>

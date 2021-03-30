@@ -6,28 +6,28 @@
     :max-width="hoverMode ? 400 : undefined"
   >
     <div class="mb-1 text-center mt-2" v-if="!compactMode && avatarURL">
-      <a :href="`/users/${userPreview.handle}`">
+      <router-link :to="`/users/${userPreview.handle}`">
         <v-avatar size="100" tile class="avatarDiv">
           <v-img :src="avatarURL" alt="Avatar" />
         </v-avatar>
-      </a>
+      </router-link>
     </div>
     <v-row justify="center">
       <v-col v-if="compactMode && avatarURL" style="max-width: 110px" align-self="center">
-        <a :href="`/users/${userPreview.handle}`">
+        <router-link :to="`/users/${userPreview.handle}`">
           <v-avatar size="100" tile class="avatarDiv">
             <v-img :src="avatarURL" alt="Avatar" />
           </v-avatar>
-        </a>
+        </router-link>
       </v-col>
       <v-col align-self="center">
         <div class="mb-1 mt-1" :class="{ headline: !compactMode, 'text-center': !compactMode }">
-          <a :href="'/users/' + userPreview.handle" class="text-decoration-none">
+          <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none">
             <span v-if="userPreview.full_name">
               {{ userPreview.full_name }}
             </span>
             <span v-else> @{{ userPreview.handle }} </span>
-          </a>
+          </router-link>
 
           <span v-if="userPreview.full_name" class="grey--text"> (@{{ userPreview.handle }}) </span>
         </div>
@@ -44,24 +44,24 @@
         <template v-if="follows">
           <v-row v-if="compactMode">
             <v-col>
-              <a
+              <router-link
                 class="text-decoration-none text-caption mr-2"
-                :href="`/users/${userPreview.handle}?tab=followers`"
+                :to="`/users/${userPreview.handle}?tab=followers`"
                 v-if="loggedIn && !compactMode"
               >
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
-              </a>
+              </router-link>
               <span class="text-caption mr-2" v-else>
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
               </span>
 
-              <a
+              <router-link
                 class="text-decoration-none text-caption mr-2"
-                :href="`/users/${userPreview.handle}?tab=followed`"
+                :to="`/users/${userPreview.handle}?tab=followed`"
                 v-if="loggedIn && !compactMode"
               >
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
-              </a>
+              </router-link>
               <span class="text-caption mr-2" v-else>
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
               </span>
@@ -73,25 +73,25 @@
           </v-row>
           <v-row v-else class="mt-3">
             <v-col class="text-center">
-              <a
+              <router-link
                 class="text-decoration-none"
-                :href="`/users/${userPreview.handle}?tab=followers`"
+                :to="`/users/${userPreview.handle}?tab=followers`"
                 v-if="loggedIn"
               >
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
-              </a>
+              </router-link>
               <span v-else>
                 {{ $t('有n个关注者', { count: follows.followers_count }) }}
               </span>
             </v-col>
             <v-col class="text-center">
-              <a
+              <router-link
                 class="text-decoration-none"
-                :href="`/users/${userPreview.handle}?tab=followed`"
+                :to="`/users/${userPreview.handle}?tab=followed`"
                 v-if="loggedIn"
               >
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
-              </a>
+              </router-link>
               <span v-else>
                 {{ $t('关注了n个人', { count: follows.followed_count }) }}
               </span>
