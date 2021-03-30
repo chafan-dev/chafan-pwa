@@ -5,7 +5,6 @@ import {
   IComment,
   IMsg,
   INotification,
-  IQuestionPreview,
   IReaction,
   IReactions,
   IUserInvite,

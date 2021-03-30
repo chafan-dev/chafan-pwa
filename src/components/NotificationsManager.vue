@@ -8,7 +8,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { Vue, Component, Watch } from 'vue-property-decorator';
 import { AppNotification } from '@/store/main/state';
 import { commitRemoveNotification } from '@/store/main/mutations';
 import { readFirstNotification } from '@/store/main/getters';
@@ -35,7 +35,7 @@ export default class NotificationsManager extends Vue {
 
   public async hide() {
     this.show = false;
-    await new Promise<void>((resolve, reject) => setTimeout(() => resolve(), 500));
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 500));
   }
 
   public async close() {
@@ -64,8 +64,8 @@ export default class NotificationsManager extends Vue {
 
   @Watch('firstNotification')
   public async onNotificationChange(
-    newNotification: AppNotification | false,
-    oldNotification: AppNotification | false
+    newNotification: AppNotification | false
+    // oldNotification: AppNotification | false
   ) {
     if (newNotification !== this.currentNotification) {
       await this.setNotification(newNotification);
