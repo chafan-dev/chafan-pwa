@@ -1,5 +1,5 @@
 <template>
-  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
+  <BaseCard :embedded="embedded">
     <div class="title" style="word-break: normal">
       <router-link :to="'/submissions/' + submission.uuid" class="text-decoration-none">
         {{ submission.title }}
@@ -34,7 +34,7 @@
     >
       {{ shortDesc }}
     </div>
-  </v-card>
+  </BaseCard>
 </template>
 
 <script lang="ts">
@@ -44,9 +44,10 @@ import LinkIcon from '@/components/icons/LinkIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
-  components: { SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
+  components: { BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
 export default class submission extends Vue {
   @Prop({ default: false }) private readonly embedded!: false;

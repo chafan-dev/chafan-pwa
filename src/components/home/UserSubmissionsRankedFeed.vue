@@ -1,17 +1,12 @@
 <template>
   <div>
     <v-progress-linear v-if="loadingSubmissions" indeterminate />
-    <div v-for="submission in submissions" :key="submission.uuid" class="my-4">
-      <SubmissionCard
-        :class="{
-          'px-3': $vuetify.breakpoint.mdAndUp,
-          'py-4': $vuetify.breakpoint.mdAndUp,
-          'px-2': !$vuetify.breakpoint.mdAndUp,
-          'py-3': !$vuetify.breakpoint.mdAndUp,
-        }"
-        :submission="submission"
-      />
-    </div>
+    <SubmissionCard
+      v-for="submission in submissions"
+      :key="submission.uuid"
+      class="ma-4"
+      :submission="submission"
+    />
   </div>
 </template>
 
