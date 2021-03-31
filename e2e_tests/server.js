@@ -400,6 +400,9 @@ app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
   });
 });
 
+const example_activity_upvote_random_questions = [];
+
+let randomQuestionActivityIdCounter = 4000;
 for (const randomQuestion of randomQuestionPreviews) {
   app.get(`/api/v1/questions/${randomQuestion.uuid}`, (req, res) => {
     res.json({
@@ -437,6 +440,22 @@ for (const randomQuestion of randomQuestionPreviews) {
       counters: {},
       my_reactions: [],
     });
+  });
+  randomQuestionActivityIdCounter = randomQuestionActivityIdCounter + 1;
+  example_activity_upvote_random_questions.push({
+    id: randomQuestionActivityIdCounter,
+    site_uuid: null,
+    created_at: '2021-02-06T20:31:09.965902+00:00',
+    verb: 'upvote_question',
+    content: null,
+    event: {
+      created_at: '2021-02-06T20:31:09.965902+00:00',
+      content: {
+        verb: 'upvote_question',
+        subject: example_user1_preview,
+        question: randomQuestion,
+      },
+    },
   });
 }
 
@@ -771,7 +790,7 @@ app.get('/api/v1/activities/', (req, res) => {
       exmaple_create_submission_activity,
     ]);
   } else {
-    res.json([]);
+    res.json(example_activity_upvote_random_questions);
   }
 });
 

@@ -25,13 +25,7 @@
       <div v-if="loadingActivities" class="text-center">
         <v-progress-circular size="20" color="primary" indeterminate />
       </div>
-      <v-card
-        v-else
-        @touchstart="onTouchStart"
-        @touchend="onTouchEnd"
-        @touchmove="onTouchMove"
-        flat
-      >
+      <v-card v-else flat>
         <div v-for="activity in activities" :key="activity.id">
           <v-card
             :class="{
@@ -389,21 +383,13 @@ export default class UserFeed extends Vue {
     });
 
     this.preloadMoreActivities();
+    window.onscroll = () => {
+      this.preloadMoreActivities();
+    };
   }
 
   private async mounted() {
     await this.loadActivities();
-
-    window.onscroll = () => {
-      const bottomOfWindow =
-        Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
-          window.innerHeight +
-          300 >=
-        document.documentElement.offsetHeight;
-      if (bottomOfWindow) {
-        this.preloadMoreActivities();
-      }
-    };
   }
 
   private async onCloseExploreSites() {
@@ -417,6 +403,13 @@ export default class UserFeed extends Vue {
   }
 
   private async preloadMoreActivities() {
+    const bottomOfWindow =
+      Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
+        window.innerHeight >=
+      document.documentElement.offsetHeight;
+    if (!bottomOfWindow || this.noMoreNewActivities) {
+      return;
+    }
     if (this.activities.length !== 0) {
       this.preloadMoreActivitiesIntermediate = true;
       await dispatchCaptureApiError(this.$store, async () => {
@@ -434,39 +427,30 @@ export default class UserFeed extends Vue {
     }
   }
 
-  private touchStartTimestamp = 0;
-  private touchStartY = 0;
-  private showRefreshIndicator = false;
-  private refreshWaitProgress = 0;
-
-  private onTouchStart(event: TouchEvent) {
-    const touch = event.changedTouches[0];
-    this.touchStartTimestamp = event.timeStamp;
-    this.touchStartY = touch.clientY;
-  }
-
-  private onTouchMove(event: TouchEvent) {
-    const touch = event.changedTouches[0];
-    if (touch.clientY > this.touchStartY && event.timeStamp - this.touchStartTimestamp > 500) {
-      const k = Math.pow((touch.clientY - this.touchStartY) / 100, 2);
-      this.refreshWaitProgress = Math.min(
-        Math.max(this.refreshWaitProgress, Math.ceil(k * 100)),
-        100
-      );
-      if (this.refreshWaitProgress > 50) {
-        this.showRefreshIndicator = true;
+  private async loadNewActivities() {
+    await dispatchCaptureApiError(this.$store, async () => {
+      let before_activity_id: number | undefined = undefined;
+      let latestActivityId = this.activities[0].id;
+      const newActivities: IActivity[] = [];
+      for (let iter = 0; iter < 100; iter++) {
+        const response = await api.getActivities(this.$store.state.main.token, {
+          limit: this.loadingLimit,
+          before_activity_id: before_activity_id,
+        });
+        const activities: IActivity[] = response.data;
+        if (activities.length === 0) {
+          break;
+        }
+        for (const activity of activities) {
+          if (activity.id <= latestActivityId) {
+            break;
+          }
+          newActivities.push(activity);
+        }
+        before_activity_id = activities[activities.length - 1]!.id;
       }
-    }
-  }
-
-  private async onTouchEnd() {
-    this.noMoreNewActivities = false;
-    this.showRefreshIndicator = false;
-    if (this.refreshWaitProgress === 100) {
-      this.loadingActivities = true;
-      this.refreshWaitProgress = 0;
-      await this.loadActivities();
-    }
+      this.activities.splice(0, 0, ...combinedActivities(newActivities));
+    });
   }
 }
 </script>
