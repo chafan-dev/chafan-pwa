@@ -54,6 +54,10 @@
     <v-dialog v-model="showSubmissionActionDialog" max-width="500">
       <CreateSubmissionForm :showTitle="true" />
     </v-dialog>
+
+    <v-btn class="mr-1" depressed small to="/explore">
+      {{ $t('探索') }}
+    </v-btn>
   </div>
 </template>
 
