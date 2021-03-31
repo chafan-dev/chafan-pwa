@@ -5,23 +5,36 @@
     <v-row class="pa-3" justify="center">
       <!-- Feed column -->
       <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }" fluid>
-        <div v-if="userProfile" class="d-flex justify-space-between mb-3">
-          <NewContentActionBar />
-          <v-spacer />
-          <div class="d-flex align-center">
-            <SharingIcon v-if="!showSharing" class="mr-2" color="primary" @click="toggleSharing" />
-            <FeedIcon v-else class="mr-2" color="primary" @click="toggleSharing" />
-
-            <router-link class="mr-2 mb-1" to="/explore">
-              <ExploreIcon color="yellow darken-3" />
-            </router-link>
-            <UIStyleControllers />
-          </div>
-        </div>
-
         <template v-if="userProfile">
-          <UserSubmissionsRankedFeed v-show="showSharing" />
-          <UserFeed v-show="!showSharing" :user-profile="userProfile" />
+          <div class="d-flex justify-space-between mb-3">
+            <NewContentActionBar />
+            <v-spacer />
+            <div class="d-flex align-center">
+              <UIStyleControllers />
+            </div>
+          </div>
+
+          <v-tabs v-model="currentTabItem" height="35" hide-slider>
+            <v-tab :href="'#feed'">
+              <FeedIcon class="mr-1" />
+              {{ $t('Feed') }}
+            </v-tab>
+            <v-tab :href="'#submissions'">
+              <SharingIcon class="mr-1" />
+              {{ $t('Sharing') }}
+            </v-tab>
+            <v-spacer />
+            <div class="mr-2">
+              <RefreshIcon @click="refreshFeed" v-if="currentTabItem === 'feed'" />
+            </div>
+
+            <v-tab-item value="feed">
+              <UserFeed ref="userFeed" :user-profile="userProfile" />
+            </v-tab-item>
+            <v-tab-item value="submissions">
+              <UserSubmissionsRankedFeed />
+            </v-tab-item>
+          </v-tabs>
         </template>
         <user-logout-welcome v-else />
       </v-col>
@@ -76,9 +89,11 @@ import { FAB_FLAG } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import SharingIcon from '@/components/icons/SharingIcon.vue';
 import UserSubmissionsRankedFeed from '@/components/home/UserSubmissionsRankedFeed.vue';
+import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 
 @Component({
   components: {
+    RefreshIcon,
     UserSubmissionsRankedFeed,
     SharingIcon,
     UserFeed,
@@ -96,7 +111,17 @@ import UserSubmissionsRankedFeed from '@/components/home/UserSubmissionsRankedFe
   },
 })
 export default class Home extends Vue {
-  private showSharing = false;
+  get currentTabItem() {
+    return this.$route.query.tab ? this.$route.query.tab : 'feed';
+  }
+
+  set currentTabItem(tab) {
+    if (tab !== 'feed') {
+      this.$router.replace({ query: { ...this.$route.query, tab } });
+    } else {
+      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+    }
+  }
 
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);
@@ -106,13 +131,13 @@ export default class Home extends Vue {
     return readUserProfile(this.$store);
   }
 
+  private refreshFeed() {
+    (this.$refs.userFeed as UserFeed).loadNewActivities();
+  }
+
   private async onFabClicked() {
     (this.$refs.userAgreement as UserAgreement).overlay = false;
     await dispatchAddFlag(this.$store, FAB_FLAG);
-  }
-
-  private async toggleSharing() {
-    this.showSharing = !this.showSharing;
   }
 }
 </script>

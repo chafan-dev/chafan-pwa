@@ -553,8 +553,10 @@ const i18n = new VueI18n({
       site: 'Circle',
       answer: 'Answer',
       'No users found': 'No users found',
+      Feed: 'Feed',
     },
     zh: {
+      Feed: '信息流',
       'No users found': '无结果',
       answer: '答案',
       site: '圈子',

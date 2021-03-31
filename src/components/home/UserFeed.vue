@@ -16,16 +16,11 @@
 
     <div>
       <v-expand-transition>
-        <div v-show="showRefreshIndicator" class="text-center">
-          <v-progress-linear v-model="refreshWaitProgress" color="primary" />
-          <span>{{ $t('下拉刷新') }}</span>
+        <div v-show="loadingActivities" class="text-center">
+          <v-progress-circular size="20" color="primary" indeterminate />
         </div>
       </v-expand-transition>
-
-      <div v-if="loadingActivities" class="text-center">
-        <v-progress-circular size="20" color="primary" indeterminate />
-      </div>
-      <v-card v-else flat>
+      <v-card flat>
         <div v-for="activity in activities" :key="activity.id">
           <v-card
             :class="{
@@ -427,8 +422,9 @@ export default class UserFeed extends Vue {
     }
   }
 
-  private async loadNewActivities() {
+  public async loadNewActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
+      this.loadingActivities = true;
       let before_activity_id: number | undefined = undefined;
       let latestActivityId = this.activities[0].id;
       const newActivities: IActivity[] = [];
@@ -450,6 +446,7 @@ export default class UserFeed extends Vue {
         before_activity_id = activities[activities.length - 1]!.id;
       }
       this.activities.splice(0, 0, ...combinedActivities(newActivities));
+      this.loadingActivities = false;
     });
   }
 }
