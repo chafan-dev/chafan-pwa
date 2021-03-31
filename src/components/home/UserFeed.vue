@@ -428,7 +428,8 @@ export default class UserFeed extends Vue {
       let before_activity_id: number | undefined = undefined;
       let latestActivityId = this.activities[0].id;
       const newActivities: IActivity[] = [];
-      for (let iter = 0; iter < 100; iter++) {
+      let fetching = true;
+      while (fetching) {
         const response = await api.getActivities(this.$store.state.main.token, {
           limit: this.loadingLimit,
           before_activity_id: before_activity_id,
@@ -439,6 +440,7 @@ export default class UserFeed extends Vue {
         }
         for (const activity of activities) {
           if (activity.id <= latestActivityId) {
+            fetching = false;
             break;
           }
           newActivities.push(activity);
