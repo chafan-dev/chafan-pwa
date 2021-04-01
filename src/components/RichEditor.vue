@@ -291,7 +291,7 @@ export default class RichEditor extends Vue {
     this.answerId = this.answerIdProp ? this.answerIdProp : null;
     this.articleId = this.articleIdProp ? this.articleIdProp : null;
     const workingDraft = readWorkingDraft(this.$store);
-    if (workingDraft) {
+    if (workingDraft && workingDraft.body) {
       this.visibility = workingDraft.visibility;
       this.articleTitle = workingDraft.title;
       this.initEditor(workingDraft.body, workingDraft.editor);
@@ -335,11 +335,11 @@ export default class RichEditor extends Vue {
     return 'wysiwyg';
   }
 
-  private getContent() {
+  private getContent(): string | null {
     if (this.topLevelEditor === 'tiptap') {
-      return JSON.stringify((this.$refs.tiptap as ChafanTiptap).getJSON());
+      return (this.$refs.tiptap as ChafanTiptap).content;
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getContent();
+      return (this.$refs.vditor as VditorComponent).content;
     }
     commitAddNotification(this.$store, {
       content: this.$t('编辑器错误').toString(),
@@ -348,7 +348,7 @@ export default class RichEditor extends Vue {
     return '';
   }
 
-  private getTextContent() {
+  private getTextContent(): string | null {
     if (this.topLevelEditor === 'tiptap') {
       return (this.$refs.tiptap as ChafanTiptap).getText();
     } else if (this.topLevelEditor === 'vditor') {
@@ -358,7 +358,7 @@ export default class RichEditor extends Vue {
       content: this.$t('编辑器错误').toString(),
       color: 'error',
     });
-    return '';
+    return null;
   }
 
   private readState(isPublished: boolean): IRichEditorState {

@@ -212,7 +212,7 @@ export interface IAnswerUpdate {
 
 export interface IRichEditorState {
   title: string | null; // for article
-  body: string;
+  body: string | null;
   rendered_body_text: string | null;
   visibility: 'anyone' | 'registered';
   is_draft: boolean;
@@ -510,7 +510,7 @@ export interface IActivity {
 export interface ICommentCreate {
   site_uuid?: string;
   body: string;
-  body_text: string;
+  body_text?: string;
   editor: editor_T;
   question_uuid?: string;
   submission_uuid?: string;

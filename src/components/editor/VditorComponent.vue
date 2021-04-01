@@ -133,14 +133,14 @@ export default class VditorComponent extends Vue {
     });
   }
 
-  public getText() {
+  public getText(): string | null {
     return (
       this.$el.querySelectorAll(`.vditor-${this.translateMode(this.getMode())}`)[0].textContent ||
-      ''
+      null
     );
   }
 
-  public getContent() {
+  get content() {
     return this.vditor!.getValue();
   }
 

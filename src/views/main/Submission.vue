@@ -529,7 +529,7 @@ export default class Submission extends Vue {
         const response = await apiSubmission.updateSubmission(this.token, this.submission.uuid, {
           title: this.newSubmissionTitle,
           description: descEditor.content,
-          description_text: descEditor.getTextContent(),
+          description_text: descEditor.getTextContent() || undefined,
           description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
         });

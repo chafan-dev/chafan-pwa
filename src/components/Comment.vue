@@ -318,7 +318,7 @@ export default class Comment extends Vue {
 
   private async submitNewReplyBody() {
     const editor = this.$refs.commentReplyEditor as SimpleEditor;
-    if (editor.content.length === 0) {
+    if (!editor.content) {
       commitAddNotification(this.$store, {
         content: this.$t("Comment can't be empty.").toString(),
         color: 'error',
@@ -330,8 +330,8 @@ export default class Comment extends Vue {
       const response = await apiComment.postComment(this.token, {
         site_uuid: this.siteId,
         parent_comment_uuid: this.comment.uuid,
-        body: editor.content,
-        body_text: editor.getTextContent(),
+        body: editor.content!,
+        body_text: editor.getTextContent() || undefined,
         editor: editor.editor,
       });
       const comment = response.data;
@@ -348,7 +348,7 @@ export default class Comment extends Vue {
 
   private async submitUpdateCommentBody() {
     const editor = this.$refs.commentUpdateEditor as SimpleEditor;
-    if (editor.content.length === 0) {
+    if (!editor.content) {
       commitAddNotification(this.$store, {
         content: this.$t("Comment can't be empty.").toString(),
         color: 'error',
@@ -358,15 +358,15 @@ export default class Comment extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.submitIntermediate = true;
       await apiComment.updateComment(this.token, this.comment.uuid, {
-        body: editor.content,
-        body_text: editor.getTextContent(),
+        body: editor.content!,
+        body_text: editor.getTextContent() || undefined,
       });
       commitAddNotification(this.$store, {
         content: this.$t('评论更新成功').toString(),
         color: 'success',
       });
       this.showUpdateEditor = false;
-      this.comment.body = editor.content;
+      this.comment.body = editor.content!;
       this.submitIntermediate = false;
     });
   }

@@ -100,7 +100,11 @@ export default class ArticleEditor extends Vue {
         this.handlingNewEdit = false;
         return;
       }
-      if (!payload.edit.rendered_body_text || payload.edit.rendered_body_text.length < 5) {
+      if (
+        !payload.edit.rendered_body_text ||
+        payload.edit.rendered_body_text.length < 5 ||
+        !payload.edit.body
+      ) {
         if (!payload.isAutosaved) {
           commitAddNotification(this.$store, {
             content: this.$t('Article body is too short: minimum length 5 characters.').toString(),

@@ -16,7 +16,7 @@
 import { Tiptap } from 'chafan-vue-editors';
 import { Component, Vue } from 'vue-property-decorator';
 import { apiSearch } from '@/api/search';
-import { IUserPreview } from '../../interfaces';
+import { IUserPreview } from '@/interfaces';
 import 'tippy.js/dist/tippy.css';
 
 @Component({
@@ -29,11 +29,23 @@ export default class ChafanTiptap extends Vue {
     return this.$refs.base as any;
   }
 
-  public getJSON() {
-    return this.base.getJSON();
+  get content(): string | null {
+    const json = this.base.getJSON();
+    if (json) {
+      return JSON.stringify(json);
+    }
+    return null;
   }
 
-  public getText() {
+  set content(value: string | null) {
+    if (!value) {
+      this.base.reset();
+      return;
+    }
+    this.base.loadJSON(JSON.parse(value));
+  }
+
+  public getText(): string | null {
     return this.base.getText();
   }
 

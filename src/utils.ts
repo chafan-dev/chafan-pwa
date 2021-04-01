@@ -112,7 +112,7 @@ export const newArticleHandler = async (
   isAutosaved: boolean,
   articleColumnId: string
 ) => {
-  if (!edit.title) {
+  if (!edit.title || !edit.body) {
     commitAddNotification(vueInstance.$store, {
       content: vueInstance.$t('Article must have title.').toString(),
       color: 'error',
