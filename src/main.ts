@@ -554,8 +554,10 @@ const i18n = new VueI18n({
       answer: 'Answer',
       'No users found': 'No users found',
       Feed: 'Feed',
+      问题反馈: 'Feedback',
     },
     zh: {
+      问题反馈: '问题反馈',
       Feed: '信息流',
       'No users found': '无结果',
       answer: '答案',
