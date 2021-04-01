@@ -1031,6 +1031,7 @@ export interface ISubmission {
   site: ISite;
   upvoted: boolean;
   view_times: number;
+  keywords?: string[];
 }
 
 export interface ISubmissionUpvotes {

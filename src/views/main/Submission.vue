@@ -284,6 +284,14 @@
             </v-expand-transition>
           </div>
         </ValidationObserver>
+        <template v-if="relatedSubmissions">
+          <v-divider class="my-2" />
+          <RotationList v-slot="{ item }" :items="relatedSubmissions" :title="$t('相关分享')">
+            <router-link :to="'/submissions/' + item.uuid" class="text-decoration-none">
+              {{ item.title }}
+            </router-link>
+          </RotationList>
+        </template>
       </v-col>
     </v-row>
   </v-container>
@@ -328,9 +336,12 @@ import { apiMe } from '@/api/me';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
 import * as _ from 'lodash';
+import { apiSearch } from '@/api/search';
+import RotationList from '@/components/base/RotationList.vue';
 
 @Component({
   components: {
+    RotationList,
     MoreIcon,
     Answer,
     SubmissionCard,
@@ -377,6 +388,7 @@ export default class Submission extends Vue {
   private comments: IComment[] = [];
   private commentSubmitIntermediate = false;
   private submissionSubscription: IUserSubmissionSubscription | null = null;
+  private relatedSubmissions: ISubmission[] | null = null;
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -413,6 +425,7 @@ export default class Submission extends Vue {
       this.upvotes = null;
       this.archives = [];
       this.comments = [];
+      this.relatedSubmissions = [];
       this.load();
     }
   }
@@ -495,6 +508,21 @@ export default class Submission extends Vue {
         }
         this.loadingProgress = 100;
         this.loading = false;
+
+        if (this.submission.keywords) {
+          this.relatedSubmissions = (
+            await apiSearch.searchSubmissions(
+              this.$store.state.main.token,
+              this.submission.keywords.join(' ')
+            )
+          ).data;
+          const i = this.relatedSubmissions?.findIndex((submission) => {
+            return submission.uuid === this.submission!.uuid;
+          });
+          if (i >= 0) {
+            this.relatedSubmissions.splice(i, 1);
+          }
+        }
       }
     });
   }

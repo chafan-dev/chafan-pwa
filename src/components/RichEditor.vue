@@ -15,7 +15,7 @@
       ref="tiptap"
       :class="{ 'mt-2': focusMode }"
       :onEditorChange="onEditorChange"
-      class="mb-2 mx-2"
+      class="mb-2"
     />
 
     <VditorComponent
