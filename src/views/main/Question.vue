@@ -180,14 +180,18 @@
               class="ma-1"
               @click="subscribe"
             />
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <div v-bind="attrs" v-on="on" align-self="center" class="d-flex">
-                  <EditIcon v-show="editable" @click="showQuestionEditor = true" />
-                </div>
-              </template>
-              <span>{{ $t('编辑问题') }}</span>
-            </v-tooltip>
+            <v-btn
+              class="slim-btn ma-1"
+              depressed
+              small
+              :color="showUpdateDetailsButton ? 'primary' : undefined"
+              @click="showQuestionEditor = true"
+              v-show="editable"
+            >
+              <EditIcon />
+              <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
+              <span v-else>{{ $t('编辑问题') }}</span>
+            </v-btn>
           </v-col>
 
           <v-col
@@ -519,6 +523,7 @@ export default class Question extends Vue {
   private newQuestionSite: ISite | null = null;
   private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
+  private showUpdateDetailsButton = false;
 
   get userProfile() {
     return readUserProfile(this.$store);
@@ -590,6 +595,7 @@ export default class Question extends Vue {
       this.archives = [];
       this.siteProfiles = [];
       this.currentUserAnswerUUID = null;
+      this.showUpdateDetailsButton = false;
       this.loadQuestion();
     }
   }
@@ -720,7 +726,7 @@ export default class Question extends Vue {
   private async mounted() {
     try {
       if (localStorage.getItem('new-question')) {
-        this.showQuestionEditor = true;
+        this.showUpdateDetailsButton = true;
         localStorage.removeItem('new-question');
       }
     } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
@@ -791,7 +797,7 @@ export default class Question extends Vue {
         const response = await apiQuestion.updateQuestion(this.token, this.question.uuid, {
           title: this.newQuestionTitle,
           description: descEditor.content,
-          description_text: descEditor.getTextContent(),
+          description_text: descEditor.getTextContent() || undefined,
           description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
         });
