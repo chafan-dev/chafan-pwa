@@ -226,7 +226,7 @@ import { apiComment } from '@/api/comment';
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
 import { Route, RouteRecord } from 'vue-router';
-import * as _ from 'lodash';
+import { isEqual } from '@/common';
 
 @Component({
   components: {
@@ -288,7 +288,7 @@ export default class Article extends Vue {
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'article');
-    if (matched && !_.isEqual(to.params, from.params)) {
+    if (matched && !isEqual(to.params, from.params)) {
       this.showComments = false;
       this.loading = true;
       this.load();

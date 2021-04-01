@@ -10,6 +10,8 @@ export const YES_FLAG = 'user-agreement-yes';
 export const FAB_FLAG = 'webfront-fab-clicked';
 export const EXPLORE_SITES = 'closed-explore-sites-in-home';
 
+export { isEqual } from 'lodash';
+
 export const getDefaultNarrowFeedUI = () => {
   try {
     const value = localStorage.getItem(NARROW_FEED_UI_KEY);

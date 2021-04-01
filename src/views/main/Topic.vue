@@ -45,7 +45,7 @@ import TopicCard from '@/components/TopicCard.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
-import * as _ from 'lodash';
+import { isEqual } from '@/common';
 
 @Component({
   components: { QuestionLink, TopicCard, InfoIcon },
@@ -63,7 +63,7 @@ export default class Topic extends Vue {
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'topic');
-    if (matched && !_.isEqual(to.params, from.params)) {
+    if (matched && !isEqual(to.params, from.params)) {
       this.loading = true;
       this.loadingProgress = 0;
       this.questions = [];

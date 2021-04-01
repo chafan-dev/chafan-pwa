@@ -131,7 +131,7 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
-import * as _ from 'lodash';
+import { isEqual } from '@/common';
 
 @Component({
   components: {
@@ -204,7 +204,7 @@ export default class Site extends Vue {
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'site');
-    if (matched && !_.isEqual(to.params, from.params)) {
+    if (matched && !isEqual(to.params, from.params)) {
       this.loading = true;
       this.site = null;
       this.siteProfile = null;
