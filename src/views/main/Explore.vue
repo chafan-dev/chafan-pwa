@@ -17,7 +17,7 @@
               {{ $t('关注更多用户') }}
             </v-tab>
 
-            <v-tab-item value="questions">
+            <v-tab-item value="questions" eager>
               <div v-if="interestingQuestions !== null" class="pb-2">
                 <QuestionPreview
                   v-for="questionPreview in interestingQuestions"
@@ -35,10 +35,10 @@
               <v-skeleton-loader v-else type="paragraph" />
               <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
-            <v-tab-item value="sites">
+            <v-tab-item value="sites" eager>
               <ExploreSitesGrid />
             </v-tab-item>
-            <v-tab-item value="users">
+            <v-tab-item value="users" eager>
               <div v-if="interestingUsers !== null">
                 <UserGrid :users="interestingUsers" />
               </div>
