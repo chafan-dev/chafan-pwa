@@ -28,10 +28,10 @@
               <RefreshIcon @click="refreshFeed" v-if="currentTabItem === 'feed'" />
             </div>
 
-            <v-tab-item value="feed">
+            <v-tab-item value="feed" eager>
               <UserFeed ref="userFeed" :user-profile="userProfile" />
             </v-tab-item>
-            <v-tab-item value="submissions">
+            <v-tab-item value="submissions" eager>
               <UserSubmissionsRankedFeed />
             </v-tab-item>
           </v-tabs>
