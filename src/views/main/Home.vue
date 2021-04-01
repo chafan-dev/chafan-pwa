@@ -21,7 +21,7 @@
             </v-tab>
             <v-tab :href="'#submissions'">
               <SharingIcon class="mr-1" />
-              {{ $t('Sharing') }}
+              {{ $t('Sharings') }}
             </v-tab>
             <v-spacer />
             <div class="mr-2">
