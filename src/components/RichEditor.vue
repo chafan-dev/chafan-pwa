@@ -313,7 +313,7 @@ export default class RichEditor extends Vue {
     const userProfile = readUserProfile(this.$store);
     if (userProfile!.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
       topLevelEditorItems.push({
-        text: this.$t('tiptap (beta ⚠️)').toString(),
+        text: this.$t('tiptap').toString(),
         value: 'tiptap',
       });
     }
