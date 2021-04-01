@@ -2,6 +2,7 @@ import axios from 'axios';
 import { apiUrl } from '@/env';
 import {
   IAnswerPreview,
+  IArticlePreview,
   IQuestionPreview,
   ISite,
   ISubmission,
@@ -56,6 +57,14 @@ export const apiSearch = {
     params.append('q', fragment);
     return axios.get<IAnswerPreview[]>(
       `${apiUrl}/api/v1/search/answers/`,
+      authHeadersWithParams(token, params)
+    );
+  },
+  async searchArticles(token: string, fragment: string) {
+    const params = new URLSearchParams();
+    params.append('q', fragment);
+    return axios.get<IArticlePreview[]>(
+      `${apiUrl}/api/v1/search/articles/`,
       authHeadersWithParams(token, params)
     );
   },

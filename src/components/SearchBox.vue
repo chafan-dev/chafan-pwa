@@ -113,27 +113,30 @@ export default class SearchBox extends Vue {
       });
     });
 
-    const r = await apiSearch.searchSubmissions(this.token, v);
-    if (r.data) {
-      r.data.forEach((submission) => {
-        items.push({
-          id: submission.uuid,
-          type: 'submission',
-          data: submission,
-        });
+    (await apiSearch.searchSubmissions(this.token, v)).data.forEach((submission) => {
+      items.push({
+        id: submission.uuid,
+        type: 'submission',
+        data: submission,
       });
-    }
+    });
 
-    const r2 = await apiSearch.searchAnswers(this.token, v);
-    if (r2.data) {
-      r2.data.forEach((answer) => {
-        items.push({
-          id: answer.uuid,
-          type: 'answer',
-          data: answer,
-        });
+    (await apiSearch.searchAnswers(this.token, v)).data.forEach((answer) => {
+      items.push({
+        id: answer.uuid,
+        type: 'answer',
+        data: answer,
       });
-    }
+    });
+
+    (await apiSearch.searchArticles(this.token, v)).data.forEach((article) => {
+      items.push({
+        id: article.uuid,
+        type: 'article',
+        data: article,
+      });
+    });
+
     this.loading = false;
     this.items = items;
     this.menuY = this.$el.getBoundingClientRect().bottom;
@@ -150,6 +153,9 @@ export default class SearchBox extends Vue {
       return name;
     }
     if (item.type === 'question') {
+      return item.data.title;
+    }
+    if (item.type === 'article') {
       return item.data.title;
     }
     if (item.type === 'site') {
@@ -178,6 +184,9 @@ export default class SearchBox extends Vue {
     }
     if (item.type === 'question') {
       return `/questions/${item.data.uuid}`;
+    }
+    if (item.type === 'article') {
+      return `/articles/${item.data.uuid}`;
     }
     if (item.type === 'submission') {
       return `/submissions/${item.data.uuid}`;
