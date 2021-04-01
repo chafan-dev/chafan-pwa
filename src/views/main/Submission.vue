@@ -335,7 +335,7 @@ import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
-import * as _ from 'lodash';
+import { isEqual } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
 
@@ -413,7 +413,7 @@ export default class Submission extends Vue {
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'submission');
-    if (matched && !_.isEqual(to.params, from.params)) {
+    if (matched && !isEqual(to.params, from.params)) {
       this.loading = true;
       this.loadingProgress = 0;
       this.showHelp = false;

@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import { Tiptap } from 'chafan-vue-editors';
 import { Component, Vue } from 'vue-property-decorator';
 import { apiSearch } from '@/api/search';
 import { IUserPreview } from '@/interfaces';
 import 'tippy.js/dist/tippy.css';
+import { Tiptap } from 'chafan-vue-editors';
 
 @Component({
   components: {

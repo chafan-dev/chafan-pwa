@@ -44,7 +44,7 @@ import UserLink from '@/components/UserLink.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
-import * as _ from 'lodash';
+import { isEqual } from '@/common';
 
 @Component({
   components: { UserLink, ChannelCard, ChannelIcon, ChatWindow },
@@ -68,7 +68,7 @@ export default class Channel extends Vue {
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'channel');
-    if (matched && !_.isEqual(to.params, from.params)) {
+    if (matched && !isEqual(to.params, from.params)) {
       this.loading = true;
       this.load();
     }
