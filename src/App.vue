@@ -54,6 +54,11 @@ import {
 import { getDefaultNarrowFeedUI } from '@/common';
 
 @Component({
+  data: function () {
+    return {
+      loading: true,
+    };
+  },
   components: {
     NotificationsManager,
     LoginCard,
@@ -63,7 +68,6 @@ export default class App extends Vue {
   private registration: ServiceWorkerRegistration | null = null;
   private updateExists = false;
   private refreshing = false;
-  private loading = true;
 
   get loggedIn() {
     return readIsLoggedIn(this.$store);
@@ -101,7 +105,7 @@ export default class App extends Vue {
       });
     }
     await dispatchCheckLoggedIn(this.$store);
-    this.loading = false;
+    this.$data.loading = false;
     if (prodStateJsonURL) {
       axios.get(prodStateJsonURL).then((response) => {
         commitSetTopBanner(this.$store, response.data['top-banner']);

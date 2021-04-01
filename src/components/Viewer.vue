@@ -24,13 +24,16 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 
 @Component({
   components: { ChafanTiptap, LightboxGroup },
+  data: function () {
+    return {
+      contentElem: null,
+    };
+  },
 })
 export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
   @Prop() public readonly bodyFormat: body_format_T | undefined;
   @Prop() public readonly editor!: editor_T;
-
-  private contentElem: HTMLElement | null = null;
 
   get sanitizedBody() {
     return DOMPurify.sanitize(this.body);
@@ -40,14 +43,14 @@ export default class Viewer extends Vue {
     if (this.editor !== 'tiptap') {
       const viewer = this.$refs.viewer as HTMLElement;
       if (this.bodyFormat === 'html') {
-        this.contentElem = viewer;
+        this.$data.contentElem = viewer;
         postProcessViewerDOM(this.$store.state.main.token, viewer);
       } else if (!this.bodyFormat || this.bodyFormat === 'markdown') {
         Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
           mode: 'light',
           cdn: vditorCDN,
           after: () => {
-            this.contentElem = viewer;
+            this.$data.contentElem = viewer;
             postProcessViewerDOM(this.$store.state.main.token, viewer);
           },
         });
