@@ -55,7 +55,7 @@
     <span v-if="question.view_times" class="text-caption grey--text">
       {{ $t('问题已经被浏览n次', { times: question.view_times }) }}
     </span>
-    <template v-if="relatedQuestions !== null">
+    <template v-if="relatedQuestions">
       <v-divider class="my-2" />
       <RotationList v-slot="{ item }" :items="relatedQuestions" :title="$t('相关问题')">
         <QuestionLink :question-preview="item" />
