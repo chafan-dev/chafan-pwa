@@ -239,10 +239,10 @@ export default class Site extends Vue {
           );
         }
       }
-      if (this.siteProfile !== null || this.site.public_writable_question) {
+      if (this.siteProfile !== null || this.site!.public_writable_question) {
         this.showQuestionEditor = true;
       }
-      if (this.siteProfile !== null || this.site.public_writable_submission) {
+      if (this.siteProfile !== null || this.site!.public_writable_submission) {
         this.showSubmissionEditor = true;
       }
       this.loading = false;

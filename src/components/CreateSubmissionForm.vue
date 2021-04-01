@@ -25,6 +25,7 @@
           :disabled="postNewSubmissionIntermediate"
           color="primary"
           small
+          depressed
           @click="handleSubmit(postNewSubmission)"
         >
           {{ $t('提交') }}

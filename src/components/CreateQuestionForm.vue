@@ -20,7 +20,7 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn :disabled="intermediate" color="primary" small @click="postNewQuestion">
+      <v-btn :disabled="intermediate" color="primary" small depressed @click="postNewQuestion">
         {{ $t('提交新问题') }}
         <v-progress-circular v-if="intermediate" intermediate size="20" />
       </v-btn>

@@ -568,8 +568,10 @@ const i18n = new VueI18n({
       '源链接（选填）': 'Source link (optional)',
       相关分享: 'Related Sharings',
       换一批: 'Rotate',
+      加入: 'Join',
     },
     zh: {
+      加入: '加入',
       相关分享: '相关分享',
       换一批: '换一批',
       '源链接（选填）': '源链接（选填）',
