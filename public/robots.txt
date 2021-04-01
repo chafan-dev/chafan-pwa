@@ -11,6 +11,7 @@ Allow: /articles/
 Allow: /submissions/
 Allow: /sites/
 Allow: /users/
+Allow: /topics/
 
 User-agent: *
 Disallow: /
