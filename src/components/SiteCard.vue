@@ -64,7 +64,7 @@
       </v-menu>
     </div>
 
-    <v-tabs v-if="showSubmissionEditor || showSubmissionEditor">
+    <v-tabs v-if="showQuestionEditor || showSubmissionEditor">
       <v-tab v-if="showQuestionEditor">{{ $t('提问') }}</v-tab>
       <v-tab v-if="showSubmissionEditor">{{ $t('分享') }}</v-tab>
       <v-tabs-slider />
