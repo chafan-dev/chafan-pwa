@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-app id="root-app">
+    <v-app>
       <v-banner
         v-if="topBanner && topBanner.enabled"
         :color="topBanner.color"
@@ -28,12 +28,6 @@
       <v-dialog v-model="showLoginPrompt" max-width="600">
         <LoginCard :showTopBar="false" class="py-10" />
       </v-dialog>
-
-      <v-fab-transition>
-        <v-btn bottom fab fixed right @click="$vuetify.goTo('#root-app')">
-          <v-icon>mdi-chevron-up</v-icon>
-        </v-btn>
-      </v-fab-transition>
     </v-app>
   </div>
 </template>

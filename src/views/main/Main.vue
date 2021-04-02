@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="home-app">
     <v-navigation-drawer
       v-if="userProfile"
       v-model="showDrawer"
@@ -328,28 +328,32 @@
     <v-main>
       <router-view></router-view>
     </v-main>
+
+    <v-btn bottom fab fixed right @click="$vuetify.goTo('#home-app')">
+      <v-icon>mdi-chevron-up</v-icon>
+    </v-btn>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 import { appName, wsUrl } from '@/env';
 import {
   readDashboardMiniDrawer,
-  readHasModeratedSites,
   readDashboardShowDrawer,
-  readUserProfile,
+  readHasModeratedSites,
   readModeratedSites,
   readUserMode,
+  readUserProfile,
 } from '@/store/main/getters';
 import {
-  commitSetDashboardShowDrawer,
   commitSetDashboardMiniDrawer,
-  commitSetUserMode,
+  commitSetDashboardShowDrawer,
   commitSetShowLoginPrompt,
+  commitSetUserMode,
 } from '@/store/main/mutations';
-import { dispatchUserLogOut } from '@/store/main/actions';
+import { dispatchCaptureApiError, dispatchUserLogOut } from '@/store/main/actions';
 
 import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import MenuIcon from '@/components/icons/MenuIcon.vue';
@@ -369,7 +373,6 @@ import SearchBox from '@/components/SearchBox.vue';
 import { INotification, IUserProfile, IWsUserMsg } from '@/interfaces';
 import { api } from '@/api';
 import { api2 } from '@/api2';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
