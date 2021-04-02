@@ -9,25 +9,49 @@
         </div>
       </v-expand-transition>
 
+      <v-dialog v-model="usersDialog" max-width="600">
+        <v-card class="pt-6">
+          <v-card-text>
+            <v-lazy>
+              <UserGrid :users="usersInDialog" />
+            </v-lazy>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn primary small depressed @click="usersDialog = false">{{ $t('隐藏') }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <BaseCard class="ma-4" v-for="activity in combinedActivities.items" :key="activity.id">
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
           <!-- Column for subject and verb -->
           <div v-if="activity.verb === 'follow_user'">
-            <ActivitySubject :activity="activity" />
+            <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
             {{ $t('follows') }}
           </div>
+          <div v-else-if="activity.verb === 'upvote_answer'">
+            <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
+            {{ $t('upvotes answer') }}
+          </div>
+          <div v-else-if="activity.verb === 'upvote_question'">
+            <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
+            {{ $t('found a good question') }}
+          </div>
+          <div v-else-if="activity.verb === 'upvote_submission'">
+            <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
+            {{ $t('upvoted submission') }}
+          </div>
+          <div v-else-if="activity.verb === 'upvote_article'">
+            <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
+            {{ $t('upvoted article') }}
+          </div>
 
-          <div v-if="activity.verb === 'follow_article_column'">
+          <div v-else-if="activity.verb === 'follow_article_column'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('followed column') }}
           </div>
-
-          <div v-else-if="activity.verb === 'upvote_answer'">
-            <ActivitySubject :activity="activity" />
-            {{ $t('upvotes answer') }}
-          </div>
-
           <div v-else-if="activity.verb === 'comment_question'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('commented question') }}
@@ -44,27 +68,10 @@
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('commented answer') }}
           </div>
-
           <div v-else-if="activity.verb === 'reply_comment'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('replied comment') }}
           </div>
-
-          <div v-else-if="activity.verb === 'upvote_question'">
-            <ActivitySubject :activity="activity" />
-            {{ $t('found a good question') }}
-          </div>
-
-          <div v-else-if="activity.verb === 'upvote_submission'">
-            <ActivitySubject :activity="activity" />
-            {{ $t('upvoted submission') }}
-          </div>
-
-          <div v-else-if="activity.verb === 'upvote_article'">
-            <ActivitySubject :activity="activity" />
-            {{ $t('upvoted article') }}
-          </div>
-
           <div v-else-if="activity.verb === 'create_article'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('created article') }}
@@ -88,7 +95,25 @@
         <!-- Row for content preview if any -->
         <div>
           <div v-if="activity.verb === 'follow_user'">
+            <template v-if="activity.event.content.users">
+              <UserCard
+                :compactMode="true"
+                :embedded="true"
+                :userPreview="activity.event.content.users[0]"
+              />
+              <a
+                class="text-decoration-none"
+                @click="showUsersDialog(activity.event.content.users)"
+              >
+                {{
+                  $t('等x人', {
+                    n: activity.event.content.users.length,
+                  })
+                }}
+              </a>
+            </template>
             <UserCard
+              v-else
               :compactMode="true"
               :embedded="true"
               :userPreview="activity.event.content.user"
@@ -182,8 +207,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { api } from '@/api';
-import { CombinedActivities } from '@/home';
-import { IActivity, IUserProfile } from '@/interfaces';
+import { CombinedActivities } from '@/CombinedActivities';
+import { IActivity, IUserPreview, IUserProfile } from '@/interfaces';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
 import UserWelcome from '@/components/home/UserWelcome.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
@@ -250,6 +275,8 @@ export default class UserFeed extends Vue {
   private noMoreNewActivities = false;
   private preloadMoreActivitiesIntermediate = false;
   private showExploreSites = false;
+  private usersDialog = false;
+  private usersInDialog: IUserPreview[] = [];
 
   private async loadActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -342,6 +369,11 @@ export default class UserFeed extends Vue {
       }
       this.loadingActivities = false;
     });
+  }
+
+  private showUsersDialog(users: IUserPreview[]) {
+    this.usersInDialog = users;
+    this.usersDialog = true;
   }
 }
 </script>

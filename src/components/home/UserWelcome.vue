@@ -12,7 +12,7 @@
 
         <template v-slot:close>
           <v-btn icon @click="$emit('on-close-explore-sites')">
-            <close-icon />
+            <CloseIcon />
           </v-btn>
         </template>
       </v-alert>

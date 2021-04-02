@@ -76,7 +76,6 @@ import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import HomeSideCard from '@/components/HomeSideCard.vue';
 import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
 import { readNarrowUI, readUserProfile } from '@/store/main/getters';
 import { dispatchAddFlag } from '@/store/main/actions';
@@ -107,7 +106,6 @@ import RefreshIcon from '@/components/icons/RefreshIcon.vue';
     ExploreIcon,
     NewContentActionBar,
     FeedIcon,
-    CloseIcon,
   },
 })
 export default class Home extends Vue {

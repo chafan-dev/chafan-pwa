@@ -76,6 +76,12 @@ export class CombinedActivities {
             }
             guardEvent.subjects.push(newEvent.subject);
             return;
+          } else if (newEvent.subject.uuid === guardEvent.subject.uuid) {
+            if (!guardEvent.users) {
+              guardEvent.users = [guardEvent.user];
+            }
+            guardEvent.users.push(newEvent.user);
+            return;
           }
         }
       }

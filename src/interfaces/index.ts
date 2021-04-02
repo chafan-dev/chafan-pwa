@@ -415,6 +415,7 @@ export interface FollowUser {
   subject: IUserPreview;
   user: IUserPreview;
   subjects?: IUserPreview[];
+  users?: IUserPreview[];
 }
 
 export interface SystemBroadcast {

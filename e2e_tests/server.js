@@ -311,6 +311,44 @@ const example_activity_upvote_question1 = {
   },
 };
 
+let counter = 9000;
+const example_activities_follow_random_users_1 = [];
+const example_activities_upvote_questions_users_1 = [];
+for (const user of randomUserPreviews1) {
+  counter += 1;
+  example_activities_follow_random_users_1.push({
+    id: counter,
+    site_uuid: null,
+    created_at: '2021-02-06T20:31:09.965902+00:00',
+    verb: 'follow_user',
+    content: null,
+    event: {
+      created_at: '2021-02-06T20:31:09.965902+00:00',
+      content: {
+        verb: 'follow_user',
+        subject: example_user1_preview,
+        user: user,
+      },
+    },
+  });
+  counter += 1;
+  example_activities_upvote_questions_users_1.push({
+    id: counter,
+    site_uuid: null,
+    created_at: '2021-02-06T20:31:09.965902+00:00',
+    verb: 'upvote_question',
+    content: null,
+    event: {
+      created_at: '2021-02-06T20:31:09.965902+00:00',
+      content: {
+        verb: 'upvote_question',
+        subject: user,
+        question: example_question_preview,
+      },
+    },
+  });
+}
+
 const example_activity_upvote_question2 = {
   id: 1395,
   site_uuid: null,
@@ -782,15 +820,19 @@ app.post('/api/v1/answers/3b4TBWxFUnBe4aRrKq4X/views/', (req, res) => {
 
 app.get('/api/v1/activities/', (req, res) => {
   if (req.query.before_activity_id === undefined) {
-    res.json([
-      example_activity,
-      example_activity_upvote_question1,
-      example_activity_upvote_question2,
-      example_comment_submission_activity,
-      exmaple_create_submission_activity,
-    ]);
+    res.json(
+      [
+        example_activity,
+        example_activity_upvote_question1,
+        example_activity_upvote_question2,
+        example_comment_submission_activity,
+        exmaple_create_submission_activity,
+      ].concat(example_activities_upvote_questions_users_1.slice(0, 4))
+    );
   } else {
-    res.json(example_activity_upvote_random_questions);
+    res.json(
+      example_activities_follow_random_users_1.concat(example_activity_upvote_random_questions)
+    );
   }
 });
 
