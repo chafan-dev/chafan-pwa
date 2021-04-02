@@ -7,6 +7,7 @@
     :search-users="searchUsers"
     :user-href="userHref"
     :user-label="userLabel"
+    :upload="upload"
   >
     {{ user.full_name }} (@{{ user.handle }})
   </Tiptap>
@@ -21,6 +22,10 @@ import 'tippy.js/dist/tippy.css';
 import 'highlight.js/styles/github.css';
 
 import { Tiptap } from 'chafan-vue-editors';
+import { resizeImage } from '@/imagelib';
+import piexif from 'piexifjs';
+import { api2 } from '@/api2';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: {
@@ -78,6 +83,24 @@ export default class ChafanTiptap extends Vue {
 
   private userLabel(user: IUserPreview) {
     return `${user.full_name} (${user.handle})`;
+  }
+
+  async upload(file: Blob) {
+    const resized = await resizeImage({
+      maxSize: 500, // px
+      file,
+    });
+
+    const formData = new FormData();
+    // Upload candidate image and update URL
+    try {
+      formData.append('file', piexif.remove(resized.blob));
+      // Remove EXIF if it is jpeg
+    } catch {
+      formData.append('file', resized.blob);
+    }
+    const response = await api2.uploadFile(readToken(this.$store), formData);
+    return response.data.msg;
   }
 }
 </script>
