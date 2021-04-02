@@ -418,7 +418,7 @@ const i18n = new VueI18n({
       'commented question': 'commented question',
       'commented article': 'commented article',
       'commented answer': 'commented answer',
-      'replyed comment': 'replyed comment',
+      'replied comment': 'replied comment',
       导出: 'Export',
       'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
         'Chafan supports data and content ownership, you can export your data and content at any time. Current automated export is not implemented, please contact takeout@cha.fan and we will send your data snapshot in a week',
@@ -721,7 +721,7 @@ const i18n = new VueI18n({
       'commented question': '评论了问题',
       'commented article': '评论了文章',
       'commented answer': '评论了回答',
-      'replyed comment': '回复了评论',
+      'replied comment': '回复了评论',
       转发给我的关注者: '转发给我的关注者',
       已经转发过了: '已经转发过了',
       发送邮件提醒未读通知: '发送邮件提醒未读通知',

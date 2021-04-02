@@ -2,18 +2,6 @@
   <div>
     <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
 
-    <v-dialog v-model="showSubjectDialog" max-width="600">
-      <v-card class="pt-6">
-        <v-card-text>
-          <UserGrid :users="subjectsInDialog" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="showSubjectDialog = false">{{ $t('隐藏') }}</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <div>
       <v-expand-transition>
         <div v-show="loadingActivities" class="text-center">
@@ -21,50 +9,25 @@
         </div>
       </v-expand-transition>
 
-      <BaseCard class="ma-4" v-for="activity in activities" :key="activity.id">
+      <BaseCard class="ma-4" v-for="activity in combinedActivities.items" :key="activity.id">
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
           <!-- Column for subject and verb -->
           <div v-if="activity.verb === 'follow_user'">
-            <UserLink :userPreview="activity.event.content.subject" />
+            <ActivitySubject :activity="activity" />
             {{ $t('follows') }}
           </div>
-          <div v-if="activity.verb === 'follow_user_combined'">
-            <UserLink :userPreview="activity.event.content.subjects[0]" />
-            <a
-              class="text-decoration-none grey--text text--darken-2"
-              @click="showSubjects(activity.event.content.subjects)"
-            >
-              {{
-                $t('等x人', {
-                  n: activity.event.content.subjects.length,
-                })
-              }}
-            </a>
-            {{ $t('follows') }}
-          </div>
+
           <div v-if="activity.verb === 'follow_article_column'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('followed column') }}
           </div>
+
           <div v-else-if="activity.verb === 'upvote_answer'">
-            <UserLink :userPreview="activity.event.content.subject" />
+            <ActivitySubject :activity="activity" />
             {{ $t('upvotes answer') }}
           </div>
-          <div v-else-if="activity.verb === 'upvote_answer_combined'">
-            <UserLink :userPreview="activity.event.content.subjects[0]" />
-            <a
-              class="text-decoration-none grey--text text--darken-2"
-              @click="showSubjects(activity.event.content.subjects)"
-            >
-              {{
-                $t('等x人', {
-                  n: activity.event.content.subjects.length,
-                })
-              }}
-            </a>
-            {{ $t('upvoted answer') }}
-          </div>
+
           <div v-else-if="activity.verb === 'comment_question'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('commented question') }}
@@ -81,64 +44,27 @@
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('commented answer') }}
           </div>
+
           <div v-else-if="activity.verb === 'reply_comment'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('replyed comment') }}
+            {{ $t('replied comment') }}
           </div>
+
           <div v-else-if="activity.verb === 'upvote_question'">
-            <UserLink :userPreview="activity.event.content.subject" />
+            <ActivitySubject :activity="activity" />
             {{ $t('found a good question') }}
           </div>
+
           <div v-else-if="activity.verb === 'upvote_submission'">
-            <UserLink :userPreview="activity.event.content.subject" />
+            <ActivitySubject :activity="activity" />
             {{ $t('upvoted submission') }}
           </div>
-          <div v-else-if="activity.verb === 'upvote_question_combined'">
-            <UserLink :userPreview="activity.event.content.subjects[0]" />
-            <a
-              class="text-decoration-none grey--text text--darken-2"
-              @click="showSubjects(activity.event.content.subjects)"
-            >
-              {{
-                $t('等x人', {
-                  n: activity.event.content.subjects.length,
-                })
-              }}
-            </a>
-            {{ $t('found a good question') }}
-          </div>
-          <div v-else-if="activity.verb === 'upvote_submission_combined'">
-            <UserLink :userPreview="activity.event.content.subjects[0]" />
-            <a
-              class="text-decoration-none grey--text text--darken-2"
-              @click="showSubjects(activity.event.content.subjects)"
-            >
-              {{
-                $t('等x人', {
-                  n: activity.event.content.subjects.length,
-                })
-              }}
-            </a>
-            {{ $t('upvoted submission') }}
-          </div>
+
           <div v-else-if="activity.verb === 'upvote_article'">
-            <UserLink :userPreview="activity.event.content.subject" />
+            <ActivitySubject :activity="activity" />
             {{ $t('upvoted article') }}
           </div>
-          <div v-else-if="activity.verb === 'upvote_article_combined'">
-            <UserLink :userPreview="activity.event.content.subjects[0]" />
-            <a
-              class="text-decoration-none grey--text text--darken-2"
-              @click="showSubjects(activity.event.content.subjects)"
-            >
-              {{
-                $t('等x人', {
-                  n: activity.event.content.subjects.length,
-                })
-              }}
-            </a>
-            {{ $t('upvoted article') }}
-          </div>
+
           <div v-else-if="activity.verb === 'create_article'">
             <UserLink :userPreview="activity.event.content.subject" />
             {{ $t('created article') }}
@@ -161,7 +87,7 @@
         </v-row>
         <!-- Row for content preview if any -->
         <div>
-          <div v-if="activity.verb === 'follow_user' || activity.verb === 'follow_user_combined'">
+          <div v-if="activity.verb === 'follow_user'">
             <UserCard
               :compactMode="true"
               :embedded="true"
@@ -175,28 +101,17 @@
               :embedded="true"
             />
           </div>
-          <div
-            v-if="activity.verb === 'upvote_answer' || activity.verb === 'upvote_answer_combined'"
-          >
+          <div v-if="activity.verb === 'upvote_answer'">
             <Answer
               :answerPreview="activity.event.content.answer"
               :embedded="true"
               :showAuthor="true"
             />
           </div>
-          <div
-            v-if="
-              activity.verb === 'upvote_question' || activity.verb === 'upvote_question_combined'
-            "
-          >
+          <div v-if="activity.verb === 'upvote_question'">
             <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
           </div>
-          <div
-            v-else-if="
-              activity.verb === 'upvote_submission' ||
-              activity.verb === 'upvote_submission_combined'
-            "
-          >
+          <div v-else-if="activity.verb === 'upvote_submission'">
             <SubmissionCard :embedded="true" :submission="activity.event.content.submission" />
           </div>
           <div v-else-if="activity.verb === 'comment_question'">
@@ -229,11 +144,7 @@
               :parentComment="activity.event.content.parent_comment"
             />
           </div>
-          <div
-            v-else-if="
-              activity.verb === 'upvote_article' || activity.verb === 'upvote_article_combined'
-            "
-          >
+          <div v-else-if="activity.verb === 'upvote_article'">
             <ArticlePreview :articlePreview="activity.event.content.article" :embedded="true" />
           </div>
           <div v-else-if="activity.verb === 'create_article'">
@@ -271,8 +182,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { api } from '@/api';
-import { combinedActivities } from '@/home';
-import { IActivity, IUserPreview, IUserProfile } from '@/interfaces';
+import { CombinedActivities } from '@/home';
+import { IActivity, IUserProfile } from '@/interfaces';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
 import UserWelcome from '@/components/home/UserWelcome.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
@@ -298,9 +209,11 @@ import FeedIcon from '@/components/icons/FeedIcon.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { EXPLORE_SITES } from '@/common';
+import ActivitySubject from '@/components/ActivitySubject.vue';
 
 @Component({
   components: {
+    ActivitySubject,
     UserFeed,
     UserLogoutWelcome,
     UserWelcome,
@@ -331,13 +244,11 @@ import { EXPLORE_SITES } from '@/common';
 export default class UserFeed extends Vue {
   @Prop() public readonly userProfile!: IUserProfile;
 
-  private activities: IActivity[] = [];
+  private combinedActivities: CombinedActivities = new CombinedActivities();
   private loadingActivities = true;
   private readonly loadingLimit = 12;
   private noMoreNewActivities = false;
   private preloadMoreActivitiesIntermediate = false;
-  private showSubjectDialog = false;
-  private subjectsInDialog: IUserPreview[] = [];
   private showExploreSites = false;
 
   private async loadActivities() {
@@ -345,10 +256,12 @@ export default class UserFeed extends Vue {
       const response = await api.getActivities(this.$store.state.main.token, {
         limit: this.loadingLimit,
       });
-      this.activities = combinedActivities(response.data);
+      for (const activity of response.data) {
+        this.combinedActivities.add(activity, 'tail');
+      }
       if (this.userProfile!.flag_list.includes(EXPLORE_SITES)) {
         this.showExploreSites = false;
-      } else if (this.activities.length === 0) {
+      } else if (this.combinedActivities.items.length === 0) {
         this.showExploreSites = true;
       }
       this.loadingActivities = false;
@@ -369,11 +282,6 @@ export default class UserFeed extends Vue {
     await dispatchAddFlag(this.$store, EXPLORE_SITES);
   }
 
-  private showSubjects(subjects: IUserPreview[]) {
-    this.showSubjectDialog = true;
-    this.subjectsInDialog = subjects;
-  }
-
   private async preloadMoreActivities() {
     const bottomOfWindow =
       Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
@@ -382,17 +290,20 @@ export default class UserFeed extends Vue {
     if (!bottomOfWindow || this.noMoreNewActivities) {
       return;
     }
-    if (this.activities.length !== 0) {
+    const minActivityId = this.combinedActivities.minActivityId;
+    if (minActivityId !== null) {
       this.preloadMoreActivitiesIntermediate = true;
       await dispatchCaptureApiError(this.$store, async () => {
         const response = await api.getActivities(this.$store.state.main.token, {
           limit: this.loadingLimit,
-          before_activity_id: this.activities[this.activities.length - 1].id,
+          before_activity_id: minActivityId,
         });
         if (response.data.length === 0) {
           this.noMoreNewActivities = true;
         } else {
-          this.activities.push(...combinedActivities(response.data));
+          for (const activity of response.data) {
+            this.combinedActivities.add(activity, 'tail');
+          }
         }
         this.preloadMoreActivitiesIntermediate = false;
       });
@@ -403,7 +314,6 @@ export default class UserFeed extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.loadingActivities = true;
       let before_activity_id: number | undefined = undefined;
-      let latestActivityId = this.activities[0].id;
       const newActivities: IActivity[] = [];
       let fetching = true;
       while (fetching) {
@@ -416,7 +326,10 @@ export default class UserFeed extends Vue {
           break;
         }
         for (const activity of activities) {
-          if (activity.id <= latestActivityId) {
+          if (
+            this.combinedActivities.maxActivityId &&
+            activity.id <= this.combinedActivities.maxActivityId
+          ) {
             fetching = false;
             break;
           }
@@ -424,7 +337,9 @@ export default class UserFeed extends Vue {
         }
         before_activity_id = activities[activities.length - 1]!.id;
       }
-      this.activities.splice(0, 0, ...combinedActivities(newActivities));
+      for (const activity of newActivities) {
+        this.combinedActivities.add(activity, 'head');
+      }
       this.loadingActivities = false;
     });
   }

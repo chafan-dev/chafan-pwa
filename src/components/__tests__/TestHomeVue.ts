@@ -1,8 +1,8 @@
-import { combinedActivities } from '@/home';
+import { CombinedActivities } from '@/home';
 import { IActivity } from '@/interfaces';
 
 test('TestHomeVue', () => {
-  expect(combinedActivities([])).toStrictEqual([]);
+  expect(new CombinedActivities().items).toStrictEqual([]);
   const inputActivities: IActivity[] = [
     {
       id: 1,
@@ -32,7 +32,11 @@ test('TestHomeVue', () => {
       },
     },
   ];
-  expect(combinedActivities(inputActivities)).toStrictEqual(inputActivities);
+  const c1 = new CombinedActivities();
+  for (const a1 of inputActivities) {
+    c1.add(a1, 'tail');
+  }
+  expect(c1.items).toStrictEqual(inputActivities);
   inputActivities.push({
     id: 2,
     site_uuid: '',
@@ -60,7 +64,12 @@ test('TestHomeVue', () => {
       },
     },
   });
-  expect(combinedActivities(inputActivities)).toStrictEqual([
+
+  const c2 = new CombinedActivities();
+  for (const a2 of inputActivities) {
+    c2.add(a2, 'tail');
+  }
+  expect(c1.items).toStrictEqual([
     {
       id: 1,
       site_uuid: '',
