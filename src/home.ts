@@ -1,148 +1,89 @@
 import {
-  CreateArticle,
   FollowUser,
   IActivity,
   UpvoteAnswer,
+  UpvoteArticle,
   UpvoteQuestion,
   UpvoteSubmission,
 } from '@/interfaces/index';
 
-import dayjs from '@/dayjs';
+export class CombinedActivities {
+  public items: IActivity[] = [];
+  public maxActivityId: number | null = null;
+  public minActivityId: number | null = null;
 
-export const combinedActivities = (activities: IActivity[]) => {
-  const questionUpvotes = new Map<string, IActivity[]>();
-  const submissionUpvotes = new Map<string, IActivity[]>();
-  const answerUpvotes = new Map<string, IActivity[]>();
-  const createArticles = new Map<string, IActivity[]>();
-  const followUsers = new Map<string, IActivity[]>();
-  const newActivities: IActivity[] = [];
-
-  for (const activity of activities) {
-    if (activity.verb === 'upvote_question') {
-      const q = (activity.event.content as UpvoteQuestion).question;
-      if (!questionUpvotes.has(q.uuid)) {
-        questionUpvotes.set(q.uuid, []);
+  public add(newActivity: IActivity, where: 'tail' | 'head') {
+    if (this.maxActivityId === null || newActivity.id > this.maxActivityId) {
+      this.maxActivityId = newActivity.id;
+    }
+    if (this.minActivityId === null || newActivity.id < this.minActivityId) {
+      this.minActivityId = newActivity.id;
+    }
+    if (this.items.length > 0) {
+      let guardActivity;
+      if (where === 'tail') {
+        guardActivity = this.items[this.items.length - 1];
+      } else {
+        guardActivity = this.items[0];
       }
-      questionUpvotes.get(q.uuid)!.push(activity);
-    } else if (activity.verb === 'upvote_submission') {
-      const q = (activity.event.content as UpvoteSubmission).submission;
-      if (!submissionUpvotes.has(q.uuid)) {
-        submissionUpvotes.set(q.uuid, []);
+      if (newActivity.verb == guardActivity.verb) {
+        if (newActivity.verb === 'upvote_question') {
+          const newEvent = newActivity.event.content as UpvoteQuestion;
+          const guardEvent = guardActivity.event.content as UpvoteQuestion;
+          if (newEvent.question.uuid === guardEvent.question.uuid) {
+            if (!guardEvent.subjects) {
+              guardEvent.subjects = [guardEvent.subject];
+            }
+            guardEvent.subjects.push(newEvent.subject);
+            return;
+          }
+        } else if (newActivity.verb === 'upvote_submission') {
+          const newEvent = newActivity.event.content as UpvoteSubmission;
+          const guardEvent = guardActivity.event.content as UpvoteSubmission;
+          if (newEvent.submission.uuid === guardEvent.submission.uuid) {
+            if (!guardEvent.subjects) {
+              guardEvent.subjects = [guardEvent.subject];
+            }
+            guardEvent.subjects.push(newEvent.subject);
+            return;
+          }
+        } else if (newActivity.verb === 'upvote_answer') {
+          const newEvent = newActivity.event.content as UpvoteAnswer;
+          const guardEvent = guardActivity.event.content as UpvoteAnswer;
+          if (newEvent.answer.uuid === guardEvent.answer.uuid) {
+            if (!guardEvent.subjects) {
+              guardEvent.subjects = [guardEvent.subject];
+            }
+            guardEvent.subjects.push(newEvent.subject);
+            return;
+          }
+        } else if (newActivity.verb === 'upvote_article') {
+          const newEvent = newActivity.event.content as UpvoteArticle;
+          const guardEvent = guardActivity.event.content as UpvoteArticle;
+          if (newEvent.article.uuid === guardEvent.article.uuid) {
+            if (!guardEvent.subjects) {
+              guardEvent.subjects = [guardEvent.subject];
+            }
+            guardEvent.subjects.push(newEvent.subject);
+            return;
+          }
+        } else if (newActivity.verb === 'follow_user') {
+          const newEvent = newActivity.event.content as FollowUser;
+          const guardEvent = guardActivity.event.content as FollowUser;
+          if (newEvent.user.uuid === guardEvent.user.uuid) {
+            if (!guardEvent.subjects) {
+              guardEvent.subjects = [guardEvent.subject];
+            }
+            guardEvent.subjects.push(newEvent.subject);
+            return;
+          }
+        }
       }
-      submissionUpvotes.get(q.uuid)!.push(activity);
-    } else if (activity.verb === 'upvote_answer') {
-      const answer = (activity.event.content as UpvoteAnswer).answer;
-      if (!answerUpvotes.has(answer.uuid)) {
-        answerUpvotes.set(answer.uuid, []);
-      }
-      answerUpvotes.get(answer.uuid)!.push(activity);
-    } else if (activity.verb === 'create_article') {
-      const article = (activity.event.content as CreateArticle).article;
-      if (!createArticles.has(article.uuid)) {
-        createArticles.set(article.uuid, []);
-      }
-      createArticles.get(article.uuid)!.push(activity);
-    } else if (activity.verb === 'follow_user') {
-      const user = (activity.event.content as FollowUser).user;
-      if (!followUsers.has(user.uuid)) {
-        followUsers.set(user.uuid, []);
-      }
-      followUsers.get(user.uuid)!.push(activity);
+    }
+    if (where === 'tail') {
+      this.items.push(newActivity);
     } else {
-      newActivities.push(activity);
+      this.items.splice(0, 0, newActivity);
     }
   }
-
-  questionUpvotes.forEach((v) => {
-    if (v.length > 1) {
-      newActivities.push({
-        id: v[0].id,
-        created_at: v[0].created_at,
-        site_uuid: v[0].site_uuid,
-        verb: 'upvote_question_combined',
-        event: {
-          created_at: v[0].created_at,
-          content: {
-            verb: 'upvote_question_combined',
-            subjects: v.map((a) => (a.event.content as UpvoteQuestion).subject),
-            question: (v[0].event.content as UpvoteQuestion).question,
-          },
-        },
-      });
-    } else {
-      newActivities.push(v[0]);
-    }
-  });
-
-  submissionUpvotes.forEach((v) => {
-    if (v.length > 1) {
-      newActivities.push({
-        id: v[0].id,
-        created_at: v[0].created_at,
-        site_uuid: v[0].site_uuid,
-        verb: 'upvote_submission_combined',
-        event: {
-          created_at: v[0].created_at,
-          content: {
-            verb: 'upvote_submission_combined',
-            subjects: v.map((a) => (a.event.content as UpvoteSubmission).subject),
-            submission: (v[0].event.content as UpvoteSubmission).submission,
-          },
-        },
-      });
-    } else {
-      newActivities.push(v[0]);
-    }
-  });
-
-  answerUpvotes.forEach((v) => {
-    if (v.length > 1) {
-      newActivities.push({
-        id: v[0].id,
-        created_at: v[0].created_at,
-        site_uuid: v[0].site_uuid,
-        verb: 'upvote_answer_combined',
-        event: {
-          created_at: v[0].created_at,
-          content: {
-            verb: 'upvote_answer_combined',
-            subjects: v.map((a) => (a.event.content as UpvoteAnswer).subject),
-            answer: (v[0].event.content as UpvoteAnswer).answer,
-          },
-        },
-      });
-    } else {
-      newActivities.push(v[0]);
-    }
-  });
-
-  followUsers.forEach((v) => {
-    if (v.length > 1) {
-      newActivities.push({
-        id: v[0].id,
-        created_at: v[0].created_at,
-        site_uuid: v[0].site_uuid,
-        verb: 'follow_user_combined',
-        event: {
-          created_at: v[0].created_at,
-          content: {
-            verb: 'follow_user_combined',
-            subjects: v.map((a) => (a.event.content as FollowUser).subject),
-            user: (v[0].event.content as FollowUser).user,
-          },
-        },
-      });
-    } else {
-      newActivities.push(v[0]);
-    }
-  });
-
-  // Combine repeated publish/unpublish/publish event.
-  createArticles.forEach((v) => {
-    newActivities.push(v[0]);
-  });
-
-  return newActivities.sort((a, b) => {
-    return -(dayjs as any).utc(a.created_at).diff((dayjs as any).utc(b.created_at));
-  });
-};
+}

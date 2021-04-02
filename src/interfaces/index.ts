@@ -307,6 +307,7 @@ export interface UpvoteArticle {
   verb: 'upvote_article';
   subject: IUserPreview;
   article: IArticlePreview;
+  subjects: IUserPreview[];
 }
 
 export interface SubscribeArticleColumn {
@@ -345,6 +346,7 @@ export interface UpvoteSubmission {
   verb: 'upvote_submission';
   subject: IUserPreview;
   submission: ISubmission;
+  subjects?: IUserPreview[];
 }
 
 export interface ReplyComment {
@@ -398,48 +400,21 @@ export interface UpvoteAnswer {
   verb: 'upvote_answer';
   subject: IUserPreview;
   answer: IAnswerPreview;
-}
-
-export interface UpvoteAnswerCombined {
-  verb: 'upvote_answer_combined';
-  subjects: IUserPreview[];
-  answer: IAnswerPreview;
-}
-
-export interface UpvoteArticleCombined {
-  verb: 'upvote_article_combined';
-  subjects: IUserPreview[];
-  article: IArticlePreview;
-}
-
-export interface UpvoteSubmissionCombined {
-  verb: 'upvote_submission_combined';
-  subjects: IUserPreview[];
-  submission: ISubmission;
+  subjects?: IUserPreview[];
 }
 
 export interface UpvoteQuestion {
   verb: 'upvote_question';
   subject: IUserPreview;
   question: IQuestionPreview;
-}
-
-export interface UpvoteQuestionCombined {
-  verb: 'upvote_question_combined';
-  subjects: IUserPreview[];
-  question: IQuestionPreview;
+  subjects?: IUserPreview[];
 }
 
 export interface FollowUser {
   verb: 'follow_user';
   subject: IUserPreview;
   user: IUserPreview;
-}
-
-export interface FollowUserCombined {
-  verb: 'follow_user_combined';
   subjects: IUserPreview[];
-  user: IUserPreview;
 }
 
 export interface SystemBroadcast {
@@ -486,11 +461,6 @@ export interface IEvent {
     | CommentArticle
     | UpvoteArticle
     | SubscribeArticleColumn
-    | UpvoteQuestionCombined
-    | UpvoteAnswerCombined
-    | UpvoteArticleCombined
-    | UpvoteSubmissionCombined
-    | FollowUserCombined
     | CreateSubmission
     | CommentSubmission
     | UpvoteSubmission
