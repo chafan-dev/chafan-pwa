@@ -16,7 +16,10 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { apiSearch } from '@/api/search';
 import { IUserPreview } from '@/interfaces';
+
 import 'tippy.js/dist/tippy.css';
+import 'highlight.js/styles/github.css';
+
 import { Tiptap } from 'chafan-vue-editors';
 
 @Component({
