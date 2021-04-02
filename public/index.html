@@ -2,31 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width,initial-scale=1.0" name="viewport" />
     <meta
-      http-equiv="Content-Security-Policy"
       content="default-src <%= VUE_APP_DEFAULT_SRC %>; style-src <%= VUE_APP_STYLE_SRC %>; script-src <%= VUE_APP_SCRIPT_SRC %>; connect-src <%= VUE_APP_CONNECT_SRC %>; frame-src <%= VUE_APP_FRAME_SRC %>; img-src * data:;"
+      http-equiv="Content-Security-Policy"
     />
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <link href="<%= BASE_URL %>favicon.ico" rel="icon" />
     <link
+      crossorigin="anonymous"
       defer
-      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css"
       integrity="sha384-qCEsSYDSH0x5I45nNW4oXemORUZnYFtPy/FqB/OjqxabTMW5HVaaH9USK4fN3goV"
-      crossorigin="anonymous"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css"
+      rel="stylesheet"
     />
     <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
-      integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4"
       crossorigin="anonymous"
+      defer
+      integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4"
+      src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
     ></script>
     <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
-      integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa"
       crossorigin="anonymous"
+      defer
+      integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa"
+      src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
     ></script>
     <script
       defer
@@ -36,21 +40,21 @@
       defer
       src="//cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chafan.3/dist/js/mermaid/mermaid.min.js"
     ></script>
-    <meta name="description" content="Chafan 茶饭 - 有深度的社交问答网站" />
-    <meta name="keywords" content="Cha, Fan, Chafan, 茶饭, 社交, 问答" />
-    <meta name="theme-color" content="#1976d2" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="<%= VUE_APP_NAME %>" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="msapplication-navbutton-color" content="#1976d2" />
-    <meta name="msapplication-TileColor" content="#1976d2" />
-    <meta name="browsermode" content="application" />
-    <meta name="nightmode" content="disable" />
+    <meta content="Chafan 茶饭 - 有深度的社交问答网站" name="description" />
+    <meta content="Cha, Fan, Chafan, 茶饭, 社交, 问答" name="keywords" />
+    <meta content="#1976d2" name="theme-color" />
+    <meta content="yes" name="mobile-web-app-capable" />
+    <meta content="<%= VUE_APP_NAME %>" name="apple-mobile-web-app-title" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="default" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="#1976d2" name="msapplication-navbutton-color" />
+    <meta content="#1976d2" name="msapplication-TileColor" />
+    <meta content="application" name="browsermode" />
+    <meta content="disable" name="nightmode" />
     <link href="img/icons/apple-touch-icon.png" rel="apple-touch-icon" />
     <link
-      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chafan.3/dist/index.css"
+      rel="stylesheet"
     />
     <title><%= VUE_APP_NAME %></title>
   </head>
