@@ -307,7 +307,7 @@ export interface UpvoteArticle {
   verb: 'upvote_article';
   subject: IUserPreview;
   article: IArticlePreview;
-  subjects: IUserPreview[];
+  subjects?: IUserPreview[];
 }
 
 export interface SubscribeArticleColumn {
@@ -414,7 +414,7 @@ export interface FollowUser {
   verb: 'follow_user';
   subject: IUserPreview;
   user: IUserPreview;
-  subjects: IUserPreview[];
+  subjects?: IUserPreview[];
 }
 
 export interface SystemBroadcast {
