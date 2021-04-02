@@ -310,16 +310,20 @@ export default class UserFeed extends Vue {
   }
 
   private async preloadMoreActivities() {
+    if (this.preloadMoreActivitiesIntermediate) {
+      return;
+    }
+    this.preloadMoreActivitiesIntermediate = true;
     const bottomOfWindow =
       Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
         window.innerHeight >=
       document.documentElement.offsetHeight;
     if (!bottomOfWindow || this.noMoreNewActivities) {
+      this.preloadMoreActivitiesIntermediate = false;
       return;
     }
     const minActivityId = this.combinedActivities.minActivityId;
     if (minActivityId !== null) {
-      this.preloadMoreActivitiesIntermediate = true;
       await dispatchCaptureApiError(this.$store, async () => {
         const response = await api.getActivities(this.$store.state.main.token, {
           limit: this.loadingLimit,
@@ -332,9 +336,9 @@ export default class UserFeed extends Vue {
             this.combinedActivities.add(activity, 'tail');
           }
         }
-        this.preloadMoreActivitiesIntermediate = false;
       });
     }
+    this.preloadMoreActivitiesIntermediate = false;
   }
 
   public async loadNewActivities() {
