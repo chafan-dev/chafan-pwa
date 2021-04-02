@@ -3535,13 +3535,14 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.2.0.tgz#11087e18bec7efa5798766108dd06bdeab441a9a"
-  integrity sha512-t3LepK4G7iOANwAsJoSGiQoF4wJmb6zM3KuhPKYmP73mNzyjhRAVgNIqL+pYmnXjVCjZODZkE3mYpmoSXLbIrA==
+chafan-vue-editors@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.3.0.tgz#86df16a0f4c25b7f0673e39bdf59365b8d5a92d7"
+  integrity sha512-pf5oGuUQI8fwIS60gIOivQ2Xs1LH/wdycftO6CXeR9b6WxhlTPJNOSso8I/jYrNgwv3+0C6Pp9YeC6ySiscWzw==
   dependencies:
     "@chafan/vditor" "3.8.2-chafan.3"
     core-js "^3.10.0"
+    highlightjs "^9.16.2"
     lodash "^4.17.21"
     tippy.js "^6.3.1"
     tiptap "^1.32.1"
@@ -6239,6 +6240,11 @@ highlight.js@~10.6.0:
   version "10.6.0"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.6.0.tgz#0073aa71d566906965ba6e1b7be7b2682f5e18b6"
   integrity sha512-8mlRcn5vk/r4+QcqerapwBYTe+iPL5ih6xrNylxrnBdHQiijDETfXX7VIxC3UiCRiINBJfANBAsPzAvRQj8RpQ==
+
+highlightjs@^9.16.2:
+  version "9.16.2"
+  resolved "https://registry.yarnpkg.com/highlightjs/-/highlightjs-9.16.2.tgz#07ea6cc7c93340fc440734fb7abf28558f1f0fe1"
+  integrity sha512-FK1vmMj8BbEipEy8DLIvp71t5UsC7n2D6En/UfM/91PCwmOpj6f2iu0Y0coRC62KSRHHC+dquM2xMULV/X7NFg==
 
 hmac-drbg@^1.0.1:
   version "1.0.1"
