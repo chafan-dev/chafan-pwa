@@ -331,6 +331,7 @@ for (const user of randomUserPreviews1) {
       },
     },
   });
+
   counter += 1;
   example_activities_upvote_questions_users_1.push({
     id: counter,
