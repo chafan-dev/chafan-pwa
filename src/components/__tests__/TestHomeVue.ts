@@ -74,11 +74,16 @@ test('TestHomeVue', () => {
       id: 1,
       site_uuid: '',
       created_at: '2021-01-30T23:31:21.630841-08:00',
-      verb: 'upvote_question_combined',
+      verb: 'upvote_question',
       event: {
         created_at: '2021-01-30T23:31:21.630841-08:00',
         content: {
-          verb: 'upvote_question_combined',
+          verb: 'upvote_question',
+          subject: {
+            uuid: 'u1',
+            handle: 'u1',
+            karma: 0,
+          },
           subjects: [
             {
               uuid: 'u1',
