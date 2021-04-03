@@ -335,9 +335,10 @@ import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { isEqual, updateHead } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
+import { appName } from '@/env';
 
 @Component({
   components: {
@@ -444,6 +445,7 @@ export default class Submission extends Vue {
     try {
       const response = await apiSubmission.getSubmission(this.token, this.id);
       this.submission = response.data;
+      updateHead(this.$route.path, this.submission?.title, this.submission?.description_text);
       if (!this.$route.query.title) {
         this.$router.replace({
           query: { ...this.$route.query, title: this.submission.title },
@@ -452,7 +454,6 @@ export default class Submission extends Vue {
       this.submissionSubscription = (
         await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
       ).data;
-      document.title = this.submission.title;
     } catch (err) {
       commitAddNotification(this.$store, {
         content: this.$t('分享不存在，返回主页').toString(),
@@ -473,8 +474,6 @@ export default class Submission extends Vue {
           count: this.submission.upvotes_count,
           upvoted: this.submission.upvoted,
         };
-
-        document.title = this.submission.title;
 
         this.loadingProgress = 33;
 
