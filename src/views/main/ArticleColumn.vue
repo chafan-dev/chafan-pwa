@@ -10,7 +10,7 @@
             <span class="title">{{ $t('文章列表') }}</span>
             <v-spacer />
             <v-btn
-              v-if="articleColumn && articleColumn.owner.uuid === userProfile.uuid"
+              v-if="articleColumn && userProfile && articleColumn.owner.uuid === userProfile.uuid"
               :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
               class="mt-2"
               color="primary"
