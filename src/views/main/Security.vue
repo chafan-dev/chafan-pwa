@@ -122,7 +122,15 @@
 
               <v-form v-if="editLoginMode === 'email' || editLoginMode === 'add_secondary_email'">
                 <ValidationProvider v-slot="{ errors }" name="email" rules="email">
-                  <v-text-field v-model="newEmail" :label="$t('Email')" type="text">
+                  <v-text-field
+                    v-model="newEmail"
+                    type="text"
+                    :label="
+                      editLoginMode === 'email'
+                        ? $t('更改后的主要邮箱地址')
+                        : $t('新添加的次要邮箱地址')
+                    "
+                  >
                     <template v-slot:prepend>
                       <EmailIcon />
                     </template>
@@ -231,7 +239,7 @@ import {
   IAuditLog,
 } from '@/interfaces';
 import { readUserProfile } from '@/store/main/getters';
-import { dispatchUpdateUserProfile } from '@/store/main/actions';
+import { dispatchCheckApiError, dispatchUpdateUserProfile } from '@/store/main/actions';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { apiMe } from '@/api/me';
@@ -241,6 +249,7 @@ import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
 import EmailIcon from '@/components/icons/EmailIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
+import { AxiosError } from 'axios';
 
 @Component({
   components: {
@@ -307,16 +316,14 @@ export default class Security extends Vue {
       if (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') {
         payload.email = this.newEmail!;
       }
-      const response = await api.sendVerificationCode(payload);
-      if (response) {
-        commitAddNotification(this.$store, {
-          content: response.data.msg,
-          color: 'success',
-        });
-        this.showVerifyCodeBtn = true;
-        this.showCodeInput = true;
-        this.verificationCodeDisabled = true;
-      }
+      await api.sendVerificationCode(payload);
+      commitAddNotification(this.$store, {
+        content: this.$t('验证码已发送到邮箱，请查收').toString(),
+        color: 'success',
+      });
+      this.showVerifyCodeBtn = true;
+      this.showCodeInput = true;
+      this.verificationCodeDisabled = true;
       this.intermediate = false;
     });
   }
@@ -336,7 +343,23 @@ export default class Security extends Vue {
           email: this.newEmail!,
           verification_code: this.verificationCode,
         };
-        response = await apiMe.updatePrimaryEmail(this.$store.state.main.token, payload);
+        await apiMe
+          .updatePrimaryEmail(this.$store.state.main.token, payload)
+          .then((r) => {
+            response = r;
+          })
+          .catch((err: AxiosError) => {
+            if (
+              err.response?.data?.detail === 'This primary email is already used in the website.'
+            ) {
+              commitAddNotification(this.$store, {
+                content: this.$t(`该主要邮箱地址已经存在: ${this.newEmail!}`).toString(),
+                color: 'error',
+              });
+            } else {
+              dispatchCheckApiError(this.$store, err);
+            }
+          });
       } else if (this.editLoginMode === 'add_secondary_email') {
         const payload: IUserUpdateSecondaryEmails = {
           secondary_email: this.newEmail!,
@@ -353,6 +376,9 @@ export default class Security extends Vue {
         commitSetUserProfile(this.$store, response.data);
         this.showVerifyCodeBtn = false;
         this.editLoginMode = null;
+        this.newEmail = null;
+        this.verificationCode = '';
+        this.verificationCodeDisabled = false;
       }
       this.intermediate = false;
     });
