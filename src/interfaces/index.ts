@@ -195,7 +195,7 @@ export interface ISite {
 export interface IAnswerCreate {
   question_uuid: string;
   body: string;
-  body_text?: string;
+  body_text: string;
   is_published: boolean;
   editor: editor_T;
   visibility: 'anyone' | 'registered';
@@ -204,7 +204,7 @@ export interface IAnswerCreate {
 
 export interface IAnswerUpdate {
   updated_body: string;
-  updated_body_text?: string;
+  updated_body_text: string;
   is_draft: boolean;
   editor: editor_T;
   visibility: 'anyone' | 'registered';
@@ -481,7 +481,7 @@ export interface IActivity {
 export interface ICommentCreate {
   site_uuid?: string;
   body: string;
-  body_text?: string;
+  body_text: string;
   editor: editor_T;
   question_uuid?: string;
   submission_uuid?: string;
@@ -722,7 +722,7 @@ export interface ITopBanner {
 export interface IArticleCreate {
   title: string;
   body: string;
-  body_text?: string;
+  body_text: string;
   article_column_uuid: string;
   is_published: boolean;
   editor: editor_T;
