@@ -226,7 +226,7 @@ import { apiComment } from '@/api/comment';
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { isEqual, updateHead } from '@/common';
 
 @Component({
   components: {
@@ -373,7 +373,7 @@ export default class Article extends Vue {
         query: { ...this.$route.query, title: article.title },
       });
     }
-    document.title = article.title;
+    updateHead(this.$route.path, article.title);
     if (this.token) {
       apiArticle.bumpViewsCounter(this.token, article.uuid);
     }

@@ -1,5 +1,6 @@
 import { apiQuestion } from '@/api/question';
-import { apiUrl } from '@/env';
+import { apiUrl, appName } from '@/env';
+import { ISubmission } from '@/interfaces';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 export const vditorCDN = 'https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chafan.3';
@@ -46,4 +47,23 @@ export const vditorUploadConfig = (token: string) => {
       Authorization: `Bearer ${token}`,
     },
   };
+};
+
+export const updateHead = (routePath: string, title: string, descriptionText?: string) => {
+  document.title = title;
+  document.querySelector('meta[property="og.title"]')?.setAttribute('content', title);
+  document.querySelector('meta[property="og.site_name"]')?.setAttribute('content', appName);
+  if (descriptionText) {
+    document.querySelector('meta[name="description"]')?.setAttribute('content', descriptionText);
+    document
+      .querySelector('meta[property="description"]')
+      ?.setAttribute('content', descriptionText);
+    document
+      .querySelector('meta[property="og.description"]')
+      ?.setAttribute('content', descriptionText);
+  }
+  document.querySelector('meta[property="og.type"]')?.setAttribute('content', 'article');
+  document
+    .querySelector('meta[property="og.url"]')
+    ?.setAttribute('content', 'https://cha.fan' + routePath);
 };

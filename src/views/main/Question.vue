@@ -464,7 +464,7 @@ import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { AnswerEditHandler } from '@/handlers';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { isEqual, updateHead } from '@/common';
 
 @Component({
   components: {
@@ -643,7 +643,7 @@ export default class Question extends Vue {
 
           this.isShowInHome = this.question.is_placed_at_home;
 
-          document.title = this.question.title;
+          updateHead(this.$route.path, this.question.title, this.question.description_text);
 
           this.loadingProgress = 33;
 
