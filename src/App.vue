@@ -68,6 +68,7 @@ export default class App extends Vue {
   private registration: ServiceWorkerRegistration | null = null;
   private updateExists = false;
   private refreshing = false;
+  private loading = true;
 
   get loggedIn() {
     return readIsLoggedIn(this.$store);

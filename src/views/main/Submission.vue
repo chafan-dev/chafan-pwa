@@ -338,7 +338,6 @@ import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
-import { appName } from '@/env';
 
 @Component({
   components: {
@@ -451,9 +450,11 @@ export default class Submission extends Vue {
           query: { ...this.$route.query, title: this.submission.title },
         });
       }
-      this.submissionSubscription = (
-        await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
-      ).data;
+      if (this.token) {
+        this.submissionSubscription = (
+          await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
+        ).data;
+      }
     } catch (err) {
       commitAddNotification(this.$store, {
         content: this.$t('分享不存在，返回主页').toString(),
@@ -508,7 +509,7 @@ export default class Submission extends Vue {
         this.loadingProgress = 100;
         this.loading = false;
 
-        if (this.submission.keywords) {
+        if (this.submission.keywords && this.userProfile) {
           this.relatedSubmissions = (
             await apiSearch.searchSubmissions(
               this.$store.state.main.token,

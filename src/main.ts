@@ -569,8 +569,10 @@ const i18n = new VueI18n({
       相关分享: 'Related Sharings',
       换一批: 'Rotate',
       加入: 'Join',
+      登录后参与讨论: 'Log in to participate',
     },
     zh: {
+      登录后参与讨论: '登录后参与讨论',
       加入: '加入',
       相关分享: '相关分享',
       换一批: '换一批',
