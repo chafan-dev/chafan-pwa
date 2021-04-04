@@ -1,7 +1,7 @@
 <template>
   <div class="simple-viewer">
     <ChafanTiptap v-if="editor === 'tiptap'" :editable="false" :initial-value="body" />
-    <div v-else ref="vditorViewer" />
+    <div v-else id="vditorViewer" />
     <LightboxGroup v-if="contentElem" :container="contentElem" />
   </div>
 </template>
@@ -25,15 +25,13 @@ export default class SimpleViewer extends Vue {
 
   private mounted() {
     if (this.editor !== 'tiptap') {
-      Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
+      const vditorViewerDiv = this.$el.querySelector('#vditorViewer') as HTMLDivElement;
+      Vditor.preview(vditorViewerDiv, this.body, {
         mode: 'light',
         cdn: vditorCDN,
         after: () => {
-          this.contentElem = this.$refs.vditorViewer as HTMLElement;
-          postProcessViewerDOM(
-            this.$store.state.main.token,
-            this.$refs.vditorViewer as HTMLElement
-          );
+          this.contentElem = vditorViewerDiv;
+          postProcessViewerDOM(this.$store.state.main.token, vditorViewerDiv);
         },
       });
     }

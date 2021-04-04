@@ -96,7 +96,7 @@ export default class QuestionInfo extends Vue {
   }
 
   public async mounted() {
-    if (this.question.keywords) {
+    if (this.question.keywords && this.userProfile) {
       this.relatedQuestions = (
         await apiSearch.searchQuestions(
           this.$store.state.main.token,
