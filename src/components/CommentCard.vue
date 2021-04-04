@@ -1,7 +1,7 @@
 <template>
   <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
     <div class="d-flex mb-2">
-      <SimpleViewer :body="comment.body" />
+      <SimpleViewer :body="comment.body" :editor="comment.editor" />
       <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
         <OpenInNewIcon />
       </router-link>
