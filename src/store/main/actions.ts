@@ -204,8 +204,7 @@ export const actions = {
       commitAddNotification(context, { content: message, color: 'error' });
       if (payload.response && payload.response.status === 401) {
         await dispatchLogOut(context);
-      }
-      if (env !== 'development') {
+      } else if (env !== 'development') {
         captureException(payload);
       } else {
         throw payload;
