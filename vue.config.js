@@ -31,9 +31,8 @@ module.exports = {
         maxEntrypointSize: 512000,
         maxAssetSize: 512000,
       };
-    } else {
-      config.devtool = 'source-map';
     }
+    config.devtool = 'source-map';
   },
   chainWebpack: (config) => {
     config.module
