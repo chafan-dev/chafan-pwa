@@ -134,8 +134,10 @@ export default class Home extends Vue {
   }
 
   private async onFabClicked() {
-    (this.$refs.userAgreement as UserAgreement).overlay = false;
-    await dispatchAddFlag(this.$store, FAB_FLAG);
+    if (this.userProfile) {
+      (this.$refs.userAgreement as UserAgreement).overlay = false;
+      await dispatchAddFlag(this.$store, FAB_FLAG);
+    }
   }
 }
 </script>
