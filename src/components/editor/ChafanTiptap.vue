@@ -9,7 +9,8 @@
     :user-label="userLabel"
     :upload="upload"
   >
-    {{ user.full_name }} (@{{ user.handle }})
+    <span v-if="user.full_name">{{ user.full_name }} (@{{ user.handle }})</span>
+    <span v-else>@{{ user.handle }}</span>
   </Tiptap>
 </template>
 
