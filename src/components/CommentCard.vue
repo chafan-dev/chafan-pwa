@@ -1,17 +1,19 @@
 <template>
-  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
+  <base-card :embedded="embedded">
     <div class="d-flex mb-2">
       <SimpleViewer :body="comment.body" :editor="comment.editor" />
       <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
-        <OpenInNewIcon />
+        <OpenInNewIcon small />
       </router-link>
     </div>
     <QuestionPreview v-if="questionPreview" :questionPreview="questionPreview" />
     <Answer v-if="answerPreview" :answerPreview="answerPreview" />
     <ArticlePreview v-if="articlePreview" :articlePreview="articlePreview" />
-    <CommentCard v-if="parentComment" :comment="parentComment" />
+    <div class="parent-comment">
+      <CommentCard v-if="parentComment" :comment="parentComment" />
+    </div>
     <SubmissionCard v-if="submission" :submission="submission" />
-  </v-card>
+  </base-card>
 </template>
 
 <script lang="ts">
@@ -30,10 +32,12 @@ import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
 import SimpleViewer from '@/components/SimpleViewer.vue';
 import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
   name: 'CommentCard',
   components: {
+    BaseCard,
     QuestionPreview,
     ArticlePreview,
     Answer,
@@ -54,9 +58,7 @@ export default class CommentCard extends Vue {
 </script>
 
 <style scoped>
-/* FIXME: code duplicate: Home.vue */
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
+.parent-comment {
+  border-left: 2px solid lightgrey;
 }
 </style>
