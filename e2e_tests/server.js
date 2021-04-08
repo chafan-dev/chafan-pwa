@@ -295,6 +295,21 @@ const example_activity = {
   },
 };
 
+const example_comment_activity = {
+  id: 1000,
+  site_uuid: null,
+  created_at: '2021-02-06T20:31:09.965902+00:00',
+  verb: 'reply_comment',
+  event: {
+    created_at: '2021-02-06T20:31:09.965902+00:00',
+    content: {
+      verb: 'reply_comment',
+      reply: example_user2_comment1,
+      parent_comment: example_user2_comment1,
+    },
+  },
+};
+
 const example_activity_upvote_question1 = {
   id: 1394,
   site_uuid: null,
@@ -828,6 +843,7 @@ app.get('/api/v1/activities/', (req, res) => {
         example_activity_upvote_question2,
         example_comment_submission_activity,
         exmaple_create_submission_activity,
+        example_comment_activity,
       ].concat(example_activities_upvote_questions_users_1.slice(0, 4))
     );
   } else {
