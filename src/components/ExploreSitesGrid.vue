@@ -43,9 +43,10 @@ export default class ExploreSitesGrid extends Vue {
   }
 
   private sitesFromSiteMap(siteMap: ISiteMap): ISite[] {
-    return siteMap.sites.concat(
-      siteMap.sub_site_maps.flatMap((childSiteMap) => this.sitesFromSiteMap(childSiteMap))
-    );
+    const fromSubs = siteMap.sub_site_maps
+      ? siteMap.sub_site_maps.flatMap((childSiteMap) => this.sitesFromSiteMap(childSiteMap))
+      : [];
+    return siteMap.sites.concat(fromSubs);
   }
 
   private async mounted() {
