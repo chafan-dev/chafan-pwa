@@ -19,6 +19,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { readToken } from '@/store/main/getters';
+import 'core-js/features/array/flat-map';
 
 function uniqBy(a, key) {
   const seen = new Set();
