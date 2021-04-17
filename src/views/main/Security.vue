@@ -217,7 +217,14 @@
                   }}</span>
                 </template>
                 <template v-slot:item.api="{ item }">
-                  <span v-if="item.api === '/login/access-token'">{{ $t('获取登录token') }}</span>
+                  <span
+                    v-if="item.api === '/login/access-token' || item.api === 'create access token'"
+                    >{{ $t('获取登录token') }}</span
+                  >
+                  <span v-if="item.api === 'post answer'">{{ $t('提交答案') }}</span>
+                  <span v-if="item.api === 'post question'">{{ $t('提交问题') }}</span>
+                  <span v-if="item.api === 'post article'">{{ $t('提交文章') }}</span>
+                  <span v-if="item.api === 'post submission'">{{ $t('提交分享') }}</span>
                 </template>
               </v-data-table>
             </v-card-text>
