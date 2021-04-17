@@ -19,9 +19,9 @@ VUE_APP_ENV=development
 VUE_APP_PROD_STATE_JSON_URL=https://chafan-prod-state.s3.amazonaws.com/prod-state.json
 VUE_APP_ADMIN_UUID=
 VUE_APP_HCAPTCHA_SITEKEY=10000000-ffff-ffff-ffff-000000000001
-VUE_APP_DEFAULT_SRC='self' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com
+VUE_APP_DEFAULT_SRC='self' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com newassets.hcaptcha.com
 VUE_APP_STYLE_SRC='self' 'unsafe-inline' cdn.jsdelivr.net
-VUE_APP_FRAME_SRC=assets.hcaptcha.com
+VUE_APP_FRAME_SRC=assets.hcaptcha.com newassets.hcaptcha.com
 VUE_APP_SCRIPT_SRC='self' 'unsafe-inline' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com
 VUE_APP_CONNECT_SRC=* data:
 ```

@@ -82,18 +82,25 @@
                   <v-row>
                     <v-col>
                       <!-- TODO: validate -->
-                      <v-text-field v-model="userUpdateMe.homepage_url" :label="$t('个人主页')" />
+                      <v-text-field
+                        v-model="userUpdateMe.homepage_url"
+                        :label="$t('个人主页')"
+                        clearable
+                      />
                       <v-text-field
                         v-model="userUpdateMe.github_username"
                         :label="$t('Github 用户名')"
+                        clearable
                       />
                       <v-text-field
                         v-model="userUpdateMe.twitter_username"
                         :label="$t('Twitter 用户名')"
+                        clearable
                       />
                       <v-text-field
                         v-model="userUpdateMe.linkedin_url"
                         :label="$t('Linkedin 主页地址')"
+                        clearable
                       />
 
                       <v-combobox
@@ -104,7 +111,11 @@
                         multiple
                         small-chips
                       />
-                      <v-text-field v-model="newProfessionTopicName" :label="$t('所在行业')" />
+                      <v-text-field
+                        v-model="newProfessionTopicName"
+                        :label="$t('所在行业')"
+                        clearable
+                      />
 
                       <div>
                         <span class="title">{{ $t('教育经历') }}</span>
