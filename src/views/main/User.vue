@@ -210,6 +210,15 @@
               </div>
             </v-tab-item>
 
+            <v-tab-item class="pt-2" value="recent">
+              <UserFeed
+                v-if="userPublic"
+                :enable-show-explore-sites="false"
+                :subject-user-uuid="userPublic.uuid"
+                :user-profile="userProfile"
+              />
+            </v-tab-item>
+
             <v-tab-item class="pt-2" value="answers">
               <DynamicItemList
                 v-if="userPublic"
@@ -324,9 +333,11 @@ import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters
 import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual } from '@/common';
+import UserFeed from '@/components/home/UserFeed.vue';
 
 @Component({
   components: {
+    UserFeed,
     RegisteredUserOnlyIcon,
     QuestionPreview,
     Answer,
@@ -349,6 +360,10 @@ export default class User extends Vue {
       code: 'profile',
       text: 'Profile',
       render: this.renderProfileTab,
+    },
+    {
+      code: 'recent',
+      text: 'Recent',
     },
     {
       code: 'answers',
@@ -395,6 +410,10 @@ export default class User extends Vue {
 
   get currentUserId() {
     return readUserProfile(this.$store)?.uuid;
+  }
+
+  get userProfile() {
+    return readUserProfile(this.$store);
   }
 
   get handle() {
