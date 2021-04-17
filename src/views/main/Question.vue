@@ -734,6 +734,15 @@ export default class Question extends Vue {
     this.loadQuestion();
   }
 
+  private updateOrAddFullyLoadedAnswer(answer: IAnswer) {
+    const answerUUIDx = this.loadedFullAnswers.findIndex((a) => a.uuid === answer.uuid);
+    if (answerUUIDx === -1) {
+      this.loadedFullAnswers.unshift(answer);
+    } else {
+      this.loadedFullAnswers[answerUUIDx] = answer;
+    }
+  }
+
   private async newEditHandler(payload: INewEditEvent) {
     this.handlingNewEdit = true;
     const handler = new AnswerEditHandler(
@@ -744,21 +753,14 @@ export default class Question extends Vue {
         this.savedNewAnswer = answer;
         if (!isAutoSaved) {
           this.showEditor = false;
-          const answerUUIDx = this.loadedFullAnswers.findIndex(
-            (answer) => answer.uuid === answer.uuid
-          );
-          if (answerUUIDx === -1) {
-            this.loadedFullAnswers.unshift(answer);
-          } else {
-            this.loadedFullAnswers[answerUUIDx] = answer;
-          }
+          this.updateOrAddFullyLoadedAnswer(answer);
         }
         this.handlingNewEdit = false;
       },
       (answer, isAutoSaved) => {
         this.savedNewAnswer = answer;
         if (!isAutoSaved) {
-          this.loadedFullAnswers.unshift(answer);
+          this.updateOrAddFullyLoadedAnswer(answer);
           this.showEditor = false;
         }
         this.handlingNewEdit = false;
