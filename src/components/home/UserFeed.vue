@@ -268,6 +268,8 @@ import ActivitySubject from '@/components/ActivitySubject.vue';
 })
 export default class UserFeed extends Vue {
   @Prop() public readonly userProfile!: IUserProfile;
+  @Prop({ default: true }) public readonly enableShowExploreSites!: boolean;
+  @Prop() public readonly subjectUserUuid: number | undefined;
 
   private combinedActivities: CombinedActivities = new CombinedActivities();
   private loadingActivities = true;
@@ -282,14 +284,17 @@ export default class UserFeed extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       const response = await api.getActivities(this.$store.state.main.token, {
         limit: this.loadingLimit,
+        subjectUserUUID: this.subjectUserUuid,
       });
       for (const activity of response.data) {
         this.combinedActivities.add(activity, 'tail');
       }
-      if (this.userProfile!.flag_list.includes(EXPLORE_SITES)) {
-        this.showExploreSites = false;
-      } else if (this.combinedActivities.items.length === 0) {
-        this.showExploreSites = true;
+      if (this.enableShowExploreSites) {
+        if (this.userProfile!.flag_list.includes(EXPLORE_SITES)) {
+          this.showExploreSites = false;
+        } else if (this.combinedActivities.items.length === 0) {
+          this.showExploreSites = true;
+        }
       }
       this.loadingActivities = false;
     });
@@ -328,6 +333,7 @@ export default class UserFeed extends Vue {
         const response = await api.getActivities(this.$store.state.main.token, {
           limit: this.loadingLimit,
           before_activity_id: minActivityId,
+          subjectUserUUID: this.subjectUserUuid,
         });
         if (response.data.length === 0) {
           this.noMoreNewActivities = true;

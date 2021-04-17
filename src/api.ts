@@ -101,11 +101,17 @@ export const api = {
     );
   },
 
-  async getActivities(token: string, payload: { limit: number; before_activity_id?: number }) {
+  async getActivities(
+    token: string,
+    payload: { limit: number; before_activity_id?: number; subjectUserUUID?: number }
+  ) {
     const params = new URLSearchParams();
     params.set('limit', payload.limit.toString());
     if (payload.before_activity_id !== undefined) {
       params.set('before_activity_id', payload.before_activity_id.toString());
+    }
+    if (payload.subjectUserUUID !== undefined) {
+      params.set('subject_user_uuid', payload.subjectUserUUID.toString());
     }
     return axios.get<IActivity[]>(
       `${apiUrl}/api/v1/activities/`,
