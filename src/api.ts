@@ -36,6 +36,7 @@ import {
   IInvitationLink,
   ITask,
   ITaskDefinition,
+  ITopic,
 } from './interfaces';
 import { authHeaders, authHeadersWithParams } from './utils';
 
@@ -307,5 +308,8 @@ export const api = {
   },
   async getAuditLogs(token: string) {
     return axios.get<IAuditLog[]>(`${apiUrl}/api/v1/audit-logs/`, authHeaders(token));
+  },
+  async getCategoryTopics() {
+    return axios.get<ITopic[]>(`${apiUrl}/api/v1/category-topics/`);
   },
 };

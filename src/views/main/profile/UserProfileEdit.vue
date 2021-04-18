@@ -227,7 +227,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
-import { IUserUpdateMe } from '@/interfaces';
+import { ITopic, IUserUpdateMe } from '@/interfaces';
 import { readToken, readUserProfile } from '@/store/main/getters';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { resizeImage } from '@/imagelib';
@@ -237,6 +237,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
+import { api } from '@/api';
 
 interface IUserWorkExperienceInput {
   company_topic_name: string;
@@ -288,8 +289,11 @@ export default class UserProfileEdit extends Vue {
     return readToken(this.$store);
   }
 
+  private categoryTopics: ITopic[] | null = null;
+
   public async mounted() {
     const userProfile = readUserProfile(this.$store);
+    this.categoryTopics = (await api.getCategoryTopics()).data;
     if (userProfile) {
       if (userProfile.avatar_url) {
         this.avatarURL = userProfile.avatar_url;
