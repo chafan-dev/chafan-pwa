@@ -76,7 +76,29 @@
                   <span v-if="!showSiteConfigEditor" class="black--text mr-1">Description:</span>
                   <span>{{ selectedSite.description }}</span>
                 </template>
-                <v-text-field v-else v-model="siteConfigUpdate.description" label="Description" />
+                <v-text-field
+                  v-else
+                  v-model="siteConfigUpdate.description"
+                  label="Description"
+                  clearable
+                />
+              </div>
+
+              <div>
+                <v-select
+                  v-if="showSiteConfigEditor"
+                  v-model="siteConfigUpdate.category_topic_uuid"
+                  :items="categoryTopics"
+                  :label="$t('类别')"
+                  item-text="name"
+                  item-value="uuid"
+                />
+                <template v-else>
+                  <span v-if="!showSiteConfigEditor" class="black--text mr-1"
+                    >{{ $t('类别') }}:</span
+                  >
+                  <span>{{ selectedSite.category_topic.name }}</span>
+                </template>
               </div>
 
               <div>
@@ -288,6 +310,7 @@ export default class Moderation extends Vue {
   get token() {
     return this.$store.state.main.token;
   }
+  private categoryTopics: ITopic[] | null = null;
 
   private async mounted() {
     this.moderatedSites = readModeratedSites(this.$store);
@@ -305,15 +328,27 @@ export default class Moderation extends Vue {
       }
     }
     this.onSiteSelected();
+    this.categoryTopics = (await api.getCategoryTopics()).data;
     this.loading = false;
   }
 
   private resetSiteConfig(site: ISite) {
     this.siteConfigUpdate = {};
-    for (const key in site) {
+    const keys = [
+      'name',
+      'description',
+      'auto_approval',
+      'min_karma_for_application',
+      'email_domain_suffix_for_application',
+    ];
+
+    for (const key of keys) {
       if (site[key] !== undefined) {
         this.siteConfigUpdate[key] = site[key];
       }
+    }
+    if (site.category_topic) {
+      this.siteConfigUpdate.category_topic_uuid = site.category_topic.uuid;
     }
     this.siteTopics = site.topics;
     this.autoApproval = site.auto_approval;

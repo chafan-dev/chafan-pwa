@@ -6,7 +6,7 @@
       </v-card-title>
       <v-card-text>
         <template>
-          <v-form>
+          <v-form v-if="categoryTopics !== null">
             <ValidationProvider v-slot="{ errors }" :name="$t('显示名')" rules="required">
               <v-text-field v-model="siteCreate.name" :label="$t('显示名') + '*'" />
               <span class="error--text">{{ errors[0] }}</span>
@@ -23,6 +23,13 @@
               />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
+            <v-select
+              v-model="siteCreate.category_topic_uuid"
+              :items="categoryTopics"
+              :label="$t('类别')"
+              item-text="name"
+              item-value="uuid"
+            />
             <v-select
               v-model="siteCreate.permission_type"
               :items="permissionTypeItems"
@@ -72,7 +79,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { ISiteCreate } from '@/interfaces';
+import { ISiteCreate, ITopic } from '@/interfaces';
 import { api } from '@/api';
 import {
   dispatchCaptureApiError,
@@ -96,6 +103,11 @@ export default class CreateSite extends Vue {
 
   private readonly permissionTypeItems = ['public', 'private'];
   private intermediate = false;
+  private categoryTopics: ITopic[] | null = null;
+
+  private async mounted() {
+    this.categoryTopics = (await api.getCategoryTopics()).data;
+  }
 
   get canCreateSite() {
     if (env !== 'production') {

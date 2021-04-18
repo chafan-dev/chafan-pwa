@@ -163,6 +163,7 @@ export interface IUserProfileCreate {
 export interface ISiteUpdate {
   name?: string;
   description?: string;
+  category_topic_uuid?: string;
   topic_uuids?: string[];
   auto_approval?: boolean;
   min_karma_for_application?: number;
@@ -190,6 +191,7 @@ export interface ISite {
   questions_count: number;
   submissions_count: number;
   members_count: number;
+  category_topic?: ITopic;
 }
 
 export interface IAnswerCreate {
@@ -575,6 +577,7 @@ export interface ITopicCreate {
 export interface ISiteCreate {
   name: string;
   description?: string;
+  category_topic_uuid?: string;
   subdomain: string;
   permission_type: 'public' | 'private';
 }
