@@ -58,7 +58,11 @@
                       </v-expand-transition>
                     </v-col>
                     <v-col>
-                      <v-text-field v-model="userUpdateMe.full_name" :label="$t('Full Name')" />
+                      <v-text-field
+                        v-model="userUpdateMe.full_name"
+                        :label="$t('Full Name')"
+                        clearable
+                      />
                       <ValidationProvider
                         v-slot="{ errors }"
                         :name="$t('Username')"
@@ -75,6 +79,7 @@
                       <v-text-field
                         v-model="userUpdateMe.personal_introduction"
                         :label="$t('个人简介')"
+                        clearable
                       />
                     </v-col>
                   </v-row>
