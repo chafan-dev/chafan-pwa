@@ -213,7 +213,7 @@ export interface IAnswerUpdate {
 }
 
 export interface IRichEditorState {
-  title: string | null; // for article
+  title?: string; // for article
   body: string | null;
   rendered_body_text: string | null;
   visibility: 'anyone' | 'registered';
@@ -685,6 +685,7 @@ export interface IWsUserMsg {
 export interface IAnswerDraft {
   body_draft?: string;
   draft_saved_at?: string;
+  editor: editor_T;
 }
 
 export interface IArchive {
@@ -746,6 +747,7 @@ export interface IArticleDraft {
   title_draft?: string;
   body_draft?: string;
   draft_saved_at?: number[];
+  editor: editor_T;
 }
 
 export interface IArticle {
@@ -767,6 +769,7 @@ export interface IArticle {
   upvoted: boolean;
   view_times: number;
   bookmark_count: number;
+  archives_count: number;
   bookmarked: boolean;
 }
 
@@ -963,8 +966,8 @@ export interface INewEditEvent {
   answerId?: string;
   articleId?: string;
   writingSessionUUID: string;
-  saveCallback: (answer: IAnswer) => void;
-  saveArticleCallback: (article: IArticle) => void;
+  saveCallback?: (answer: IAnswer) => void;
+  saveArticleCallback?: (article: IArticle) => void;
 }
 
 export interface IApplication {

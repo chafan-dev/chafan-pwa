@@ -1,9 +1,9 @@
 const Viewer = () => import('@/components/Viewer.vue');
-const RichEditor = () => import('@/components/RichEditor.vue');
+const AnswerEditor = () => import('@/components/AnswerEditor.vue');
 
 export default {
   install: (Vue) => {
     Vue.component('Viewer', Viewer);
-    Vue.component('RichEditor', RichEditor);
+    Vue.component('AnswerEditor', AnswerEditor);
   },
 };

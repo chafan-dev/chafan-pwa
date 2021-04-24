@@ -72,7 +72,9 @@ class AnswerEditHandler {
         );
         if (answer) {
           this.answerUUID = answer.uuid;
-          payload.saveCallback(answer);
+          if (payload.saveCallback) {
+            payload.saveCallback(answer);
+          }
           if (this.newAnswerCallback) {
             this.newAnswerCallback(answer, payload.isAutosaved);
           }
@@ -103,7 +105,9 @@ class AnswerEditHandler {
               color: 'success',
             });
           }
-          payload.saveCallback(response.data);
+          if (payload.saveCallback) {
+            payload.saveCallback(response.data);
+          }
           this.updatedAnswerCallback(response.data, payload.isAutosaved);
         }
       }

@@ -140,7 +140,7 @@ export default class VditorComponent extends Vue {
     );
   }
 
-  get content() {
+  public getContent() {
     return this.vditor!.getValue();
   }
 

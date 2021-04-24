@@ -20,7 +20,56 @@ export const removeLocalToken = () => {
   try {
     localStorage.removeItem(CHAFAN_TOKEN);
   } catch (e) {
-    // do nothing
+    // TODO
+  }
+};
+
+export interface LocalEdit {
+  edit: IRichEditorState | string;
+  createdAt: Date;
+}
+
+export const saveLocalEdit = (
+  draftType: 'article' | 'answer',
+  uuid: string | null,
+  edit: IRichEditorState | string
+) => {
+  const now = new Date();
+  try {
+    const key = `${draftType}-${uuid}`;
+    const value: LocalEdit = {
+      edit,
+      createdAt: now,
+    };
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    // TODO
+  }
+};
+
+export const loadLocalEdit = (
+  draftType: 'article' | 'answer',
+  uuid: string | null
+): LocalEdit | null => {
+  try {
+    const key = `${draftType}-${uuid}`;
+    const value = localStorage.getItem(key);
+    if (value) {
+      return JSON.parse(value);
+    }
+    return null;
+  } catch (e) {
+    // TODO
+    return null;
+  }
+};
+
+export const clearLocalEdit = (draftType: 'article' | 'answer', uuid: string | null) => {
+  try {
+    const key = `${draftType}-${uuid}`;
+    localStorage.removeItem(key);
+  } catch (e) {
+    //  TODO
   }
 };
 
