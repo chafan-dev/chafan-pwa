@@ -82,6 +82,17 @@
             >
               {{ $t('我的回答') }}
             </v-btn>
+
+            <v-btn
+              v-else-if="savedLocalEdit"
+              class="ma-1 slim-btn"
+              color="primary"
+              depressed
+              small
+              @click="loadSavedLocalEdit"
+              >{{ $t('载入本地草稿') }}
+            </v-btn>
+
             <v-btn
               v-else-if="answerWritable"
               class="ma-1 slim-btn"
@@ -91,6 +102,7 @@
               @click="showEditor = !showEditor"
               >{{ $t('写回答') }}
             </v-btn>
+
             <v-tooltip v-else bottom>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -348,12 +360,12 @@
 
         <!-- Answer editor -->
         <v-expand-transition v-if="userProfile">
-          <RichEditor
+          <AnswerEditor
+            :questionIdProp="question.uuid"
             v-if="showEditor"
             :inPrivateSite="!question.site.public_readable"
             class="ma-1"
-            publishText="发表答案"
-            @submit-edit="newEditHandler"
+            @updated-answer="updatedAnswerCallback"
             @cancel-edit="cancelHandler"
             @delete-draft="deleteDraft"
           />
@@ -430,9 +442,13 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
+import {
+  commitAddNotification,
+  commitSetShowLoginPrompt,
+  commitSetWorkingDraft,
+} from '@/store/main/mutations';
 import { api } from '@/api';
-import { apiAnswer } from '@/api/answer';
+
 import {
   readIsLoggedIn,
   readNarrowUI,
@@ -443,10 +459,10 @@ import {
 import {
   IAnswer,
   IAnswerPreview,
-  INewEditEvent,
   IQuestion,
   IQuestionArchive,
   IQuestionUpvotes,
+  IRichEditorState,
   ISite,
   IUserQuestionSubscription,
   IUserSiteProfile,
@@ -462,9 +478,9 @@ import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
-import { AnswerEditHandler } from '@/handlers';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
+import { loadLocalEdit, LocalEdit } from '@/utils';
 
 @Component({
   components: {
@@ -524,6 +540,7 @@ export default class Question extends Vue {
   private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
   private showUpdateDetailsButton = false;
+  private savedLocalEdit: LocalEdit | null = null;
 
   get userProfile() {
     return readUserProfile(this.$store);
@@ -694,6 +711,9 @@ export default class Question extends Vue {
               this.currentUserAnswerUUID = a.uuid;
             }
           });
+          if (!this.currentUserAnswerUUID) {
+            this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + this.question!.uuid);
+          }
           this.loadingProgress = 66;
 
           if (this.userProfile) {
@@ -743,30 +763,14 @@ export default class Question extends Vue {
     }
   }
 
-  private async newEditHandler(payload: INewEditEvent) {
+  private updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
     this.handlingNewEdit = true;
-    const handler = new AnswerEditHandler(
-      this,
-      payload.answerId || null,
-      this.question!.uuid,
-      (answer, isAutoSaved) => {
-        this.savedNewAnswer = answer;
-        if (!isAutoSaved) {
-          this.showEditor = false;
-          this.updateOrAddFullyLoadedAnswer(answer);
-        }
-        this.handlingNewEdit = false;
-      },
-      (answer, isAutoSaved) => {
-        this.savedNewAnswer = answer;
-        if (!isAutoSaved) {
-          this.updateOrAddFullyLoadedAnswer(answer);
-          this.showEditor = false;
-        }
-        this.handlingNewEdit = false;
-      }
-    );
-    await handler.newEditHandler(payload);
+    this.savedNewAnswer = event.answer;
+    if (!event.isAutoSaved) {
+      this.showEditor = false;
+      this.updateOrAddFullyLoadedAnswer(event.answer);
+    }
+    this.handlingNewEdit = false;
   }
 
   private async submitNewQuestionCommentBody({ body, body_text, editor }) {
@@ -861,6 +865,11 @@ export default class Question extends Vue {
     });
   }
 
+  private deleteDraft() {
+    this.savedLocalEdit = null;
+    this.showEditor = false;
+  }
+
   private async showHistoryDialog() {
     if (this.question) {
       this.archives = (await apiQuestion.getQuestionArchives(this.token, this.question.uuid)).data;
@@ -887,22 +896,6 @@ export default class Question extends Vue {
     this.showEditor = false;
     if (this.question && this.savedNewAnswer) {
       this.loadedFullAnswers.unshift(this.savedNewAnswer);
-    }
-  }
-
-  private async deleteDraft() {
-    if (this.savedNewAnswer) {
-      await apiAnswer.deleteAnswerDraft(this.token, this.savedNewAnswer.uuid);
-      commitAddNotification(this.$store, {
-        content: this.$t('草稿已删除').toString(),
-        color: 'success',
-      });
-      this.showEditor = false;
-    } else {
-      commitAddNotification(this.$store, {
-        content: this.$t('无法删除草稿').toString(),
-        color: 'success',
-      });
     }
   }
 
@@ -988,6 +981,11 @@ export default class Question extends Vue {
       return;
     }
     this.showComments = !this.showComments;
+  }
+
+  private loadSavedLocalEdit() {
+    commitSetWorkingDraft(this.$store, this.savedLocalEdit!.edit as IRichEditorState);
+    this.showEditor = true;
   }
 }
 </script>

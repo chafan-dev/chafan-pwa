@@ -1,14 +1,5 @@
 <template>
-  <v-card
-    v-if="!showEditor && !loading"
-    :class="{
-      'pa-3': $vuetify.breakpoint.mdAndUp,
-      'pa-2': !$vuetify.breakpoint.mdAndUp,
-      'c-card': !embedded,
-    }"
-    :flat="embedded"
-    :loading="loading"
-  >
+  <base-card v-if="!showEditor && !loading">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
@@ -25,7 +16,7 @@
           {{ $t('展开全文') }}
         </a>
       </div>
-      <div v-if="answer" :hidden="preview">
+      <div v-if="answer" v-show="!preview">
         <div v-if="showAuthor" class="d-flex align-center">
           <UserLink v-show="!preview" :showAvatar="true" :userPreview="answer.author" />
           <span
@@ -48,9 +39,9 @@
               {{ $t('草稿') }}
             </v-chip>
             <Viewer
-              v-if="bodyDraft !== null"
+              v-if="bodyDraft !== null && draftEditor !== null"
               :body="bodyDraft"
-              :editor="answer.editor"
+              :editor="draftEditor"
               class="vditor-preview"
             />
           </template>
@@ -71,7 +62,7 @@
           </template>
         </div>
 
-        <div v-if="userBookmark" fluid>
+        <div v-if="userBookmark">
           <v-row>
             <v-col align-self="end" class="d-flex">
               <v-dialog v-model="showCancelUpvoteDialog" max-width="400">
@@ -227,9 +218,9 @@
           </v-row>
 
           <!--
-                        NOTE: Layout of this part is tricky since it can be quite wide when there are six emojis.
-                        Let's fix them later.
-                     -->
+            NOTE: Layout of this part is tricky since it can be quite wide when there are six emojis.
+            Let's fix them later.
+          -->
           <div class="d-flex justify-end mt-1">
             <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
           </div>
@@ -278,27 +269,29 @@
         </v-col>
       </v-row>
     </div>
-  </v-card>
-  <RichEditor
+  </base-card>
+  <AnswerEditor
     v-else-if="answer && showEditor"
     :answerIdProp="answer.uuid"
+    :questionIdProp="answer.question.uuid"
     :archivesCount="answer.archives_count"
     :inPrivateSite="!answer.site.public_readable"
-    publishText="发表答案"
-    @submit-edit="newEditHandler"
-    @cancel-edit="onCancelEdit"
     @delete-draft="deleteDraft"
+    @cancel-edit="cancelHandler"
+    @updated-answer="updatedAnswerCallback"
+    ref="editor"
   />
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
+  editor_T,
   IAnswer,
   IAnswerDraft,
   IAnswerPreview,
   IAnswerUpvotes,
-  INewEditEvent,
+  IRichEditorState,
   IUserAnswerBookmark,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
@@ -315,7 +308,6 @@ import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { AnswerEditHandler } from '@/handlers';
 
 import {
   commitAddNotification,
@@ -324,9 +316,14 @@ import {
 } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
+import { clearLocalEdit, loadLocalEdit, LocalEdit } from '@/utils';
+import BaseCard from '@/components/base/BaseCard.vue';
+import AnswerEditor from '@/components/AnswerEditor.vue';
 
 @Component({
   components: {
+    AnswerEditor,
+    BaseCard,
     UserLink,
     QuestionLink,
     CommentBlock,
@@ -368,17 +365,14 @@ export default class Answer extends Vue {
   private toggleHideAnswerIntermediate = false;
   private answerPreviewBody: string = this.answerPreview.body;
   private currentUserIsAuthor = false;
-  private answerEditHandler: AnswerEditHandler = new AnswerEditHandler(
-    this,
-    this.answerPreview.uuid,
-    this.answerPreview.question.uuid,
-    this.updatedAnswerCallback
-  );
+
   private editButtonText = '编辑';
   private showHasDraftBadge = false;
+  private bodyDraftFromLocalSavedEdit: LocalEdit | null = null;
   private draftPromise: Promise<IAnswerDraft> | null = null;
   private commentSubmitIntermediate = false;
   private bodyDraft: string | null = null;
+  private draftEditor: editor_T | null = null;
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -496,15 +490,11 @@ export default class Answer extends Vue {
     });
   }
 
-  private async newEditHandler(payload: INewEditEvent) {
-    this.answerEditHandler.newEditHandler(payload);
-  }
-
-  private updatedAnswerCallback(answer: IAnswer, isAutoSaved: boolean) {
-    if (!isAutoSaved) {
+  private updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
+    if (!event.isAutoSaved) {
       this.showHasDraftBadge = false;
       this.showEditor = false;
-      this.updateStateWithLoadedAnswer(answer);
+      this.updateStateWithLoadedAnswer(event.answer);
     }
   }
 
@@ -514,14 +504,26 @@ export default class Answer extends Vue {
     if (this.userProfile) {
       this.currentUserIsAuthor = this.userProfile.uuid === this.answer.author.uuid;
       if (this.currentUserIsAuthor) {
+        const localSavedEdit = loadLocalEdit('answer', answer.uuid);
         this.draftPromise = apiAnswer.getAnswerDraft(this.token, answer.uuid).then((response) => {
           const draft = response.data;
-          if (draft.body_draft) {
+          if (
+            draft.body_draft &&
+            (localSavedEdit === null ||
+              this.$dayjs.utc(draft.draft_saved_at).isAfter(this.$dayjs(localSavedEdit.createdAt)))
+          ) {
             this.editButtonText = '编辑草稿';
             this.bodyDraft = draft.body_draft;
+            this.draftEditor = draft.editor;
+            this.showHasDraftBadge = true;
+          } else if (localSavedEdit) {
+            this.editButtonText = '编辑草稿';
+            this.bodyDraft = (localSavedEdit.edit as IRichEditorState).body;
+            this.draftEditor = (localSavedEdit.edit as IRichEditorState).editor;
+            this.bodyDraftFromLocalSavedEdit = localSavedEdit;
             this.showHasDraftBadge = true;
           }
-          return response.data;
+          return draft;
         });
       }
     }
@@ -553,24 +555,31 @@ export default class Answer extends Vue {
   }
 
   private async loadEditor() {
-    if (this.answer) {
+    if (this.answer && this.draftPromise) {
       const draft = await this.draftPromise;
-      if (draft && draft.body_draft) {
+      if (this.bodyDraftFromLocalSavedEdit) {
+        commitAddNotification(this.$store, {
+          content: this.$t('载入最近的草稿').toString(),
+          color: 'success',
+        });
+        commitSetWorkingDraft(
+          this.$store,
+          this.bodyDraftFromLocalSavedEdit.edit as IRichEditorState
+        );
+      } else if (draft && draft.body_draft) {
         commitAddNotification(this.$store, {
           content: this.$t('载入最近的草稿').toString(),
           color: 'success',
         });
         commitSetWorkingDraft(this.$store, {
-          title: null,
           body: draft.body_draft,
           rendered_body_text: null,
           is_draft: true,
-          editor: this.answer.editor,
+          editor: draft.editor,
           visibility: this.answer.visibility,
         });
       } else {
         commitSetWorkingDraft(this.$store, {
-          title: null,
           body: this.answer.body,
           rendered_body_text: null,
           visibility: this.answer.visibility,
@@ -582,17 +591,15 @@ export default class Answer extends Vue {
     }
   }
 
-  private onCancelEdit() {
-    this.showEditor = false;
-    apiAnswer.getAnswer(this.token, this.answerPreview.uuid).then((response) => {
-      this.updateStateWithLoadedAnswer(response.data);
-    });
-  }
-
   private async deleteAnswer() {
     if (this.draftMode) {
-      await this.deleteDraft();
-      this.$emit('delete-answer-draft', this.answerPreview.uuid);
+      await (this.$refs.editor as AnswerEditor).deleteDraft();
+      clearLocalEdit('answer', this.answerPreview.uuid);
+      await apiAnswer.deleteAnswerDraft(this.token, this.answerPreview.uuid);
+      commitAddNotification(this.$store, {
+        content: this.$t('草稿已删除').toString(),
+        color: 'success',
+      });
     } else {
       dispatchCaptureApiError(this.$store, async () => {
         await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
@@ -601,21 +608,9 @@ export default class Answer extends Vue {
           color: 'success',
         });
         this.confirmDeleteDialog = false;
-        this.$emit('delete-answer', this.answerPreview.uuid);
       });
     }
-  }
-
-  private async deleteDraft() {
-    dispatchCaptureApiError(this.$store, async () => {
-      await apiAnswer.deleteAnswerDraft(this.token, this.answer!.uuid);
-      commitAddNotification(this.$store, {
-        content: this.$t('草稿已删除').toString(),
-        color: 'success',
-      });
-      this.showHasDraftBadge = false;
-      this.showEditor = false;
-    });
+    this.$emit('delete-answer', this.answerPreview.uuid);
   }
 
   private truncatedIntro(intro: string) {
@@ -641,6 +636,15 @@ export default class Answer extends Vue {
     }
     this.showComments = !this.showComments;
   }
+
+  private cancelHandler() {
+    this.showEditor = false;
+  }
+
+  private deleteDraft() {
+    this.showEditor = false;
+    this.showHasDraftBadge = false;
+  }
 }
 </script>
 
@@ -650,12 +654,4 @@ export default class Answer extends Vue {
 
 .vditor-preview
   padding: 0px 1px
-</style>
-
-<style scoped>
-/* FIXME: code duplicate: Home.vue */
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
-}
 </style>

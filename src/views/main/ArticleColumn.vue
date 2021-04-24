@@ -29,9 +29,9 @@
             </li>
           </ul>
           <div v-if="!userProfile" class="text-center grey--text">
+            <v-skeleton-loader type="paragraph" boilerplate />
             {{ $t('登录后查看更多') }}
           </div>
-          <v-skeleton-loader v-else type="paragraph" />
         </div>
       </v-col>
     </v-row>

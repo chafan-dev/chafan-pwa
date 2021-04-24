@@ -1,15 +1,5 @@
 <template>
-  <div
-    :class="{
-      'd-flex': true,
-      'flex-column': true,
-      'flex-column-reverse': focusMode,
-    }"
-  >
-    <v-overlay v-model="overlay" opacity="0.5" z-index="10">
-      <v-progress-circular indeterminate />
-    </v-overlay>
-
+  <div>
     <ChafanTiptap
       v-show="topLevelEditor === 'tiptap'"
       ref="tiptap"
@@ -26,19 +16,40 @@
       class="mb-2"
     />
 
+    <!-- Editor controls -->
     <div class="d-flex align-center">
-      <v-btn color="slim-btn primary" depressed small @click="submitEdit(true)">
-        {{ $t(publishText) }}
+      <v-btn
+        color="primary"
+        depressed
+        small
+        @click="submitEdit(true)"
+        :disabled="savingIntermediate"
+      >
+        {{ $t('发表答案') }}
       </v-btn>
-      <v-btn color="slim-btn info ml-2" depressed small @click="submitEdit(false)">
-        {{ $t('Save draft') }}
-      </v-btn>
-      <v-btn class="slim-btn ml-2" depressed small @click="$emit('cancel-edit')"
-        >{{ $t('Cancel') }}
-      </v-btn>
-      <v-btn class="slim-btn ml-2" depressed small @click="showHelp = !showHelp"
-        >{{ $t('Help') }}
-      </v-btn>
+
+      <span class="ml-2">
+        <!-- NOTE: wrap in span to avoid ml-2 problem when disabled during progress -->
+        <v-btn
+          color="info"
+          depressed
+          small
+          @click="submitEdit(false)"
+          :disabled="savingIntermediate"
+        >
+          {{ $t('Save draft') }}
+        </v-btn>
+      </span>
+
+      <v-btn class="ml-2" depressed small @click="$emit('cancel-edit')">{{ $t('Cancel') }} </v-btn>
+      <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">{{ $t('Help') }} </v-btn>
+      <v-progress-circular
+        class="ml-2"
+        v-if="savingIntermediate"
+        size="20"
+        color="primary"
+        indeterminate
+      />
       <v-spacer />
       <span
         v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp"
@@ -48,9 +59,9 @@
         {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
       </span>
 
-      <v-tooltip v-if="answerId || articleId" bottom>
+      <v-tooltip v-if="answerId" bottom>
         <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" align-self="center" class="d-flex">
+          <div v-bind="attrs" v-on="on" class="d-flex">
             <HistoryIcon class="ml-2" @click="showHistoryDialog" />
           </div>
         </template>
@@ -62,7 +73,7 @@
           <SettingsIcon v-bind="attrs" v-on="on" class="ml-1" />
         </template>
         <v-list dense>
-          <v-list-item v-if="answerId || articleId" @click="showDeleteDraftDialog = true">
+          <v-list-item @click="showDeleteDraftDialog = true">
             <v-list-item-icon>
               <DeleteIcon />
             </v-list-item-icon>
@@ -139,29 +150,6 @@
             </v-expansion-panel>
           </v-expansion-panels>
 
-          <v-expansion-panels v-if="articleArchives">
-            <v-expansion-panel v-for="archive in articleArchives" :key="archive.id">
-              <v-expansion-panel-header>
-                <v-btn
-                  class="mr-4"
-                  depressed
-                  max-width="100px"
-                  small
-                  @click="loadArticleArchive(archive)"
-                  >{{ $t('加载该版本') }}
-                </v-btn>
-                {{ $dayjs.utc(archive.created_at).local().fromNow() }}
-                <v-spacer />
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <div class="title">
-                  {{ archive.title }}
-                </div>
-                <Viewer :body="archive.body" :editor="archive.editor" />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-
           <v-pagination
             v-model="archivePage"
             :length="archivePagesLength"
@@ -170,28 +158,7 @@
         </v-card>
       </v-dialog>
     </div>
-    <v-expand-transition>
-      <v-card v-show="showHelp" class="ma-3 pa-3">
-        <div class="headline primary--text">{{ $t('Help') }}</div>
-        <div>
-          <ul>
-            <li>
-              数学输入：目前支持用<code>$...$</code>输入行内公式，用<code>$$....$$</code>输入公式块。
-            </li>
-          </ul>
-        </div>
-      </v-card>
-    </v-expand-transition>
-    <div v-if="hasTitle">
-      <v-textarea
-        v-model="articleTitle"
-        :label="$t('Title')"
-        auto-grow
-        class="headline mt-2"
-        dense
-        rows="1"
-      />
-    </div>
+    <EditorHelp :show-help="showHelp" />
   </div>
 </template>
 
@@ -204,18 +171,9 @@ import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
 import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readUserProfile, readWorkingDraft } from '@/store/main/getters';
-import { uuidv4 } from '@/utils';
-import {
-  editor_T,
-  IAnswer,
-  IArchive,
-  IArticle,
-  IArticleArchive,
-  INewEditEvent,
-  IRichEditorState,
-} from '@/interfaces';
+import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
+import { editor_T, IAnswer, IArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
-import { apiArticle } from '@/api/article';
 import { env } from '@/env';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
@@ -223,9 +181,12 @@ import VditorComponent from '@/components/editor/VditorComponent.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
+import { AnswerEditHandler } from '@/handlers';
+import EditorHelp from '@/components/editor/EditorHelp.vue';
 
 @Component({
   components: {
+    EditorHelp,
     ChafanTiptap,
     EditIcon,
     VditorComponent,
@@ -236,14 +197,18 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
     RegisteredVisibilityIcon,
   },
 })
-export default class RichEditor extends Vue {
+export default class AnswerEditor extends Vue {
+  // Events:
+  // - cancel-edit
+  // - updated-answer
+  // - delete-draft
+
   @Prop({ default: false }) private readonly focusMode!: boolean;
   @Prop() private readonly answerIdProp: string | undefined;
-  @Prop() private readonly articleIdProp: string | undefined;
+  @Prop() private readonly questionIdProp!: string;
   @Prop({ default: false }) private readonly inPrivateSite!: boolean;
   @Prop() private readonly archivesCount: number | undefined;
-  @Prop({ default: false }) private readonly hasTitle!: boolean;
-  @Prop({ default: 'Publish' }) private readonly publishText!: string;
+
   private topLevelEditorItems: { text: string; value: string }[] | null = null;
   private readonly visibilityItems = [
     {
@@ -264,9 +229,6 @@ export default class RichEditor extends Vue {
   private showHelp = false;
   private historyDialog = false;
   private answerId: string | null = null;
-  private articleId: string | null = null;
-  private overlay = false;
-  private articleTitle: string | null = null;
   private archivePage = 1;
   private archivePagesLength = 1;
   private readonly archivePageLimit = 10;
@@ -277,11 +239,9 @@ export default class RichEditor extends Vue {
   private lastSaveIntermediate = false;
   private lastSaveTimerId: any = null;
   private archives: IArchive[] = [];
-  private selectedArchive: IArchive | null = null;
-  private articleArchives: IArticleArchive[] = [];
-  private selectedArticleArchive: IArticleArchive | null = null;
   private showDeleteDraftDialog = false;
   private topLevelEditor: 'tiptap' | 'vditor' = 'vditor';
+  private savingIntermediate: boolean = false;
 
   get token() {
     return this.$store.state.main.token;
@@ -289,11 +249,9 @@ export default class RichEditor extends Vue {
 
   private mounted() {
     this.answerId = this.answerIdProp ? this.answerIdProp : null;
-    this.articleId = this.articleIdProp ? this.articleIdProp : null;
     const workingDraft = readWorkingDraft(this.$store);
     if (workingDraft && workingDraft.body) {
       this.visibility = workingDraft.visibility;
-      this.articleTitle = workingDraft.title;
       this.initEditor(workingDraft.body, workingDraft.editor);
       this.lastSaveLength = workingDraft.body.length;
     } else {
@@ -339,7 +297,7 @@ export default class RichEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return (this.$refs.tiptap as ChafanTiptap).content;
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).content;
+      return (this.$refs.vditor as VditorComponent).getContent();
     }
     commitAddNotification(this.$store, {
       content: this.$t('编辑器错误').toString(),
@@ -363,7 +321,6 @@ export default class RichEditor extends Vue {
 
   private readState(isPublished: boolean): IRichEditorState {
     return {
-      title: this.articleTitle,
       body: this.getContent(),
       rendered_body_text: this.getTextContent(),
       is_draft: !isPublished,
@@ -384,7 +341,6 @@ export default class RichEditor extends Vue {
     }
   }
 
-  @Emit('submit-edit')
   private autoSaveEdit(): INewEditEvent {
     if (env === 'development') {
       console.log('autoSaveEdit, this.answerId: ' + this.answerId);
@@ -392,7 +348,6 @@ export default class RichEditor extends Vue {
     return {
       isAutosaved: true,
       answerId: this.answerId ? this.answerId : undefined,
-      articleId: this.articleId ? this.articleId : undefined,
       edit: this.readState(false),
       writingSessionUUID: this.writingSessionUUID,
       saveCallback: (answer: IAnswer) => {
@@ -406,38 +361,59 @@ export default class RichEditor extends Vue {
           this.lastAutoSavedAt = answer.updated_at;
         }
       },
-      saveArticleCallback: (article: IArticle) => {
-        if (env === 'development') {
-          console.log('autoSaveEdit saveCallback');
-        }
-        this.articleId = article.uuid;
-        if (article.draft_saved_at) {
-          this.lastAutoSavedAt = article.draft_saved_at;
-        } else {
-          this.lastAutoSavedAt = article.updated_at;
-        }
-      },
     };
   }
 
-  @Emit('submit-edit')
-  private submitEdit(isPublished: boolean): INewEditEvent {
+  private answerEditHandler: AnswerEditHandler = new AnswerEditHandler(
+    this,
+    this.answerId,
+    this.questionIdProp,
+    this.updatedAnswerCallback
+  );
+
+  @Emit('updated-answer')
+  private updatedAnswerCallback(answer: IAnswer, isAutoSaved: boolean) {
     return {
+      answer,
+      isAutoSaved,
+    };
+  }
+
+  private async newEditHandler(payload: INewEditEvent) {
+    this.answerEditHandler.newEditHandler(payload);
+  }
+
+  private submitEdit(isPublished: boolean) {
+    this.savingIntermediate = true;
+    this.newEditHandler({
       isAutosaved: false,
       edit: this.readState(isPublished),
       answerId: this.answerId ? this.answerId : undefined,
-      articleId: this.articleId ? this.articleId : undefined,
       writingSessionUUID: this.writingSessionUUID,
       saveCallback: (answer: IAnswer) => {
+        clearLocalEdit('answer', this.contentId);
         this.lastAutoSavedAt = answer.updated_at;
       },
-      saveArticleCallback: (article: IArticle) => {
-        this.lastAutoSavedAt = article.updated_at;
-      },
-    };
+    });
+  }
+
+  // For local edit saving identification
+  get contentId() {
+    if (this.answerId) {
+      return this.answerId;
+    }
+    if (this.questionIdProp) {
+      return 'answer-of-' + this.questionIdProp;
+    }
+    return null;
   }
 
   private onEditorChange(textContent: string) {
+    if (Math.abs(textContent.length - this.lastSaveLength) > 10) {
+      // More frequent local backup
+      saveLocalEdit('answer', this.contentId, this.readState(false));
+      this.lastSaveLength = textContent.length;
+    }
     if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
       if (!this.lastSaveIntermediate) {
         this.lastSaveIntermediate = true;
@@ -468,19 +444,6 @@ export default class RichEditor extends Vue {
           });
         }
       }
-      if (this.articleId) {
-        this.articleArchives = (
-          await apiArticle.getArticleArchives(this.token, this.articleId, 0, this.archivePageLimit)
-        ).data;
-        if (this.articleArchives.length > 0) {
-          this.historyDialog = true;
-        } else {
-          commitAddNotification(this.$store, {
-            content: this.$t('尚无历史发表存档').toString(),
-            color: 'info',
-          });
-        }
-      }
     });
   }
 
@@ -489,15 +452,19 @@ export default class RichEditor extends Vue {
     this.historyDialog = false;
   }
 
-  private loadArticleArchive(archive: IArticleArchive) {
-    this.articleTitle = archive.title;
-    this.initEditor(archive.body, this.getEditorMode());
-    this.historyDialog = false;
-  }
-
   @Emit('delete-draft')
-  private deleteDraft() {
+  async deleteDraft() {
     this.showDeleteDraftDialog = false;
+    clearLocalEdit('answer', this.contentId);
+    dispatchCaptureApiError(this.$store, async () => {
+      if (this.answerId) {
+        await apiAnswer.deleteAnswerDraft(this.token, this.answerId);
+        commitAddNotification(this.$store, {
+          content: this.$t('草稿已删除').toString(),
+          color: 'success',
+        });
+      }
+    });
   }
 
   private async changeArchivePage() {
@@ -507,16 +474,6 @@ export default class RichEditor extends Vue {
           await apiAnswer.getAnswerArchives(
             this.token,
             this.answerId,
-            (this.archivePage - 1) * this.archivePageLimit,
-            this.archivePageLimit
-          )
-        ).data;
-      }
-      if (this.articleId) {
-        this.articleArchives = (
-          await apiArticle.getArticleArchives(
-            this.token,
-            this.articleId,
             (this.archivePage - 1) * this.archivePageLimit,
             this.archivePageLimit
           )
@@ -536,9 +493,3 @@ export default class RichEditor extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-.slim-btn {
-  padding: 0 8px !important;
-}
-</style>
