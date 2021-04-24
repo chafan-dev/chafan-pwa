@@ -2,7 +2,6 @@
 
 [![CodeQL](https://github.com/chafan-dev/frontend/actions/workflows/codeql-analysis.yml/badge.svg?branch=prod)](https://github.com/chafan-dev/frontend/actions/workflows/codeql-analysis.yml)
 [![CI](https://github.com/chafan-dev/frontend/actions/workflows/main.yml/badge.svg)](https://github.com/chafan-dev/frontend/actions/workflows/main.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/2eaac29c-b2e4-4d0f-85af-1eb464e9447c/deploy-status)](https://app.netlify.com/sites/chafan-test/deploys)
 
 ## Project setup
 
