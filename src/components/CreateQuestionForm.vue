@@ -8,14 +8,16 @@
         v-if="site === undefined"
         v-model="selectedSite"
         :items="siteProfiles"
-        :label="$t('Circle')"
+        :label="$t('Circle') + $t(' (加入后在此处可见, 「大广场」不限话题)')"
         item-text="site.name"
         item-value="site"
       />
       <v-textarea v-model="newQuestionTitle" :label="$t('Title')" auto-grow dense rows="3" />
       <div class="d-flex">
         <v-spacer />
-        <span class="text-caption grey--text">{{ $t('创建后添加细节') }}</span>
+        <span class="text-caption grey--text">
+          {{ $t('创建后添加细节') }}
+        </span>
       </div>
     </v-card-text>
     <v-card-actions>

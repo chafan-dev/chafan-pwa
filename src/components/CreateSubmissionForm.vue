@@ -9,7 +9,7 @@
           v-if="site === undefined"
           v-model="selectedSite"
           :items="siteProfiles"
-          :label="$t('Circle')"
+          :label="$t('Circle') + $t(' (加入后在此处可见, 「大广场」不限话题)')"
           item-text="site.name"
           item-value="site"
         />
