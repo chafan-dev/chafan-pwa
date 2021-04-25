@@ -165,6 +165,12 @@
                       @click="expandReadNotifications"
                     >
                       {{ $t('已读通知') }}
+                      <v-progress-circular
+                        size="20"
+                        indeterminate
+                        v-if="readNotificationsIntermediate"
+                        color="primary"
+                      />
                     </v-btn>
                   </div>
                 </v-list>
@@ -517,6 +523,10 @@ export default class Main extends Vue {
         is_read: true,
       });
       this.unreadNotifications.splice(this.unreadNotifications.indexOf(notif), 1);
+      if (this.readNotifications === null) {
+        this.readNotifications = [];
+      }
+      this.readNotifications.push(notif);
       this.readNotifIntermediate = false;
     });
   }
