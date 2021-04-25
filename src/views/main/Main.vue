@@ -191,7 +191,7 @@
             <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
               <v-card>
                 <v-card-title>
-                  {{ $t('你的反馈会让 Chafan 变得更好') }}
+                  {{ $t('你的反馈会让「茶饭」变得更好') }}
                 </v-card-title>
                 <v-card-text>
                   <div>

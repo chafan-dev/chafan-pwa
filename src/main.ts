@@ -420,8 +420,8 @@ const i18n = new VueI18n({
       'commented answer': 'commented answer',
       'replied comment': 'replied comment',
       导出: 'Export',
-      'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
-        'Chafan supports data and content ownership, you can export your data and content at any time. Current automated export is not implemented, please contact takeout@cha.fan and we will send your data snapshot in a week',
+      '「茶饭」支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
+        '「茶饭」supports data and content ownership, you can export your data and content at any time. Current automated export is not implemented, please contact takeout@cha.fan and we will send your data snapshot in a week',
       管理员模式: 'Admin mode',
       普通用户模式: 'Normal user mode',
       'Article title is too short: minimum length 5 characters.':
@@ -720,8 +720,8 @@ const i18n = new VueI18n({
       普通用户模式: '普通用户模式',
       管理员模式: '管理员模式',
       导出: '导出',
-      'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
-        'Chafan 支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。',
+      '「茶饭」支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。':
+        '「茶饭」支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。',
       'commented question': '评论了问题',
       'commented article': '评论了文章',
       'commented answer': '评论了回答',

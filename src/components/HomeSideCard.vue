@@ -68,7 +68,7 @@
     <v-divider />
     <div class="py-3">
       <div>
-        <a class="text-decoration-none" href="https://about.cha.fan" target="_blank">关于 Chafan</a>
+        <a class="text-decoration-none" href="https://about.cha.fan" target="_blank">关于茶饭</a>
       </div>
       <div>
         <a
