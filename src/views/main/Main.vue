@@ -135,7 +135,7 @@
                 class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1"
               >
                 <v-subheader class="font-weight-bold">
-                  {{ $t('未读通知') }}
+                  {{ $t('通知') }}
                 </v-subheader>
 
                 <div class="mr-1">
@@ -149,7 +149,7 @@
               <div style="max-height: 300px; overflow: auto">
                 <v-list>
                   <template v-for="(notif, idx) in unreadNotifications">
-                    <v-divider v-if="idx" :key="'divider-' + notif.id" class="ma-1" />
+                    <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />
 
                     <v-list-item :key="notif.id">
                       <Event v-if="notif.event" :event="notif.event" />
@@ -157,22 +157,13 @@
                       <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
                     </v-list-item>
                   </template>
-                  <div class="text-center mt-2">
-                    <v-btn
-                      :disabled="readNotificationsIntermediate"
-                      depressed
-                      small
-                      @click="expandReadNotifications"
-                    >
-                      {{ $t('已读通知') }}
-                      <v-progress-circular
-                        size="20"
-                        indeterminate
-                        v-if="readNotificationsIntermediate"
-                        color="primary"
-                      />
-                    </v-btn>
-                  </div>
+                  <template v-for="notif in readNotifications">
+                    <v-divider :key="'divider-' + notif.id" />
+
+                    <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
+                      <Event v-if="notif.event" :event="notif.event" />
+                    </v-list-item>
+                  </template>
                 </v-list>
               </div>
             </v-card>
@@ -418,9 +409,9 @@ export default class Main extends Vue {
   private unreadNotifications: INotification[] = [];
   private wsConnection: WebSocket | null = null;
   private readNotifIntermediate = false;
-  private readNotificationsIntermediate = false;
+
   private showReadNotifications = false;
-  private readNotifications: INotification[] | null = null;
+  private readNotifications: INotification[] = [];
   private readonly accountItems = [
     {
       icon: 'DashboardIcon',
@@ -487,6 +478,10 @@ export default class Main extends Vue {
             }
           });
         }
+        this.readNotifications.push(
+          ...(await api2.getReadNotifications(this.$store.state.main.token)).data
+        );
+
         const wsToken = (await api2.getWsToken(this.$store.state.main.token)).data.msg;
         this.wsConnection = new WebSocket(wsUrl + '/api/v1/ws?token=' + wsToken);
         this.wsConnection.onmessage = (message) => {
@@ -523,9 +518,6 @@ export default class Main extends Vue {
         is_read: true,
       });
       this.unreadNotifications.splice(this.unreadNotifications.indexOf(notif), 1);
-      if (this.readNotifications === null) {
-        this.readNotifications = [];
-      }
       this.readNotifications.push(notif);
       this.readNotifIntermediate = false;
     });
@@ -534,19 +526,6 @@ export default class Main extends Vue {
   private async readAllNotifs() {
     this.unreadNotifications.forEach((notif) => {
       this.readNotif(notif);
-    });
-  }
-
-  private async expandReadNotifications() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.readNotifications === null) {
-        this.readNotificationsIntermediate = true;
-        this.readNotifications = (
-          await api2.getReadNotifications(this.$store.state.main.token)
-        ).data;
-        this.readNotificationsIntermediate = false;
-      }
-      this.showReadNotifications = !this.showReadNotifications;
     });
   }
 
