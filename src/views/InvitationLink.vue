@@ -99,7 +99,9 @@ export default class InvitationLink extends Vue {
       },
       errorFilter: (err: AxiosError) => {
         if (err.response && err.response.data.detail === 'Invalid invitation link') {
-          this.errorMsg = this.$t('邀请码已失效').toString();
+          this.errorMsg = this.$t(
+            '邀请码已过期/用完，请联系站内用户重新生成或者前往 https://about.cha.fan/signup/ 申请，谢谢！'
+          ).toString();
           return true;
         }
         return false;
