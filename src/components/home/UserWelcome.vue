@@ -39,7 +39,7 @@
           <v-stepper-content step="1" />
 
           <v-stepper-step step="2">
-            {{ $t('探索 Chafan 上的感兴趣的圈子和用户来生成自己的信息流：') }}
+            {{ $t('探索「茶饭」上的感兴趣的圈子和用户来生成自己的信息流：') }}
           </v-stepper-step>
 
           <v-stepper-content step="2" />
@@ -51,7 +51,7 @@
             class="text-decoration-none"
             href="https://cha.fan/questions/6Xrr59FKbTdFU4M6mXUg"
             target="_blank"
-            >「新用户如何上手 Chafan？ 」</a
+            >「新用户如何上手「茶饭」？ 」</a
           >
         </div>
       </div>

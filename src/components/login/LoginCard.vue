@@ -165,7 +165,7 @@
                       text
                     >
                       <HelpCircleOutline class="mr-1" />
-                      {{ $t('如何加入 Chafan?') }}
+                      {{ $t('如何加入「茶饭」?') }}
                     </v-btn>
 
                     <v-btn
