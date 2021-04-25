@@ -1,10 +1,10 @@
 <template>
-  <base-card v-if="!showEditor && !loading">
+  <base-card v-if="!showEditor">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
     <div v-else>
-      <div v-if="showQuestionInCard" class="title mb-2 d-flex">
+      <div v-if="showQuestionInCard" class="title mb-2">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
       <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
@@ -12,9 +12,8 @@
           <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
         </span>
         {{ answerPreviewBody }}
-        <a @click="expandDown">
-          {{ $t('展开全文') }}
-        </a>
+        <span class="primary--text">{{ $t('展开全文') }}</span>
+        <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading" />
       </div>
       <div v-if="answer" v-show="!preview">
         <div v-if="showAuthor" class="d-flex align-center">
@@ -52,6 +51,7 @@
             <v-chip v-else-if="showHasDraftBadge" color="info" small>
               {{ $t('编辑器中有未发表的草稿') }}
             </v-chip>
+
             <Viewer
               v-intersect.once="onReadFullAnswer"
               :body="answer.body"
