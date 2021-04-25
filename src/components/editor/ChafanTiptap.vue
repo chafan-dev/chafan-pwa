@@ -83,7 +83,7 @@ export default class ChafanTiptap extends Vue {
   }
 
   private userLabel(user: IUserPreview) {
-    return `${user.full_name} (${user.handle})`;
+    return user.full_name ? `${user.full_name} (${user.handle})` : user.handle;
   }
 
   async upload(file: Blob) {
