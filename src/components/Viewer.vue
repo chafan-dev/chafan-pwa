@@ -78,4 +78,8 @@ export default class Viewer extends Vue {
 .vditor-reset a {
   text-decoration: none !important;
 }
+
+.vditor-reset {
+  padding: 0;
+}
 </style>

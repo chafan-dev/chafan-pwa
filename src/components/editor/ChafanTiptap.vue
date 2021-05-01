@@ -44,7 +44,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <div class="d-flex pb-1">
+    <div class="d-flex pb-1" v-if="editable">
       <v-spacer />
       <v-btn small outlined color="grey" @click="showImageDialog = true">Image</v-btn>
       <v-btn small class="ml-1" outlined color="grey" @click="showVideoDialog = true">Video</v-btn>
@@ -52,6 +52,7 @@
     <Tiptap
       ref="base"
       v-bind="$attrs"
+      :editable="editable"
       v-on="$listeners"
       :search-users="searchUsers"
       :user-href="userHref"
@@ -64,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { apiSearch } from '@/api/search';
 import { IUserPreview } from '@/interfaces';
 
@@ -88,6 +89,8 @@ interface ITiptapDialogController {
   },
 })
 export default class ChafanTiptap extends Vue {
+  @Prop({ default: true }) private readonly editable!: boolean;
+
   private showVideoDialog = false;
   readonly videoDialogController: ITiptapDialogController = {
     onUrl: undefined,

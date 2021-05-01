@@ -2,11 +2,11 @@
   <v-container :class="{ 'pa-1': !$vuetify.breakpoint.mdAndUp }" fluid>
     <user-agreement v-if="userProfile" ref="userAgreement" :user-profile="userProfile" />
 
-    <v-row class="pa-3" justify="center">
+    <v-row class="py-3" justify="center">
       <!-- Feed column -->
       <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }" fluid>
         <template v-if="userProfile">
-          <div class="d-flex justify-space-between mb-3">
+          <div class="d-flex justify-space-between mb-3 mx-4">
             <NewContentActionBar />
             <v-spacer />
             <div class="d-flex align-center">
