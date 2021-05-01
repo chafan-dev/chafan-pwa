@@ -1,6 +1,6 @@
 <template>
   <div class="simple-viewer">
-    <ChafanTiptap v-if="editor === 'tiptap'" :editable="false" :initial-value="body" />
+    <ChafanTiptap v-if="editor === 'tiptap'" :editable="false" :body="body" />
     <div v-else id="vditorViewer" />
     <LightboxGroup v-if="contentElem" :container="contentElem" />
   </div>
@@ -59,6 +59,10 @@ export default class SimpleViewer extends Vue {
 
 .simple-viewer p
   margin-bottom: 10px
+
+.simple-viewer .ProseMirror
+  padding-left: 0
+  padding-right: 0
 </style>
 
 <style>

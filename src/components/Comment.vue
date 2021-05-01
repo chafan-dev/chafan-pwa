@@ -116,7 +116,12 @@
     <!-- Editor -->
     <div v-if="writable && !isDeleted">
       <div v-if="showUpdateEditor">
-        <SimpleEditor ref="commentUpdateEditor" :initialValue="comment.body" class="mt-2 mb-2" />
+        <SimpleEditor
+          ref="commentUpdateEditor"
+          :initialValue="comment.body"
+          class="mt-2 mb-2"
+          :editor-prop="comment.editor"
+        />
         <div class="d-flex">
           <v-spacer />
           <v-btn
