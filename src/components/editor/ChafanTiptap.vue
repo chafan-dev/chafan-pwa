@@ -1,17 +1,15 @@
 <template>
-  <Tiptap
-    ref="base"
-    v-slot="{ user }"
-    v-bind="$attrs"
-    v-on="$listeners"
-    :search-users="searchUsers"
-    :user-href="userHref"
-    :user-label="userLabel"
-    :upload="upload"
-  >
-    <span v-if="user.full_name">{{ user.full_name }} (@{{ user.handle }})</span>
-    <span v-else>@{{ user.handle }}</span>
-  </Tiptap>
+  <div>
+    <Tiptap
+      ref="base"
+      v-bind="$attrs"
+      v-on="$listeners"
+      :search-users="searchUsers"
+      :user-href="userHref"
+      :user-label="userLabel"
+      :upload="upload"
+    />
+  </div>
 </template>
 
 <script lang="ts">
