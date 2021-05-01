@@ -3871,10 +3871,10 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.4.4.tgz#d8ff99135c328c736b12d7b8dfcd3cae9cb3f5b5"
-  integrity sha512-+ZrgQ1SSolEBmiMAKcbebcEudEy8CIZzxAr+Wi0ocbLtyGiRxIse68z1bi13msoOQNt7I5NxQrjXDZGQgPlwrA==
+chafan-vue-editors@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.5.0.tgz#3b80b8b6302cd3c4f0500a36aa63a750fe04ef0c"
+  integrity sha512-hhb0MEJewEPyOmBYbHDeyikZpAdyCDRii4aOYSW1+yeRglroRcAKjhUBOxKZiRszK7L5ZxB7Yb5cUodgOOEVYw==
   dependencies:
     "@chafan/vditor" "3.8.2-chafan.3"
     "@tiptap/core" "^2.0.0-beta.38"
@@ -6303,6 +6303,11 @@ get-value@^2.0.3, get-value@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/get-value/-/get-value-2.0.6.tgz#dc15ca1c672387ca76bd37ac0a395ba2042a2c28"
   integrity sha1-3BXKHGcjh8p2vTesCjlbogQqLCg=
+
+get-youtube-id@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/get-youtube-id/-/get-youtube-id-1.0.1.tgz#adb6f475e292d98f98ed5bfb530887656193e157"
+  integrity sha512-5yidLzoLXbtw82a/Wb7LrajkGn29BM6JuLWeHyNfzOGp1weGyW4+7eMz6cP23+etqj27VlOFtq8fFFDMLq/FXQ==
 
 getpass@^0.1.1:
   version "0.1.7"
