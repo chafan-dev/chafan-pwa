@@ -1,5 +1,5 @@
 <template>
-  <base-card v-if="!showEditor">
+  <base-card v-if="!showEditor" :embedded="embedded">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
