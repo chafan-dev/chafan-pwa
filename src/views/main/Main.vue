@@ -164,6 +164,9 @@
                       </v-list-item>
                     </template>
                   </template>
+                  <div class="text-center" v-if="loadNotifsIntermediate">
+                    <v-progress-circular size="20" color="primary" indeterminate />
+                  </div>
                 </v-list>
               </div>
             </v-card>
@@ -409,6 +412,7 @@ export default class Main extends Vue {
   private notifications: INotification[] = [];
   private wsConnection: WebSocket | null = null;
   private readNotifIntermediate = false;
+  private loadNotifsIntermediate = true;
 
   private showReadNotifications = false;
   private readonly accountItems = [
@@ -484,6 +488,7 @@ export default class Main extends Vue {
         this.notifications.push(
           ...(await api2.getReadNotifications(this.$store.state.main.token)).data
         );
+        this.loadNotifsIntermediate = false;
 
         const wsToken = (await api2.getWsToken(this.$store.state.main.token)).data.msg;
         this.wsConnection = new WebSocket(wsUrl + '/api/v1/ws?token=' + wsToken);
