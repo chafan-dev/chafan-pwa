@@ -32,7 +32,7 @@
           </span>
         </div>
 
-        <div class="mt-2 mb-1">
+        <div class="mt-1">
           <template v-if="draftMode">
             <v-chip v-if="answer" color="info" small>
               {{ $t('草稿') }}
@@ -87,7 +87,7 @@
                 </v-card>
               </v-dialog>
 
-              <div class="d-flex mt-2">
+              <div class="d-flex mt-1">
                 <v-btn
                   v-if="upvotes && upvotes.upvoted"
                   color="primary lighten-2"
@@ -653,5 +653,5 @@ export default class Answer extends Vue {
   padding: 0 8px !important
 
 .vditor-preview
-  padding: 0px 1px
+  padding: 0 1px
 </style>

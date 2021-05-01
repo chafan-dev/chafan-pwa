@@ -3871,12 +3871,13 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.4.2.tgz#36cd12291192b2f92854c4d68d4b5176bf76a8ed"
-  integrity sha512-Nwk/dhIJrHlFVlki/fglGm+aaKa7semegM7HIUhtRgtCKfEtyqir48ZUfhilR8hZzwpVUYCk//t4gJ5O//V3AA==
+chafan-vue-editors@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.4.4.tgz#d8ff99135c328c736b12d7b8dfcd3cae9cb3f5b5"
+  integrity sha512-+ZrgQ1SSolEBmiMAKcbebcEudEy8CIZzxAr+Wi0ocbLtyGiRxIse68z1bi13msoOQNt7I5NxQrjXDZGQgPlwrA==
   dependencies:
     "@chafan/vditor" "3.8.2-chafan.3"
+    "@tiptap/core" "^2.0.0-beta.38"
     "@tiptap/extension-bubble-menu" "^2.0.0-beta.9"
     "@tiptap/extension-code-block-lowlight" "^2.0.0-beta.11"
     "@tiptap/extension-link" "^2.0.0-beta.8"
@@ -3888,6 +3889,7 @@ chafan-vue-editors@^0.4.2:
     core-js "^3.10.0"
     highlightjs "^9.16.2"
     lodash "^4.17.21"
+    prosemirror-commands "^1.1.7"
     tippy.js "^6.3.1"
     vue-class-component "^7.2.6"
     vue-property-decorator "^9.1.2"
