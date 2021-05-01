@@ -1,18 +1,18 @@
 <template>
   <div class="simple-editor">
+    <ChafanTiptap
+      v-if="editor === 'tiptap'"
+      ref="tiptap"
+      :comment-mode="true"
+      :body="initialValue"
+      :placeholder="placeholder"
+    />
     <SimpleVditor
-      v-show="isVditor"
+      v-else
       ref="simpleVditor"
       :initial-value="initialValue"
       :placeholder="placeholder"
       :showMenu="showMenu"
-    />
-    <ChafanTiptap
-      v-show="isTiptap"
-      ref="tiptap"
-      :comment-mode="true"
-      :initial-value="initialValue"
-      :placeholder="placeholder"
     />
   </div>
 </template>
@@ -22,7 +22,6 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import SimpleVditor from '@/components/editor/SimpleVditor.vue';
 import { readUserProfile } from '@/store/main/getters';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
-import { commitAddNotification } from '@/store/main/mutations';
 import { editor_T } from '@/interfaces';
 
 @Component({
@@ -33,8 +32,6 @@ export default class SimpleEditor extends Vue {
   @Prop() public readonly placeholder: string | undefined;
   @Prop() public readonly editorProp: editor_T | undefined;
   @Prop({ default: false }) public readonly showMenu!: boolean;
-  private isVditor = false;
-  private isTiptap = false;
 
   get simpleVditor() {
     return this.$refs.simpleVditor as SimpleVditor;
@@ -52,56 +49,42 @@ export default class SimpleEditor extends Vue {
   }
 
   get content(): string | null {
-    if (this.isTiptap) {
+    if (this.editor === 'tiptap') {
       return this.tiptap.content;
-    } else if (this.isVditor) {
+    } else {
       return this.simpleVditor.content;
     }
-    return null;
   }
 
   set content(value: string | null) {
     if (value) {
-      if (this.isTiptap) {
+      if (this.editor === 'tiptap') {
         this.tiptap.content = value;
-      } else if (this.isVditor) {
+      } else {
         this.simpleVditor.content = value;
       }
     } else {
-      if (this.isTiptap) {
+      if (this.editor === 'tiptap') {
         this.tiptap.reset();
-      } else if (this.isVditor) {
+      } else {
         this.simpleVditor.reset();
       }
     }
   }
 
   public getTextContent() {
-    if (this.isTiptap) {
+    if (this.editor === 'tiptap') {
       return this.tiptap.getText();
-    } else if (this.isVditor) {
+    } else {
       return this.simpleVditor.getText();
     }
-    commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
-      color: 'error',
-    });
-    return '';
   }
 
   public reset() {
-    if (this.isVditor) {
-      this.simpleVditor.initVditor();
-    } else if (this.isTiptap) {
-      this.tiptap.reset();
-    }
-  }
-
-  private mounted() {
     if (this.editor === 'tiptap') {
-      this.isTiptap = true;
+      this.tiptap.reset();
     } else {
-      this.isVditor = true;
+      this.simpleVditor.initVditor();
     }
   }
 }
