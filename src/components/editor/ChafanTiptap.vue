@@ -61,6 +61,7 @@
       :upload="upload"
       :video-dialog-controller="videoDialogController"
       :image-dialog-controller="imageDialogController"
+      :onEditorReady="onEditorReady"
     />
   </div>
 </template>
@@ -92,6 +93,7 @@ interface ITiptapDialogController {
 export default class ChafanTiptap extends Vue {
   @Prop({ default: true }) private readonly editable!: boolean;
   @Prop({ default: false }) private readonly commentMode!: boolean;
+  @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
 
   private showVideoDialog = false;
   readonly videoDialogController: ITiptapDialogController = {
