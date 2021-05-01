@@ -1,5 +1,54 @@
 <template>
   <div>
+    <v-dialog v-model="showImageDialog" max-width="700">
+      <v-card>
+        <v-card-title> Add image </v-card-title>
+        <v-card-text>
+          <v-text-field v-model="insertImageUrl" label="image URL" type="text" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            small
+            depressed
+            @click="
+              insertImageUrl = '';
+              showImageDialog = false;
+            "
+          >
+            Close
+          </v-btn>
+          <v-btn small color="primary" depressed @click="insertImage"> Insert </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showVideoDialog" max-width="700">
+      <v-card>
+        <v-card-title> Add video </v-card-title>
+        <v-card-text>
+          <v-text-field v-model="youtubeUrl" label="YouTube URL" type="text" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            small
+            depressed
+            @click="
+              youtubeUrl = '';
+              showVideoDialog = false;
+            "
+          >
+            Close
+          </v-btn>
+          <v-btn small color="primary" depressed @click="insertVideo"> Insert </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <div class="d-flex pb-1">
+      <v-spacer />
+      <v-btn small outlined color="grey" @click="showImageDialog = true">Image</v-btn>
+      <v-btn small class="ml-1" outlined color="grey" @click="showVideoDialog = true">Video</v-btn>
+    </div>
     <Tiptap
       ref="base"
       v-bind="$attrs"
@@ -8,6 +57,8 @@
       :user-href="userHref"
       :user-label="userLabel"
       :upload="upload"
+      :video-dialog-controller="videoDialogController"
+      :image-dialog-controller="imageDialogController"
     />
   </div>
 </template>
@@ -25,6 +76,11 @@ import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
 import { api2 } from '@/api2';
 import { readToken } from '@/store/main/getters';
+import getYouTubeID from 'get-youtube-id';
+
+interface ITiptapDialogController {
+  onUrl: ((url: string) => void) | undefined;
+}
 
 @Component({
   components: {
@@ -32,6 +88,41 @@ import { readToken } from '@/store/main/getters';
   },
 })
 export default class ChafanTiptap extends Vue {
+  private showVideoDialog = false;
+  readonly videoDialogController: ITiptapDialogController = {
+    onUrl: undefined,
+  };
+  private showImageDialog = false;
+  readonly imageDialogController: ITiptapDialogController = {
+    onUrl: undefined,
+  };
+  private insertImageUrl = '';
+  private insertImage() {
+    if (this.imageDialogController.onUrl) {
+      this.imageDialogController.onUrl(this.insertImageUrl);
+    }
+    this.showImageDialog = false;
+  }
+
+  private youtubeUrl = '';
+  private insertVideo() {
+    let url = '';
+    if (this.youtubeUrl) {
+      const youtubeId = getYouTubeID(this.youtubeUrl);
+      if (youtubeId) {
+        url = `https://www.youtube.com/embed/${youtubeId}`;
+      }
+    }
+
+    if (!url) {
+      return;
+    }
+    if (this.videoDialogController.onUrl) {
+      this.videoDialogController.onUrl(url);
+    }
+    this.showVideoDialog = false;
+  }
+
   get base() {
     return this.$refs.base as any;
   }
