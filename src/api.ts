@@ -312,4 +312,9 @@ export const api = {
   async getCategoryTopics() {
     return axios.get<ITopic[]>(`${apiUrl}/api/v1/category-topics/`);
   },
+  async generateLinkPreview(url: string) {
+    const params = new URLSearchParams();
+    params.append('url', url);
+    return axios.get<Record<string, string>>(`${apiUrl}/api/v1/link-preview/`, { params });
+  },
 };

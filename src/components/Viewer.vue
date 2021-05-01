@@ -1,7 +1,12 @@
 <template>
   <div ref="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }" class="viewer">
     <template v-if="editor === 'tiptap'">
-      <ChafanTiptap :body="body" :bodyFormat="bodyFormat" :editable="false" />
+      <ChafanTiptap
+        :body="body"
+        :bodyFormat="bodyFormat"
+        :editable="false"
+        :on-editor-ready="onViewerReady"
+      />
     </template>
     <template v-else>
       <div v-if="bodyFormat === 'html'" v-html="sanitizedBody" />
@@ -39,19 +44,23 @@ export default class Viewer extends Vue {
     return DOMPurify.sanitize(this.body);
   }
 
+  private onViewerReady(contentElem: HTMLElement) {
+    postProcessViewerDOM(this.$store.state.main.token, contentElem);
+  }
+
   private mounted() {
     if (this.editor !== 'tiptap') {
       const viewer = this.$refs.viewer as HTMLElement;
       if (this.bodyFormat === 'html') {
         this.$data.contentElem = viewer;
-        postProcessViewerDOM(this.$store.state.main.token, viewer);
+        this.onViewerReady(viewer);
       } else if (!this.bodyFormat || this.bodyFormat === 'markdown') {
         Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
           mode: 'light',
           cdn: vditorCDN,
           after: () => {
             this.$data.contentElem = viewer;
-            postProcessViewerDOM(this.$store.state.main.token, viewer);
+            this.onViewerReady(viewer);
           },
         });
       }
@@ -72,6 +81,18 @@ export default class Viewer extends Vue {
 .viewer
   font-family: $body-font-family
   font-size: $font-size-root
+
+.og-card
+  border: 1px lightgrey solid
+  border-radius: 5px
+  padding: 5px
+  width: fit-content
+
+.og-card img
+  max-width: 500px
+
+.og-card-desc
+  padding-top: 5px
 </style>
 
 <style scoped>
