@@ -120,8 +120,8 @@
                 icon
               >
                 <v-badge
-                  v-if="unreadNotifications.length > 0"
-                  :content="unreadNotifications.length"
+                  v-if="unreadNotificationsCount > 0"
+                  :content="unreadNotificationsCount"
                   color="green"
                 >
                   <NotificationIcon />
@@ -148,21 +148,21 @@
 
               <div style="max-height: 300px; overflow: auto">
                 <v-list>
-                  <template v-for="(notif, idx) in unreadNotifications">
+                  <template v-for="(notif, idx) in notifications">
                     <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />
 
-                    <v-list-item :key="notif.id">
-                      <Event v-if="notif.event" :event="notif.event" />
-                      <v-spacer />
-                      <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
-                    </v-list-item>
-                  </template>
-                  <template v-for="notif in readNotifications">
-                    <v-divider :key="'divider-' + notif.id" />
-
-                    <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
-                      <Event v-if="notif.event" :event="notif.event" />
-                    </v-list-item>
+                    <template v-if="notif.is_read">
+                      <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
+                        <Event v-if="notif.event" :event="notif.event" />
+                      </v-list-item>
+                    </template>
+                    <template v-else>
+                      <v-list-item :key="notif.id">
+                        <Event v-if="notif.event" :event="notif.event" />
+                        <v-spacer />
+                        <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
+                      </v-list-item>
+                    </template>
                   </template>
                 </v-list>
               </div>
@@ -174,7 +174,7 @@
               <v-card-title primary-title>
                 <div class="headline primary--text">{{ $t('已读通知') }}</div>
               </v-card-title>
-              <v-list-item v-for="notif in readNotifications" :key="notif.id">
+              <v-list-item v-for="notif in notifications" :key="notif.id">
                 <Event v-if="notif.event" :event="notif.event" />
               </v-list-item>
             </v-list>
@@ -406,12 +406,11 @@ const routeGuardMain = async (to, from, next) => {
 })
 export default class Main extends Vue {
   private appName = appName;
-  private unreadNotifications: INotification[] = [];
+  private notifications: INotification[] = [];
   private wsConnection: WebSocket | null = null;
   private readNotifIntermediate = false;
 
   private showReadNotifications = false;
-  private readNotifications: INotification[] = [];
   private readonly accountItems = [
     {
       icon: 'DashboardIcon',
@@ -433,6 +432,10 @@ export default class Main extends Vue {
   private feedbackText = '';
   private feedbackEmail = '';
   private sendingFeedback = false;
+
+  get unreadNotificationsCount() {
+    return this.notifications.filter((x) => !x.is_read).length;
+  }
 
   get miniDrawer() {
     return readDashboardMiniDrawer(this.$store);
@@ -474,11 +477,11 @@ export default class Main extends Vue {
         if (notifs) {
           notifs.forEach((notif) => {
             if (notif !== null) {
-              this.unreadNotifications.push(notif);
+              this.notifications.push(notif);
             }
           });
         }
-        this.readNotifications.push(
+        this.notifications.push(
           ...(await api2.getReadNotifications(this.$store.state.main.token)).data
         );
 
@@ -505,8 +508,8 @@ export default class Main extends Vue {
 
   private handleWsMsg(msg: IWsUserMsg) {
     if (msg.type === 'notification') {
-      if (!this.unreadNotifications.find((notif) => notif.id === msg.data.id)) {
-        this.unreadNotifications.unshift(msg.data);
+      if (!this.notifications.find((notif) => notif.id === msg.data.id)) {
+        this.notifications.unshift(msg.data);
       }
     }
   }
@@ -514,17 +517,18 @@ export default class Main extends Vue {
   private async readNotif(notif: INotification) {
     this.readNotifIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      await api.updateNotification(this.$store.state.main.token, notif.id, {
-        is_read: true,
-      });
-      this.unreadNotifications.splice(this.unreadNotifications.indexOf(notif), 1);
-      this.readNotifications.push(notif);
+      const resp = (
+        await api.updateNotification(this.$store.state.main.token, notif.id, {
+          is_read: true,
+        })
+      ).data;
+      notif.is_read = resp.is_read;
       this.readNotifIntermediate = false;
     });
   }
 
   private async readAllNotifs() {
-    this.unreadNotifications.forEach((notif) => {
+    this.notifications.forEach((notif) => {
       this.readNotif(notif);
     });
   }
