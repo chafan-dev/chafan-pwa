@@ -31,9 +31,9 @@ function getOpenGraphCard(
   const div = document.createElement('div');
   anchor.appendChild(div);
   div.classList.add('og-card');
-  const title = properties['og:title'];
+  const title = properties['title'] || properties['og:title'];
   const imageUrl = properties['og:image'];
-  anchor.href = properties['og:url'] || originalUrl;
+  anchor.href = originalUrl;
   const siteName = properties['og:site_name'];
   const description = properties['og:description'];
   if (imageUrl) {
@@ -45,9 +45,6 @@ function getOpenGraphCard(
     const titleDiv = document.createElement('div');
     titleDiv.classList.add('og-card-title', 'text--primary');
     titleDiv.innerText = title;
-    if (siteName) {
-      titleDiv.innerText += ` (${siteName})`;
-    }
     div.appendChild(titleDiv);
   }
   if (description && description !== title) {
@@ -56,14 +53,25 @@ function getOpenGraphCard(
     descriptionDiv.innerText = description;
     div.appendChild(descriptionDiv);
   }
+  if (siteName) {
+    const siteNameDiv = document.createElement('div');
+    siteNameDiv.classList.add('og-card-sitename', 'text--secondary');
+    siteNameDiv.innerText = siteName;
+    div.appendChild(siteNameDiv);
+  }
   if (div.children.length) {
     return anchor;
   }
   return null;
 }
 
+const linkPreviewHosts = new Set(['www.flickr.com', 'github.com', 'twitter.com', 'www.zhihu.com']);
+
 export const postProcessViewerDOM = async (token: string, viewer: HTMLElement) => {
   for (const a of viewer.getElementsByTagName('a')) {
+    if (a.href !== a.innerText) {
+      continue;
+    }
     const url = new URL(a.href);
     if (url.origin === window.origin) {
       const match = url.pathname.match(/^\/questions\/(\w+)$/);
@@ -73,7 +81,7 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement) =
         a.innerText = question.title;
       }
     }
-    if (url.host === 'www.flickr.com') {
+    if (linkPreviewHosts.has(url.host)) {
       const props = (await api.generateLinkPreview(a.href)).data;
       const card = getOpenGraphCard(a.href, props);
       if (card) {
