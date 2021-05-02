@@ -39,6 +39,7 @@ export default class Viewer extends Vue {
   @Prop() public readonly body!: string;
   @Prop() public readonly bodyFormat: body_format_T | undefined;
   @Prop() public readonly editor!: editor_T;
+  public textContent: string | null = null;
 
   get sanitizedBody() {
     return DOMPurify.sanitize(this.body);
@@ -46,6 +47,7 @@ export default class Viewer extends Vue {
 
   private onViewerReady(contentElem: HTMLElement) {
     postProcessViewerDOM(this.$store.state.main.token, contentElem);
+    this.textContent = contentElem.textContent;
   }
 
   private mounted() {
