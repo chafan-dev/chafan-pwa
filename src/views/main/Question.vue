@@ -405,10 +405,7 @@
         </v-expand-transition>
 
         <!-- Answers -->
-        <div
-          v-if="answerPreviews && answerPreviews.length && loadingFullAnswer"
-          class="text-center"
-        >
+        <div v-if="loadingFullAnswer" class="text-center">
           <v-progress-circular indeterminate size="30" />
         </div>
         <Answer
@@ -550,7 +547,7 @@ export default class Question extends Vue {
   private hintTopicNames: string[] = []; // TODO
   private answerWritable = false;
   private commentWritable = false;
-  private answerPreviews: IAnswerPreview[] | null = null;
+  private answerPreviews: IAnswerPreview[] = [];
   private loadedFullAnswers: IAnswer[] = [];
   private editable = false;
   private canHide = false;
@@ -636,7 +633,7 @@ export default class Question extends Vue {
       this.showComments = false;
       this.answerWritable = false;
       this.commentWritable = false;
-      this.answerPreviews = null;
+      this.answerPreviews = [];
       this.loadedFullAnswers = [];
       this.editable = false;
       this.canHide = false;
