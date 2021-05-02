@@ -675,6 +675,22 @@ export default class Answer extends Vue {
     });
     this.shareQrCodeUrl = qr.toDataURL();
   }
+
+  private truncatedIntro(intro: string) {
+    if (this.$vuetify.breakpoint.mdAndUp) {
+      if (intro.length > 30) {
+        return intro.substring(0, 30) + '...';
+      } else {
+        return intro;
+      }
+    } else {
+      if (intro.length > 18) {
+        return intro.substring(0, 18) + '...';
+      } else {
+        return intro;
+      }
+    }
+  }
 }
 </script>
 
