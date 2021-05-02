@@ -24,13 +24,13 @@
                 <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
               </div>
               <div>
-                <UserLink v-show="!preview" :showAvatar="true" :userPreview="answer.author" />
+                <UserLink :showAvatar="true" :userPreview="answer.author" />
                 <span
                   v-if="answer.author.personal_introduction"
                   :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
                   class="grey--text ml-2"
                 >
-                  {{ truncatedIntro(answer.author.personal_introduction) }}
+                  {{ answer.author.personal_introduction }}
                 </span>
               </div>
             </div>
@@ -645,22 +645,6 @@ export default class Answer extends Vue {
       });
     }
     this.$emit('delete-answer', this.answerPreview.uuid);
-  }
-
-  private truncatedIntro(intro: string) {
-    if (this.$vuetify.breakpoint.mdAndUp) {
-      if (intro.length > 30) {
-        return intro.substring(0, 30) + '...';
-      } else {
-        return intro;
-      }
-    } else {
-      if (intro.length > 18) {
-        return intro.substring(0, 18) + '...';
-      } else {
-        return intro;
-      }
-    }
   }
 
   private toggleShowComments() {
