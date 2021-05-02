@@ -475,6 +475,9 @@ export default class Article extends Vue {
   private articlePreviewBody = '';
   private showSharingCardDialog() {
     this.articlePreviewBody = (this.$refs.viewer as Viewer).textContent || '';
+    if (this.articlePreviewBody.length > 40) {
+      this.articlePreviewBody = this.articlePreviewBody.substring(0, 40) + '...';
+    }
     this.showSharingCard = true;
     const qr = new QRious({
       value: `${window.location.origin}/articles/${this.article!.uuid}`,
