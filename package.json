@@ -27,6 +27,7 @@
     "jest": "^26.6.3",
     "lodash": "^4.17.21",
     "piexifjs": "^1.0.6",
+    "qrious": "^4.0.2",
     "register-service-worker": "^1.0.0",
     "sass": "^1.32.6",
     "typesafe-vuex": "^3.1.1",

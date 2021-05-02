@@ -27,6 +27,7 @@
         <v-card-title> Add video </v-card-title>
         <v-card-text>
           <v-text-field v-model="youtubeUrl" label="YouTube URL" type="text" />
+          <v-text-field v-model="bilibiliEmbedCode" label="Bilibili Embed Code" type="text" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -112,12 +113,22 @@ export default class ChafanTiptap extends Vue {
   }
 
   private youtubeUrl = '';
+  private bilibiliEmbedCode = '';
   private insertVideo() {
     let url = '';
     if (this.youtubeUrl) {
       const youtubeId = getYouTubeID(this.youtubeUrl);
       if (youtubeId) {
         url = `https://www.youtube.com/embed/${youtubeId}`;
+      }
+    } else if (this.bilibiliEmbedCode) {
+      const bilibiliEmbedDOM = new DOMParser().parseFromString(this.bilibiliEmbedCode, 'text/html');
+      const iframe = bilibiliEmbedDOM.getElementsByTagName('iframe')[0];
+      if (iframe) {
+        const iframeUrl = new URL(iframe.src);
+        if (iframeUrl.hostname === 'player.bilibili.com') {
+          url = iframeUrl.href;
+        }
       }
     }
 
