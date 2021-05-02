@@ -1,41 +1,5 @@
 <template>
   <v-row :loading="loading" justify="center">
-    <v-dialog v-if="article" v-model="showSharingCard" max-width="400px">
-      <v-card @click-outside="showSharingCard = false">
-        <div class="pa-4">
-          <router-link :to="`/articles/${article.uuid}`" class="text-decoration-none"
-            >复制链接</router-link
-          >，或者截屏分享卡片：
-        </div>
-        <v-divider class="mx-4" />
-        <v-card-title>
-          {{ article.title }}
-        </v-card-title>
-        <v-card-text>
-          <div class="pt-2 d-flex">
-            <div>
-              <div class="text--primary text-body-1">
-                <div class="pa-1 text-center" style="float: right">
-                  <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
-                  <span class="text-caption">查看原文</span>
-                </div>
-                <p style="overflow-wrap: anywhere">{{ articlePreviewBody }}</p>
-              </div>
-              <div>
-                <UserLink :showAvatar="true" :userPreview="article.author" />
-                <span
-                  v-if="article.author.personal_introduction"
-                  :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
-                  class="grey--text ml-2"
-                >
-                  {{ article.author.personal_introduction }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
     <v-col
       :class="{
         'col-8': $vuetify.breakpoint.mdAndUp,
@@ -170,14 +134,38 @@
                 </v-list>
               </v-menu>
 
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div v-bind="attrs" v-on="on">
-                    <ShareIcon class="pl-1 pr-1" @click="showSharingCardDialog" />
+              <ShareCardButton
+                :link="`/articles/${article.uuid}`"
+                v-slot="{ shareQrCodeUrl }"
+                :onClickShare="onClickShare"
+              >
+                <v-card-title>
+                  {{ article.title }}
+                </v-card-title>
+                <v-card-text>
+                  <div class="pt-2 d-flex">
+                    <div>
+                      <div class="text--primary text-body-1">
+                        <div class="pa-1 text-center" style="float: right">
+                          <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                          <span class="text-caption">查看原文</span>
+                        </div>
+                        <p style="overflow-wrap: anywhere">{{ articlePreviewBody }}</p>
+                      </div>
+                      <div>
+                        <UserLink :showAvatar="true" :userPreview="article.author" />
+                        <span
+                          v-if="article.author.personal_introduction"
+                          :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+                          class="grey--text ml-2"
+                        >
+                          {{ article.author.personal_introduction }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </template>
-                <span>{{ $t('分享') }}</span>
-              </v-tooltip>
+                </v-card-text>
+              </ShareCardButton>
 
               <v-dialog v-model="confirmDeleteDialog" max-width="300">
                 <v-card>
@@ -277,13 +265,12 @@ import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
-import QRious from 'qrious';
+import ShareCardButton from '@/components/ShareCardButton.vue';
 import Viewer from '@/components/Viewer.vue';
-import ShareIcon from '@/components/icons/ShareIcon.vue';
 
 @Component({
   components: {
-    ShareIcon,
+    ShareCardButton,
     UserLink,
     QuestionLink,
     CommentBlock,
@@ -357,6 +344,15 @@ export default class Article extends Vue {
     this.article = (await apiArticle.getArticle(this.token, this.id)).data;
     this.updateStateWithLoadedArticle(this.article);
     this.loading = false;
+  }
+
+  private articlePreviewBody: string = '';
+
+  private onClickShare() {
+    this.articlePreviewBody = (this.$refs.viewer as Viewer).textContent || '';
+    if (this.articlePreviewBody.length > 40) {
+      this.articlePreviewBody = this.articlePreviewBody.substring(0, 40) + '...';
+    }
   }
 
   private async mounted() {
@@ -468,21 +464,6 @@ export default class Article extends Vue {
       return;
     }
     this.showComments = !this.showComments;
-  }
-
-  private showSharingCard = false;
-  private shareQrCodeUrl = '';
-  private articlePreviewBody = '';
-  private showSharingCardDialog() {
-    this.articlePreviewBody = (this.$refs.viewer as Viewer).textContent || '';
-    if (this.articlePreviewBody.length > 40) {
-      this.articlePreviewBody = this.articlePreviewBody.substring(0, 40) + '...';
-    }
-    this.showSharingCard = true;
-    const qr = new QRious({
-      value: `${window.location.origin}/articles/${this.article!.uuid}`,
-    });
-    this.shareQrCodeUrl = qr.toDataURL();
   }
 }
 </script>
