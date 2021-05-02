@@ -422,11 +422,6 @@ export default class Article extends Vue {
   }
 
   private updateStateWithLoadedArticle(article: IArticle) {
-    if (!this.$route.query.title) {
-      this.$router.replace({
-        query: { ...this.$route.query, title: article.title },
-      });
-    }
     updateHead(this.$route.path, article.title);
     if (this.token) {
       apiArticle.bumpViewsCounter(this.token, article.uuid);
