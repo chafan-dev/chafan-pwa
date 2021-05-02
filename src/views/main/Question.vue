@@ -6,6 +6,45 @@
       :indeterminate="loadingProgress === 0"
     />
     <v-row v-else class="px-2" justify="center">
+      <v-dialog v-if="question" v-model="showSharingCard" max-width="400px">
+        <v-card @click-outside="showSharingCard = false">
+          <div class="pa-4">
+            <router-link :to="`/questions/${question.uuid}`" class="text-decoration-none"
+              >复制链接</router-link
+            >，或者截屏分享卡片：
+          </div>
+          <v-divider class="mx-4" />
+          <v-card-title>
+            {{ question.title }}
+          </v-card-title>
+          <v-card-text>
+            <div class="pt-2 d-flex">
+              <div class="text--primary text-body-1">
+                <p v-if="question.description" style="overflow-wrap: anywhere">
+                  {{ question.description_text }}
+                </p>
+                <p>
+                  <CommentsIcon class="mr-1" small />
+                  <span class="text-caption">
+                    {{ $t('n条评论', { n: question.comments.length }) }}
+                  </span>
+                </p>
+                <p>
+                  <AnswerIcon class="mr-1" small />
+                  <span class="text-caption">
+                    {{ $t('n个回答', { n: question.answers_count }) }}
+                  </span>
+                </p>
+              </div>
+              <v-spacer />
+              <div class="pa-1 text-center" style="float: right">
+                <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                <span class="text-caption">查看原问题</span>
+              </div>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
       <v-col
         :class="{
           'col-8': $vuetify.breakpoint.mdAndUp,
@@ -180,18 +219,6 @@
               ({{ upvotes.count }})
             </v-btn>
 
-            <BookmarkedIcon
-              v-if="questionSubscription && questionSubscription.subscribed_by_me"
-              :disabled="cancelSubscriptionIntermediate"
-              class="ma-1"
-              @click="cancelSubscription"
-            />
-            <ToBookmarkIcon
-              v-else
-              :disabled="subscribeIntermediate"
-              class="ma-1"
-              @click="subscribe"
-            />
             <v-btn
               class="slim-btn ma-1"
               depressed
@@ -204,6 +231,28 @@
               <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
               <span v-else>{{ $t('编辑问题') }}</span>
             </v-btn>
+
+            <BookmarkedIcon
+              v-if="questionSubscription && questionSubscription.subscribed_by_me"
+              :disabled="cancelSubscriptionIntermediate"
+              class="ma-1"
+              @click="cancelSubscription"
+            />
+            <ToBookmarkIcon
+              v-else
+              :disabled="subscribeIntermediate"
+              class="ma-1"
+              @click="subscribe"
+            />
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <div v-bind="attrs" v-on="on">
+                  <ShareIcon class="my-1" @click="showSharingCardDialog" />
+                </div>
+              </template>
+              <span>{{ $t('分享') }}</span>
+            </v-tooltip>
           </v-col>
 
           <v-col
@@ -481,9 +530,14 @@ import { AxiosError } from 'axios';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
+import QRious from 'qrious';
+import ShareIcon from '@/components/icons/ShareIcon.vue';
+import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 
 @Component({
   components: {
+    AnswerIcon,
+    ShareIcon,
     Answer,
     QuestionInfo,
     CommentBlock,
@@ -622,11 +676,6 @@ export default class Question extends Vue {
       action: async () => {
         const response = await apiQuestion.getQuestion(this.token, this.id);
         this.question = response.data;
-        if (!this.$route.query.title) {
-          this.$router.replace({
-            query: { ...this.$route.query, title: this.question.title },
-          });
-        }
       },
       errorFilter: (err: AxiosError) => {
         if (
@@ -986,6 +1035,16 @@ export default class Question extends Vue {
   private loadSavedLocalEdit() {
     commitSetWorkingDraft(this.$store, this.savedLocalEdit!.edit as IRichEditorState);
     this.showEditor = true;
+  }
+
+  private showSharingCard = false;
+  private shareQrCodeUrl = '';
+  private showSharingCardDialog() {
+    this.showSharingCard = true;
+    const qr = new QRious({
+      value: `${window.location.origin}/questions/${this.question!.uuid}`,
+    });
+    this.shareQrCodeUrl = qr.toDataURL();
   }
 }
 </script>
