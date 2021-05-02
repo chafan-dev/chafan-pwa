@@ -6,39 +6,6 @@
       :indeterminate="loadingProgress === 0"
     />
     <v-row v-else justify="center">
-      <v-dialog v-if="submission" v-model="showSharingCard" max-width="400px">
-        <v-card @click-outside="showSharingCard = false">
-          <div class="pa-4">
-            <router-link :to="`/submissions/${submission.uuid}`" class="text-decoration-none"
-              >复制链接</router-link
-            >，或者截屏分享卡片：
-          </div>
-          <v-divider class="mx-4" />
-          <v-card-title>
-            {{ submission.title }}
-          </v-card-title>
-          <v-card-text>
-            <div class="pt-2 d-flex">
-              <div class="text--primary text-body-1">
-                <p v-if="submission.description" style="overflow-wrap: anywhere">
-                  {{ submission.description_text }}
-                </p>
-                <p>
-                  <CommentsIcon class="mr-1" small />
-                  <span class="text-caption">
-                    {{ $t('n条评论', { n: submission.comments.length }) }}
-                  </span>
-                </p>
-              </div>
-              <v-spacer />
-              <div class="pa-1 text-center" style="float: right">
-                <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
-                <span class="text-caption">查看原文</span>
-              </div>
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
       <v-col
         :class="{ 'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI }"
         fluid
@@ -184,14 +151,35 @@
                 @click="subscribe"
               />
 
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div v-bind="attrs" v-on="on">
-                    <ShareIcon class="my-1" @click="showSharingCardDialog" />
+              <ShareCardButton
+                :link="`/submissions/${submission.uuid}`"
+                class="text-decoration-none"
+                v-slot="{ shareQrCodeUrl }"
+              >
+                <v-card-title>
+                  {{ submission.title }}
+                </v-card-title>
+                <v-card-text>
+                  <div class="pt-2 d-flex">
+                    <div class="text--primary text-body-1">
+                      <p v-if="submission.description" style="overflow-wrap: anywhere">
+                        {{ submission.description_text }}
+                      </p>
+                      <p>
+                        <CommentsIcon class="mr-1" small />
+                        <span class="text-caption">
+                          {{ $t('n条评论', { n: submission.comments.length }) }}
+                        </span>
+                      </p>
+                    </div>
+                    <v-spacer />
+                    <div class="pa-1 text-center" style="float: right">
+                      <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                      <span class="text-caption">查看原文</span>
+                    </div>
                   </div>
-                </template>
-                <span>{{ $t('分享') }}</span>
-              </v-tooltip>
+                </v-card-text>
+              </ShareCardButton>
             </v-col>
             <v-col
               v-if="!showSubmissionEditor"
@@ -380,12 +368,11 @@ import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
-import QRious from 'qrious';
-import ShareIcon from '@/components/icons/ShareIcon.vue';
+import ShareCardButton from '@/components/ShareCardButton.vue';
 
 @Component({
   components: {
-    ShareIcon,
+    ShareCardButton,
     RotationList,
     MoreIcon,
     Answer,
@@ -697,16 +684,6 @@ export default class Submission extends Vue {
         this.subscribeIntermediate = false;
       }
     });
-  }
-
-  private showSharingCard = false;
-  private shareQrCodeUrl = '';
-  private showSharingCardDialog() {
-    this.showSharingCard = true;
-    const qr = new QRious({
-      value: `${window.location.origin}/submissions/${this.submission!.uuid}`,
-    });
-    this.shareQrCodeUrl = qr.toDataURL();
   }
 }
 </script>

@@ -1,43 +1,5 @@
 <template>
   <base-card v-if="!showEditor" :embedded="embedded">
-    <v-dialog v-if="answer" v-model="showSharingCard" max-width="400px">
-      <v-card @click-outside="showSharingCard = false">
-        <div class="pa-4">
-          <router-link
-            :to="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
-            class="text-decoration-none"
-            >复制链接</router-link
-          >，或者截屏分享卡片：
-        </div>
-        <v-divider class="mx-4" />
-        <v-card-title>
-          {{ answer.question.title }}
-        </v-card-title>
-        <v-card-text>
-          <div class="pt-2 d-flex">
-            <div>
-              <div class="text--primary text-body-1">
-                <div class="pa-1 text-center" style="float: right">
-                  <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
-                  <span class="text-caption">查看原文</span>
-                </div>
-                <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
-              </div>
-              <div>
-                <UserLink :showAvatar="true" :userPreview="answer.author" />
-                <span
-                  v-if="answer.author.personal_introduction"
-                  :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
-                  class="grey--text ml-2"
-                >
-                  {{ answer.author.personal_introduction }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
@@ -231,14 +193,37 @@
 
                 <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
 
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <div v-bind="attrs" v-on="on">
-                      <ShareIcon class="pl-1 pr-1" @click="showSharingCardDialog" />
+                <ShareCardButton
+                  :link="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                  v-slot="{ shareQrCodeUrl }"
+                >
+                  <v-card-title>
+                    {{ answer.question.title }}
+                  </v-card-title>
+                  <v-card-text>
+                    <div class="pt-2 d-flex">
+                      <div>
+                        <div class="text--primary text-body-1">
+                          <div class="pa-1 text-center" style="float: right">
+                            <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                            <span class="text-caption">查看原文</span>
+                          </div>
+                          <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
+                        </div>
+                        <div>
+                          <UserLink :showAvatar="true" :userPreview="answer.author" />
+                          <span
+                            v-if="answer.author.personal_introduction"
+                            :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+                            class="grey--text ml-2"
+                          >
+                            {{ answer.author.personal_introduction }}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </template>
-                  <span>{{ $t('分享') }}</span>
-                </v-tooltip>
+                  </v-card-text>
+                </ShareCardButton>
               </div>
             </v-col>
 
@@ -333,7 +318,7 @@ import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import CollapseUpIcon from '@/components/icons/CollapseUpIcon.vue';
-import ShareIcon from '@/components/icons/ShareIcon.vue';
+import ShareCardButton from '@/components/ShareCardButton.vue';
 import { api } from '@/api';
 import { apiAnswer } from '@/api/answer';
 import UserLink from '@/components/UserLink.vue';
@@ -352,10 +337,10 @@ import { apiMe } from '@/api/me';
 import { clearLocalEdit, loadLocalEdit, LocalEdit } from '@/utils';
 import BaseCard from '@/components/base/BaseCard.vue';
 import AnswerEditor from '@/components/AnswerEditor.vue';
-import QRious from 'qrious';
 
 @Component({
   components: {
+    ShareCardButton,
     AnswerEditor,
     BaseCard,
     UserLink,
@@ -367,7 +352,6 @@ import QRious from 'qrious';
     ToBookmarkIcon,
     DeleteIcon,
     CollapseUpIcon,
-    ShareIcon,
   },
 })
 export default class Answer extends Vue {
@@ -662,18 +646,6 @@ export default class Answer extends Vue {
   private deleteDraft() {
     this.showEditor = false;
     this.showHasDraftBadge = false;
-  }
-
-  private showSharingCard = false;
-  private shareQrCodeUrl = '';
-  private showSharingCardDialog() {
-    this.showSharingCard = true;
-    const qr = new QRious({
-      value: `${window.location.origin}/questions/${this.answer!.question.uuid}/answers/${
-        this.answerPreview.uuid
-      }`,
-    });
-    this.shareQrCodeUrl = qr.toDataURL();
   }
 
   private truncatedIntro(intro: string) {
