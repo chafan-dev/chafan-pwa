@@ -13,8 +13,8 @@
   "dependencies": {
     "@chafan/vditor": "3.8.2-chafan.3",
     "@hcaptcha/vue-hcaptcha": "^0.3.0",
-    "@sentry/tracing": "^5.30.0",
-    "@sentry/vue": "^5.30.0",
+    "@sentry/tracing": "^6.3.5",
+    "@sentry/vue": "^6.3.5",
     "axios": "^0.21.1",
     "chafan-vue-editors": "^0.5.2",
     "core-js": "^3.8.3",
