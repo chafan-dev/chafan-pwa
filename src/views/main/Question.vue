@@ -405,7 +405,7 @@
         </v-expand-transition>
 
         <!-- Answers -->
-        <div v-if="loadingFullAnswer" class="text-center">
+        <div v-if="answerPreviews.length && loadingFullAnswer" class="text-center">
           <v-progress-circular indeterminate size="30" />
         </div>
         <Answer
