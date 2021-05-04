@@ -83,9 +83,12 @@
                         </v-alert>
                       </div>
                       <div class="text-right">
-                        <router-link class="text-decoration-none caption" to="/recover-password"
+                        <a
+                          class="text-decoration-none caption"
+                          href="/recover-password"
+                          target="_blank"
                           >{{ $t('Forgot your password?') }}
-                        </router-link>
+                        </a>
                       </div>
                     </v-sheet>
                   </template>
@@ -226,7 +229,7 @@ import { appName } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchCaptureApiError, dispatchLogIn } from '@/store/main/actions';
 import LangPicker from '@/components/LangPicker.vue';
-import { commitAddNotification } from '@/store/main/mutations';
+import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
 import { captureException } from '@sentry/vue';
 import AccountCircleOutlineIcon from '@/components/icons/AccountCircleOutlineIcon.vue';
