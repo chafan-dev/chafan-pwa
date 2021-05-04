@@ -39,8 +39,13 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn @click="cancel">{{ $t('Cancel') }}</v-btn>
-                <v-btn :disabled="!valid" color="primary" @click.prevent="handleSubmit(submit)">
+                <v-btn depressed @click="cancel">{{ $t('Cancel') }}</v-btn>
+                <v-btn
+                  depressed
+                  :disabled="!valid"
+                  color="primary"
+                  @click.prevent="handleSubmit(submit)"
+                >
                   {{ $t('Send') }}
                 </v-btn>
               </v-card-actions>
