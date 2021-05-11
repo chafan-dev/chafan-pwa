@@ -227,7 +227,7 @@ export const api = {
     return axios.get<INotification[]>(`${apiUrl}/api/v1/notifications/unread/`, authHeaders(token));
   },
   async updateNotification(token: string, notifId: number, payload: INotificationUpdate) {
-    return axios.put<INotification>(
+    return axios.put<IMsg>(
       `${apiUrl}/api/v1/notifications/${notifId}`,
       payload,
       authHeaders(token)
