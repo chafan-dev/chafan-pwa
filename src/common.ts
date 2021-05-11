@@ -104,6 +104,20 @@ export const vditorUploadConfig = (token: string) => {
   };
 };
 
+export const constants = {
+  explore: '探索',
+  dashboard: '个人中心',
+  profile: '个人资料',
+  edit_profile: '编辑个人资料',
+  security_center: '安全中心',
+  moderate_circles: '管理圈子',
+  login: '登录',
+  signup: '注册',
+  recover_password: '找回密码',
+  reset_password: '重置密码',
+  invitation_to_join: '邀请加入',
+};
+
 export const updateHead = (routePath: string, title: string, descriptionText?: string) => {
   document.title = title;
   document.querySelector('meta[property="og.title"]')?.setAttribute('content', title);

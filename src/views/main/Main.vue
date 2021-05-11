@@ -99,8 +99,6 @@
         </div>
 
         <div>
-          <LangPicker />
-
           <!-- Notifications -->
           <v-menu
             v-if="userProfile"

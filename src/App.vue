@@ -36,12 +36,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
-import {
-  readIsLoggedIn,
-  readLocalePreference,
-  readShowLoginPrompt,
-  readTopBanner,
-} from '@/store/main/getters';
+import { readIsLoggedIn, readShowLoginPrompt, readTopBanner } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { setAppLocale } from '@/utils'; // FIXME: store locale in main.store
 import { prodStateJsonURL } from './env';
@@ -112,10 +107,7 @@ export default class App extends Vue {
         commitSetTopBanner(this.$store, response.data['top-banner']);
       });
     }
-    const pref = readLocalePreference(this.$store);
-    if (pref) {
-      setAppLocale(this, pref);
-    }
+    setAppLocale(this, 'zh');
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }
 
