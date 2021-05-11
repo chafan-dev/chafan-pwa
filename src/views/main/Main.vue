@@ -522,12 +522,10 @@ export default class Main extends Vue {
   private async readNotif(notif: INotification) {
     this.readNotifIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      const resp = (
-        await api.updateNotification(this.$store.state.main.token, notif.id, {
-          is_read: true,
-        })
-      ).data;
-      notif.is_read = resp.is_read;
+      await api.updateNotification(this.$store.state.main.token, notif.id, {
+        is_read: true,
+      });
+      notif.is_read = true;
       this.readNotifIntermediate = false;
     });
   }

@@ -7,11 +7,11 @@
           v-if="userPublic || userPublicForVisitor"
           :userPreview="userPublic ? userPublic : userPublicForVisitor"
           :userPublic="userPublic ? userPublic : userPublicForVisitor"
-          class="mb-4 mx-7 pb-7"
+          class="mb-4 pb-7"
         />
         <v-skeleton-loader v-else type="card" />
 
-        <div v-if="loggedIn" class="mx-7">
+        <div v-if="loggedIn">
           <v-tabs
             v-model="currentTabItem"
             :align-with-title="$vuetify.breakpoint.mdAndUp"

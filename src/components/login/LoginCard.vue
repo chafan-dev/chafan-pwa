@@ -152,6 +152,7 @@
                       depressed
                       large
                       @click.prevent="handleSubmit(submit)"
+                      class="white--text"
                     >
                       {{ $t('Login') }}
                       <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
