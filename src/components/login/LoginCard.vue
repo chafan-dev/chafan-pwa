@@ -119,7 +119,6 @@
                         :label="$t('验证码')"
                         name="verification-code"
                         type="text"
-                        @keyup.enter="verifyCode"
                       >
                         <template v-slot:prepend>
                           <VerifyCodeIcon />
@@ -144,8 +143,8 @@
                       :disabled="
                         submitIntermediate ||
                         (loginMethod === 'cellphone' && !verificationCode) ||
-                        !valid ||
-                        !captchaToken
+                        (loginMethod === 'email' && !captchaToken) ||
+                        !valid
                       "
                       block
                       color="primary"
@@ -230,7 +229,7 @@ import { appName } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchCaptureApiError, dispatchLogIn } from '@/store/main/actions';
 import LangPicker from '@/components/LangPicker.vue';
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
+import { commitAddNotification } from '@/store/main/mutations';
 import { api } from '@/api';
 import { captureException } from '@sentry/vue';
 import AccountCircleOutlineIcon from '@/components/icons/AccountCircleOutlineIcon.vue';
