@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import RouterComponent from './components/RouterComponent.vue';
+import { constants } from '@/common';
 
 Vue.use(Router);
 
@@ -19,6 +20,9 @@ export default new Router({
         },
         {
           path: 'explore/',
+          meta: {
+            title: constants.explore,
+          },
           component: () => import(/* webpackChunkName: "main-sites" */ './views/main/Explore.vue'),
         },
         {
@@ -110,15 +114,24 @@ export default new Router({
         },
         {
           path: 'dashboard',
+          meta: {
+            title: constants.dashboard,
+          },
           component: () =>
             import(/* webpackChunkName: "main-dashboard" */ './views/main/Dashboard.vue'),
         },
         {
           path: 'profile',
           component: RouterComponent,
+          meta: {
+            title: constants.profile,
+          },
           children: [
             {
               path: 'edit',
+              meta: {
+                title: constants.edit_profile,
+              },
               component: () =>
                 import(
                   /* webpackChunkName: "main-profile-edit" */ './views/main/profile/UserProfileEdit.vue'
@@ -128,11 +141,17 @@ export default new Router({
         },
         {
           path: 'security',
+          meta: {
+            title: constants.security_center,
+          },
           component: () =>
             import(/* webpackChunkName: "main-security" */ './views/main/Security.vue'),
         },
         {
           path: 'moderation',
+          meta: {
+            title: constants.moderate_circles,
+          },
           component: () =>
             import(/* webpackChunkName: "main-moderation" */ './views/main/Moderation.vue'),
         },
@@ -140,6 +159,9 @@ export default new Router({
     },
     {
       path: '/login',
+      meta: {
+        title: constants.login,
+      },
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -147,19 +169,31 @@ export default new Router({
     },
     {
       path: '/signup',
+      meta: {
+        title: constants.signup,
+      },
       component: () => import(/* webpackChunkName: "signup" */ './views/Signup.vue'),
     },
     {
       path: '/recover-password',
+      meta: {
+        title: constants.recover_password,
+      },
       component: () =>
         import(/* webpackChunkName: "recover-password" */ './views/PasswordRecovery.vue'),
     },
     {
       path: '/reset-password',
+      meta: {
+        title: constants.reset_password,
+      },
       component: () => import(/* webpackChunkName: "reset-password" */ './views/ResetPassword.vue'),
     },
     {
       path: '/invitation-links/:uuid',
+      meta: {
+        title: constants.invitation_to_join,
+      },
       component: () =>
         import(/* webpackChunkName: "invitation-link" */ './views/InvitationLink.vue'),
     },

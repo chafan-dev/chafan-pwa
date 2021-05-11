@@ -131,7 +131,7 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { isEqual, updateHead } from '@/common';
 
 @Component({
   components: {
@@ -220,6 +220,7 @@ export default class Site extends Vue {
   private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.site = (await api.getSite(this.token, this.subdomain)).data;
+      updateHead(this.$route.path, this.site.name, this.site?.description);
 
       if (this.userProfile) {
         this.siteProfile = (

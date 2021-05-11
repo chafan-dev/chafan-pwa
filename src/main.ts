@@ -40,7 +40,7 @@ declare module 'vue/types/vue' {
 
 Vue.use(VueI18n);
 const i18n = new VueI18n({
-  locale: getBrowserLocale(),
+  locale: 'zh',
   messages: {
     en: {
       'answered question': 'answered question',

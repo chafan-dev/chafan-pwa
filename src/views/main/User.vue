@@ -332,7 +332,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { isEqual, updateHead } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 
 @Component({
@@ -459,6 +459,9 @@ export default class User extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.loggedIn) {
         this.userPublic = (await apiPeople.getUserPublic(this.token, this.handle)).data;
+        let title = this.userPublic!.full_name || this.userPublic!.handle;
+        updateHead(this.$route.path, title, this.userPublic!.personal_introduction);
+
         const currentItem = this.tabItems.find((item) => item.code === this.currentTabItem);
         if (currentItem && currentItem.render) {
           await currentItem.render(this.userPublic);
