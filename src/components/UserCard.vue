@@ -277,11 +277,3 @@ export default class UserCard extends Vue {
   padding-top: 0 !important;
 }
 </style>
-
-<style scoped>
-/* FIXME: code duplicate: Home.vue */
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
-}
-</style>

@@ -1,3 +1,160 @@
+@import '~vuetify/src/styles/styles.sass';
+
+// General
 .vh-100 {
   height: 100vh !important;
+}
+
+.slim-btn {
+  padding: 0 8px !important;
+}
+
+.c-card {
+  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
+    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
+}
+
+// Editor/Preview
+.vditor-preview {
+  padding: 0 1px;
+}
+
+.simple-editor h1,
+.simple-editor h2,
+.simple-editor h3 {
+  border-bottom: none !important;
+  font-family: $body-font-family;
+  font-size: $font-size-root;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.simple-editor img {
+  max-height: 100px;
+}
+
+.simple-editor p {
+  margin-bottom: 10px;
+}
+
+.vditor-reset a {
+  text-decoration: none !important;
+}
+
+.simple-viewer img {
+  max-height: 100px;
+  max-width: 100%;
+}
+
+.simple-viewer {
+  font-family: $body-font-family;
+  font-size: $font-size-root;
+}
+
+.simple-viewer h1,
+.simple-viewer h2,
+.simple-viewer h3 {
+  border-bottom: none !important;
+  font-family: $body-font-family;
+  font-size: $font-size-root;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.simple-viewer p {
+  margin-bottom: 10px;
+}
+
+.simple-viewer .ProseMirror {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.vditor-reset {
+  padding: 0;
+}
+
+.viewer-desktop img {
+  max-height: 500px;
+}
+
+.viewer img {
+  max-width: 100%;
+}
+
+.viewer {
+  font-family: $body-font-family;
+  font-size: $font-size-root;
+}
+
+.og-card {
+  border: 1px lightgrey solid;
+  border-radius: 5px;
+  padding: 5px;
+  width: fit-content;
+}
+
+.og-card img {
+  max-width: 500px;
+}
+
+.og-card-desc {
+  padding-top: 5px;
+}
+
+//// For ChafanTiptap
+.v-application code {
+  background: none !important;
+}
+
+.simple-vditor .vditor-reset {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.vditor-without-menu .vditor-toolbar {
+  height: 0px;
+  border-bottom: 0px;
+}
+
+.simple-vditor h1::before,
+.simple-vditor h2::before,
+.simple-vditor h3::before {
+  content: '';
+}
+
+.vditor {
+  --textarea-background-color: white;
+}
+
+.vditor-sv {
+  font-family: mononoki, Consolas, Liberation Mono, Menlo, Courier, monospace, Apple Color Emoji,
+    Segoe UI Emoji, Noto Color Emoji, Segoe UI Symbol, Android Emoji, EmojiSymbols;
+}
+
+// Comment
+.comment-item {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.comment-reply {
+  border-left: 2px solid lightgrey;
+  border-radius: 0 0 0 10px;
+}
+
+.reply-item {
+  padding-right: 0;
+  word-break: break-all;
+}
+
+.parent-comment {
+  border-left: 2px solid lightgrey;
+}
+
+// Event
+.event-span a {
+  text-decoration: none;
 }

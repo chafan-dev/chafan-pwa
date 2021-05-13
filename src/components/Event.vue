@@ -138,9 +138,3 @@ export default class Event extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.event-span a {
-  text-decoration: none;
-}
-</style>

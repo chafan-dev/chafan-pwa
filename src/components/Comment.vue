@@ -431,19 +431,3 @@ export default class Comment extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.comment-reply {
-  border-left: 2px solid lightgrey;
-  border-radius: 0 0 0 10px;
-}
-
-.reply-item {
-  padding-right: 0;
-  word-break: break-all;
-}
-
-.slim-btn {
-  padding: 0 0 !important;
-}
-</style>

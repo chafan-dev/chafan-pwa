@@ -169,14 +169,3 @@ export default class VditorComponent extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-.vditor {
-  --textarea-background-color: white;
-}
-
-.vditor-sv {
-  font-family: mononoki, Consolas, Liberation Mono, Menlo, Courier, monospace, Apple Color Emoji,
-    Segoe UI Emoji, Noto Color Emoji, Segoe UI Symbol, Android Emoji, EmojiSymbols;
-}
-</style>

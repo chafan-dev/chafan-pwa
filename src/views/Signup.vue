@@ -194,5 +194,3 @@ export default class Signup extends Vue {
   }
 }
 </script>
-
-<style></style>

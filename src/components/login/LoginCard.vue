@@ -349,5 +349,3 @@ export default class LoginCard extends Vue {
   }
 }
 </script>
-
-<style></style>

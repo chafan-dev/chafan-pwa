@@ -89,20 +89,3 @@ export default class SimpleEditor extends Vue {
   }
 }
 </script>
-
-<style lang="sass">
-@import '~vuetify/src/styles/styles.sass'
-
-.simple-editor h1, .simple-editor h2, .simple-editor h3
-  border-bottom: none !important
-  font-family: $body-font-family
-  font-size: $font-size-root
-  margin-top: 10px
-  margin-bottom: 10px
-
-.simple-editor img
-  max-height: 100px
-
-.simple-editor p
-  margin-bottom: 10px
-</style>

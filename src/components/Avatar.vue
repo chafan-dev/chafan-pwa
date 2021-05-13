@@ -16,9 +16,3 @@ export default class Avatar extends Vue {
   @Prop() public readonly userPreview!: IUserPreview;
 }
 </script>
-
-<style scoped>
-.framed-avatar {
-  border: 1px solid white;
-}
-</style>
