@@ -29,7 +29,7 @@
           @click="handleSubmit(postNewSubmission)"
         >
           {{ $t('提交') }}
-          <v-progress-circular v-if="postNewSubmissionIntermediate" intermediate size="20" />
+          <v-progress-circular v-if="postNewSubmissionIntermediate" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
     </ValidationObserver>
