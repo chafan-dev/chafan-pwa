@@ -56,9 +56,3 @@ export default class CommentCard extends Vue {
   @Prop({ default: true }) private readonly embedded!: false;
 }
 </script>
-
-<style scoped>
-.parent-comment {
-  border-left: 2px solid lightgrey;
-}
-</style>

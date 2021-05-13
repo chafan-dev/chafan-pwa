@@ -70,39 +70,3 @@ export default class Viewer extends Vue {
   }
 }
 </script>
-
-<style lang="sass">
-@import '~vuetify/src/styles/styles.sass'
-
-.viewer-desktop img
-  max-height: 500px
-
-.viewer img
-  max-width: 100%
-
-.viewer
-  font-family: $body-font-family
-  font-size: $font-size-root
-
-.og-card
-  border: 1px lightgrey solid
-  border-radius: 5px
-  padding: 5px
-  width: fit-content
-
-.og-card img
-  max-width: 500px
-
-.og-card-desc
-  padding-top: 5px
-</style>
-
-<style scoped>
-.vditor-reset a {
-  text-decoration: none !important;
-}
-
-.vditor-reset {
-  padding: 0;
-}
-</style>

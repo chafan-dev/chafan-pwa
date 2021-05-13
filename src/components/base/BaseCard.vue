@@ -20,10 +20,3 @@ export default class BaseCard extends Vue {
   @Prop({ default: false }) private readonly noGutter!: boolean;
 }
 </script>
-
-<style scoped>
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
-}
-</style>

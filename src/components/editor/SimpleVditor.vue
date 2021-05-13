@@ -74,21 +74,3 @@ export default class SimpleVditor extends Vue {
   }
 }
 </script>
-
-<style>
-.simple-vditor .vditor-reset {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.vditor-without-menu .vditor-toolbar {
-  height: 0px;
-  border-bottom: 0px;
-}
-
-.simple-vditor h1::before,
-.simple-vditor h2::before,
-.simple-vditor h3::before {
-  content: '';
-}
-</style>

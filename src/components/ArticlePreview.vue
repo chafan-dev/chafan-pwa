@@ -1,5 +1,5 @@
 <template>
-  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
+  <base-card :embedded="embedded">
     <div class="title" style="word-break: normal">
       <router-link :to="'/articles/' + articlePreview.uuid" class="text-decoration-none">
         {{ articlePreview.title }}
@@ -16,24 +16,19 @@
         </router-link>
       </span>
     </div>
-  </v-card>
+  </base-card>
 </template>
 
 <script lang="ts">
 import { IArticlePreview } from '@/interfaces';
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import BaseCard from '@/components/base/BaseCard.vue';
 
-@Component
+@Component({
+  components: { BaseCard },
+})
 export default class ArticlePreview extends Vue {
   @Prop() public readonly articlePreview!: IArticlePreview;
   @Prop({ default: false }) private readonly embedded!: false;
 }
 </script>
-
-<style scoped>
-/* FIXME: code duplicate: Home.vue */
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
-}
-</style>

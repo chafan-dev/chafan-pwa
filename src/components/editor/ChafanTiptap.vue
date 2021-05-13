@@ -212,9 +212,3 @@ export default class ChafanTiptap extends Vue {
   }
 }
 </script>
-
-<style>
-.v-application code {
-  background: none !important;
-}
-</style>

@@ -83,9 +83,3 @@ export default class SiteBtn extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.slim-btn {
-  padding: 0 4px !important;
-}
-</style>

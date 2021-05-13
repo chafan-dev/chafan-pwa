@@ -1,5 +1,5 @@
 <template>
-  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
+  <base-card :embedded="embedded">
     <v-row justify="center">
       <v-col align-self="center">
         <div
@@ -72,7 +72,7 @@
         </v-row>
       </v-col>
     </v-row>
-  </v-card>
+  </base-card>
 </template>
 
 <script lang="ts">
@@ -82,9 +82,10 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import { readToken, readUserProfile } from '@/store/main/getters';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
-  components: { EditIcon },
+  components: { BaseCard, EditIcon },
 })
 export default class ArticleColumnCard extends Vue {
   @Prop() public readonly articleColumn!: IArticleColumn;
@@ -167,11 +168,3 @@ export default class ArticleColumnCard extends Vue {
   }
 }
 </script>
-
-<style scoped>
-/* FIXME: code duplicate: Home.vue */
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
-}
-</style>

@@ -116,8 +116,3 @@ export default class NewContentActionBar extends Vue {
   }
 }
 </script>
-<style scoped>
-.slim-btn {
-  padding: 3 0 !important;
-}
-</style>

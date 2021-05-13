@@ -666,11 +666,3 @@ export default class Answer extends Vue {
   }
 }
 </script>
-
-<style lang="sass">
-.slim-btn
-  padding: 0 8px !important
-
-.vditor-preview
-  padding: 0 1px
-</style>

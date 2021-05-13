@@ -1,5 +1,5 @@
 <template>
-  <v-card :class="{ 'c-card': !embedded }" :flat="embedded" class="pa-2">
+  <base-card :embedded="embedded">
     <div class="title" style="word-break: normal">
       <router-link :to="'/questions/' + questionPreview.uuid" class="text-decoration-none">
         {{ questionPreview.title }}
@@ -32,7 +32,7 @@
         <span v-else class="text-caption">{{ questionPreview.answers_count }}</span>
       </div>
     </div>
-  </v-card>
+  </base-card>
 </template>
 
 <script lang="ts">
@@ -42,9 +42,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
-  components: { SiteBtn, AnswerIcon, CommentsIcon },
+  components: { BaseCard, SiteBtn, AnswerIcon, CommentsIcon },
 })
 export default class QuestionPreview extends Vue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
@@ -60,11 +61,3 @@ export default class QuestionPreview extends Vue {
   }
 }
 </script>
-
-<style scoped>
-/* FIXME: code duplicate: Home.vue */
-.c-card {
-  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
-    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
-}
-</style>
