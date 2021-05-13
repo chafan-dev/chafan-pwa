@@ -7,8 +7,6 @@
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} - {{ $t('Password Recovery') }}</v-toolbar-title>
-                <v-spacer />
-                <LangPicker />
               </v-toolbar>
               <v-card-text>
                 <p class="subheading">
@@ -63,11 +61,9 @@ import { appName } from '@/env';
 import { dispatchPasswordRecovery } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 
-import LangPicker from '@/components/LangPicker.vue';
-
 // TODO: share a parent component with Login.vue
 @Component({
-  components: { LangPicker, AccountIcon },
+  components: { AccountIcon },
 })
 export default class Login extends Vue {
   public valid = true;

@@ -183,13 +183,6 @@ export default new Router({
         import(/* webpackChunkName: "recover-password" */ './views/PasswordRecovery.vue'),
     },
     {
-      path: '/reset-password',
-      meta: {
-        title: constants.reset_password,
-      },
-      component: () => import(/* webpackChunkName: "reset-password" */ './views/ResetPassword.vue'),
-    },
-    {
       path: '/invitation-links/:uuid',
       meta: {
         title: constants.invitation_to_join,

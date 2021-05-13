@@ -228,7 +228,6 @@ import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 import { appName } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchCaptureApiError, dispatchLogIn } from '@/store/main/actions';
-import LangPicker from '@/components/LangPicker.vue';
 import { commitAddNotification } from '@/store/main/mutations';
 import { api } from '@/api';
 import { captureException } from '@sentry/vue';
@@ -247,7 +246,6 @@ import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
     LockOutlineIcon,
     LockOutline,
     AccountCircleOutlineIcon,
-    LangPicker,
     AccountIcon,
     PasswordIcon,
     VerifyCodeIcon,
