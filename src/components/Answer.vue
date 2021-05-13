@@ -195,6 +195,7 @@
 
                 <ShareCardButton
                   :link="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                  :link-text="answer.question.title + ` - ${answer.author.handle} 的回答`"
                   v-slot="{ shareQrCodeUrl }"
                 >
                   <v-card-title>

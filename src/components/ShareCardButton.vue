@@ -3,7 +3,7 @@
     <v-dialog v-model="showSharingCard" max-width="400px">
       <v-card @click-outside="showSharingCard = false">
         <div class="pa-4">
-          <router-link :to="link" class="text-decoration-none">复制链接</router-link
+          复制链接：<router-link :to="link" class="text-decoration-none">{{ linkText }}</router-link
           >，或者截屏分享卡片：
         </div>
         <v-divider class="mx-4" />
@@ -33,6 +33,7 @@ import QRious from 'qrious';
 })
 export default class ShareCardButton extends Vue {
   @Prop() private readonly link!: string;
+  @Prop() private readonly linkText!: string;
   @Prop() private readonly onClickShare!: (() => void) | undefined;
 
   private tooltipModel = false;

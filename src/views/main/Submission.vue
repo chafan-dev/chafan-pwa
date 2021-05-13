@@ -153,6 +153,7 @@
 
               <ShareCardButton
                 :link="`/submissions/${submission.uuid}`"
+                :link-text="submission.title"
                 class="text-decoration-none"
                 v-slot="{ shareQrCodeUrl }"
               >
