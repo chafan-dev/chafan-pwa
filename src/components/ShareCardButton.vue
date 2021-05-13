@@ -11,7 +11,7 @@
       </v-card>
     </v-dialog>
 
-    <v-tooltip bottom v-model="tooltipModel">
+    <v-tooltip bottom :disabled="!$vuetify.breakpoint.mdAndUp">
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <ShareIcon @click="showSharingCardDialog" />
@@ -36,7 +36,6 @@ export default class ShareCardButton extends Vue {
   @Prop() private readonly linkText!: string;
   @Prop() private readonly onClickShare!: (() => void) | undefined;
 
-  private tooltipModel = false;
   private showSharingCard = false;
   private shareQrCodeUrl = '';
 
@@ -45,7 +44,6 @@ export default class ShareCardButton extends Vue {
       this.onClickShare();
     }
     this.showSharingCard = true;
-    this.tooltipModel = false;
     const qr = new QRious({
       value: window.location.origin + this.link,
     });
