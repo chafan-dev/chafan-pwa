@@ -1,5 +1,5 @@
 <template>
-  <base-card v-if="!showEditor" :embedded="embedded">
+  <div v-if="!showEditor" class="pa-2">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
@@ -288,7 +288,7 @@
         </v-col>
       </v-row>
     </div>
-  </base-card>
+  </div>
   <AnswerEditor
     v-else-if="answer && showEditor"
     :answerIdProp="answer.uuid"
@@ -356,7 +356,6 @@ import AnswerEditor from '@/components/AnswerEditor.vue';
   },
 })
 export default class Answer extends Vue {
-  @Prop({ default: false }) private readonly embedded!: false;
   @Prop() private readonly answerPreview!: IAnswerPreview;
   @Prop() private readonly answerProp: IAnswer | undefined;
   @Prop({ default: false }) private readonly loadFull!: boolean;

@@ -1,5 +1,5 @@
 <template>
-  <BaseCard :embedded="embedded">
+  <div class="pa-2">
     <div class="title" style="word-break: normal">
       <router-link :to="'/submissions/' + submission.uuid" class="text-decoration-none">
         {{ submission.title }}
@@ -34,7 +34,7 @@
     >
       {{ shortDesc }}
     </div>
-  </BaseCard>
+  </div>
 </template>
 
 <script lang="ts">
@@ -50,7 +50,6 @@ import BaseCard from '@/components/base/BaseCard.vue';
   components: { BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
 export default class submission extends Vue {
-  @Prop({ default: false }) private readonly embedded!: false;
   @Prop() private readonly submission!: ISubmission;
 
   get shortDesc() {

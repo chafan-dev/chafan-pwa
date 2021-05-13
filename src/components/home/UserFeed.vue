@@ -23,7 +23,7 @@
         </v-card>
       </v-dialog>
 
-      <BaseCard class="ma-4" v-for="activity in combinedActivities.items" :key="activity.id">
+      <div class="ma-4 shadow-card" v-for="activity in combinedActivities.items" :key="activity.id">
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
           <!-- Column for subject and verb -->
@@ -123,21 +123,16 @@
             <ArticleColumnCard
               :articleColumn="activity.event.content.article_column"
               :compactMode="true"
-              :embedded="true"
             />
           </div>
           <div v-if="activity.verb === 'upvote_answer'">
-            <Answer
-              :answerPreview="activity.event.content.answer"
-              :embedded="true"
-              :showAuthor="true"
-            />
+            <Answer :answerPreview="activity.event.content.answer" :showAuthor="true" />
           </div>
           <div v-if="activity.verb === 'upvote_question'">
-            <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
+            <QuestionPreview :questionPreview="activity.event.content.question" />
           </div>
           <div v-else-if="activity.verb === 'upvote_submission'">
-            <SubmissionCard :embedded="true" :submission="activity.event.content.submission" />
+            <SubmissionCard :submission="activity.event.content.submission" />
           </div>
           <div v-else-if="activity.verb === 'comment_question'">
             <CommentCard
@@ -170,26 +165,22 @@
             />
           </div>
           <div v-else-if="activity.verb === 'upvote_article'">
-            <ArticlePreview :articlePreview="activity.event.content.article" :embedded="true" />
+            <ArticlePreview :articlePreview="activity.event.content.article" />
           </div>
           <div v-else-if="activity.verb === 'create_article'">
-            <ArticlePreview :articlePreview="activity.event.content.article" :embedded="true" />
+            <ArticlePreview :articlePreview="activity.event.content.article" />
           </div>
           <div v-else-if="activity.verb === 'answer_question'">
-            <Answer
-              :answerPreview="activity.event.content.answer"
-              :embedded="true"
-              :showAuthor="false"
-            />
+            <Answer :answerPreview="activity.event.content.answer" :showAuthor="false" />
           </div>
           <div v-else-if="activity.verb === 'create_question'">
-            <QuestionPreview :embedded="true" :questionPreview="activity.event.content.question" />
+            <QuestionPreview :questionPreview="activity.event.content.question" />
           </div>
           <div v-else-if="activity.verb === 'create_submission'">
-            <SubmissionCard :embedded="true" :submission="activity.event.content.submission" />
+            <SubmissionCard :submission="activity.event.content.submission" />
           </div>
         </div>
-      </BaseCard>
+      </div>
 
       <div class="text-center">
         <v-progress-circular

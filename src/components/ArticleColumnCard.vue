@@ -1,5 +1,5 @@
 <template>
-  <base-card :embedded="embedded">
+  <div class="pa-2">
     <v-row justify="center">
       <v-col align-self="center">
         <div
@@ -72,7 +72,7 @@
         </v-row>
       </v-col>
     </v-row>
-  </base-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -90,7 +90,6 @@ import BaseCard from '@/components/base/BaseCard.vue';
 export default class ArticleColumnCard extends Vue {
   @Prop() public readonly articleColumn!: IArticleColumn;
   @Prop({ default: false }) public readonly compactMode!: boolean;
-  @Prop({ default: false }) private readonly embedded!: false;
   private loading = true;
   private subscription: IUserArticleColumnSubscription | null = null;
   private subscribeIntermediate = false;

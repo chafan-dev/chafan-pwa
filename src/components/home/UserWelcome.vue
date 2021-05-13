@@ -1,6 +1,6 @@
 <template>
   <v-sheet>
-    <base-card :embedded="true" :no-gutter="true" outlined>
+    <base-card :flat="true" :no-gutter="true" outlined>
       <v-alert type="info">
         <template v-slot:prepend>
           <v-btn icon>
