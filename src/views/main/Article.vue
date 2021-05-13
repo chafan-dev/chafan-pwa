@@ -136,6 +136,7 @@
 
               <ShareCardButton
                 :link="`/articles/${article.uuid}`"
+                :link-text="article.title"
                 v-slot="{ shareQrCodeUrl }"
                 :onClickShare="onClickShare"
               >

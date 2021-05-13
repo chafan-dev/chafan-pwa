@@ -206,7 +206,11 @@
               @click="subscribe"
             />
 
-            <ShareCardButton :link="`/questions/${question.uuid}`" v-slot="{ shareQrCodeUrl }">
+            <ShareCardButton
+              :link-text="question.title"
+              :link="`/questions/${question.uuid}`"
+              v-slot="{ shareQrCodeUrl }"
+            >
               <v-card-title>
                 {{ question.title }}
               </v-card-title>
