@@ -1,5 +1,5 @@
 <template>
-  <base-card :embedded="embedded">
+  <div class="pa-2">
     <div class="title" style="word-break: normal">
       <router-link :to="'/questions/' + questionPreview.uuid" class="text-decoration-none">
         {{ questionPreview.title }}
@@ -32,7 +32,7 @@
         <span v-else class="text-caption">{{ questionPreview.answers_count }}</span>
       </div>
     </div>
-  </base-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -49,7 +49,6 @@ import BaseCard from '@/components/base/BaseCard.vue';
 })
 export default class QuestionPreview extends Vue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
-  @Prop({ default: false }) private readonly embedded!: false;
 
   get shortDesc() {
     const d = this.questionPreview.description_text!;

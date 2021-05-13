@@ -1,5 +1,5 @@
 <template>
-  <base-card :embedded="embedded">
+  <div class="pa-2">
     <div class="title" style="word-break: normal">
       <router-link :to="'/articles/' + articlePreview.uuid" class="text-decoration-none">
         {{ articlePreview.title }}
@@ -16,7 +16,7 @@
         </router-link>
       </span>
     </div>
-  </base-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -29,6 +29,5 @@ import BaseCard from '@/components/base/BaseCard.vue';
 })
 export default class ArticlePreview extends Vue {
   @Prop() public readonly articlePreview!: IArticlePreview;
-  @Prop({ default: false }) private readonly embedded!: false;
 }
 </script>
