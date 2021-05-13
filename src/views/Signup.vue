@@ -7,8 +7,6 @@
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} 注册</v-toolbar-title>
-                <v-spacer />
-                <LangPicker />
               </v-toolbar>
               <v-card-text>
                 <div class="black--text mb-4">
@@ -130,13 +128,11 @@ import PasswordIcon from '@/components/icons/PasswordIcon.vue';
 import HandleIcon from '@/components/icons/HandleIcon.vue';
 import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
-import LangPicker from '@/components/LangPicker.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
 // TODO: share a parent component with Login.vue
 @Component({
   components: {
-    LangPicker,
     AccountIcon,
     PasswordIcon,
     HandleIcon,
