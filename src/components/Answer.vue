@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!showEditor" class="pa-2">
+  <div v-if="!showEditor">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>
@@ -26,7 +26,7 @@
             {{ truncatedIntro(answer.author.personal_introduction) }}
           </span>
           <v-spacer />
-          <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text mr-3">
+          <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text">
             {{ $t('上次编辑：') }}
             {{ $dayjs.utc(answer.updated_at).local().fromNow() }}
           </span>
@@ -64,7 +64,7 @@
 
         <div v-if="userBookmark">
           <v-row>
-            <v-col align-self="end" class="d-flex">
+            <v-col align-self="end" class="d-flex pl-3">
               <v-dialog v-model="showCancelUpvoteDialog" max-width="400">
                 <v-card>
                   <v-card-title primary-title>
@@ -90,7 +90,7 @@
               <div class="d-flex mt-1">
                 <v-btn
                   v-if="upvotes && upvotes.upvoted"
-                  color="primary lighten-2"
+                  color="slim-btn primary lighten-2 mr-1"
                   depressed
                   small
                   @click="showCancelUpvoteDialog = true"
@@ -100,7 +100,7 @@
                 <v-btn
                   v-else
                   :disabled="currentUserIsAuthor || upvoteIntermediate"
-                  class="slim-btn mx-1"
+                  class="slim-btn mr-1"
                   color="primary"
                   depressed
                   small
@@ -109,9 +109,9 @@
                   {{ $t('赞') }} ({{ upvotes.count }})
                 </v-btn>
 
-                <v-btn class="mx-1" depressed small @click="toggleShowComments">
+                <v-btn class="mr-1 slim-btn" depressed small @click="toggleShowComments">
                   {{
-                    answer.comments.length == 0
+                    answer.comments.length === 0
                       ? $t('评论')
                       : $t('查看n条评论', { amount: answer.comments.length })
                   }}
@@ -120,7 +120,7 @@
                 <template v-if="userProfile">
                   <v-btn
                     v-show="currentUserIsAuthor"
-                    class="slim-btn mx-1"
+                    class="slim-btn mr-1"
                     depressed
                     small
                     @click="loadEditor"
@@ -130,7 +130,7 @@
 
                   <v-menu v-if="currentUserIsAuthor" offset-y>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-bind="attrs" v-on="on" class="slim-btn mx-1" depressed small
+                      <v-btn v-bind="attrs" v-on="on" class="slim-btn m2-1" depressed small
                         >{{ $t('设置') }}
                       </v-btn>
                     </template>
@@ -230,7 +230,7 @@
 
             <!-- Column of variable width -->
             <v-col v-if="$vuetify.breakpoint.mdAndUp & !preview && userProfile" md="auto">
-              <span class="text-caption grey--text ma-2">{{
+              <span class="text-caption grey--text mt-2">{{
                 $t('已被阅读n次', { times: answer.view_times })
               }}</span>
             </v-col>

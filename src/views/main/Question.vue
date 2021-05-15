@@ -367,7 +367,7 @@
           </v-dialog>
         </v-row>
 
-        <div class="d-flex justify-end">
+        <div class="d-flex justify-end mb-2">
           <ReactionBlock :objectId="question.uuid" objectType="question" />
         </div>
 
