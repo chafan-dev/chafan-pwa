@@ -41,7 +41,6 @@
               v-if="bodyDraft !== null && draftEditor !== null"
               :body="bodyDraft"
               :editor="draftEditor"
-              class="vditor-preview"
             />
           </template>
           <template v-else>
@@ -57,7 +56,6 @@
               :body="answer.body"
               :bodyFormat="answer.body_format"
               :editor="answer.editor"
-              class="vditor-preview"
             />
           </template>
         </div>

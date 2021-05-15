@@ -8,9 +8,8 @@
         :on-editor-ready="onViewerReady"
       />
     </template>
-    <template v-else>
-      <div v-if="bodyFormat === 'html'" v-html="sanitizedBody" />
-      <div v-else-if="!bodyFormat || bodyFormat === 'markdown'" ref="vditorViewer" />
+    <template v-else-if="!bodyFormat || bodyFormat === 'markdown'">
+      <div ref="vditorViewer" />
     </template>
     <template v-if="contentElem">
       <LightboxGroup :container="contentElem" />
@@ -23,7 +22,6 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import Vditor from '@chafan/vditor';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { vditorCDN, postProcessViewerDOM } from '@/common';
-import DOMPurify from 'dompurify';
 import { body_format_T, editor_T } from '@/interfaces';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 
@@ -36,14 +34,10 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
   },
 })
 export default class Viewer extends Vue {
-  @Prop() public readonly body!: string;
-  @Prop() public readonly bodyFormat: body_format_T | undefined;
-  @Prop() public readonly editor!: editor_T;
+  @Prop() private readonly body!: string;
+  @Prop() private readonly bodyFormat: body_format_T | undefined;
+  @Prop() private readonly editor!: editor_T;
   public textContent: string | null = null;
-
-  get sanitizedBody() {
-    return DOMPurify.sanitize(this.body);
-  }
 
   private onViewerReady(contentElem: HTMLElement) {
     postProcessViewerDOM(this.$store.state.main.token, contentElem);
@@ -53,10 +47,7 @@ export default class Viewer extends Vue {
   private mounted() {
     if (this.editor !== 'tiptap') {
       const viewer = this.$refs.viewer as HTMLElement;
-      if (this.bodyFormat === 'html') {
-        this.$data.contentElem = viewer;
-        this.onViewerReady(viewer);
-      } else if (!this.bodyFormat || this.bodyFormat === 'markdown') {
+      if (!this.bodyFormat || this.bodyFormat === 'markdown') {
         Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
           mode: 'light',
           cdn: vditorCDN,
