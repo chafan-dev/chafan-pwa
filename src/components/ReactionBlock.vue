@@ -15,7 +15,7 @@
     </v-btn-toggle>
     <v-menu v-if="loggedIn" offset-x>
       <template v-slot:activator="{ on, attrs }">
-        <ReactionIcon v-bind="attrs" v-on="on" class="ml-2 mr-2" />
+        <ReactionIcon v-bind="attrs" v-on="on" />
       </template>
       <v-list>
         <v-list-item v-for="(reaction, index) in myReactionChoices" :key="index">
