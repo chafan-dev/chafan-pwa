@@ -1,4 +1,5 @@
 @import '~vuetify/src/styles/styles.sass';
+@import 'variables';
 
 // General
 .vh-100 {
@@ -30,6 +31,11 @@
   }
 }
 
+.vditor-reset {
+  font-family: $body-font-family;
+  line-height: $rich-text-line-height;
+}
+
 .simple-editor h1,
 .simple-editor h2,
 .simple-editor h3 {
@@ -49,6 +55,10 @@
 }
 
 .vditor-reset a {
+  text-decoration: none !important;
+}
+
+.viewer a {
   text-decoration: none !important;
 }
 
@@ -76,9 +86,11 @@
   margin-bottom: 10px;
 }
 
-.simple-viewer .ProseMirror {
+.simple-viewer .ProseMirror,
+.viewer .ProseMirror {
   padding-left: 0;
   padding-right: 0;
+  line-height: $rich-text-line-height;
 }
 
 .viewer-desktop img {
