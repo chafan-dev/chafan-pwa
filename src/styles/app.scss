@@ -25,7 +25,9 @@
 
 // Editor/Preview
 .vditor-preview {
-  padding: 0 1px;
+  .vditor-reset {
+    padding: 2px 2px;
+  }
 }
 
 .simple-editor h1,
@@ -77,10 +79,6 @@
 .simple-viewer .ProseMirror {
   padding-left: 0;
   padding-right: 0;
-}
-
-.vditor-reset {
-  padding: 0 !important;
 }
 
 .viewer-desktop img {

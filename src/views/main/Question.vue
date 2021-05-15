@@ -72,7 +72,7 @@
 
         <!-- Question control -->
         <v-row justify="space-between">
-          <v-col v-if="!showQuestionEditor" class="d-flex">
+          <v-col v-if="!showQuestionEditor" class="d-flex pl-2">
             <v-btn
               v-if="currentUserAnswerUUID"
               class="ma-1 slim-btn"
@@ -412,30 +412,33 @@
         <div v-if="answerPreviews.length && loadingFullAnswer" class="text-center">
           <v-progress-circular indeterminate size="30" />
         </div>
-        <Answer
-          v-for="answer in loadedFullAnswers"
-          :key="answer.uuid"
-          :answerPreview="answer"
-          :answerProp="answer"
-          :loadFull="true"
-          :showAuthor="true"
-          :showCommentId="answerCommentId"
-          :showQuestionInCard="false"
-          class="mb-4"
-          @delete-answer="deleteHandler"
-        />
-        <Answer
+        <div v-for="answer in loadedFullAnswers" :key="answer.uuid" class="shadow-card mb-4">
+          <Answer
+            :answerPreview="answer"
+            :answerProp="answer"
+            :loadFull="true"
+            :showAuthor="true"
+            :showCommentId="answerCommentId"
+            :showQuestionInCard="false"
+            @delete-answer="deleteHandler"
+          />
+        </div>
+
+        <div
           v-for="answerPreview in answerPreviews"
           :key="answerPreview.uuid"
-          :answerPreview="answerPreview"
-          :loadFull="answerPreviews.indexOf(answerPreview) <= 2"
-          :showAuthor="true"
-          :showCommentId="answerPreview.uuid === answerUUID ? answerCommentId : undefined"
-          :showQuestionInCard="false"
-          class="mb-4"
-          @load="loadingFullAnswer = false"
-          @delete-answer="deleteHandler"
-        />
+          class="shadow-card mb-4"
+        >
+          <Answer
+            :answerPreview="answerPreview"
+            :loadFull="answerPreviews.indexOf(answerPreview) <= 2"
+            :showAuthor="true"
+            :showCommentId="answerPreview.uuid === answerUUID ? answerCommentId : undefined"
+            :showQuestionInCard="false"
+            @load="loadingFullAnswer = false"
+            @delete-answer="deleteHandler"
+          />
+        </div>
       </v-col>
 
       <v-col

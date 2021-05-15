@@ -52,7 +52,7 @@
             <!-- Submission URL display -->
             <div v-if="submission.url">
               <LinkIcon />
-              {{ $t('源链接（选填）') }}:
+              {{ $t('源链接') }}:
               <a :href="submission.url" class="text-decoration-none" target="_blank">
                 {{ submission.url }}
               </a>
