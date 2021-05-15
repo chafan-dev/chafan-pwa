@@ -54,6 +54,7 @@
       ref="base"
       v-bind="$attrs"
       v-on="$listeners"
+      class="tiptap"
       :editable="editable"
       :comment-mode="commentMode"
       :search-users="searchUsers"
@@ -62,7 +63,7 @@
       :upload="upload"
       :video-dialog-controller="videoDialogController"
       :image-dialog-controller="imageDialogController"
-      :onEditorReady="onEditorReady"
+      :on-editor-change="onEditorChange"
     />
   </div>
 </template>
@@ -95,6 +96,23 @@ export default class ChafanTiptap extends Vue {
   @Prop({ default: true }) private readonly editable!: boolean;
   @Prop({ default: false }) private readonly commentMode!: boolean;
   @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
+  @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
+
+  private onEditorChange() {
+    if (this.onMentionedHandles) {
+      const tiptapElement = this.$el.getElementsByClassName('tiptap')[0];
+      const handles: string[] = [];
+      tiptapElement.querySelectorAll('a.mention').forEach((elem: Element) => {
+        const anchor = elem as HTMLAnchorElement;
+        const url = new URL(anchor.href);
+        const segments = url.pathname.split('/');
+        if (segments.length === 3 && segments[1] === 'users') {
+          handles.push(segments[2]);
+        }
+      });
+      this.onMentionedHandles(handles);
+    }
+  }
 
   private showVideoDialog = false;
   readonly videoDialogController: ITiptapDialogController = {

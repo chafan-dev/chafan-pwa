@@ -809,7 +809,7 @@ export default class Question extends Vue {
     this.handlingNewEdit = false;
   }
 
-  private async submitNewQuestionCommentBody({ body, body_text, editor }) {
+  private async submitNewQuestionCommentBody({ body, body_text, editor, mentioned }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.commentSubmitIntermediate = true;
@@ -819,6 +819,7 @@ export default class Question extends Vue {
           body,
           body_text,
           editor,
+          mentioned,
         });
         const comment = response.data;
         this.question.comments.push(comment);

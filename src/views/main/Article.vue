@@ -401,7 +401,7 @@ export default class Article extends Vue {
     });
   }
 
-  private async submitNewArticleCommentBody({ body, body_text, editor }) {
+  private async submitNewArticleCommentBody({ body, body_text, editor, mentioned }) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
         this.commentSubmitIntermediate = true;
@@ -410,6 +410,7 @@ export default class Article extends Vue {
           body,
           body_text,
           editor,
+          mentioned,
         });
         const comment = response.data;
         this.article.comments.push(comment);
