@@ -12,8 +12,16 @@
       </v-list-item-content>
     </v-list-item>
     <div v-if="writable">
-      <SimpleEditor ref="simpleEditor" :placeholder="$t('评论')" class="mb-1" />
+      <SimpleEditor
+        ref="simpleEditor"
+        :onMentionedHandles="onMentionedHandles"
+        :placeholder="$t('评论')"
+        class="mb-1"
+      />
       <div class="d-flex">
+        <span v-if="mentioned.length" class="grey--text caption"
+          >将通知用户：{{ mentioned.join(', ') }}</span
+        >
         <v-spacer />
         <v-btn
           :disabled="commentSubmitIntermediate"
@@ -53,6 +61,8 @@ export default class CommentBlock extends Vue {
   @Prop({ default: false }) public commentSubmitIntermediate!: boolean;
   @Prop({ default: false }) public readonly enableUpvotes!: boolean;
 
+  private mentioned: string[] = [];
+
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
@@ -74,7 +84,12 @@ export default class CommentBlock extends Vue {
       body: commentCopy,
       body_text: commentText,
       editor: editor.editor,
+      mentioned: this.mentioned,
     };
+  }
+
+  private onMentionedHandles(handles: string[]) {
+    this.mentioned = handles;
   }
 }
 </script>

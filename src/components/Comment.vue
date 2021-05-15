@@ -121,8 +121,12 @@
           :initialValue="comment.body"
           class="mt-2 mb-2"
           :editor-prop="comment.editor"
+          :onMentionedHandles="onMentionedHandles"
         />
         <div class="d-flex">
+          <span v-if="mentioned.length" class="grey--text caption"
+            >将通知用户：{{ mentioned.join(', ') }}</span
+          >
           <v-spacer />
           <v-btn
             :disabled="submitIntermediate"
@@ -143,8 +147,16 @@
 
       <v-expand-transition>
         <div v-show="showEditor" class="ml-4">
-          <SimpleEditor ref="commentReplyEditor" :placeholder="$t('回复')" class="mt-2 mb-2" />
+          <SimpleEditor
+            ref="commentReplyEditor"
+            :onMentionedHandles="onMentionedHandles"
+            :placeholder="$t('回复')"
+            class="mt-2 mb-2"
+          />
           <div class="d-flex">
+            <span v-if="mentioned.length" class="grey--text caption"
+              >将通知用户：{{ mentioned.join(', ') }}</span
+            >
             <v-spacer />
             <v-btn
               :disabled="submitIntermediate"
@@ -246,6 +258,8 @@ export default class Comment extends Vue {
   private cancelUpvoteIntermediate: boolean = false;
   private showCancelUpvoteDialog: boolean = false;
 
+  private mentioned: string[] = [];
+
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
@@ -338,6 +352,7 @@ export default class Comment extends Vue {
         body: editor.content!,
         body_text: editor.getTextContent() || '',
         editor: editor.editor,
+        mentioned: this.mentioned,
       });
       const comment = response.data;
       if (this.childComments === null) {
@@ -365,6 +380,7 @@ export default class Comment extends Vue {
       await apiComment.updateComment(this.token, this.comment.uuid, {
         body: editor.content!,
         body_text: editor.getTextContent() || '',
+        mentioned: this.mentioned,
       });
       commitAddNotification(this.$store, {
         content: this.$t('评论更新成功').toString(),
@@ -418,6 +434,11 @@ export default class Comment extends Vue {
         this.showCancelUpvoteDialog = false;
       }
     });
+  }
+
+  private onMentionedHandles(handles: string[]) {
+    console.log(handles);
+    this.mentioned = handles;
   }
 
   private async toggleUpvote() {

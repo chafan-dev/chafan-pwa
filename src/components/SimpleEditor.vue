@@ -6,6 +6,7 @@
       :comment-mode="true"
       :body="initialValue"
       :placeholder="placeholder"
+      :onMentionedHandles="onMentionedHandles"
     />
     <SimpleVditor
       v-else
@@ -32,6 +33,7 @@ export default class SimpleEditor extends Vue {
   @Prop() public readonly placeholder: string | undefined;
   @Prop() public readonly editorProp: editor_T | undefined;
   @Prop({ default: false }) public readonly showMenu!: boolean;
+  @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
 
   get simpleVditor() {
     return this.$refs.simpleVditor as SimpleVditor;

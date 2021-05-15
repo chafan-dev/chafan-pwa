@@ -491,12 +491,14 @@ export interface ICommentCreate {
   blog_uuid?: string;
   answer_uuid?: string;
   parent_comment_uuid?: string;
+  mentioned: string[];
 }
 
 export interface ICommentUpdate {
   body?: string;
   body_text?: string;
   shared_to_timeline?: true;
+  mentioned?: string[];
 }
 
 export interface IQuestionUpdate {
