@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!showEditor">
+  <div v-if="!showEditor" class="pa-1">
     <div v-if="isHiddenByMod">
       <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
     </div>

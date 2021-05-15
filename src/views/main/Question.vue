@@ -40,7 +40,7 @@
 
           <!-- Question title display/editor -->
           <div>
-            <div v-if="!showQuestionEditor" class="text-h5 mb-2">
+            <div v-if="!showQuestionEditor" class="text-h5">
               {{ question.title }}
             </div>
             <v-textarea

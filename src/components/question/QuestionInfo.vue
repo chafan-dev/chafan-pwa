@@ -57,7 +57,7 @@
     </span>
     <template v-if="relatedQuestions">
       <v-divider class="my-2" />
-      <RotationList v-slot="{ item }" :items="relatedQuestions" :title="$t('相关问题')">
+      <RotationList v-slot="{ item }" :items="relatedQuestions" title="相关问题">
         <QuestionLink :question-preview="item" />
       </RotationList>
     </template>

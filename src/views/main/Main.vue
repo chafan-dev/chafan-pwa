@@ -132,9 +132,7 @@
               <v-sheet
                 class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1"
               >
-                <v-subheader class="font-weight-bold">
-                  {{ $t('通知') }}
-                </v-subheader>
+                <v-subheader class="font-weight-bold"> 通知 </v-subheader>
 
                 <div class="mr-1">
                   <v-btn depressed small @click="readAllNotifs">
