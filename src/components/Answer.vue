@@ -64,7 +64,7 @@
 
         <div v-if="userBookmark">
           <v-row>
-            <v-col align-self="end" class="d-flex pl-3">
+            <v-col align-self="end" class="d-flex pl-3 pb-0">
               <v-dialog v-model="showCancelUpvoteDialog" max-width="400">
                 <v-card>
                   <v-card-title primary-title>
