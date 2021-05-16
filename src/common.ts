@@ -116,6 +116,7 @@ export const constants = {
   recover_password: '找回密码',
   reset_password: '重置密码',
   invitation_to_join: '邀请加入',
+  search_results: '搜索结果',
 };
 
 export const updateHead = (routePath: string, title: string, descriptionText?: string) => {
