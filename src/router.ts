@@ -26,6 +26,13 @@ export default new Router({
           component: () => import(/* webpackChunkName: "main-sites" */ './views/main/Explore.vue'),
         },
         {
+          path: 'search/',
+          meta: {
+            title: constants.search_results,
+          },
+          component: () => import(/* webpackChunkName: "main-search" */ './views/main/Search.vue'),
+        },
+        {
           name: 'site',
           path: 'sites/:subdomain',
           component: () => import(/* webpackChunkName: "main-site" */ './views/main/Site.vue'),
