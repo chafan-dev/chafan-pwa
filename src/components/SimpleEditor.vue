@@ -43,7 +43,7 @@ export default class SimpleEditor extends Vue {
     if (this.editorProp) {
       return this.editorProp;
     }
-    return readUserProfile(this.$store)!.default_editor_mode;
+    return 'tiptap';
   }
 
   get tiptap() {
