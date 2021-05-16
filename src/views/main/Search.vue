@@ -26,7 +26,7 @@ export default class Search extends Vue {
     return readToken(this.$store);
   }
 
-  private async mounted() {
+  async mounted() {
     const q = this.q;
     if (q) {
       await (this.$refs.searchResults as SearchResults).doSearch(q);
