@@ -21,7 +21,6 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import SimpleVditor from '@/components/editor/SimpleVditor.vue';
-import { readUserProfile } from '@/store/main/getters';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { editor_T } from '@/interfaces';
 

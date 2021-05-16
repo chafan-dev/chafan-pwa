@@ -16,6 +16,8 @@ export interface IUserProfile {
   is_superuser: boolean;
   full_name?: string;
   handle: string;
+  about?: string;
+  about_editor: editor_T;
   moderated_sites: ISite[];
   subscribed_topics: ITopic[];
   residency_topics: ITopic[];
@@ -124,6 +126,8 @@ export interface IUserUpdateMe {
   email?: string;
   password?: string;
   is_active?: boolean;
+  about?: string | null;
+  about_editor?: editor_T;
   residency_topic_uuids?: string[];
   profession_topic_uuid?: string;
   work_experiences?: IUserWorkExperienceUpdate[];
@@ -538,6 +542,8 @@ export interface IUserPublic {
   uuid: string;
   full_name?: string;
   handle: string;
+  about?: string;
+  about_editor: editor_T;
   profiles: IUserSiteProfile[];
   profile_view_times: number;
   personal_introduction?: string;

@@ -78,7 +78,7 @@
                       </ValidationProvider>
                       <v-text-field
                         v-model="userUpdateMe.personal_introduction"
-                        :label="$t('个人简介')"
+                        :label="$t('个人签名')"
                         clearable
                       />
                     </v-col>
@@ -86,6 +86,44 @@
 
                   <v-row>
                     <v-col>
+                      <div class="d-flex">
+                        <v-btn
+                          depressed
+                          small
+                          color="primary"
+                          @click="showAboutEditor = !showAboutEditor"
+                          >「关于我」</v-btn
+                        >
+                        <v-spacer />
+                        <v-dialog v-model="showClearAboutMe" max-width="400">
+                          <v-card>
+                            <v-card-title>确认清除「关于我」的内容？</v-card-title>
+                            <v-card-actions>
+                              <v-spacer />
+                              <v-btn color="warning" small depressed @click="clearAboutMe"
+                                >确认</v-btn
+                              >
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
+                        <CloseIcon v-if="userProfile.about" @click="showClearAboutMe = true" />
+                      </div>
+                      <v-expand-transition>
+                        <div v-show="showAboutEditor" class="mt-2">
+                          <ChafanTiptap
+                            v-show="aboutEditor === 'tiptap'"
+                            ref="tiptap"
+                            :onEditorChange="onEditorChange"
+                          />
+
+                          <VditorComponent
+                            v-show="aboutEditor !== 'tiptap'"
+                            ref="vditor"
+                            :onEditorChange="onEditorChange"
+                          />
+                        </div>
+                      </v-expand-transition>
+
                       <!-- TODO: validate -->
                       <v-text-field
                         v-model="userUpdateMe.homepage_url"
@@ -227,7 +265,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
-import { ITopic, IUserUpdateMe } from '@/interfaces';
+import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
 import { readToken, readUserProfile } from '@/store/main/getters';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { resizeImage } from '@/imagelib';
@@ -238,6 +276,9 @@ import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
+import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
+import VditorComponent from '@/components/editor/VditorComponent.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 interface IUserWorkExperienceInput {
   company_topic_name: string;
@@ -250,7 +291,7 @@ interface IUserEducationExperienceInput {
 }
 
 @Component({
-  components: { ProfileIcon },
+  components: { CloseIcon, VditorComponent, ChafanTiptap, ProfileIcon },
 })
 export default class UserProfileEdit extends Vue {
   public valid = true;
@@ -280,6 +321,9 @@ export default class UserProfileEdit extends Vue {
   private uploadGifAvatarIntermediate = false;
   private gifAvatarURL: string | null = null;
   private showGifAvatar = false;
+  private aboutEditor: editor_T = 'wysiwyg';
+  private showAboutEditor: boolean = false;
+  private showClearAboutMe: boolean = false;
 
   get userProfile() {
     return readUserProfile(this.$store);
@@ -295,6 +339,16 @@ export default class UserProfileEdit extends Vue {
     const userProfile = readUserProfile(this.$store);
     this.categoryTopics = (await api.getCategoryTopics()).data;
     if (userProfile) {
+      this.aboutEditor = userProfile.about_editor;
+      if (this.aboutEditor === 'tiptap') {
+        const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
+        if (userProfile.about) {
+          chafanTiptap.loadJSON(JSON.parse(userProfile.about));
+        }
+      } else {
+        const vditor = this.$refs.vditor as VditorComponent;
+        vditor.init(this.aboutEditor, userProfile.about || '');
+      }
       if (userProfile.avatar_url) {
         this.avatarURL = userProfile.avatar_url;
       } else {
@@ -530,6 +584,30 @@ export default class UserProfileEdit extends Vue {
   private showGifFilePicker() {
     this.showGifAvatar = true;
     document.getElementById('gifFileInput')?.click();
+  }
+
+  private onEditorChange() {
+    if (this.aboutEditor === 'tiptap') {
+      const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
+      this.userUpdateMe.about = chafanTiptap.content || undefined;
+    } else {
+      const vditor = this.$refs.vditor as VditorComponent;
+      this.userUpdateMe.about = vditor.getContent() || undefined;
+    }
+    this.userUpdateMe.about_editor = this.aboutEditor;
+  }
+
+  private clearAboutMe() {
+    if (this.aboutEditor === 'tiptap') {
+      const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
+      chafanTiptap.reset();
+    } else {
+      const vditor = this.$refs.vditor as VditorComponent;
+      vditor.init(this.aboutEditor, '');
+    }
+    this.showAboutEditor = false;
+    this.showClearAboutMe = false;
+    this.userUpdateMe.about = null;
   }
 }
 </script>

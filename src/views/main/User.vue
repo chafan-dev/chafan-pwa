@@ -27,6 +27,11 @@
 
             <v-tab-item class="pt-2" value="profile">
               <template v-if="userPublic">
+                <div v-if="userPublic.about">
+                  <span class="subheading secondary--text text--lighten-3">关于我:</span>
+                  <Viewer :body="userPublic.about" :editor="userPublic.about_editor" />
+                </div>
+
                 <div
                   v-if="
                     userPublic.homepage_url ||
