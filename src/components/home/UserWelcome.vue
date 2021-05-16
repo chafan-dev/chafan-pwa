@@ -39,11 +39,12 @@
           <v-stepper-content step="1" />
 
           <v-stepper-step step="2">
-            {{ $t('探索「茶饭」上的感兴趣的圈子和用户来生成自己的信息流：') }}
+            <div class="d-flex">
+              <a class="text-decoration-none" href="/explore" target="_blank"
+                >探索「茶饭」上的圈子和用户</a
+              >来生成自己的信息流
+            </div>
           </v-stepper-step>
-
-          <v-stepper-content step="2" />
-          <explore-sites-grid />
         </v-stepper>
 
         <div class="text-center mb-4">
@@ -60,13 +61,12 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 
 @Component({
-  components: { InfoIcon, CloseIcon, BaseCard, ExploreSitesGrid },
+  components: { InfoIcon, CloseIcon, BaseCard },
 })
 export default class UserWelcome extends Vue {
   private stepperValue = 1;

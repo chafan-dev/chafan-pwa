@@ -82,7 +82,6 @@ import { dispatchAddFlag } from '@/store/main/actions';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
-import UserWelcome from '@/components/home/UserWelcome.vue';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
 import { FAB_FLAG } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
@@ -97,7 +96,6 @@ import RefreshIcon from '@/components/icons/RefreshIcon.vue';
     SharingIcon,
     UserFeed,
     UserLogoutWelcome,
-    UserWelcome,
     UserAgreement,
     CreateQuestionForm,
     UIStyleControllers,
