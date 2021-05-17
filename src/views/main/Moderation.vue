@@ -93,7 +93,7 @@
                   item-text="name"
                   item-value="uuid"
                 />
-                <template v-else>
+                <template v-else-if="selectedSite.category_topic">
                   <span v-if="!showSiteConfigEditor" class="black--text mr-1"
                     >{{ $t('类别') }}:</span
                   >
@@ -230,6 +230,56 @@
               </v-btn>
             </v-card-actions>
           </v-card>
+
+          <v-card class="ma-3">
+            <v-dialog v-model="showNewWebhookDialog" max-width="600">
+              <v-card>
+                <v-card-title>添加新 Webhook</v-card-title>
+                <v-card-text>
+                  <v-text-field
+                    label="Callback URL 地址"
+                    v-model="webhookCreate.callback_url"
+                    placeholder="https://..."
+                  />
+                  <v-text-field label="Secret" v-model="webhookCreate.secret" />
+                  <v-textarea label="Event Spec JSON" v-model="webhookCreateEventSpecJson" />
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn small depressed @click="resetNewWebhook">取消</v-btn>
+                  <v-btn small depressed color="primary" @click="addNewWebhook">添加</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-card-title>
+              Webhook 配置 (beta)
+              <v-spacer />
+              <v-btn color="primary" depressed small @click="showNewWebhookDialog = true"
+                >添加新 Webhook</v-btn
+              >
+            </v-card-title>
+            <v-card-text>
+              <v-data-table :headers="webhookHeaders" :items="webhooks" item-key="id">
+                <template v-slot:top>
+                  <v-toolbar flat>
+                    <v-toolbar-title>所有 Webhooks</v-toolbar-title>
+                  </v-toolbar>
+                </template>
+
+                <template v-slot:item.site="{ item }">
+                  {{ item.site.name }}
+                </template>
+
+                <template v-slot:item.event_spec="{ item }">
+                  {{ item.event_spec }}
+                </template>
+
+                <template v-slot:item.update_action="{ item }">
+                  <v-btn depressed small @click="disableWebhook(item)">禁用</v-btn>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
         </template>
         <div v-else class="mt-2 text-center">Please select a circle.</div>
       </v-tab-item>
@@ -262,7 +312,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { IApplication, ISite, ISiteUpdate, ITopic } from '@/interfaces';
+import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
 import { readModeratedSites } from '@/store/main/getters';
 import { api } from '@/api';
 import UserLink from '@/components/UserLink.vue';
@@ -272,6 +322,18 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiTopic } from '@/api/topic';
 import { commitAddNotification } from '@/store/main/mutations';
+import { apiSite } from '@/api/site';
+import { deepCopy } from '@/utils';
+import { apiWebhook } from '@/api/webhook';
+
+const defaultWebhookCreate: IWebhookCreate = {
+  site_uuid: '',
+  event_spec: {
+    content: { event_type: 'site_event' },
+  },
+  secret: '',
+  callback_url: '',
+};
 
 @Component({
   components: { UserLink, UserSearch, EditIcon, SiteBtn },
@@ -288,7 +350,17 @@ export default class Moderation extends Vue {
     { text: 'Actions', value: 'actions', sortable: false },
   ];
 
+  private webhookHeaders = [
+    { text: '圈子', value: 'site', sortable: false },
+    { text: 'Event', value: 'event_spec', sortable: false },
+    { text: '启用', value: 'enabled', sortable: true },
+    { text: 'Secret', value: 'secret', sortable: false },
+    { text: 'Callback URL', value: 'callback_url', sortable: false },
+    { text: '更新', value: 'update_action', sortable: false },
+  ];
+
   private siteTopics: ITopic[] = [];
+  private showNewWebhookDialog: boolean = false;
 
   private newSiteTopicNames: string[] = [];
   private moderatedSites: ISite[] | null = [];
@@ -302,6 +374,8 @@ export default class Moderation extends Vue {
   private allApplications: Map<string, IApplication[]> = new Map();
 
   private siteConfigUpdate: ISiteUpdate = {};
+
+  private webhooks: IWebhook[] = [];
 
   private broadcastSubmissionLink = '';
   private transferToNewAdminUUID: string | null = null;
@@ -351,6 +425,10 @@ export default class Moderation extends Vue {
       this.siteConfigUpdate.category_topic_uuid = site.category_topic.uuid;
     }
     this.siteTopics = site.topics;
+    this.webhookCreate.site_uuid = site.uuid;
+    apiSite.getWebhooks(this.token, site.uuid).then((r) => {
+      this.webhooks = r.data;
+    });
     this.autoApproval = site.auto_approval;
     this.newSiteTopicNames = site.topics.map((s) => s.name);
     if (site.email_domain_suffix_for_application) {
@@ -389,14 +467,14 @@ export default class Moderation extends Vue {
         if (this.emailSuffixes) {
           this.siteConfigUpdate.email_domain_suffix_for_application = this.emailSuffixes.join(',');
         }
-        const response = await api.updateSiteConfig(
+        const response = await apiSite.updateSiteConfig(
           this.token,
           this.selectedSite.uuid,
           this.siteConfigUpdate
         );
         if (response) {
           this.selectedSite = response.data;
-          this.resetSiteConfig(this.selectedSite);
+          this.resetSiteConfig(this.selectedSite!);
           this.showSiteConfigEditor = false;
         }
       }
@@ -454,11 +532,53 @@ export default class Moderation extends Vue {
 
   private async submitTransferToNewAdmin() {
     if (this.selectedSite && this.transferToNewAdminUUID) {
-      await api.updateSiteConfig(this.token, this.selectedSite.uuid, {
+      await apiSite.updateSiteConfig(this.token, this.selectedSite.uuid, {
         moderator_uuid: this.transferToNewAdminUUID,
       });
       this.$router.go(0);
     }
+  }
+
+  private webhookEventTypeItems = [
+    {
+      value: 'site_event',
+      text: '圈子事件',
+    },
+  ];
+
+  private webhookCreate: IWebhookCreate = deepCopy(defaultWebhookCreate);
+
+  /*
+{
+  "content": {
+    "event_type": "site_event",
+    "new_question": true,
+    "new_answer": true,
+    "new_submission": true
+  }
+}
+   */
+  private webhookCreateEventSpecJson: string = '';
+
+  private async disableWebhook(webhook: IWebhook) {
+    webhook.enabled = ((
+      await apiWebhook.update(this.token, webhook.id, {
+        enabled: false,
+      })
+    ).data as IWebhook).enabled;
+  }
+
+  private resetNewWebhook() {
+    this.webhookCreate = deepCopy(defaultWebhookCreate);
+    this.showNewWebhookDialog = false;
+  }
+
+  private async addNewWebhook() {
+    this.webhookCreate.event_spec = JSON.parse(this.webhookCreateEventSpecJson);
+    const webhook = (await apiWebhook.create(this.token, this.webhookCreate)).data;
+    this.webhooks.push(webhook);
+    this.webhookCreate = deepCopy(defaultWebhookCreate);
+    this.showNewWebhookDialog = false;
   }
 }
 </script>

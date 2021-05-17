@@ -112,6 +112,7 @@ import { AxiosError } from 'axios';
 
 import DoorIcon from '@/components/icons/DoorIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
+import { apiSite } from '@/api/site';
 
 @Component({
   components: {
@@ -161,7 +162,7 @@ export default class SiteCard extends Vue {
         }
 
         if (this.notMember && this.token) {
-          const r = await api.getSiteApply(this.token, this.site.uuid);
+          const r = await apiSite.getSiteApply(this.token, this.site.uuid);
           if (r) {
             this.siteApplied = r.data.msg === 'applied';
           }
@@ -180,7 +181,7 @@ export default class SiteCard extends Vue {
       action: async () => {
         if (this.site != null && this.site.moderator && !this.isMember) {
           this.applyToJoinIntermediate = true;
-          const response = await api.applySite(this.token, this.site.uuid);
+          const response = await apiSite.applySite(this.token, this.site.uuid);
           if (response) {
             if (response.data.msg === 'applied') {
               this.siteApplied = true;
@@ -213,7 +214,7 @@ export default class SiteCard extends Vue {
   private async leaveSite() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;
-      await api.leaveSite(this.token, this.site.uuid);
+      await apiSite.leaveSite(this.token, this.site.uuid);
       this.intermediate = false;
       this.$router.go(0);
     });

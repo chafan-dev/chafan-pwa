@@ -90,6 +90,7 @@ import { AxiosError } from 'axios';
 import { commitAddNotification } from '@/store/main/mutations';
 import { readUserProfile } from '@/store/main/getters';
 import { adminUUID, env } from '@/env';
+import { apiSite } from '@/api/site';
 
 @Component({
   components: { UserSearch },
@@ -143,7 +144,8 @@ export default class CreateSite extends Vue {
     if (this.canCreateSite) {
       await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
         action: async () => {
-          const site = (await api.createSite(this.$store.state.main.token, this.siteCreate)).data;
+          const site = (await apiSite.createSite(this.$store.state.main.token, this.siteCreate))
+            .data;
           this.$router.push(`/sites/${site.subdomain}`);
         },
         errorFilter: (err: AxiosError) => {

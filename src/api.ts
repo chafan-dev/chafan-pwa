@@ -4,12 +4,10 @@ import {
   IUserProfile,
   IUserProfileUpdate,
   IUserProfileCreate,
-  ISite,
   IAnswer,
   IActivity,
   IAuditLog,
   IAnswerPreview,
-  ISiteUpdate,
   IUserSiteProfile,
   IChannel,
   IChannelCreate,
@@ -20,18 +18,15 @@ import {
   INotification,
   INotificationUpdate,
   ICoinPayment,
-  ISiteCreate,
   IAnswerModUpdate,
   IArticleColumn,
   IVerificationCodeRequest,
   ISiteMaps,
   IRewardCreate,
   IReward,
-  IQuestionPreview,
   IClaimWelcomeTestScoreMsg,
   IArticlePreview,
   IApplication,
-  ISubmission,
   IInvitationLinkCreate,
   IInvitationLink,
   ITask,
@@ -83,18 +78,6 @@ export const api = {
   async getSiteMaps(token: string) {
     return axios.get<ISiteMaps>(`${apiUrl}/api/v1/sitemaps/`, authHeaders(token));
   },
-  async getSite(token: string, subdomain: string) {
-    return axios.get<ISite>(`${apiUrl}/api/v1/sites/${subdomain}`, authHeaders(token));
-  },
-  async getSiteQuestions(token: string, siteUUID: string, skip: number, limit: number) {
-    const params = new URLSearchParams();
-    params.append('skip', skip.toString());
-    params.append('limit', limit.toString());
-    return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/api/v1/sites/${siteUUID}/questions/`,
-      authHeadersWithParams(token, params)
-    );
-  },
   async getUserSiteProfile(token: string, siteUUID: string, userUUID: string) {
     return axios.get<IUserSiteProfile>(
       `${apiUrl}/api/v1/profiles/members/${siteUUID}/${userUUID}`,
@@ -130,30 +113,11 @@ export const api = {
       authHeadersWithParams(token, params)
     );
   },
-  async updateSiteConfig(token: string, siteUUID: string, payload: ISiteUpdate) {
-    return axios.put<ISite>(
-      `${apiUrl}/api/v1/sites/${siteUUID}/config`,
-      payload,
-      authHeaders(token)
-    );
-  },
   async getSiteProfiles(token: string, siteUUID: string) {
     return axios.get<IUserSiteProfile[]>(
       `${apiUrl}/api/v1/profiles/members/${siteUUID}`,
       authHeaders(token)
     );
-  },
-  async getSiteSubmissions(token: string, uuid: string, skip: number, limit: number) {
-    const params = new URLSearchParams();
-    params.append('skip', skip.toString());
-    params.append('limit', limit.toString());
-    return axios.get<ISubmission[]>(
-      `${apiUrl}/api/v1/sites/${uuid}/submissions/`,
-      authHeadersWithParams(token, params)
-    );
-  },
-  async createSite(token: string, payload: ISiteCreate) {
-    return axios.post<ISite>(`${apiUrl}/api/v1/sites/`, payload, authHeaders(token));
   },
   async getMyArticleColumns(token: string) {
     return axios.get<IArticleColumn[]>(`${apiUrl}/api/v1/me/article-columns/`, authHeaders(token));
@@ -207,15 +171,6 @@ export const api = {
       code,
       invitation_link_uuid,
     });
-  },
-  async getSiteApply(token: string, siteUUID: string) {
-    return axios.get<IMsg>(`${apiUrl}/api/v1/sites/${siteUUID}/apply`, authHeaders(token));
-  },
-  async applySite(token: string, siteUUID: string) {
-    return axios.post<IMsg>(`${apiUrl}/api/v1/sites/${siteUUID}/apply`, null, authHeaders(token));
-  },
-  async leaveSite(token: string, siteUUID: string) {
-    return axios.delete<IMsg>(`${apiUrl}/api/v1/sites/${siteUUID}/membership`, authHeaders(token));
   },
   async getQuestionAnswers(token: string, questionUUID: string) {
     return axios.get<IAnswerPreview[]>(
