@@ -302,7 +302,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { api } from '@/api';
 import { apiPeople } from '@/api/people';
 
 import {
@@ -339,6 +338,7 @@ import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vu
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
+import { apiSite } from '@/api/site';
 
 @Component({
   components: {
@@ -554,7 +554,7 @@ export default class User extends Vue {
     this.eduExps = (await apiPeople.getUserEducationExperiences(this.token, userPublic.uuid)).data;
     this.workExps = (await apiPeople.getUserWorkExperiences(this.token, userPublic.uuid)).data;
     const responses = await Promise.all(
-      userPublic.profiles.map((p) => api.getSite(this.token, p.site.subdomain))
+      userPublic.profiles.map((p) => apiSite.getSite(this.token, p.site.subdomain))
     );
     this.sites = responses.map((r) => r.data);
   }

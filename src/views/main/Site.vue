@@ -132,6 +132,7 @@ import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
+import { apiSite } from '@/api/site';
 
 @Component({
   components: {
@@ -219,7 +220,7 @@ export default class Site extends Vue {
 
   private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.site = (await api.getSite(this.token, this.subdomain)).data;
+      this.site = (await apiSite.getSite(this.token, this.subdomain)).data;
       updateHead(this.$route.path, this.site.name, this.site?.description);
 
       if (this.userProfile) {
@@ -255,7 +256,7 @@ export default class Site extends Vue {
     if (this.siteProfile !== null || (this.site && this.site.public_readable)) {
       await dispatchCaptureApiError(this.$store, async () => {
         if (this.site) {
-          items = (await api.getSiteQuestions(this.token, this.site.uuid, skip, limit)).data;
+          items = (await apiSite.getSiteQuestions(this.token, this.site.uuid, skip, limit)).data;
         }
       });
     }
@@ -267,7 +268,7 @@ export default class Site extends Vue {
     if (this.siteProfile !== null || (this.site && this.site.public_readable)) {
       await dispatchCaptureApiError(this.$store, async () => {
         if (this.site) {
-          items = (await api.getSiteSubmissions(this.token, this.site.uuid, skip, limit)).data;
+          items = (await apiSite.getSiteSubmissions(this.token, this.site.uuid, skip, limit)).data;
         }
       });
     }

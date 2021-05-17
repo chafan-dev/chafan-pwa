@@ -241,3 +241,7 @@ export const rankComments = (dayjs, comments: IComment[]) => {
     return 1;
   });
 };
+
+export const deepCopy = (o: any): any => {
+  return JSON.parse(JSON.stringify(o));
+};

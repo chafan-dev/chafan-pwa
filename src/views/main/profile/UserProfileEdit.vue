@@ -78,7 +78,7 @@
                       </ValidationProvider>
                       <v-text-field
                         v-model="userUpdateMe.personal_introduction"
-                        :label="$t('个人签名')"
+                        label="个人签名"
                         clearable
                       />
                     </v-col>
