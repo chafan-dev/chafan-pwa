@@ -3,7 +3,7 @@
     <v-dialog v-model="showSharingCard" max-width="400px">
       <v-card @click-outside="showSharingCard = false">
         <div class="pa-4">
-          复制链接：<router-link :to="link" class="text-decoration-none">{{ linkText }}</router-link
+          复制链接：<a :href="link" class="text-decoration-none">{{ linkText }}</a
           >，或者截屏分享卡片：
         </div>
         <v-divider class="mx-4" />
