@@ -10,7 +10,7 @@
       <v-tab-item :key="config.type" v-if="config.items.length">
         <v-list>
           <template v-for="(item, index) in config.items">
-            <v-divider v-if="index && !card" :key="index" class="ma-1" />
+            <v-divider v-if="index && !card" :key="index" class="mx-1" />
             <v-list-item :key="item.type + item.id" :to="getItemLink(item)" link target="_blank">
               {{ getItemText(item) }}
             </v-list-item>
