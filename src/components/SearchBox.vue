@@ -13,9 +13,14 @@
     >
       <div>
         <SearchResults ref="searchResults" mode="menu" />
-        <div class="d-flex pb-1 pr-1" v-if="!loading" style="width: 400px; background: white">
-          <v-spacer />
-          <v-btn depressed outlined @click="openInNew" small color="secondary"> 新页面打开 </v-btn>
+        <div style="min-width: 400px; background: white">
+          <v-divider class="mx-1 mb-1" />
+          <div class="d-flex pb-1 pr-1">
+            <v-spacer />
+            <v-btn depressed outlined @click="openInNew" small color="secondary">
+              新页面打开
+            </v-btn>
+          </div>
         </div>
       </div>
     </v-menu>
@@ -86,11 +91,14 @@ export default class SearchBox extends Vue {
     this.menuY = this.$el.getBoundingClientRect().bottom;
     this.menuX = this.$el.getBoundingClientRect().left;
     this.showSearchResults = true;
-    this.loading = false;
+    setTimeout(() => {
+      this.loading = false;
+    }, 1000);
   }
 
   private openInNew() {
-    this.$router.push({ path: 'search/', query: { q: this.currentQuery } });
+    this.showSearchResults = false;
+    this.$router.push({ path: '/search', query: { q: this.currentQuery } });
   }
 }
 </script>
