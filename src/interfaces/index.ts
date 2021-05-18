@@ -188,7 +188,7 @@ export interface ISite {
   public_writable_comment: boolean;
   create_question_coin_deduction: number;
   subdomain: string;
-  permission_type?: 'public' | 'private' | 'chaos';
+  permission_type: 'public' | 'private';
   auto_approval: boolean;
   min_karma_for_application?: number;
   email_domain_suffix_for_application?: string;
