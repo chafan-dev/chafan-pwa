@@ -129,25 +129,29 @@
                 ({{ upvotes.count }})
               </v-btn>
 
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div v-bind="attrs" v-on="on" class="d-flex">
-                    <EditIcon v-show="editable" @click="showSubmissionEditor = true" />
-                  </div>
-                </template>
-                <span>{{ $t('编辑分享') }}</span>
-              </v-tooltip>
+              <v-btn
+                v-show="editable"
+                @click="showSubmissionEditor = true"
+                class="slim-btn"
+                depressed
+                small
+                :color="showUpdateDetailsButton ? 'primary' : undefined"
+              >
+                <EditIcon />
+                <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
+                <span v-else>{{ $t('编辑分享') }}</span>
+              </v-btn>
 
               <BookmarkedIcon
                 v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
                 :disabled="cancelSubscriptionIntermediate"
-                class="mr-1"
+                class="ml-1"
                 @click="cancelSubscription"
               />
               <ToBookmarkIcon
                 v-else
                 :disabled="subscribeIntermediate"
-                class="mr-1"
+                class="ml-1"
                 @click="subscribe"
               />
 
@@ -422,6 +426,7 @@ export default class Submission extends Vue {
   private commentSubmitIntermediate = false;
   private submissionSubscription: IUserSubmissionSubscription | null = null;
   private relatedSubmissions: ISubmission[] | null = null;
+  private showUpdateDetailsButton = false;
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -459,6 +464,7 @@ export default class Submission extends Vue {
       this.archives = [];
       this.comments = [];
       this.relatedSubmissions = [];
+      this.showUpdateDetailsButton = false;
       this.load();
     }
   }
@@ -466,7 +472,7 @@ export default class Submission extends Vue {
   private async mounted() {
     try {
       if (localStorage.getItem('new-submission')) {
-        this.showSubmissionEditor = true;
+        this.showUpdateDetailsButton = true;
         localStorage.removeItem('new-submission');
       }
     } catch (e) {}
