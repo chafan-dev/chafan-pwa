@@ -1,4 +1,6 @@
 import {
+  AnswerQuestion,
+  CreateArticle,
   FollowUser,
   IActivity,
   UpvoteAnswer,
@@ -81,6 +83,20 @@ export class CombinedActivities {
               guardEvent.users = [guardEvent.user];
             }
             guardEvent.users.push(newEvent.user);
+            return;
+          }
+        } else if (newActivity.verb === 'create_article') {
+          const newEvent = newActivity.event.content as CreateArticle;
+          const guardEvent = guardActivity.event.content as CreateArticle;
+          if (newEvent.subject.uuid === guardEvent.subject.uuid) {
+            // Prevent sequential publication event on timeline
+            return;
+          }
+        } else if (newActivity.verb === 'answer_question') {
+          const newEvent = newActivity.event.content as AnswerQuestion;
+          const guardEvent = guardActivity.event.content as AnswerQuestion;
+          if (newEvent.subject.uuid === guardEvent.subject.uuid) {
+            // Prevent sequential publication event on timeline
             return;
           }
         }
