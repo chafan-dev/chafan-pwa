@@ -31,10 +31,10 @@
           <v-textarea v-if="showColumnEditor" v-model="desc" :label="$t('专栏描述')" />
           <div v-if="showColumnEditor" class="d-flex">
             <v-spacer />
-            <v-btn class="mr-2" color="primary" small @click="updateArticleColumn"
+            <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
               >{{ $t('提交') }}
             </v-btn>
-            <v-btn small @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
+            <v-btn small depressed @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
           </div>
         </div>
 
@@ -44,6 +44,7 @@
               v-if="subscription.subscribed_by_me"
               :disabled="cancelSubscribeIntermediate"
               small
+              depressed
               @click="cancelSubscribe"
             >
               {{ $t('取消关注') }} ({{ subscription.subscription_count }})
@@ -58,6 +59,7 @@
               :disabled="subscribeIntermediate"
               color="primary"
               small
+              depressed
               @click="subscribe"
             >
               {{ $t('关注') }} ({{ subscription.subscription_count }})
