@@ -24,6 +24,24 @@
   padding: 8px;
 }
 
+.less-top-padding {
+  padding-top: 0 !important;
+}
+
+.less-left-right-padding {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+/* FIXME: Potential code duplication with Home.vue */
+.fixed-narrow-col {
+  max-width: 800px;
+}
+
+.fixed-narrow-sidecol {
+  max-width: 400px;
+}
+
 // Editor/Preview
 .vditor-preview {
   .vditor-reset {

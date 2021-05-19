@@ -664,7 +664,6 @@ export default class Submission extends Vue {
   }
 
   private async cancelSubmissionUpdate() {
-    this.$router.push(this.$route.path);
     this.showSubmissionEditor = false;
   }
 
