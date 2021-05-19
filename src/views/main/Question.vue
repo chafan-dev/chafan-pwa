@@ -274,7 +274,7 @@
               color="warning"
               depressed
               small
-              @click="showQuestionEditor = false"
+              @click="cancelQuestionUpdate"
               >{{ $t('取消更新') }}
             </v-btn>
             <v-spacer />
@@ -1024,29 +1024,9 @@ export default class Question extends Vue {
     commitSetWorkingDraft(this.$store, this.savedLocalEdit!.edit as IRichEditorState);
     this.showEditor = true;
   }
+
+  private async cancelQuestionUpdate() {
+    this.showQuestionEditor = false;
+  }
 }
 </script>
-
-<style scoped>
-.slim-btn {
-  padding: 0 4px !important;
-}
-
-.less-top-padding {
-  padding-top: 0 !important;
-}
-
-.less-left-right-padding {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-}
-
-/* FIXME: Potential code duplication with Home.vue */
-.fixed-narrow-col {
-  max-width: 800px;
-}
-
-.fixed-narrow-sidecol {
-  max-width: 400px;
-}
-</style>
