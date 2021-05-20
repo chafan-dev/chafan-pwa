@@ -23,10 +23,14 @@
           </div>
           <div v-if="!compactMode && !showColumnEditor" class="secondary--text text-center">
             <span v-if="desc">{{ desc }}</span>
-            <EditIcon
+            <v-btn
+              small
+              depressed
               v-if="currentUserId === articleColumn.owner.uuid"
               @click="showColumnEditor = true"
-            />
+            >
+              <EditIcon /> 编辑专栏描述
+            </v-btn>
           </div>
           <v-textarea v-if="showColumnEditor" v-model="desc" :label="$t('专栏描述')" />
           <div v-if="showColumnEditor" class="d-flex">
