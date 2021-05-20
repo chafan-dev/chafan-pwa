@@ -64,6 +64,7 @@
       :video-dialog-controller="videoDialogController"
       :image-dialog-controller="imageDialogController"
       :on-editor-change="onEditorChange"
+      :on-editor-ready="onEditorReadyInternal"
     />
   </div>
 </template>
@@ -87,6 +88,8 @@ interface ITiptapDialogController {
   onUrl: ((url: string) => void) | undefined;
 }
 
+declare const renderMathInElement: any;
+
 @Component({
   components: {
     Tiptap,
@@ -97,6 +100,22 @@ export default class ChafanTiptap extends Vue {
   @Prop({ default: false }) private readonly commentMode!: boolean;
   @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
   @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
+
+  private onEditorReadyInternal(contentElem: HTMLElement) {
+    if (this.onEditorReady) {
+      this.onEditorReady(contentElem);
+    }
+    if (!this.editable) {
+      renderMathInElement(contentElem, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true },
+        ],
+      });
+    }
+  }
 
   private onEditorChange() {
     if (this.onMentionedHandles) {
