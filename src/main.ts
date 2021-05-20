@@ -1045,6 +1045,7 @@ const i18n = new VueI18n({
       'verb.claim_answer_question_reward':
         '{who} 兑换了回答问题「{question}」的{reward_coin_amount}个硬币的奖励',
       'verb.create_submission': '{who}创建了分享「{submission}」',
+      'verb.create_site': '{who}创建了圈子「{site}」',
       'verb.upvote_submission': '{who}赞了分享「{submission}」',
       'verb.comment_submission': '{who}评论了你的分享「{submission}」：「{comment}」',
       已读通知: '已读通知',
