@@ -3,8 +3,6 @@ import './component-hooks';
 import Vue from 'vue';
 import 'intersection-observer';
 
-import { getBrowserLocale } from '@/utils';
-
 // styles
 import './styles/app.scss';
 
