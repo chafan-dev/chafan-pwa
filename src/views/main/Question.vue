@@ -121,17 +121,11 @@
               <span>{{ $t('该圈子仅会员可以写回答') }}</span>
             </v-tooltip>
 
-            <v-btn class="ma-1 slim-btn" depressed small @click="toggleShowComments">
-              <CommentsIcon class="mr-1" small />
-              <span v-if="$vuetify.breakpoint.mdAndUp">
-                {{
-                  question.comments.length === 0
-                    ? $t('评论')
-                    : $t('查看n条评论', { amount: question.comments.length })
-                }}
-              </span>
-              <span v-else-if="question.comments.length"> {{ question.comments.length }}</span>
-            </v-btn>
+            <CommentBtn
+              class="ma-1"
+              @click="toggleShowComments"
+              :count="question.comments.length"
+            />
 
             <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
               <v-card>
@@ -507,9 +501,11 @@ import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
+import CommentBtn from '@/components/widgets/CommentBtn.vue';
 
 @Component({
   components: {
+    CommentBtn,
     UpvotedBtn,
     UpvoteBtn,
     ShareCardButton,
