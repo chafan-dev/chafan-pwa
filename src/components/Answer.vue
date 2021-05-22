@@ -100,13 +100,11 @@
                   />
                 </span>
 
-                <v-btn class="mr-1 slim-btn" depressed small @click="toggleShowComments">
-                  {{
-                    answer.comments.length === 0
-                      ? $t('评论')
-                      : $t('查看n条评论', { amount: answer.comments.length })
-                  }}
-                </v-btn>
+                <CommentBtn
+                  class="mr-1"
+                  @click="toggleShowComments"
+                  :count="answer.comments.length"
+                />
 
                 <template v-if="userProfile">
                   <v-btn
@@ -331,9 +329,11 @@ import BaseCard from '@/components/base/BaseCard.vue';
 import AnswerEditor from '@/components/AnswerEditor.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
+import CommentBtn from '@/components/widgets/CommentBtn.vue';
 
 @Component({
   components: {
+    CommentBtn,
     UpvotedBtn,
     UpvoteBtn,
     ShareCardButton,

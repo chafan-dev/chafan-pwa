@@ -93,13 +93,11 @@
                 </span>
               </template>
 
-              <v-btn class="mr-1" depressed small @click="toggleShowComments">
-                {{
-                  article.comments.length == 0
-                    ? $t('评论')
-                    : $t('查看n条评论', { amount: article.comments.length })
-                }}
-              </v-btn>
+              <CommentBtn
+                class="mr-1"
+                @click="toggleShowComments"
+                :count="article.comments.length"
+              />
 
               <v-btn
                 v-show="currentUserIsAuthor"
@@ -262,9 +260,11 @@ import ShareCardButton from '@/components/ShareCardButton.vue';
 import Viewer from '@/components/Viewer.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
+import CommentBtn from '@/components/widgets/CommentBtn.vue';
 
 @Component({
   components: {
+    CommentBtn,
     UpvoteBtn,
     UpvotedBtn,
     ShareCardButton,
