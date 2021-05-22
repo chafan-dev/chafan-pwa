@@ -180,8 +180,6 @@
                   </span>
                 </template>
 
-                <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
-
                 <ShareCardButton
                   :link="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
                   :link-text="answer.question.title + ` - ${answer.author.handle} 的回答`"
@@ -214,6 +212,8 @@
                     </div>
                   </v-card-text>
                 </ShareCardButton>
+
+                <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
               </div>
             </v-col>
 
