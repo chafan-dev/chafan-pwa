@@ -135,26 +135,26 @@
                 <v-subheader class="font-weight-bold"> 通知 </v-subheader>
 
                 <div class="mr-1">
-                  <v-btn depressed small @click="readAllNotifs">
+                  <v-btn depressed small @click="readAllNotifs" class="slim-btn">
                     <MuteNotificationIcon />
-                    {{ $t('Read all') }}
+                    全部已读
                   </v-btn>
                 </div>
               </v-sheet>
 
               <div style="max-height: 300px; overflow: auto">
-                <v-list>
+                <v-list class="py-0">
                   <template v-for="(notif, idx) in notifications">
                     <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />
 
                     <template v-if="notif.is_read">
                       <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
-                        <Event v-if="notif.event" :event="notif.event" />
+                        <Event class="my-2" v-if="notif.event" :event="notif.event" />
                       </v-list-item>
                     </template>
                     <template v-else>
                       <v-list-item :key="notif.id">
-                        <Event v-if="notif.event" :event="notif.event" />
+                        <Event class="my-2" v-if="notif.event" :event="notif.event" />
                         <v-spacer />
                         <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
                       </v-list-item>
@@ -407,7 +407,6 @@ export default class Main extends Vue {
   private appName = appName;
   private notifications: INotification[] = [];
   private wsConnection: WebSocket | null = null;
-  private readNotifIntermediate = false;
   private loadNotifsIntermediate = true;
 
   private showReadNotifications = false;
@@ -515,14 +514,10 @@ export default class Main extends Vue {
     }
   }
 
-  private async readNotif(notif: INotification) {
-    this.readNotifIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      await api.updateNotification(this.$store.state.main.token, notif.id, {
-        is_read: true,
-      });
-      notif.is_read = true;
-      this.readNotifIntermediate = false;
+  private readNotif(notif: INotification) {
+    notif.is_read = true;
+    api.updateNotification(this.$store.state.main.token, notif.id, {
+      is_read: true,
     });
   }
 
