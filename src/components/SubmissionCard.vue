@@ -10,8 +10,7 @@
         :to="'/submissions/' + submission.uuid"
         class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
       >
-        <UpvoteIcon :color="submission.upvoted ? 'primary' : undefined" small />
-        {{ submission.upvotes_count }}
+        <UpvoteStat :count="submission.upvotes_count" />
       </router-link>
       <router-link
         :to="'/submissions/' + submission.uuid"
@@ -45,9 +44,10 @@ import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
+import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 
 @Component({
-  components: { BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
+  components: { UpvoteStat, BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
 export default class submission extends Vue {
   @Prop() private readonly submission!: ISubmission;

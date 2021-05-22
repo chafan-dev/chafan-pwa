@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { mdiShare } from '@mdi/js';
+import { mdiShareAll } from '@mdi/js';
 
 export default {
   data: () => ({
-    svgPath: mdiShare,
+    svgPath: mdiShareAll,
   }),
 };
 </script>

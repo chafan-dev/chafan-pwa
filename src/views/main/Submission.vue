@@ -126,7 +126,7 @@
               >
                 <EditIcon />
                 <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
-                <span v-else>{{ $t('编辑分享') }}</span>
+                <span v-else>编辑</span>
               </v-btn>
 
               <BookmarkedIcon
@@ -256,12 +256,12 @@
             </v-dialog>
           </v-row>
 
-          <div class="d-flex justify-end">
+          <div class="d-flex">
             <span class="mr-1">{{ $t('Submitted by') }}</span>
             <UserLink :userPreview="submission.author" />
-            <v-spacer />
-            <ReactionBlock :objectId="submission.uuid" objectType="submission" />
           </div>
+
+          <ReactionBlock :objectId="submission.uuid" objectType="submission" />
 
           <!-- Comments -->
           <CommentBlock
