@@ -15,29 +15,31 @@
         {{ reaction }}<span class="ml-1" style="color: #121212">{{ count }}</span>
       </v-btn>
     </v-btn-toggle>
-    <v-menu v-if="loggedIn" offset-x>
-      <template v-slot:activator="{ on, attrs }">
-        <ReactionIcon v-bind="attrs" v-on="on" />
-      </template>
-      <v-list>
-        <v-list-item v-for="(reaction, index) in myReactionChoices" :key="index">
-          <v-list-item-content
-            class="pr-1"
-            style="cursor: pointer"
-            @click="updateReaction(reaction, 'add')"
-          >
-            {{ reaction }}
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-progress-circular
-      v-if="reactionIntermediate"
-      class="ml-2"
-      color="primary"
-      indeterminate
-      size="20"
-    />
+    <span>
+      <v-menu v-if="loggedIn" offset-x>
+        <template v-slot:activator="{ on, attrs }">
+          <ReactionIcon v-bind="attrs" v-on="on" />
+        </template>
+        <v-list>
+          <v-list-item v-for="(reaction, index) in myReactionChoices" :key="index">
+            <v-list-item-content
+              class="pr-1"
+              style="cursor: pointer"
+              @click="updateReaction(reaction, 'add')"
+            >
+              {{ reaction }}
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-progress-circular
+        v-if="reactionIntermediate"
+        class="ml-2"
+        color="primary"
+        indeterminate
+        size="20"
+      />
+    </span>
   </div>
 </template>
 
