@@ -339,7 +339,7 @@
 
           <v-tab-item value="subscribed_questions">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('关注的问题') }}</div>
+              <div class="headline primary--text">关注的问题</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
