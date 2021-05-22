@@ -7,7 +7,7 @@
 }
 
 .slim-btn {
-  padding: 0 8px !important;
+  padding: 0 5px !important;
 }
 
 %c-card-base {
@@ -199,4 +199,23 @@
 .search-item-card {
   border: 1px solid lightgrey;
   border-radius: 5px;
+}
+
+// Main
+.search-box {
+  min-width: 20%;
+  max-width: 40%;
+}
+
+.app-bar-inner {
+  width: 100%;
+}
+
+.opacity-none:before {
+  opacity: 0 !important;
+}
+
+.v-list-item__action:first-child,
+.v-list-item__icon:first-child {
+  margin-right: 14px !important;
 }

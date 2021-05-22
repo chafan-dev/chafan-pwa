@@ -590,31 +590,3 @@ export default class Main extends Vue {
   }
 }
 </script>
-
-<style>
-.search-box {
-  min-width: 20%;
-  max-width: 40%;
-}
-
-.slim-btn {
-  padding: 0 8px !important;
-}
-
-.thin-btn {
-  max-width: 35px !important;
-}
-
-.app-bar-inner {
-  width: 100%;
-}
-
-.opacity-none:before {
-  opacity: 0 !important;
-}
-
-.v-list-item__action:first-child,
-.v-list-item__icon:first-child {
-  margin-right: 14px !important;
-}
-</style>

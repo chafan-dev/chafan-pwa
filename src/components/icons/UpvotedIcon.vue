@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { mdiArrowUpBoldOutline } from '@mdi/js';
+import { mdiArrowUpBold } from '@mdi/js';
 
 export default {
   data: () => ({
-    svgPath: mdiArrowUpBoldOutline,
+    svgPath: mdiArrowUpBold,
   }),
 };
 </script>

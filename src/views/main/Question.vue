@@ -136,9 +136,7 @@
             <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
               <v-card>
                 <v-card-title primary-title>
-                  <div class="headline primary--text">
-                    {{ $t('确定取消标记为好问题？') }}
-                  </div>
+                  <div class="headline primary--text">确定取消赞？</div>
                 </v-card-title>
                 <v-card-actions>
                   <v-spacer />
@@ -154,31 +152,19 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-            <v-btn
-              v-if="upvotes && upvotes.upvoted"
-              class="slim-btn ma-1"
-              color="primary lighten-2"
-              depressed
-              small
-              @click="showCancelUpvoteDialog = true"
-            >
-              <UpvoteIcon />
-              <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('好问题') }}</span>
-              ({{ upvotes.count }})
-            </v-btn>
-            <v-btn
-              v-else-if="upvotes"
-              :disabled="userProfile.uuid === question.author.uuid || upvoteIntermediate"
-              class="slim-btn ma-1"
-              color="primary"
-              depressed
-              small
-              @click="upvote"
-            >
-              <UpvoteIcon />
-              <span v-if="$vuetify.breakpoint.mdAndUp">{{ $t('好问题') }}</span>
-              ({{ upvotes.count }})
-            </v-btn>
+            <span class="ma-1" v-if="upvotes !== null">
+              <UpvotedBtn
+                v-if="upvotes.upvoted"
+                @click="showCancelUpvoteDialog = true"
+                :count="upvotes.count"
+              />
+              <UpvoteBtn
+                v-else
+                :disabled="userProfile.uuid === question.author.uuid || upvoteIntermediate"
+                @click="upvote"
+                :count="upvotes.count"
+              />
+            </span>
 
             <v-btn
               class="slim-btn ma-1"
@@ -476,7 +462,6 @@ import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
-import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 
 import {
@@ -520,9 +505,13 @@ import { isEqual, updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
+import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
+import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 
 @Component({
   components: {
+    UpvotedBtn,
+    UpvoteBtn,
     ShareCardButton,
     AnswerIcon,
     Answer,
@@ -530,7 +519,6 @@ import ShareCardButton from '@/components/ShareCardButton.vue';
     CommentBlock,
     UserLink,
     EditIcon,
-    UpvoteIcon,
     SiteBtn,
     ReactionBlock,
     BookmarkedIcon,
