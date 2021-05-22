@@ -1,5 +1,5 @@
 <template>
-  <span class="event-span body-2">
+  <span class="event-span body-2" @click="onClick">
     <i18n :path="'verb.' + event.content.verb">
       <UserLink
         v-if="event.content.subject && event.content.subject.uuid != currentUserId"
@@ -132,9 +132,16 @@ import { readUserProfile } from '@/store/main/getters';
 })
 export default class Event extends Vue {
   @Prop() public readonly event!: IEvent;
+  @Prop() public readonly onClickHandler: (() => void) | undefined;
 
   get currentUserId() {
     return readUserProfile(this.$store)?.uuid;
+  }
+
+  private onClick() {
+    if (this.onClickHandler) {
+      this.onClickHandler();
+    }
   }
 }
 </script>

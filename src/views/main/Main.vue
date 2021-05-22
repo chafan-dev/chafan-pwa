@@ -102,6 +102,7 @@
           <!-- Notifications -->
           <v-menu
             v-if="userProfile"
+            v-model="showNotifications"
             :close-on-content-click="false"
             :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
             :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
@@ -154,7 +155,17 @@
                     </template>
                     <template v-else>
                       <v-list-item :key="notif.id">
-                        <Event class="my-2" v-if="notif.event" :event="notif.event" />
+                        <Event
+                          class="my-2"
+                          v-if="notif.event"
+                          :event="notif.event"
+                          :on-click-handler="
+                            () => {
+                              showNotifications = false;
+                              readNotif(notif);
+                            }
+                          "
+                        />
                         <v-spacer />
                         <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
                       </v-list-item>
@@ -410,6 +421,7 @@ export default class Main extends Vue {
   private loadNotifsIntermediate = true;
 
   private showReadNotifications = false;
+  private showNotifications = false;
   private readonly accountItems = [
     {
       icon: 'DashboardIcon',
