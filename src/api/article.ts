@@ -3,15 +3,15 @@ import { apiUrl } from '@/env';
 import {
   IArticle,
   IArticleArchive,
+  IArticleColumn,
+  IArticleColumnCreate,
+  IArticleColumnUpdate,
   IArticleCreate,
+  IArticleDraft,
+  IArticlePreview,
   IArticleUpdate,
   IArticleUpvotes,
   IMsg,
-  IArticleColumnCreate,
-  IArticleColumn,
-  IArticleColumnUpdate,
-  IArticlePreview,
-  IArticleDraft,
   IUserArticleColumnSubscription,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';

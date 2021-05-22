@@ -92,8 +92,8 @@
                           small
                           color="primary"
                           @click="showAboutEditor = !showAboutEditor"
-                          >「关于我」</v-btn
-                        >
+                          >「关于我」
+                        </v-btn>
                         <v-spacer />
                         <v-dialog v-model="showClearAboutMe" max-width="400">
                           <v-card>
@@ -101,8 +101,8 @@
                             <v-card-actions>
                               <v-spacer />
                               <v-btn color="warning" small depressed @click="clearAboutMe"
-                                >确认</v-btn
-                              >
+                                >确认
+                              </v-btn>
                             </v-card-actions>
                           </v-card>
                         </v-dialog>

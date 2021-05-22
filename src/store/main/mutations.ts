@@ -1,5 +1,5 @@
 import { IRichEditorState, ISite, ITopBanner, IUserProfile } from '@/interfaces';
-import { MainState, AppNotification } from './state';
+import { AppNotification, MainState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { State } from '../state';
 
