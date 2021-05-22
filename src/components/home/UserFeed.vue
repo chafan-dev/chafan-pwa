@@ -37,7 +37,7 @@
           </div>
           <div v-else-if="activity.verb === 'upvote_question'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-            {{ $t('found a good question') }}
+            赞了问题
           </div>
           <div v-else-if="activity.verb === 'upvote_submission'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />

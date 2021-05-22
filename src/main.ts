@@ -48,7 +48,6 @@ const i18n = new VueI18n({
       follows: 'followed',
       'upvotes answer': 'upvoted answer',
       'creates question': 'created question',
-      'found a good question': 'found a good question',
       'Explore Circles': 'Explore Circles',
       'Pinned questions': 'Pinned questions',
       'Submit comment': 'Submit comment',
