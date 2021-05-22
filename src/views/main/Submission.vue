@@ -11,6 +11,11 @@
         fluid
       >
         <ValidationObserver v-slot="{ handleSubmit }">
+          <div class="d-flex justify-space-between">
+            <UserLink :userPreview="submission.author" :show-avatar="true" />
+            <SiteBtn :site="submission.site" class="elevation-0" />
+          </div>
+
           <!-- Submission info/editor -->
           <div>
             <!-- Submission topics display/editor -->
@@ -75,192 +80,168 @@
             </div>
           </div>
 
-          <!-- Submission control -->
-          <v-row justify="space-between">
-            <v-col v-if="!showSubmissionEditor" class="ml-1 mr-1 d-flex less-left-right-padding">
-              <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
-                <v-card>
-                  <v-card-title primary-title>
-                    <div class="headline primary--text">确定取消赞？</div>
-                  </v-card-title>
-                  <v-card-actions>
+          <v-dialog v-model="historyDialog" max-width="900">
+            <v-card>
+              <v-card-title primary-title>
+                <div class="headline primary--text">{{ $t('分享历史') }}</div>
+                <v-spacer />
+                <span class="text-caption grey--text">{{ $t('点击展开') }}</span>
+              </v-card-title>
+              <v-expansion-panels>
+                <v-expansion-panel v-for="archive in archives" :key="archive.id">
+                  <v-expansion-panel-header>
+                    {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                     <v-spacer />
-                    <v-btn depressed small @click="showCancelUpvoteDialog = false"
-                      >{{ $t('No') }}
-                    </v-btn>
-                    <v-btn
-                      :disabled="cancelUpvoteIntermediate"
-                      color="warning"
-                      depressed
-                      small
-                      @click="cancelUpvote"
-                      >{{ $t('Yes') }}
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-              <span v-if="upvotes !== null" class="mr-1">
-                <UpvotedBtn
-                  v-if="upvotes.upvoted"
-                  :count="upvotes.count"
-                  @click="showCancelUpvoteDialog = true"
-                />
-                <UpvoteBtn
-                  v-else
-                  :count="upvotes.count"
-                  :disabled="
-                    !userProfile ||
-                    userProfile.uuid === submission.author.uuid ||
-                    upvoteIntermediate
-                  "
-                  @click="upvote"
-                />
-              </span>
-              <v-btn
-                v-show="editable"
-                :color="showUpdateDetailsButton ? 'primary' : undefined"
-                class="slim-btn"
-                depressed
-                small
-                @click="showSubmissionEditor = true"
-              >
-                <EditIcon />
-                <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
-                <span v-else>编辑</span>
-              </v-btn>
-
-              <BookmarkedIcon
-                v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
-                :disabled="cancelSubscriptionIntermediate"
-                class="ml-1"
-                @click="cancelSubscription"
-              />
-              <ToBookmarkIcon
-                v-else
-                :disabled="subscribeIntermediate"
-                class="ml-1"
-                @click="subscribe"
-              />
-
-              <ShareCardButton
-                v-slot="{ shareQrCodeUrl }"
-                :link="`/submissions/${submission.uuid}`"
-                :link-text="submission.title"
-                class="text-decoration-none"
-              >
-                <v-card-title>
-                  {{ submission.title }}
-                </v-card-title>
-                <v-card-text>
-                  <div class="pt-2 d-flex">
-                    <div class="text--primary text-body-1">
-                      <p v-if="submission.description" style="overflow-wrap: anywhere">
-                        {{ submission.description_text }}
-                      </p>
-                      <p>
-                        <CommentsIcon class="mr-1" small />
-                        <span class="text-caption">
-                          {{ $t('n条评论', { n: submission.comments.length }) }}
-                        </span>
-                      </p>
-                    </div>
-                    <v-spacer />
-                    <div class="pa-1 text-center" style="float: right">
-                      <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
-                      <span class="text-caption">查看原文</span>
-                    </div>
-                  </div>
-                </v-card-text>
-              </ShareCardButton>
-            </v-col>
-            <v-col
-              v-if="!showSubmissionEditor"
-              align-self="center"
-              class="d-flex less-left-right-padding"
-            >
-              <v-spacer />
-              <SiteBtn :site="submission.site" class="elevation-0" />
-              <HistoryIcon v-if="editable" @click="showHistoryDialog" />
-            </v-col>
-            <v-col v-if="showSubmissionEditor" class="d-flex">
-              <v-btn
-                v-show="editable"
-                :disabled="commitSubmissionEditIntermediate"
-                class="mr-1"
-                color="primary"
-                depressed
-                small
-                @click="handleSubmit(commitSubmissionEdit)"
-                >{{ $t('更新分享') }}
-              </v-btn>
-              <v-btn
-                v-show="editable"
-                class="mr-1"
-                color="warning"
-                depressed
-                small
-                @click="cancelSubmissionUpdate"
-                >{{ $t('取消更新') }}
-              </v-btn>
-              <v-spacer />
-
-              <v-btn
-                v-if="showSubmissionEditor & canHide"
-                class="ml-2"
-                color="warning"
-                depressed
-                small
-                @click="showConfirmHideSubmissionDialog = true"
-              >
-                {{ $t('隐藏分享') }}
-              </v-btn>
-              <v-dialog v-model="showConfirmHideSubmissionDialog" max-width="600">
-                <v-card>
-                  <v-card-title primary-title>
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
                     <div class="headline primary--text">
-                      {{ $t('确认隐藏分享？') }}
+                      {{ archive.title }}
                     </div>
-                  </v-card-title>
-                  <v-card-text> 隐藏后分享将对所有用户不可见。</v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn color="warning" mr-1 small @click="confirmHideSubmission"
-                      >{{ $t('确认隐藏') }}
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-col>
-            <v-dialog v-model="historyDialog" max-width="900">
+                    <SimpleViewer :body="archive.description" />
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-card>
+          </v-dialog>
+
+          <div v-if="!showSubmissionEditor" class="d-flex py-2">
+            <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
               <v-card>
                 <v-card-title primary-title>
-                  <div class="headline primary--text">{{ $t('分享历史') }}</div>
-                  <v-spacer />
-                  <span class="text-caption grey--text">{{ $t('点击展开') }}</span>
+                  <div class="headline primary--text">确定取消赞？</div>
                 </v-card-title>
-                <v-expansion-panels>
-                  <v-expansion-panel v-for="archive in archives" :key="archive.id">
-                    <v-expansion-panel-header>
-                      {{ $dayjs.utc(archive.created_at).local().fromNow() }}
-                      <v-spacer />
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                      <div class="headline primary--text">
-                        {{ archive.title }}
-                      </div>
-                      <SimpleViewer :body="archive.description" />
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn depressed small @click="showCancelUpvoteDialog = false"
+                    >{{ $t('No') }}
+                  </v-btn>
+                  <v-btn
+                    :disabled="cancelUpvoteIntermediate"
+                    color="warning"
+                    depressed
+                    small
+                    @click="cancelUpvote"
+                    >{{ $t('Yes') }}
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-dialog>
-          </v-row>
+            <span v-if="upvotes !== null" class="mr-1">
+              <UpvotedBtn
+                v-if="upvotes.upvoted"
+                :count="upvotes.count"
+                @click="showCancelUpvoteDialog = true"
+              />
+              <UpvoteBtn
+                v-else
+                :count="upvotes.count"
+                :disabled="
+                  !userProfile || userProfile.uuid === submission.author.uuid || upvoteIntermediate
+                "
+                @click="upvote"
+              />
+            </span>
+            <v-btn
+              v-show="editable"
+              :color="showUpdateDetailsButton ? 'primary' : undefined"
+              class="slim-btn"
+              depressed
+              small
+              @click="showSubmissionEditor = true"
+            >
+              <EditIcon />
+              <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
+              <span v-else>编辑</span>
+            </v-btn>
 
-          <div class="d-flex">
-            <span class="mr-1">{{ $t('Submitted by') }}</span>
-            <UserLink :userPreview="submission.author" />
+            <ShareCardButton
+              v-slot="{ shareQrCodeUrl }"
+              :link="`/submissions/${submission.uuid}`"
+              :link-text="submission.title"
+              class="text-decoration-none"
+            >
+              <v-card-title>
+                {{ submission.title }}
+              </v-card-title>
+              <v-card-text>
+                <div class="pt-2 d-flex">
+                  <div class="text--primary text-body-1">
+                    <p v-if="submission.description" style="overflow-wrap: anywhere">
+                      {{ submission.description_text }}
+                    </p>
+                    <p>
+                      <CommentsIcon class="mr-1" small />
+                      <span class="text-caption">
+                        {{ $t('n条评论', { n: submission.comments.length }) }}
+                      </span>
+                    </p>
+                  </div>
+                  <v-spacer />
+                  <div class="pa-1 text-center" style="float: right">
+                    <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
+                    <span class="text-caption">查看原文</span>
+                  </div>
+                </div>
+              </v-card-text>
+            </ShareCardButton>
+
+            <BookmarkedIcon
+              v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
+              :disabled="cancelSubscriptionIntermediate"
+              class="ml-1"
+              @click="cancelSubscription"
+            />
+            <ToBookmarkIcon
+              v-else
+              :disabled="subscribeIntermediate"
+              class="ml-1"
+              @click="subscribe"
+            />
+            <HistoryIcon v-if="editable" @click="showHistoryDialog" />
           </div>
+          <div v-if="showSubmissionEditor" class="d-flex py-2">
+            <v-btn
+              v-show="editable"
+              :disabled="commitSubmissionEditIntermediate"
+              class="mr-1"
+              color="primary"
+              depressed
+              small
+              @click="handleSubmit(commitSubmissionEdit)"
+              >保存
+            </v-btn>
+            <v-btn v-show="editable" class="mr-1" depressed small @click="cancelSubmissionUpdate"
+              >取消
+            </v-btn>
+            <v-spacer />
 
+            <v-btn
+              v-if="showSubmissionEditor & canHide"
+              class="ml-2"
+              color="warning"
+              depressed
+              small
+              @click="showConfirmHideSubmissionDialog = true"
+            >
+              {{ $t('隐藏分享') }}
+            </v-btn>
+            <v-dialog v-model="showConfirmHideSubmissionDialog" max-width="600">
+              <v-card>
+                <v-card-title primary-title>
+                  <div class="headline primary--text">
+                    {{ $t('确认隐藏分享？') }}
+                  </div>
+                </v-card-title>
+                <v-card-text> 隐藏后分享将对所有用户不可见。</v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn color="warning" mr-1 small @click="confirmHideSubmission"
+                    >{{ $t('确认隐藏') }}
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
           <ReactionBlock :objectId="submission.uuid" objectType="submission" />
 
           <!-- Comments -->
