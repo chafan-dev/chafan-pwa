@@ -10,7 +10,7 @@
       <v-tab-item :key="config.type" v-if="config.items.length">
         <v-list>
           <template v-for="(item, index) in config.items">
-            <v-divider v-if="index && !card" :key="index" class="mx-1" />
+            <v-divider v-if="index" :key="index" class="mx-1" />
             <v-list-item :key="item.type + item.id" :to="getItemLink(item)" link target="_blank">
               {{ getItemText(item) }}
             </v-list-item>
@@ -28,7 +28,8 @@ import { readToken } from '@/store/main/getters';
 
 @Component
 export default class SearchResults extends Vue {
-  @Prop({ default: false }) private readonly card!: boolean;
+  @Prop() private readonly query: string | undefined;
+  @Prop() private readonly onReady: (() => void) | undefined;
 
   private d: { type: string; api: any; items: any[] }[] = [
     {
@@ -73,13 +74,23 @@ export default class SearchResults extends Vue {
     }
 
     for (const config of this.d) {
-      (await config.api(this.token, v)).data.forEach((o) => {
+      const results = (await config.api(this.token, v)).data;
+      results.forEach((o) => {
         config.items.push({
           id: o.uuid,
           type: config.type,
           data: o,
         });
       });
+    }
+    if (this.onReady) {
+      this.onReady();
+    }
+  }
+
+  public async mounted() {
+    if (this.query) {
+      await this.doSearch(this.query);
     }
   }
 
