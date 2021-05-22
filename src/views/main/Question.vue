@@ -180,19 +180,6 @@
               <span v-else>{{ $t('编辑') }}</span>
             </v-btn>
 
-            <BookmarkedIcon
-              v-if="questionSubscription && questionSubscription.subscribed_by_me"
-              :disabled="cancelSubscriptionIntermediate"
-              class="ma-1"
-              @click="cancelSubscription"
-            />
-            <ToBookmarkIcon
-              v-else
-              :disabled="subscribeIntermediate"
-              class="ma-1"
-              @click="subscribe"
-            />
-
             <ShareCardButton
               class="my-1"
               :link-text="question.title"
@@ -229,6 +216,20 @@
                 </div>
               </v-card-text>
             </ShareCardButton>
+
+            <BookmarkedIcon
+              v-if="questionSubscription && questionSubscription.subscribed_by_me"
+              :disabled="cancelSubscriptionIntermediate"
+              class="ma-1"
+              @click="cancelSubscription"
+            />
+            <ToBookmarkIcon
+              v-else
+              :disabled="subscribeIntermediate"
+              class="ma-1"
+              @click="subscribe"
+            />
+
             <HistoryIcon v-if="editable && userProfile" class="ma-1" @click="showHistoryDialog" />
           </v-col>
 
