@@ -12,7 +12,7 @@
       :close-on-content-click="false"
     >
       <div>
-        <SearchResults ref="searchResults" mode="menu" />
+        <SearchResults ref="searchResults" :query="currentQuery" :onReady="onReady" />
         <div style="min-width: 400px; background: white">
           <v-divider class="mx-1 mb-1" />
           <div class="d-flex pb-1 pr-1">
@@ -83,17 +83,20 @@ export default class SearchBox extends Vue {
     }
   }
 
+  private onReady() {
+    this.loading = false;
+  }
+
   private async querySelections(v: string) {
     this.loading = true;
-    this.currentQuery = v;
-    await (this.$refs.searchResults as SearchResults)?.doSearch(v);
-
+    if (this.showSearchResults) {
+      await (this.$refs.searchResults as SearchResults)?.doSearch(v);
+    } else {
+      this.currentQuery = v;
+    }
     this.menuY = this.$el.getBoundingClientRect().bottom;
     this.menuX = this.$el.getBoundingClientRect().left;
     this.showSearchResults = true;
-    setTimeout(() => {
-      this.loading = false;
-    }, 1000);
   }
 
   private openInNew() {
