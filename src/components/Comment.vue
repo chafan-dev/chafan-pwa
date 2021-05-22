@@ -21,7 +21,7 @@
       <!-- Part I -->
       <template v-if="enableUpvotes && upvotes && !isDeleted">
         <span v-if="currentUserIsAuthor" class="text-caption d-flex align-center mr-2">
-          <UpvoteIcon /> {{ upvotes.count }}
+          <UpvotedIcon color="grey lighten-1" /> {{ upvotes.count }}
         </span>
         <span
           v-else
@@ -29,7 +29,8 @@
           style="cursor: pointer"
           @click="toggleUpvote"
         >
-          <UpvoteIcon :color="upvotes.upvoted ? 'primary' : undefined" />
+          <UpvotedIcon v-if="upvotes.upvoted" />
+          <UpvoteIcon v-else />
           {{ upvotes.count }}
         </span>
       </template>
@@ -223,10 +224,12 @@ import { apiComment } from '@/api/comment';
 import { rankComments } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
+import UpvotedIcon from '@/components/icons/UpvotedIcon.vue';
 
 @Component({
   name: 'Comment',
   components: {
+    UpvotedIcon,
     UserLink,
     ReactionBlock,
     EditIcon,

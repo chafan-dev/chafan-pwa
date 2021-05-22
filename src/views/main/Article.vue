@@ -57,9 +57,7 @@
                 <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
                   <v-card>
                     <v-card-title primary-title>
-                      <div class="headline primary--text">
-                        {{ $t('确定收回点赞？') }}
-                      </div>
+                      <div class="headline primary--text">确定收回赞？</div>
                     </v-card-title>
                     <v-card-actions>
                       <v-spacer />
@@ -78,27 +76,21 @@
                   </v-card>
                 </v-dialog>
 
-                <v-btn
-                  v-if="upvotes && upvotes.upvoted"
-                  class="mr-1"
-                  color="primary lighten-2"
-                  depressed
-                  small
-                  @click="showCancelUpvoteDialog = true"
-                >
-                  {{ $t('已赞') }} ({{ upvotes.count }})
-                </v-btn>
-                <v-btn
-                  v-else
-                  :disabled="currentUserIsAuthor || upvoteIntermediate"
-                  class="mr-1"
-                  color="primary"
-                  depressed
-                  small
-                  @click="upvote"
-                >
-                  {{ $t('赞') }} ({{ upvotes.count }})
-                </v-btn>
+                <span class="mr-1" v-if="upvotes !== null">
+                  <UpvotedBtn
+                    v-if="upvotes.upvoted"
+                    @click="showCancelUpvoteDialog = true"
+                    :count="upvotes.count"
+                  />
+                  <UpvoteBtn
+                    v-else
+                    :disabled="currentUserIsAuthor || upvoteIntermediate"
+                    @click="upvote"
+                    :count="upvotes.count"
+                  >
+                    {{ $t('赞') }} ({{ upvotes.count }})
+                  </UpvoteBtn>
+                </span>
               </template>
 
               <v-btn class="mr-1" depressed small @click="toggleShowComments">
@@ -268,9 +260,13 @@ import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import Viewer from '@/components/Viewer.vue';
+import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
+import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 
 @Component({
   components: {
+    UpvoteBtn,
+    UpvotedBtn,
     ShareCardButton,
     UserLink,
     QuestionLink,

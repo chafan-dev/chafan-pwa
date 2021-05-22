@@ -86,26 +86,19 @@
               </v-dialog>
 
               <div class="d-flex mt-1">
-                <v-btn
-                  v-if="upvotes && upvotes.upvoted"
-                  color="slim-btn primary lighten-2 mr-1"
-                  depressed
-                  small
-                  @click="showCancelUpvoteDialog = true"
-                >
-                  {{ $t('已赞') }} ({{ upvotes.count }})
-                </v-btn>
-                <v-btn
-                  v-else
-                  :disabled="currentUserIsAuthor || upvoteIntermediate"
-                  class="slim-btn mr-1"
-                  color="primary"
-                  depressed
-                  small
-                  @click="upvote"
-                >
-                  {{ $t('赞') }} ({{ upvotes.count }})
-                </v-btn>
+                <span class="mr-1">
+                  <UpvotedBtn
+                    v-if="upvotes && upvotes.upvoted"
+                    @click="showCancelUpvoteDialog = true"
+                    :count="upvotes.count"
+                  />
+                  <UpvoteBtn
+                    v-else
+                    :disabled="currentUserIsAuthor || upvoteIntermediate"
+                    @click="upvote"
+                    :count="upvotes.count"
+                  />
+                </span>
 
                 <v-btn class="mr-1 slim-btn" depressed small @click="toggleShowComments">
                   {{
@@ -336,9 +329,13 @@ import { apiMe } from '@/api/me';
 import { clearLocalEdit, loadLocalEdit, LocalEdit } from '@/utils';
 import BaseCard from '@/components/base/BaseCard.vue';
 import AnswerEditor from '@/components/AnswerEditor.vue';
+import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
+import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 
 @Component({
   components: {
+    UpvotedBtn,
+    UpvoteBtn,
     ShareCardButton,
     AnswerEditor,
     BaseCard,
