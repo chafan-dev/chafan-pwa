@@ -18,17 +18,24 @@
         <!-- Question info/editor -->
         <div>
           <!-- Question topics display/editor -->
-          <v-chip-group v-if="!showQuestionEditor">
-            <v-chip
-              v-for="topic in question.topics"
-              :key="topic.uuid"
-              :to="'/topics/' + topic.uuid"
-            >
-              {{ topic.name }}
-            </v-chip>
-          </v-chip-group>
+          <v-slide-group
+            class="d-flex justify-space-between align-center"
+            v-if="!showQuestionEditor"
+          >
+            <SiteBtn :site="question.site" class="elevation-0" />
+            <v-chip-group>
+              <v-chip
+                small
+                v-for="topic in question.topics"
+                :key="topic.uuid"
+                :to="'/topics/' + topic.uuid"
+              >
+                {{ topic.name }}
+              </v-chip>
+            </v-chip-group>
+          </v-slide-group>
           <v-combobox
-            v-if="showQuestionEditor"
+            v-else
             v-model="newQuestionTopicNames"
             :delimiters="[',', '，', '、']"
             :items="hintTopicNames"
@@ -170,7 +177,7 @@
             >
               <EditIcon />
               <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
-              <span v-else>{{ $t('编辑问题') }}</span>
+              <span v-else>{{ $t('编辑') }}</span>
             </v-btn>
 
             <BookmarkedIcon
@@ -187,6 +194,7 @@
             />
 
             <ShareCardButton
+              class="my-1"
               :link-text="question.title"
               :link="`/questions/${question.uuid}`"
               v-slot="{ shareQrCodeUrl }"
@@ -221,20 +229,7 @@
                 </div>
               </v-card-text>
             </ShareCardButton>
-          </v-col>
-
-          <v-col
-            v-if="!showQuestionEditor"
-            :class="{
-              'col-12': !$vuetify.breakpoint.mdAndUp,
-              'less-top-padding': !$vuetify.breakpoint.mdAndUp,
-            }"
-            align-self="center"
-            class="d-flex"
-          >
-            <v-spacer />
-            <SiteBtn :site="question.site" class="elevation-0" />
-            <HistoryIcon v-if="editable && userProfile" @click="showHistoryDialog" />
+            <HistoryIcon v-if="editable && userProfile" class="ma-1" @click="showHistoryDialog" />
           </v-col>
 
           <v-col v-if="showQuestionEditor && userProfile" class="d-flex">
@@ -246,16 +241,15 @@
               depressed
               small
               @click="commitQuestionEdit"
-              >{{ $t('更新问题描述') }}
+              >保存
             </v-btn>
             <v-btn
               v-show="editable"
               class="ma-1 slim-btn"
-              color="warning"
               depressed
               small
               @click="cancelQuestionUpdate"
-              >{{ $t('取消更新') }}
+              >取消
             </v-btn>
             <v-spacer />
             <v-btn v-if="showQuestionEditor" depressed small @click="prepareShowMoveQuestionDialog">
