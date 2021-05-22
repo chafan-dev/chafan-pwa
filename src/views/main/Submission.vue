@@ -99,30 +99,30 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <span class="mr-1" v-if="upvotes !== null">
+              <span v-if="upvotes !== null" class="mr-1">
                 <UpvotedBtn
                   v-if="upvotes.upvoted"
-                  @click="showCancelUpvoteDialog = true"
                   :count="upvotes.count"
+                  @click="showCancelUpvoteDialog = true"
                 />
                 <UpvoteBtn
                   v-else
+                  :count="upvotes.count"
                   :disabled="
                     !userProfile ||
                     userProfile.uuid === submission.author.uuid ||
                     upvoteIntermediate
                   "
                   @click="upvote"
-                  :count="upvotes.count"
                 />
               </span>
               <v-btn
                 v-show="editable"
-                @click="showSubmissionEditor = true"
+                :color="showUpdateDetailsButton ? 'primary' : undefined"
                 class="slim-btn"
                 depressed
                 small
-                :color="showUpdateDetailsButton ? 'primary' : undefined"
+                @click="showSubmissionEditor = true"
               >
                 <EditIcon />
                 <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
@@ -143,10 +143,10 @@
               />
 
               <ShareCardButton
+                v-slot="{ shareQrCodeUrl }"
                 :link="`/submissions/${submission.uuid}`"
                 :link-text="submission.title"
                 class="text-decoration-none"
-                v-slot="{ shareQrCodeUrl }"
               >
                 <v-card-title>
                   {{ submission.title }}
@@ -166,7 +166,7 @@
                     </div>
                     <v-spacer />
                     <div class="pa-1 text-center" style="float: right">
-                      <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                      <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                       <span class="text-caption">查看原文</span>
                     </div>
                   </div>

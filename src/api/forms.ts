@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IForm, IFormCreate, IFormResponseCreate, IFormResponse } from '@/interfaces';
+import { IForm, IFormCreate, IFormResponse, IFormResponseCreate } from '@/interfaces';
 import { authHeaders } from '@/utils';
 
 export const apiForm = {

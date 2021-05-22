@@ -2,24 +2,24 @@ import axios from 'axios';
 import { apiUrl } from '@/env';
 import { authHeaders, authHeadersWithParams } from '../utils';
 import {
+  IAnswerPreview,
+  IArticlePreview,
   IChannel,
+  IQuestionPreview,
   ISite,
+  ISubmission,
+  IUserAnswerBookmark,
+  IUserArticleBookmark,
   IUserFollows,
   IUserProfile,
   IUserQuestionSubscription,
   IUserSiteProfile,
-  IUserTopicSubscription,
-  IUserUpdateMe,
-  IQuestionPreview,
-  IUserUpdateLoginPhoneNumber,
-  IUserUpdateSecondaryEmails,
-  IUserUpdatePrimaryEmail,
   IUserSubmissionSubscription,
-  ISubmission,
-  IAnswerPreview,
-  IUserAnswerBookmark,
-  IArticlePreview,
-  IUserArticleBookmark,
+  IUserTopicSubscription,
+  IUserUpdateLoginPhoneNumber,
+  IUserUpdateMe,
+  IUserUpdatePrimaryEmail,
+  IUserUpdateSecondaryEmails,
 } from '../interfaces';
 
 export const apiMe = {
