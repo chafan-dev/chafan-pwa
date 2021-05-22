@@ -13,7 +13,7 @@
     >
       <div>
         <SearchResults ref="searchResults" :query="currentQuery" :onReady="onReady" />
-        <div style="min-width: 400px; background: white">
+        <div style="background: white">
           <v-divider class="mx-1 mb-1" />
           <div class="d-flex pb-1 pr-1">
             <v-spacer />
