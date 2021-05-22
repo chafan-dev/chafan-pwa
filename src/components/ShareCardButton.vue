@@ -11,14 +11,9 @@
       </v-card>
     </v-dialog>
 
-    <v-tooltip bottom :disabled="!$vuetify.breakpoint.mdAndUp">
-      <template v-slot:activator="{ on, attrs }">
-        <div v-bind="attrs" v-on="on">
-          <ShareIcon @click="showSharingCardDialog" />
-        </div>
-      </template>
-      <span>{{ $t('分享') }}</span>
-    </v-tooltip>
+    <v-btn small depressed @click="showSharingCardDialog" class="slim-btn">
+      <ShareIcon class="mr-1" small /> 转发
+    </v-btn>
   </span>
 </template>
 

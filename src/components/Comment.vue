@@ -20,18 +20,11 @@
     <div class="d-flex mt-1 align-center">
       <!-- Part I -->
       <template v-if="enableUpvotes && upvotes && !isDeleted">
-        <span v-if="currentUserIsAuthor" class="text-caption d-flex align-center mr-2">
-          <UpvotedIcon color="grey lighten-1" /> {{ upvotes.count }}
-        </span>
-        <span
-          v-else
-          class="text-caption d-flex align-center mr-2"
-          style="cursor: pointer"
-          @click="toggleUpvote"
-        >
+        <UpvoteStat v-if="currentUserIsAuthor" :count="upvotes.count" class="mr-2" />
+        <span v-else class="d-flex align-center mr-2" style="cursor: pointer" @click="toggleUpvote">
           <UpvotedIcon v-if="upvotes.upvoted" />
           <UpvoteIcon v-else />
-          {{ upvotes.count }}
+          <span class="text-caption">{{ upvotes.count }}</span>
         </span>
       </template>
 
@@ -225,10 +218,12 @@ import { rankComments } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import UpvotedIcon from '@/components/icons/UpvotedIcon.vue';
+import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 
 @Component({
   name: 'Comment',
   components: {
+    UpvoteStat,
     UpvotedIcon,
     UserLink,
     ReactionBlock,

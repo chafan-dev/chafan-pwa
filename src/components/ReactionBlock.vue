@@ -1,16 +1,18 @@
 <template>
-  <div>
-    <v-btn-toggle v-if="reactions" dense multiple>
+  <div class="d-flex justify-space-between">
+    <v-btn-toggle v-if="reactions" dense multiple background-color="white">
       <v-btn
         v-for="(count, reaction) in reactions.counters"
         :key="reaction"
-        :class="{ 'v-btn--active': reactions.my_reactions.includes(reaction) }"
+        class="slim-btn"
         small
+        depressed
+        :color="reactions.my_reactions.includes(reaction) ? undefined : 'white'"
         @click="
           updateReaction(reaction, reactions.my_reactions.includes(reaction) ? 'cancel' : 'add')
         "
       >
-        {{ reaction }} {{ count }}
+        {{ reaction }}<span class="ml-1" style="color: #121212">{{ count }}</span>
       </v-btn>
     </v-btn-toggle>
     <v-menu v-if="loggedIn" offset-x>
