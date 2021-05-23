@@ -105,7 +105,7 @@
                 class="mr-1"
                 depressed
                 small
-                >{{ $t(editButtonText) }}
+                >{{ editButtonText }}
               </v-btn>
 
               <v-menu v-if="currentUserIsAuthor" offset-y>
@@ -261,6 +261,7 @@ import Viewer from '@/components/Viewer.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
+import { getArticleDraft } from '@/utils';
 
 @Component({
   components: {
@@ -422,9 +423,8 @@ export default class Article extends Vue {
     }
     this.currentUserIsAuthor = this.userProfile?.uuid === article.author.uuid;
     if (this.currentUserIsAuthor) {
-      apiArticle.getArticleDraft(this.token, article.uuid).then((response) => {
-        const draft = response.data;
-        if (draft.title_draft) {
+      getArticleDraft(this.$dayjs, this.token, article.uuid).then((draft) => {
+        if (draft) {
           this.editButtonText = '编辑草稿';
           this.showHasDraftBadge = true;
         }

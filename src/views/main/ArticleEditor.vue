@@ -174,7 +174,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { newArticleHandler } from '@/utils';
+import { getArticleDraft, newArticleHandler } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { IRichEditorState, IArticle } from '@/interfaces';
 import { apiArticle } from '@/api/article';
@@ -262,18 +262,19 @@ export default class ArticleEditor extends Vue {
         await apiArticle.getArticle(this.$store.state.main.token, this.articleId)
       ).data;
       this.archivesCount = article.archives_count;
-      const articleDraft = (
-        await apiArticle.getArticleDraft(this.$store.state.main.token, article.uuid)
-      ).data;
-      if (articleDraft.title_draft) {
+      const articleDraft = await getArticleDraft(
+        this.$dayjs,
+        this.$store.state.main.token,
+        article.uuid
+      );
+      if (articleDraft) {
         commitAddNotification(this.$store, {
           content: this.$t('载入最近的草稿').toString(),
           color: 'success',
         });
-        article.title = articleDraft.title_draft;
-        if (articleDraft.body_draft) {
-          article.body = articleDraft.body_draft;
-        }
+        article.title = articleDraft.title || '';
+        article.body = articleDraft.body || '';
+        article.editor = articleDraft.editor;
       }
       workingDraft = {
         title: article.title,
