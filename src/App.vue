@@ -39,13 +39,7 @@ import LoginCard from '@/components/login/LoginCard.vue';
 import { readIsLoggedIn, readShowLoginPrompt, readTopBanner } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { setAppLocale } from '@/utils'; // FIXME: store locale in main.store
-import { prodStateJsonURL } from './env';
-import axios from 'axios';
-import {
-  commitSetNarrowUI,
-  commitSetShowLoginPrompt,
-  commitSetTopBanner,
-} from './store/main/mutations';
+import { commitSetNarrowUI, commitSetShowLoginPrompt } from './store/main/mutations';
 import { getDefaultNarrowFeedUI } from '@/common';
 
 @Component({
@@ -102,11 +96,6 @@ export default class App extends Vue {
     }
     await dispatchCheckLoggedIn(this.$store);
     this.$data.loading = false;
-    if (prodStateJsonURL) {
-      axios.get(prodStateJsonURL).then((response) => {
-        commitSetTopBanner(this.$store, response.data['top-banner']);
-      });
-    }
     setAppLocale(this, 'zh');
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }

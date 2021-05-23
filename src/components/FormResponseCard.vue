@@ -79,10 +79,8 @@
 
 <script lang="ts">
 import { api } from '@/api';
-import { prodStateJsonURL } from '@/env';
 import { env } from '@/env';
 import { IClaimWelcomeTestScoreMsg, IFormResponse } from '@/interfaces';
-import axios from 'axios';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
@@ -101,8 +99,7 @@ export default class FormResponseCard extends Vue {
       if (env === 'development') {
         this.welcomeTestFormUUID = '48i9bNDXk2NXwp9fELCE';
       } else {
-        const data = (await axios.get(prodStateJsonURL)).data;
-        this.welcomeTestFormUUID = data['welcome-test-form-uuid'];
+        this.welcomeTestFormUUID = '4CGv4iReMxuWjs3T2PEY';
       }
     }
   }

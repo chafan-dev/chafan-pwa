@@ -2,7 +2,7 @@ import { api } from '@/api';
 import { IUserUpdateMe } from '@/interfaces';
 import router from '@/router';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
 import { State } from '../state';
@@ -19,7 +19,7 @@ import {
   commitSetUserProfile,
 } from './mutations';
 import { AppNotification, MainState } from './state';
-import { env, prodStateJsonURL } from '@/env';
+import { env } from '@/env';
 import { apiMe } from '@/api/me';
 import { captureException } from '@sentry/vue';
 
@@ -198,9 +198,6 @@ export const actions = {
       if (payload.response && payload.response.data && payload.response.data.detail) {
         message += `, detail: ${JSON.stringify(payload.response.data.detail)}`;
       }
-      axios.get(prodStateJsonURL).then((response) => {
-        commitSetTopBanner(context, response.data['top-banner']);
-      });
       commitAddNotification(context, { content: message, color: 'error' });
       if (payload.response && payload.response.status === 401) {
         await dispatchLogOut(context);
