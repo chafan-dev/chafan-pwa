@@ -4,21 +4,10 @@
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <ArticleColumnCard v-if="articleColumn" :articleColumn="articleColumn" />
         <v-skeleton-loader v-else type="card" />
-
-        <div class="ma-2">
+        <v-divider class="mb-2 mx-2" />
+        <div class="mx-2">
           <div class="d-flex">
             <span class="title">{{ $t('文章列表') }}</span>
-            <v-spacer />
-            <v-btn
-              v-if="articleColumn && userProfile && articleColumn.owner.uuid === userProfile.uuid"
-              :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
-              class="mt-2"
-              color="primary"
-              depressed
-              small
-            >
-              {{ $t('写文章') }}
-            </v-btn>
           </div>
           <ul v-if="articles">
             <li v-for="article in articles" :key="article.uuid">
@@ -29,7 +18,6 @@
             </li>
           </ul>
           <div v-if="!userProfile" class="text-center grey--text">
-            <v-skeleton-loader type="paragraph" boilerplate />
             {{ $t('登录后查看更多') }}
           </div>
         </div>
