@@ -8,74 +8,84 @@
             'mb-2': currentUserId !== articleColumn.owner.uuid && !compactMode,
           }"
         >
-          <div :class="{ headline: !compactMode, 'text-center': !compactMode }" class="mb-1">
-            <router-link
-              v-if="!showColumnEditor"
-              :to="'/article-columns/' + articleColumn.uuid"
-              class="text-decoration-none title"
-            >
-              {{ name }}
-            </router-link>
-            <span v-if="compactMode && desc && !showColumnEditor" class="grey--text ml-2">
+          <div v-if="!showColumnEditor">
+            <div class="d-flex justify-space-between">
+              <router-link
+                :to="'/article-columns/' + articleColumn.uuid"
+                class="text-decoration-none"
+                :class="{ headline: !compactMode, title: compactMode }"
+              >
+                {{ name }}
+              </router-link>
+              <div v-if="!showColumnEditor">
+                <template v-if="currentUserId === articleColumn.owner.uuid && !compactMode">
+                  <v-btn small depressed class="slim-btn mr-2" @click="showColumnEditor = true">
+                    编辑专栏
+                  </v-btn>
+                  <v-btn
+                    :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
+                    class="slim-btn"
+                    outlined
+                    depressed
+                    small
+                  >
+                    写文章
+                  </v-btn>
+                </template>
+                <template v-else-if="currentUserId !== articleColumn.owner.uuid">
+                  <v-btn
+                    v-if="subscription.subscribed_by_me"
+                    :disabled="cancelSubscribeIntermediate"
+                    small
+                    depressed
+                    @click="cancelSubscribe"
+                  >
+                    {{ $t('取消关注') }} ({{ subscription.subscription_count }})
+                    <v-progress-circular
+                      v-show="cancelSubscribeIntermediate"
+                      :size="20"
+                      indeterminate
+                    ></v-progress-circular>
+                  </v-btn>
+                  <v-btn
+                    v-else-if="currentUserId !== articleColumn.owner.uuid"
+                    :disabled="subscribeIntermediate"
+                    color="primary"
+                    small
+                    depressed
+                    @click="subscribe"
+                  >
+                    {{ $t('关注') }} ({{ subscription.subscription_count }})
+                    <v-progress-circular
+                      v-show="subscribeIntermediate"
+                      :size="20"
+                      color="primary"
+                      indeterminate
+                    ></v-progress-circular>
+                  </v-btn>
+                </template>
+              </div>
+            </div>
+            <div v-if="desc" class="mt-1">
               {{ desc }}
-            </span>
-            <v-text-field v-if="showColumnEditor" v-model="name" :label="$t('专栏名称')" />
+            </div>
+            <div class="mt-1">
+              <UserLink :show-avatar="true" :user-preview="articleColumn.owner" />
+            </div>
           </div>
-          <div v-if="!compactMode && !showColumnEditor" class="secondary--text text-center">
-            <span v-if="desc">{{ desc }}</span>
-            <v-btn
-              small
-              depressed
-              v-if="currentUserId === articleColumn.owner.uuid"
-              @click="showColumnEditor = true"
-            >
-              <EditIcon /> 编辑专栏描述
-            </v-btn>
-          </div>
-          <v-textarea v-if="showColumnEditor" v-model="desc" :label="$t('专栏描述')" />
-          <div v-if="showColumnEditor" class="d-flex">
-            <v-spacer />
-            <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
-              >{{ $t('提交') }}
-            </v-btn>
-            <v-btn small depressed @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
+
+          <div v-if="showColumnEditor">
+            <v-text-field v-model="name" :label="$t('专栏名称')" />
+            <v-textarea v-model="desc" rows="3" :label="$t('专栏描述')" />
+            <div class="d-flex">
+              <v-spacer />
+              <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
+                >{{ $t('提交') }}
+              </v-btn>
+              <v-btn small depressed @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
+            </div>
           </div>
         </div>
-
-        <v-row v-if="subscription && !showColumnEditor">
-          <v-col :class="{ 'text-center': !compactMode }">
-            <v-btn
-              v-if="subscription.subscribed_by_me"
-              :disabled="cancelSubscribeIntermediate"
-              small
-              depressed
-              @click="cancelSubscribe"
-            >
-              {{ $t('取消关注') }} ({{ subscription.subscription_count }})
-              <v-progress-circular
-                v-show="cancelSubscribeIntermediate"
-                :size="20"
-                indeterminate
-              ></v-progress-circular>
-            </v-btn>
-            <v-btn
-              v-else-if="currentUserId !== articleColumn.owner.uuid"
-              :disabled="subscribeIntermediate"
-              color="primary"
-              small
-              depressed
-              @click="subscribe"
-            >
-              {{ $t('关注') }} ({{ subscription.subscription_count }})
-              <v-progress-circular
-                v-show="subscribeIntermediate"
-                :size="20"
-                color="primary"
-                indeterminate
-              ></v-progress-circular>
-            </v-btn>
-          </v-col>
-        </v-row>
       </v-col>
     </v-row>
   </div>
@@ -89,13 +99,16 @@ import { apiArticle } from '@/api/article';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import { readToken, readUserProfile } from '@/store/main/getters';
 import BaseCard from '@/components/base/BaseCard.vue';
+import UserLink from '@/components/UserLink.vue';
 
 @Component({
-  components: { BaseCard, EditIcon },
+  components: { UserLink, BaseCard, EditIcon },
 })
 export default class ArticleColumnCard extends Vue {
   @Prop() public readonly articleColumn!: IArticleColumn;
   @Prop({ default: false }) public readonly compactMode!: boolean;
+  @Prop({ default: false }) public readonly showOwner!: boolean;
+
   private loading = true;
   private subscription: IUserArticleColumnSubscription | null = null;
   private subscribeIntermediate = false;
