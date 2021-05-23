@@ -567,7 +567,7 @@ const i18n = new VueI18n({
       Recent: 'Recent',
     },
     zh: {
-      Recent: '最近动态',
+      Recent: '动态',
       登录后参与讨论: '登录后参与讨论',
       加入: '加入',
       相关分享: '相关分享',

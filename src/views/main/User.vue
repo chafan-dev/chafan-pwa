@@ -12,12 +12,7 @@
         <v-skeleton-loader v-else type="card" />
 
         <div v-if="loggedIn">
-          <v-tabs
-            v-model="currentTabItem"
-            :align-with-title="$vuetify.breakpoint.mdAndUp"
-            :fixed-tabs="$vuetify.breakpoint.mdAndUp"
-            show-arrows
-          >
+          <v-tabs v-model="currentTabItem" :fixed-tabs="$vuetify.breakpoint.mdAndUp" show-arrows>
             <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
               {{ $t(item.text) }}
               <span v-if="item.tabExtraCount && userPublic" class="ml-1">

@@ -17,28 +17,21 @@
               {{ $t('关注更多用户') }}
             </v-tab>
 
-            <v-tab-item value="questions" eager>
+            <v-tab-item value="questions" class="mt-2" eager>
               <div v-if="interestingQuestions !== null" class="pb-2">
                 <QuestionPreview
                   v-for="questionPreview in interestingQuestions"
                   :key="questionPreview.uuid"
-                  :class="{
-                    'px-3': $vuetify.breakpoint.mdAndUp,
-                    'py-4': $vuetify.breakpoint.mdAndUp,
-                    'px-2': !$vuetify.breakpoint.mdAndUp,
-                    'py-3': !$vuetify.breakpoint.mdAndUp,
-                  }"
                   :questionPreview="questionPreview"
-                  class="mx-2 my-4"
                 />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
               <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
             </v-tab-item>
-            <v-tab-item value="sites" eager>
+            <v-tab-item value="sites" class="mt-2" eager>
               <ExploreSitesGrid />
             </v-tab-item>
-            <v-tab-item value="users" eager>
+            <v-tab-item value="users" class="mt-2" eager>
               <div v-if="interestingUsers !== null">
                 <UserGrid :users="interestingUsers" />
               </div>
