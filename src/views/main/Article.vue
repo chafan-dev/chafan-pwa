@@ -27,15 +27,15 @@
             </router-link>
           </span>
           <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text mr-3">
-            {{ $t('上次发表：') }}
+            发表于
             {{ $dayjs.utc(article.updated_at).local().fromNow() }}
           </span>
         </div>
 
-        <div class="headline mt-2">
+        <div class="headline my-2 font-weight-bold">
           {{ article.title }}
         </div>
-        <div class="my-2">
+        <div class="my-3">
           <v-chip v-if="article && !article.is_published" class="ml-2" color="warning" small
             >{{ $t('此为初稿仅自己可见') }}
           </v-chip>
