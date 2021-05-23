@@ -35,7 +35,7 @@
                     写文章
                   </v-btn>
                 </template>
-                <template v-else-if="currentUserId !== articleColumn.owner.uuid">
+                <template v-else-if="subscription && currentUserId !== articleColumn.owner.uuid">
                   <v-btn
                     v-if="subscription.subscribed_by_me"
                     :disabled="cancelSubscribeIntermediate"
@@ -51,7 +51,6 @@
                     ></v-progress-circular>
                   </v-btn>
                   <v-btn
-                    v-else-if="currentUserId !== articleColumn.owner.uuid"
                     :disabled="subscribeIntermediate"
                     color="primary"
                     small
