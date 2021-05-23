@@ -11,12 +11,15 @@
           <div v-if="!showColumnEditor">
             <div class="d-flex justify-space-between">
               <router-link
+                v-if="compactMode"
                 :to="'/article-columns/' + articleColumn.uuid"
-                class="text-decoration-none"
-                :class="{ headline: !compactMode, title: compactMode }"
+                class="text-decoration-none title"
               >
                 {{ name }}
               </router-link>
+              <h2 v-else>
+                {{ name }}
+              </h2>
               <div v-if="!showColumnEditor">
                 <template v-if="currentUserId === articleColumn.owner.uuid && !compactMode">
                   <v-btn small depressed class="slim-btn mr-2" @click="showColumnEditor = true">
