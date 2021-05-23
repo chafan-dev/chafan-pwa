@@ -108,7 +108,7 @@ export const setAppLocale = (vueInstance: any, selectedLang: string) => {
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchCheckApiError } from './store/main/actions';
 import { captureException } from '@sentry/vue';
-import { IComment, IRichEditorState } from './interfaces';
+import { editor_T, IComment, IRichEditorState } from './interfaces';
 import { env } from './env';
 
 export const newAnswerHandler = async (
@@ -244,4 +244,39 @@ export const rankComments = (dayjs, comments: IComment[]) => {
 
 export const deepCopy = (o: any): any => {
   return JSON.parse(JSON.stringify(o));
+};
+
+export interface IArticleDraft {
+  title?: string;
+  body?: string;
+  editor: editor_T;
+}
+
+export const getArticleDraft = async (
+  dayjs,
+  token: string,
+  uuid: string
+): Promise<IArticleDraft | null> => {
+  const localSavedEdit = loadLocalEdit('article', uuid);
+  const response = await apiArticle.getArticleDraft(token, uuid);
+  const draft = response.data;
+  if (
+    (draft.title_draft || draft.body_draft) &&
+    (localSavedEdit === null ||
+      dayjs.utc(draft.draft_saved_at).isAfter(dayjs(localSavedEdit.createdAt)))
+  ) {
+    return {
+      title: draft.title_draft,
+      body: draft.body_draft,
+      editor: draft.editor,
+    };
+  } else if (localSavedEdit) {
+    return {
+      title: (localSavedEdit.edit as IRichEditorState).title,
+      body: (localSavedEdit.edit as IRichEditorState).body || undefined,
+      editor: (localSavedEdit.edit as IRichEditorState).editor,
+    };
+  } else {
+    return null;
+  }
 };
