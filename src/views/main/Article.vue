@@ -32,10 +32,10 @@
           </span>
         </div>
 
-        <div class="headline my-2 font-weight-bold">
+        <div class="headline my-2 mx-1 font-weight-bold">
           {{ article.title }}
         </div>
-        <div class="my-3">
+        <div class="my-3 mx-1">
           <v-chip v-if="article && !article.is_published" class="ml-2" color="warning" small
             >{{ $t('此为初稿仅自己可见') }}
           </v-chip>
@@ -50,7 +50,7 @@
           />
         </div>
 
-        <div>
+        <div class="mx-1">
           <v-row>
             <v-col class="d-flex">
               <template v-if="token">
