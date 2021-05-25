@@ -53,45 +53,15 @@
         <div class="mx-1">
           <v-row>
             <v-col class="d-flex">
-              <template v-if="token">
-                <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
-                  <v-card>
-                    <v-card-title primary-title>
-                      <div class="headline primary--text">确定收回赞？</div>
-                    </v-card-title>
-                    <v-card-actions>
-                      <v-spacer />
-                      <v-btn class="mr-1" depressed small @click="showCancelUpvoteDialog = false"
-                        >{{ $t('No') }}
-                      </v-btn>
-                      <v-btn
-                        :disabled="cancelUpvoteIntermediate"
-                        color="warning"
-                        depressed
-                        small
-                        @click="cancelUpvote"
-                        >{{ $t('Yes') }}
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-
-                <span class="mr-1" v-if="upvotes !== null">
-                  <UpvotedBtn
-                    v-if="upvotes.upvoted"
-                    @click="showCancelUpvoteDialog = true"
-                    :count="upvotes.count"
-                  />
-                  <UpvoteBtn
-                    v-else
-                    :disabled="currentUserIsAuthor || upvoteIntermediate"
-                    @click="upvote"
-                    :count="upvotes.count"
-                  >
-                    {{ $t('赞') }} ({{ upvotes.count }})
-                  </UpvoteBtn>
-                </span>
-              </template>
+              <Upvote
+                class="mr-1"
+                v-if="upvotes !== null"
+                :upvotes-count="upvotes.count"
+                :upvoted="upvotes.upvoted"
+                :disabled="currentUserIsAuthor"
+                :on-cancel-vote="cancelUpvote"
+                :on-vote="upvote"
+              />
 
               <CommentBtn
                 class="mr-1"
@@ -262,9 +232,11 @@ import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import { getArticleDraft } from '@/utils';
+import Upvote from '@/components/Upvote.vue';
 
 @Component({
   components: {
+    Upvote,
     CommentBtn,
     UpvoteBtn,
     UpvotedBtn,
@@ -286,11 +258,8 @@ export default class Article extends Vue {
   private upvotes: IArticleUpvotes | null = null;
   private showComments: boolean = false;
   private userBookmark: IUserArticleBookmark | null = null;
-  private showCancelUpvoteDialog: boolean = false;
   private confirmDeleteDialog = false;
   private loading = true;
-  private upvoteIntermediate = false;
-  private cancelUpvoteIntermediate = false;
   private deleteArticleIntermediate = false;
   private bookmarkIntermediate = false;
   private unbookmarkIntermediate = false;
@@ -358,22 +327,17 @@ export default class Article extends Vue {
   }
 
   private async upvote() {
-    this.upvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
         this.upvotes = (await apiArticle.upvoteArticle(this.token, this.article.uuid)).data;
-        this.upvoteIntermediate = false;
       }
     });
   }
 
   private async cancelUpvote() {
-    this.cancelUpvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
         this.upvotes = (await apiArticle.cancelUpvoteArticle(this.token, this.article.uuid)).data;
-        this.cancelUpvoteIntermediate = false;
-        this.showCancelUpvoteDialog = false;
       }
     });
   }

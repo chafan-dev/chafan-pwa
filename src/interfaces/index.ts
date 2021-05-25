@@ -89,8 +89,9 @@ export interface IAnswer {
   comments: IComment[];
   is_hidden_by_moderator: boolean;
   view_times: number;
-  upvoted: boolean;
-  upvotes_count: number;
+  // TODO: deprecate them from API
+  // upvoted: boolean;
+  // upvotes_count: number;
   comment_writable: boolean;
   bookmark_count: number;
   archives_count: number;

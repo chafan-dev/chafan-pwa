@@ -153,19 +153,15 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-            <span class="ma-1" v-if="upvotes !== null">
-              <UpvotedBtn
-                v-if="upvotes.upvoted"
-                @click="showCancelUpvoteDialog = true"
-                :count="upvotes.count"
-              />
-              <UpvoteBtn
-                v-else
-                :disabled="userProfile.uuid === question.author.uuid || upvoteIntermediate"
-                @click="upvote"
-                :count="upvotes.count"
-              />
-            </span>
+            <Upvote
+              class="ma-1"
+              v-if="upvotes !== null"
+              :upvotes-count="upvotes.count"
+              :upvoted="upvotes.upvoted"
+              :disabled="userProfile.uuid === question.author.uuid"
+              :on-cancel-vote="cancelUpvote"
+              :on-vote="upvote"
+            />
 
             <v-btn
               class="slim-btn ma-1"
@@ -497,9 +493,11 @@ import ShareCardButton from '@/components/ShareCardButton.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
+import Upvote from '@/components/Upvote.vue';
 
 @Component({
   components: {
+    Upvote,
     CommentBtn,
     UpvotedBtn,
     UpvoteBtn,
@@ -549,9 +547,6 @@ export default class Question extends Vue {
   private showMoveQuestionDialog = false;
   private savedNewAnswer: IAnswer | null = null;
   private handlingNewEdit = false;
-  private showCancelUpvoteDialog: boolean = false;
-  private upvoteIntermediate: boolean = false;
-  private cancelUpvoteIntermediate = false;
   private upvotes: IQuestionUpvotes | null = null;
   private archives: IQuestionArchive[] = [];
   private historyDialog = false;
@@ -859,24 +854,19 @@ export default class Question extends Vue {
   }
 
   private async upvote() {
-    this.upvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.upvotes = (await apiQuestion.upvoteQuestion(this.token, this.question.uuid)).data;
-        this.upvoteIntermediate = false;
       }
     });
   }
 
   private async cancelUpvote() {
-    this.cancelUpvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.upvotes = (
           await apiQuestion.cancelUpvoteQuestion(this.token, this.question.uuid)
         ).data;
-        this.cancelUpvoteIntermediate = false;
-        this.showCancelUpvoteDialog = false;
       }
     });
   }

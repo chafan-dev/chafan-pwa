@@ -12,6 +12,12 @@ import {
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiAnswer = {
+  async getAnswerUpvotes(token: string, answerUUID: string) {
+    return axios.get<IAnswerUpvotes>(
+      `${apiUrl}/api/v1/answers/${answerUUID}/upvotes/`,
+      authHeaders(token)
+    );
+  },
   async upvoteAnswer(token: string, answerUUID: string) {
     return axios.post<IAnswerUpvotes>(
       `${apiUrl}/api/v1/answers/${answerUUID}/upvotes/`,
