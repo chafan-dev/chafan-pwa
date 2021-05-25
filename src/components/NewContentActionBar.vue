@@ -32,7 +32,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" @click="postNewArticle">{{ $t('创建文章') }}</v-btn>
+          <v-btn color="primary" small depressed @click="postNewArticle">创建文章</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
