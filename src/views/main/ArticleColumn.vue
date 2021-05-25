@@ -9,7 +9,7 @@
           <div class="d-flex">
             <span class="title">{{ $t('文章列表') }}</span>
           </div>
-          <ul v-if="articles">
+          <ul v-if="articles && articles.length">
             <li v-for="article in articles" :key="article.uuid">
               <router-link :to="`/articles/${article.uuid}`" class="text-decoration-none"
                 >{{ article.title }}
@@ -17,6 +17,7 @@
               <v-chip v-if="!article.is_published" class="ml-2" small>{{ $t('初稿') }}</v-chip>
             </li>
           </ul>
+          <EmptyPlaceholder v-else />
           <div v-if="!userProfile" class="text-center grey--text">
             {{ $t('登录后查看更多') }}
           </div>
@@ -35,9 +36,10 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readUserProfile } from '@/store/main/getters';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual } from '@/common';
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 
 @Component({
-  components: { ArticleColumnCard },
+  components: { EmptyPlaceholder, ArticleColumnCard },
 })
 export default class ArticleColumn extends Vue {
   private articleColumn: IArticleColumn | null = null;
