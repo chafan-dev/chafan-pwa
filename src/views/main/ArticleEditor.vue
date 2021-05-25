@@ -7,6 +7,7 @@
             <v-progress-circular indeterminate />
           </v-overlay>
 
+          <!-- Editor of title -->
           <div>
             <v-textarea
               v-model="articleTitle"
@@ -17,7 +18,22 @@
               rows="1"
             />
           </div>
-          <EditorHelp :show-help="showHelp" />
+
+          <!-- Editor of body -->
+          <ChafanTiptap
+            v-show="topLevelEditor === 'tiptap'"
+            ref="tiptap"
+            :onEditorChange="onEditorChange"
+            class="mb-2 mt-2"
+          />
+          <VditorComponent
+            v-show="topLevelEditor === 'vditor'"
+            ref="vditor"
+            :onEditorChange="onEditorChange"
+            class="mb-2 mt-2"
+          />
+
+          <!-- Controls -->
           <div class="d-flex align-center">
             <v-btn
               color="primary"
@@ -152,20 +168,7 @@
               </v-card>
             </v-dialog>
           </div>
-
-          <ChafanTiptap
-            v-show="topLevelEditor === 'tiptap'"
-            ref="tiptap"
-            :onEditorChange="onEditorChange"
-            class="mb-2 mt-2"
-          />
-
-          <VditorComponent
-            v-show="topLevelEditor === 'vditor'"
-            ref="vditor"
-            :onEditorChange="onEditorChange"
-            class="mb-2 mt-2"
-          />
+          <EditorHelp :show-help="showHelp" />
         </div>
       </v-col>
     </v-row>
