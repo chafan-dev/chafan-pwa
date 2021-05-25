@@ -102,7 +102,7 @@
               <v-btn
                 v-show="currentUserIsAuthor"
                 :to="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
-                class="mr-1"
+                class="mr-1 slim-btn"
                 depressed
                 small
                 >{{ editButtonText }}
@@ -110,7 +110,7 @@
 
               <v-menu v-if="currentUserIsAuthor" offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on" class="mr-1" depressed small
+                  <v-btn v-bind="attrs" v-on="on" class="mr-1 slim-btn" depressed small
                     >{{ $t('设置') }}
                   </v-btn>
                 </template>

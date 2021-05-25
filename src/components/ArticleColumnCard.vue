@@ -1,95 +1,83 @@
 <template>
   <div class="pa-2">
-    <v-row justify="center">
-      <v-col align-self="center">
-        <div
-          :class="{
-            'mb-6': currentUserId === articleColumn.owner.uuid && !compactMode,
-            'mb-2': currentUserId !== articleColumn.owner.uuid && !compactMode,
-          }"
+    <div v-if="!showColumnEditor">
+      <div class="d-flex justify-space-between">
+        <router-link
+          v-if="compactMode"
+          :to="'/article-columns/' + articleColumn.uuid"
+          class="text-decoration-none title"
         >
-          <div v-if="!showColumnEditor">
-            <div class="d-flex justify-space-between">
-              <router-link
-                v-if="compactMode"
-                :to="'/article-columns/' + articleColumn.uuid"
-                class="text-decoration-none title"
-              >
-                {{ name }}
-              </router-link>
-              <h2 v-else>
-                {{ name }}
-              </h2>
-              <div v-if="!showColumnEditor">
-                <template v-if="currentUserId === articleColumn.owner.uuid && !compactMode">
-                  <v-btn small depressed class="slim-btn mr-2" @click="showColumnEditor = true">
-                    编辑专栏
-                  </v-btn>
-                  <v-btn
-                    :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
-                    class="slim-btn"
-                    outlined
-                    depressed
-                    small
-                  >
-                    写文章
-                  </v-btn>
-                </template>
-                <template v-else-if="subscription && currentUserId !== articleColumn.owner.uuid">
-                  <v-btn
-                    v-if="subscription.subscribed_by_me"
-                    :disabled="cancelSubscribeIntermediate"
-                    small
-                    depressed
-                    @click="cancelSubscribe"
-                  >
-                    {{ $t('取消关注') }} ({{ subscription.subscription_count }})
-                    <v-progress-circular
-                      v-show="cancelSubscribeIntermediate"
-                      :size="20"
-                      indeterminate
-                    ></v-progress-circular>
-                  </v-btn>
-                  <v-btn
-                    :disabled="subscribeIntermediate"
-                    color="primary"
-                    small
-                    depressed
-                    @click="subscribe"
-                  >
-                    {{ $t('关注') }} ({{ subscription.subscription_count }})
-                    <v-progress-circular
-                      v-show="subscribeIntermediate"
-                      :size="20"
-                      color="primary"
-                      indeterminate
-                    ></v-progress-circular>
-                  </v-btn>
-                </template>
-              </div>
-            </div>
-            <div v-if="desc" class="mt-1">
-              {{ desc }}
-            </div>
-            <div class="mt-1">
-              <UserLink :show-avatar="true" :user-preview="articleColumn.owner" />
-            </div>
-          </div>
-
-          <div v-if="showColumnEditor">
-            <v-text-field v-model="name" :label="$t('专栏名称')" />
-            <v-textarea v-model="desc" rows="3" :label="$t('专栏描述')" />
-            <div class="d-flex">
-              <v-spacer />
-              <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
-                >{{ $t('提交') }}
-              </v-btn>
-              <v-btn small depressed @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
-            </div>
-          </div>
+          {{ name }}
+        </router-link>
+        <h2 v-else>
+          {{ name }}
+        </h2>
+        <div v-if="!showColumnEditor" class="d-flex align-center">
+          <template v-if="currentUserId === articleColumn.owner.uuid && !compactMode">
+            <v-btn small depressed class="slim-btn mr-2" @click="showColumnEditor = true">
+              编辑专栏
+            </v-btn>
+            <v-btn
+              :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
+              class="slim-btn"
+              outlined
+              depressed
+              small
+            >
+              写文章
+            </v-btn>
+          </template>
+          <template v-else-if="subscription && currentUserId !== articleColumn.owner.uuid">
+            <v-btn
+              v-if="subscription.subscribed_by_me"
+              :disabled="cancelSubscribeIntermediate"
+              small
+              depressed
+              @click="cancelSubscribe"
+            >
+              {{ $t('取消关注') }} ({{ subscription.subscription_count }})
+              <v-progress-circular
+                v-show="cancelSubscribeIntermediate"
+                :size="20"
+                indeterminate
+              ></v-progress-circular>
+            </v-btn>
+            <v-btn
+              :disabled="subscribeIntermediate"
+              color="primary"
+              small
+              depressed
+              @click="subscribe"
+            >
+              {{ $t('关注') }} ({{ subscription.subscription_count }})
+              <v-progress-circular
+                v-show="subscribeIntermediate"
+                :size="20"
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
+            </v-btn>
+          </template>
         </div>
-      </v-col>
-    </v-row>
+      </div>
+      <div v-if="desc" class="mt-1">
+        {{ desc }}
+      </div>
+      <div class="mt-1">
+        <UserLink :show-avatar="true" :user-preview="articleColumn.owner" />
+      </div>
+    </div>
+    <div v-if="showColumnEditor">
+      <v-text-field v-model="name" :label="$t('专栏名称')" />
+      <v-textarea v-model="desc" rows="3" :label="$t('专栏描述')" />
+      <div class="d-flex">
+        <v-spacer />
+        <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
+          >{{ $t('提交') }}
+        </v-btn>
+        <v-btn small depressed @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
+      </div>
+    </div>
   </div>
 </template>
 

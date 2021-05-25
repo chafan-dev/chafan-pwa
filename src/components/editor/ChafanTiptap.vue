@@ -63,7 +63,7 @@
       :upload="upload"
       :video-dialog-controller="videoDialogController"
       :image-dialog-controller="imageDialogController"
-      :on-editor-change="onEditorChange"
+      :on-editor-change="onChange"
       :on-editor-ready="onEditorReadyInternal"
     />
   </div>
@@ -99,6 +99,7 @@ export default class ChafanTiptap extends Vue {
   @Prop({ default: true }) private readonly editable!: boolean;
   @Prop({ default: false }) private readonly commentMode!: boolean;
   @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
+  @Prop() public readonly onEditorChange: ((text: string) => void) | undefined;
   @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
 
   private onEditorReadyInternal(contentElem: HTMLElement) {
@@ -117,7 +118,7 @@ export default class ChafanTiptap extends Vue {
     }
   }
 
-  private onEditorChange() {
+  private onChange() {
     if (this.onMentionedHandles) {
       const tiptapElement = this.$el.getElementsByClassName('tiptap')[0];
       const handles: string[] = [];
@@ -130,6 +131,9 @@ export default class ChafanTiptap extends Vue {
         }
       });
       this.onMentionedHandles(handles);
+    }
+    if (this.onEditorChange) {
+      this.onEditorChange(this.getText() || '');
     }
   }
 
