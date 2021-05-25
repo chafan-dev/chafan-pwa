@@ -63,43 +63,16 @@
         <div v-if="userBookmark">
           <v-row>
             <v-col align-self="end" class="d-flex pl-3 pb-0">
-              <v-dialog v-model="showCancelUpvoteDialog" max-width="400">
-                <v-card>
-                  <v-card-title primary-title>
-                    <div class="headline">{{ $t('确定收回点赞？') }}</div>
-                  </v-card-title>
-
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn outlined small @click="showCancelUpvoteDialog = false"
-                      >{{ $t('No') }}
-                    </v-btn>
-                    <v-btn
-                      :disabled="cancelUpvoteIntermediate"
-                      color="error"
-                      small
-                      @click="cancelUpvote"
-                      >{{ $t('Yes') }}
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-
               <div class="d-flex mt-1">
-                <span class="mr-1">
-                  <UpvotedBtn
-                    v-if="upvotes && upvotes.upvoted"
-                    @click="showCancelUpvoteDialog = true"
-                    :count="upvotes.count"
-                  />
-                  <UpvoteBtn
-                    v-else
-                    :disabled="currentUserIsAuthor || upvoteIntermediate"
-                    @click="upvote"
-                    :count="upvotes.count"
-                  />
-                </span>
-
+                <Upvote
+                  v-if="upvotes"
+                  class="mr-1"
+                  :upvotes-count="upvotes.count"
+                  :upvoted="upvotes.upvoted"
+                  :disabled="currentUserIsAuthor"
+                  :on-cancel-vote="cancelUpvote"
+                  :on-vote="upvote"
+                />
                 <CommentBtn
                   class="mr-1"
                   @click="toggleShowComments"
@@ -330,9 +303,11 @@ import AnswerEditor from '@/components/AnswerEditor.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
+import Upvote from '@/components/Upvote.vue';
 
 @Component({
   components: {
+    Upvote,
     CommentBtn,
     UpvotedBtn,
     UpvoteBtn,
@@ -366,12 +341,9 @@ export default class Answer extends Vue {
   private commentWritable = false;
   private userBookmark: IUserAnswerBookmark | null = null;
   private showEditor: boolean = false;
-  private showCancelUpvoteDialog: boolean = false;
   private confirmDeleteDialog = false;
   private loading = true;
   private preview = true;
-  private upvoteIntermediate = false;
-  private cancelUpvoteIntermediate = false;
   private deleteAnswerIntermediate = false;
   private bookmarkIntermediate = false;
   private unbookmarkIntermediate = false;
@@ -413,11 +385,10 @@ export default class Answer extends Vue {
     }
 
     if (this.answerProp) {
-      this.updateStateWithLoadedAnswer(this.answerProp);
+      await this.updateStateWithLoadedAnswer(this.answerProp);
     } else {
-      apiAnswer.getAnswer(this.token, this.answerPreview.uuid).then((response) => {
-        this.updateStateWithLoadedAnswer(response.data);
-      });
+      const response = await apiAnswer.getAnswer(this.token, this.answerPreview.uuid);
+      await this.updateStateWithLoadedAnswer(response.data);
     }
 
     if (this.loadFull) {
@@ -432,22 +403,17 @@ export default class Answer extends Vue {
       commitSetShowLoginPrompt(this.$store, true);
       return;
     }
-    this.upvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
         this.upvotes = (await apiAnswer.upvoteAnswer(this.token, this.answer.uuid)).data;
-        this.upvoteIntermediate = false;
       }
     });
   }
 
   private async cancelUpvote() {
-    this.cancelUpvoteIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
         this.upvotes = (await apiAnswer.cancelUpvoteAnswer(this.token, this.answer.uuid)).data;
-        this.cancelUpvoteIntermediate = false;
-        this.showCancelUpvoteDialog = false;
       }
     });
   }
@@ -504,15 +470,15 @@ export default class Answer extends Vue {
     });
   }
 
-  private updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
+  private async updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
     if (!event.isAutoSaved) {
       this.showHasDraftBadge = false;
       this.showEditor = false;
-      this.updateStateWithLoadedAnswer(event.answer);
+      await this.updateStateWithLoadedAnswer(event.answer);
     }
   }
 
-  private updateStateWithLoadedAnswer(answer: IAnswer) {
+  private async updateStateWithLoadedAnswer(answer: IAnswer) {
     this.$emit('load');
     this.answer = answer;
     if (this.userProfile) {
@@ -541,11 +507,7 @@ export default class Answer extends Vue {
         });
       }
     }
-    this.upvotes = {
-      answer_uuid: this.answer.uuid,
-      count: this.answer.upvotes_count,
-      upvoted: this.answer.upvoted,
-    };
+    this.upvotes = (await apiAnswer.getAnswerUpvotes(this.token, this.answer.uuid)).data;
     this.commentWritable = this.answer.comment_writable;
     this.userBookmark = {
       answer_uuid: this.answer.uuid,

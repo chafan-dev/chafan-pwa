@@ -9,8 +9,11 @@
 </template>
 <script>
 import UpvotedBtnIcon from '@/components/icons/UpvotedIcon';
-export default {
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component({
   components: { UpvotedBtnIcon },
   props: ['count'],
-};
+})
+export default class UpvotedBtn extends Vue {}
 </script>
