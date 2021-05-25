@@ -268,24 +268,28 @@
                 </span>
               </template>
               <template v-slot:item.action="{ item }">
-                <v-btn
-                  v-if="claimable(item)"
-                  color="primary"
-                  depressed
-                  small
-                  @click="claimReward(item)"
-                >
-                  {{ $t('Claim') }}
-                </v-btn>
-                <v-btn
-                  v-if="refundable(item)"
-                  color="primary"
-                  depressed
-                  small
-                  @click="refundReward(item)"
-                >
-                  {{ $t('Refund') }}
-                </v-btn>
+                <template v-if="item.giver.uuid === userProfile.uuid">
+                  <v-btn
+                    :disabled="!refundable(item)"
+                    color="primary"
+                    depressed
+                    small
+                    @click="refundReward(item)"
+                  >
+                    {{ $t('Refund') }}
+                  </v-btn>
+                </template>
+                <template v-else>
+                  <v-btn
+                    :disabled="!claimable(item)"
+                    color="primary"
+                    depressed
+                    small
+                    @click="claimReward(item)"
+                  >
+                    {{ $t('Claim') }}
+                  </v-btn>
+                </template>
               </template>
             </v-data-table>
 
