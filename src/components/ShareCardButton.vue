@@ -12,7 +12,8 @@
     </v-dialog>
 
     <v-btn small depressed @click="showSharingCardDialog" class="slim-btn">
-      <ShareIcon class="mr-1" small /> 转发
+      <ShareIcon small />
+      <span class="ml-1" v-if="$vuetify.breakpoint.mdAndUp">转发</span>
     </v-btn>
   </span>
 </template>
