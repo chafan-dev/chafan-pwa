@@ -1,7 +1,7 @@
 <template>
   <div v-if="!showEditor" class="pa-1">
     <div v-if="isHiddenByMod">
-      <v-card-text>{{ $t('内容已被管理员隐藏') }}</v-card-text>
+      <v-card-text>内容已被折叠</v-card-text>
     </div>
     <div v-else>
       <div v-if="showQuestionInCard" class="title mb-2">
@@ -12,7 +12,7 @@
           <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
         </span>
         {{ answerPreviewBody }}
-        <span class="primary--text">{{ $t('展开全文') }}</span>
+        <span class="primary--text">展开全文</span>
         <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading && expandClicked" />
       </div>
       <div v-if="answer" v-show="!preview">
@@ -27,16 +27,14 @@
           </span>
           <v-spacer />
           <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text">
-            {{ $t('上次编辑：') }}
+            上次编辑：
             {{ $dayjs.utc(answer.updated_at).local().fromNow() }}
           </span>
         </div>
 
         <div class="mt-1">
           <template v-if="draftMode">
-            <v-chip v-if="answer" color="info" small>
-              {{ $t('草稿') }}
-            </v-chip>
+            <v-chip v-if="answer" color="info" small> 草稿 </v-chip>
             <Viewer
               v-if="bodyDraft !== null && draftEditor !== null"
               :body="bodyDraft"
@@ -45,7 +43,7 @@
           </template>
           <template v-else>
             <v-chip v-if="answer && !answer.is_published" color="warning" small>
-              {{ $t('此为初稿仅自己可见') }}
+              此为初稿仅自己可见
             </v-chip>
             <v-chip v-else-if="showHasDraftBadge" color="info" small>
               {{ $t('编辑器中有未发表的草稿') }}
