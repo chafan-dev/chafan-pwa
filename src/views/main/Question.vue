@@ -134,25 +134,6 @@
               :count="question.comments.length"
             />
 
-            <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
-              <v-card>
-                <v-card-title primary-title>
-                  <div class="headline primary--text">确定取消赞？</div>
-                </v-card-title>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn depressed @click="showCancelUpvoteDialog = false">{{ $t('No') }}</v-btn>
-                  <v-btn
-                    :disabled="cancelUpvoteIntermediate"
-                    color="warning"
-                    depressed
-                    @click="cancelUpvote"
-                  >
-                    {{ $t('Yes') }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
             <Upvote
               class="ma-1"
               v-if="upvotes !== null"
@@ -380,9 +361,6 @@
         </v-expand-transition>
 
         <!-- Answers -->
-        <div v-if="answerPreviews.length && loadingFullAnswer" class="text-center">
-          <v-progress-circular indeterminate size="30" />
-        </div>
         <div v-for="answer in loadedFullAnswers" :key="answer.uuid" class="shadow-card mb-4">
           <Answer
             :answerPreview="answer"
@@ -409,6 +387,10 @@
             @load="loadingFullAnswer = false"
             @delete-answer="deleteHandler"
           />
+        </div>
+
+        <div v-if="answerPreviews.length && loadingFullAnswer" class="text-center">
+          <v-progress-circular indeterminate size="20" color="grey" />
         </div>
       </v-col>
 

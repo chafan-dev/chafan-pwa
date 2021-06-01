@@ -13,7 +13,7 @@
         </span>
         {{ answerPreviewBody }}
         <span class="primary--text">{{ $t('展开全文') }}</span>
-        <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading" />
+        <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading && expandClicked" />
       </div>
       <div v-if="answer" v-show="!preview">
         <div v-if="showAuthor" class="d-flex align-center">
@@ -350,6 +350,7 @@ export default class Answer extends Vue {
   private toggleHideAnswerIntermediate = false;
   private answerPreviewBody: string = this.answerPreview.body;
   private currentUserIsAuthor = false;
+  private expandClicked = false;
 
   private editButtonText = '编辑';
   private showHasDraftBadge = false;
@@ -392,7 +393,7 @@ export default class Answer extends Vue {
     }
 
     if (this.loadFull) {
-      await this.expandDown();
+      this.setLoading();
     } else {
       this.loading = false;
     }
@@ -517,7 +518,12 @@ export default class Answer extends Vue {
     this.loading = false;
   }
 
-  private async expandDown() {
+  private expandDown() {
+    this.expandClicked = true;
+    this.setLoading();
+  }
+
+  private setLoading() {
     this.preview = false;
     if (!this.answer) {
       this.loading = true;
