@@ -133,7 +133,7 @@
               <v-sheet
                 class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1"
               >
-                <v-subheader class="font-weight-bold"> 通知 </v-subheader>
+                <v-subheader class="font-weight-bold">通知</v-subheader>
 
                 <div class="mr-1">
                   <v-btn depressed small @click="readAllNotifs" class="slim-btn">
@@ -150,7 +150,17 @@
 
                     <template v-if="notif.is_read">
                       <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
-                        <Event class="my-2" v-if="notif.event" :event="notif.event" />
+                        <Event
+                          class="my-2"
+                          v-if="notif.event"
+                          :event="notif.event"
+                          :on-click-handler="
+                            () => {
+                              showNotifications = false;
+                            }
+                          "
+                          :enable-user-link-popup="false"
+                        />
                       </v-list-item>
                     </template>
                     <template v-else>
@@ -159,6 +169,7 @@
                           class="my-2"
                           v-if="notif.event"
                           :event="notif.event"
+                          :enable-user-link-popup="false"
                           :on-click-handler="
                             () => {
                               showNotifications = false;

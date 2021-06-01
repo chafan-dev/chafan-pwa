@@ -2,25 +2,23 @@
   <span class="event-span body-2" @click="onClick">
     <i18n :path="'verb.' + event.content.verb">
       <UserLink
-        v-if="event.content.subject && event.content.subject.uuid != currentUserId"
+        v-if="event.content.subject && event.content.subject.uuid !== currentUserId"
         :userPreview="event.content.subject"
+        :enable-popup="false"
         place="who"
       />
-      <span
-        v-if="event.content.subject && event.content.subject.uuid == currentUserId"
-        place="who"
-        >{{ $t('I') }}</span
+      <span v-if="event.content.subject && event.content.subject.uuid === currentUserId" place="who"
+        >我</span
       >
 
       <UserLink
         v-if="event.content.user && event.content.user.uuid !== currentUserId"
         :userPreview="event.content.user"
+        :enable-popup="false"
         place="user"
       />
-      <span
-        v-else-if="event.content.user && event.content.user.uuid === currentUserId"
-        place="user"
-        >{{ $t('me') }}</span
+      <span v-else-if="event.content.user && event.content.user.uuid === currentUserId" place="user"
+        >我</span
       >
 
       <span v-if="event.content.invited_email" place="invited_email">{{
@@ -112,7 +110,7 @@
         :to="`/channels/${event.content.channel.id}`"
         place="channel_message"
       >
-        {{ $t('私信') }}
+        私信
       </router-link>
     </i18n>
     ({{ $dayjs.utc(event.created_at).local().fromNow() }})
@@ -133,6 +131,7 @@ import { readUserProfile } from '@/store/main/getters';
 export default class Event extends Vue {
   @Prop() public readonly event!: IEvent;
   @Prop() public readonly onClickHandler: (() => void) | undefined;
+  @Prop({ default: true }) public readonly enableUserLinkPopup!: boolean;
 
   get currentUserId() {
     return readUserProfile(this.$store)?.uuid;
