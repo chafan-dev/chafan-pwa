@@ -741,7 +741,7 @@ export interface ITopBanner {
 export interface IArticleCreate {
   title: string;
   body: string;
-  body_text: string;
+  body_text?: string;
   article_column_uuid: string;
   is_published: boolean;
   editor: editor_T;
@@ -817,6 +817,7 @@ export interface IArticlePreview {
   author: IUserPreview;
   article_column: IArticleColumn;
   title: string;
+  body_text?: string;
   upvotes_count: number;
   is_published: boolean;
 }

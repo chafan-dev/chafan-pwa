@@ -8,9 +8,7 @@
         <span v-if="noMore">{{ $t('没有更多了') }}</span>
       </div>
     </div>
-    <div v-else-if="items !== null" class="my-4 text-center">
-      {{ $t(emptyItemsText) }}
-    </div>
+    <EmptyPlaceholder v-else-if="items !== null" />
     <div v-if="!noMore" class="my-4 text-center">
       <v-progress-circular color="primary" indeterminate size="20" />
     </div>
@@ -19,11 +17,12 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-
-@Component
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+@Component({
+  components: { EmptyPlaceholder },
+})
 export default class DynamicItemList<T> extends Vue {
   @Prop({ default: 20 }) public readonly pageLimit!: number;
-  @Prop() public readonly emptyItemsText!: string;
   @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<(T | null)[] | null>;
 
   private items: T[] | null = null;
