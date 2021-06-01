@@ -2,7 +2,7 @@
   <div class="d-flex d-none">
     <div>
       <v-btn class="primary darken-2 mr-1" depressed small @click="showAskActionDialog = true">
-        {{ $t('提问') }}
+        提问
       </v-btn>
 
       <v-dialog v-model="showAskActionDialog" max-width="500">
@@ -10,13 +10,11 @@
       </v-dialog>
     </div>
 
-    <v-btn class="mr-1" depressed small @click="showArticleActionDialog = true"
-      >{{ $t('写文章') }}
-    </v-btn>
+    <v-btn class="mr-1" depressed small @click="showArticleActionDialog = true">写文章 </v-btn>
     <v-dialog v-model="showArticleActionDialog" max-width="500">
       <v-card>
         <v-card-title primary-title>
-          <div class="headline primary--text">{{ $t('写文章') }}</div>
+          <div class="headline primary--text">写文章</div>
         </v-card-title>
         <div class="ma-4 pa-2">
           <v-select
@@ -27,9 +25,7 @@
             item-value="uuid"
           />
         </div>
-        <v-card-text>
-          {{ $t('在「用户中心」中可以创建专栏') }}
-        </v-card-text>
+        <v-card-text> 在「用户中心」中可以创建专栏 </v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn color="primary" small depressed @click="postNewArticle">创建文章</v-btn>
@@ -37,27 +33,21 @@
       </v-card>
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small @click="showAnswerActionDialog = true"
-      >{{ $t('回答') }}
-    </v-btn>
+    <v-btn class="mr-1" depressed small @click="showAnswerActionDialog = true"> 回答 </v-btn>
     <v-dialog v-model="showAnswerActionDialog" max-width="500">
       <v-sheet class="pa-4">
-        <RotationList v-slot="{ item }" :items="questionsToAnswer" :title="$t('等待回答的问题')">
+        <RotationList v-slot="{ item }" :items="questionsToAnswer" title="等待回答的问题">
           <QuestionLink :questionPreview="item" />
         </RotationList>
       </v-sheet>
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true"
-      >{{ $t('Share') }}
-    </v-btn>
+    <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true">新分享 </v-btn>
     <v-dialog v-model="showSubmissionActionDialog" max-width="500">
       <CreateSubmissionForm :showTitle="true" />
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small to="/explore">
-      {{ $t('探索') }}
-    </v-btn>
+    <v-btn class="mr-1" depressed small to="/explore"> 探索 </v-btn>
   </div>
 </template>
 
