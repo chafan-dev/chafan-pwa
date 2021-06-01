@@ -3,6 +3,7 @@
     v-if="clickable"
     :open-on-hover="!$vuetify.breakpoint.mobile"
     bottom
+    :disabled="!enablePopup"
     offset-y
     open-delay="400"
     right
@@ -40,6 +41,7 @@ export default class UserLink extends Vue {
   @Prop() public readonly userPreview!: IUserPreview;
   @Prop({ default: false }) public readonly showAvatar!: boolean;
   @Prop({ default: true }) public readonly clickable!: boolean;
+  @Prop({ default: true }) public readonly enablePopup!: boolean;
 
   get name() {
     if (this.userPreview.full_name) {
