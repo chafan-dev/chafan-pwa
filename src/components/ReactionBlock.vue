@@ -21,12 +21,12 @@
           <ReactionIcon v-bind="attrs" v-on="on" />
         </template>
         <v-list>
-          <v-list-item v-for="(reaction, index) in myReactionChoices" :key="index">
-            <v-list-item-content
-              class="pr-1"
-              style="cursor: pointer"
-              @click="updateReaction(reaction, 'add')"
-            >
+          <v-list-item
+            v-for="(reaction, index) in myReactionChoices"
+            :key="index"
+            @click="updateReaction(reaction, 'add')"
+          >
+            <v-list-item-content class="pr-1" style="cursor: pointer">
               {{ reaction }}
             </v-list-item-content>
           </v-list-item>

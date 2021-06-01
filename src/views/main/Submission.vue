@@ -33,7 +33,7 @@
               v-model="newSubmissionTopicNames"
               :delimiters="[',', '，', '、']"
               :items="hintTopicNames"
-              :label="$t('Topics')"
+              label="话题"
               hide-selected
               multiple
               small-chips
@@ -57,7 +57,7 @@
             <!-- Submission URL display -->
             <div v-if="submission.url">
               <LinkIcon />
-              {{ $t('源链接') }}:
+              源链接：
               <a :href="submission.url" class="text-decoration-none" target="_blank">
                 {{ submission.url }}
               </a>
@@ -74,7 +74,7 @@
                 ref="descEditor"
                 :editorProp="submission.description_editor"
                 :initialValue="submission.description"
-                :placeholder="$t('描述（选填）')"
+                placeholder="描述（选填）"
                 class="mb-2"
               />
             </div>
@@ -105,42 +105,15 @@
           </v-dialog>
 
           <div v-if="!showSubmissionEditor" class="d-flex py-2">
-            <v-dialog v-model="showCancelUpvoteDialog" max-width="300">
-              <v-card>
-                <v-card-title primary-title>
-                  <div class="headline primary--text">确定取消赞？</div>
-                </v-card-title>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn depressed small @click="showCancelUpvoteDialog = false"
-                    >{{ $t('No') }}
-                  </v-btn>
-                  <v-btn
-                    :disabled="cancelUpvoteIntermediate"
-                    color="warning"
-                    depressed
-                    small
-                    @click="cancelUpvote"
-                    >{{ $t('Yes') }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <span v-if="upvotes !== null" class="mr-1">
-              <UpvotedBtn
-                v-if="upvotes.upvoted"
-                :count="upvotes.count"
-                @click="showCancelUpvoteDialog = true"
-              />
-              <UpvoteBtn
-                v-else
-                :count="upvotes.count"
-                :disabled="
-                  !userProfile || userProfile.uuid === submission.author.uuid || upvoteIntermediate
-                "
-                @click="upvote"
-              />
-            </span>
+            <Upvote
+              v-if="upvotes"
+              class="mr-1"
+              :upvotes-count="upvotes.count"
+              :upvoted="upvotes.upvoted"
+              :disabled="!userProfile || userProfile.uuid === submission.author.uuid"
+              :on-cancel-vote="cancelUpvote"
+              :on-vote="upvote"
+            />
             <v-btn
               v-show="editable"
               :color="showUpdateDetailsButton ? 'primary' : undefined"
@@ -150,7 +123,7 @@
               @click="showSubmissionEditor = true"
             >
               <EditIcon />
-              <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
+              <span v-if="showUpdateDetailsButton">添加细节</span>
               <span v-else>编辑</span>
             </v-btn>
 
@@ -287,9 +260,9 @@
             </v-expand-transition>
           </div>
         </ValidationObserver>
-        <template v-if="relatedSubmissions">
+        <template v-if="relatedSubmissions && relatedSubmissions.length">
           <v-divider class="my-2" />
-          <RotationList v-slot="{ item }" :items="relatedSubmissions" :title="$t('相关分享')">
+          <RotationList v-slot="{ item }" :items="relatedSubmissions" title="相关分享">
             <router-link :to="'/submissions/' + item.uuid" class="text-decoration-none">
               {{ item.title }}
             </router-link>
@@ -344,9 +317,11 @@ import RotationList from '@/components/base/RotationList.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
+import Upvote from '@/components/Upvote.vue';
 
 @Component({
   components: {
+    Upvote,
     UpvotedBtn,
     UpvoteBtn,
     ShareCardButton,
@@ -556,14 +531,14 @@ export default class Submission extends Vue {
     this.commitSubmissionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       const descEditor = this.$refs.descEditor as SimpleEditor;
-      if (descEditor.content && this.submission) {
+      if ((descEditor.content || this.newSubmissionTitle) && this.submission) {
         const responses = await Promise.all(
           this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
         const response = await apiSubmission.updateSubmission(this.token, this.submission.uuid, {
           title: this.newSubmissionTitle,
-          description: descEditor.content,
+          description: descEditor.content || '',
           description_text: descEditor.getTextContent() || undefined,
           description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
