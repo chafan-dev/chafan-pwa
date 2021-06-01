@@ -5,13 +5,9 @@
         <ValidationObserver v-slot="{ handleSubmit, reset }">
           <div v-if="userProfile" class="ma-3">
             <v-card-title primary-title>
-              <div class="headline primary--text">
-                {{ $t('Edit User Profile') }}
-              </div>
+              <div class="headline primary--text">更新个人资料</div>
               <v-spacer></v-spacer>
-              <v-btn :to="`/users/${userProfile.handle}`" depressed small
-                >{{ $t('个人资料') }}
-              </v-btn>
+              <v-btn :to="`/users/${userProfile.handle}`" depressed small>个人资料 </v-btn>
             </v-card-title>
             <div class="pa-4">
               <template>
@@ -92,7 +88,8 @@
                           small
                           color="primary"
                           @click="showAboutEditor = !showAboutEditor"
-                          >「关于我」
+                          class="slim-btn"
+                          >打开「关于我」编辑
                         </v-btn>
                         <v-spacer />
                         <v-dialog v-model="showClearAboutMe" max-width="400">
