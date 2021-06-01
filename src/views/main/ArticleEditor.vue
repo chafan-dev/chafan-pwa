@@ -42,7 +42,7 @@
               @click="submitEdit(true)"
               :disabled="savingIntermediate"
             >
-              {{ $t('Publish') }}
+              发表
             </v-btn>
             <span class="ml-2">
               <!-- NOTE: wrap in span to avoid ml-2 problem when disabled during progress -->
@@ -53,13 +53,11 @@
                 @click="submitEdit(false)"
                 :disabled="savingIntermediate"
               >
-                {{ $t('Save draft') }}
+                保存草稿
               </v-btn>
             </span>
-            <v-btn class="ml-2" depressed small @click="cancelHandler">{{ $t('Cancel') }} </v-btn>
-            <v-btn class="ml-2" depressed small @click="showHelp = !showHelp"
-              >{{ $t('Help') }}
-            </v-btn>
+            <v-btn class="ml-2" depressed small @click="cancelHandler">取消</v-btn>
+            <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
             <v-progress-circular
               class="ml-2"
               v-if="savingIntermediate"
@@ -72,7 +70,7 @@
               v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp"
               class="mr-2 text-caption grey--text"
             >
-              {{ $t('自动保存于') }}
+              自动保存于
               {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
             </span>
 
@@ -82,7 +80,7 @@
                   <HistoryIcon class="ml-2" @click="showHistoryDialog" />
                 </div>
               </template>
-              <span>{{ $t('版本历史') }}</span>
+              <span>版本历史</span>
             </v-tooltip>
 
             <v-menu :close-on-content-click="false" offset-y top>
@@ -94,7 +92,7 @@
                   <v-list-item-icon>
                     <DeleteIcon />
                   </v-list-item-icon>
-                  <v-list-item-content>{{ $t('删除') }}</v-list-item-content>
+                  <v-list-item-content>删除</v-list-item-content>
                 </v-list-item>
                 <v-list-item v-if="topLevelEditorItems">
                   <v-list-item-icon>
@@ -116,15 +114,11 @@
 
             <v-dialog v-model="showDeleteDraftDialog" max-width="400">
               <v-card>
-                <v-card-title primary-title>
-                  {{ $t('删除当前草稿？') }}
-                </v-card-title>
-                <v-card-text>
-                  {{ $t('不影响已发表版本') }}
-                </v-card-text>
+                <v-card-title primary-title> 删除当前草稿？ </v-card-title>
+                <v-card-text> 不影响已发表版本 </v-card-text>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn color="warning" @click="deleteDraft">{{ $t('确认') }}</v-btn>
+                  <v-btn color="warning" @click="deleteDraft">确认</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -132,9 +126,9 @@
             <v-dialog v-model="historyDialog" max-width="900">
               <v-card>
                 <v-card-title primary-title>
-                  <div class="headline primary--text">{{ $t('版本历史') }}</div>
+                  <div class="headline primary--text">版本历史</div>
                   <v-spacer />
-                  <span class="text-caption grey--text">{{ $t('点击展开') }}</span>
+                  <span class="text-caption grey--text">点击展开</span>
                 </v-card-title>
 
                 <v-expansion-panels v-if="articleArchives">
@@ -146,7 +140,7 @@
                         max-width="100px"
                         small
                         @click="loadArticleArchive(archive)"
-                        >{{ $t('加载该版本') }}
+                        >加载该版本
                       </v-btn>
                       {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                       <v-spacer />
@@ -177,7 +171,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { getArticleDraft, newArticleHandler } from '@/utils';
+import { clearLocalEdit, getArticleDraft, newArticleHandler } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { IRichEditorState, IArticle } from '@/interfaces';
 import { apiArticle } from '@/api/article';
@@ -491,7 +485,7 @@ export default class ArticleEditor extends Vue {
       if (!payload.edit.title || payload.edit.title.length < 5) {
         if (!payload.isAutosaved) {
           commitAddNotification(this.$store, {
-            content: this.$t('Article title is too short: minimum length 5 characters.').toString(),
+            content: '文章标题太短了，不得少于5个字。',
             color: 'error',
           });
         }
@@ -505,7 +499,7 @@ export default class ArticleEditor extends Vue {
       ) {
         if (!payload.isAutosaved) {
           commitAddNotification(this.$store, {
-            content: this.$t('Article body is too short: minimum length 5 characters.').toString(),
+            content: '文章内容太短了，不得少于5个字。',
             color: 'error',
           });
         }
@@ -525,6 +519,7 @@ export default class ArticleEditor extends Vue {
         );
         if (article) {
           payload.saveArticleCallback(article);
+          clearLocalEdit('article', article.uuid);
           this.newArticleId = article.uuid;
           if (!payload.isAutosaved) {
             commitAddNotification(this.$store, {
@@ -550,6 +545,7 @@ export default class ArticleEditor extends Vue {
             is_draft: payload.edit.is_draft,
           });
           payload.saveArticleCallback(response.data);
+          clearLocalEdit('article', response.data.uuid);
           if (!payload.isAutosaved) {
             commitAddNotification(this.$store, {
               content: this.$t(payload.edit.is_draft ? '文章草稿已更新' : '更新已发表').toString(),
@@ -575,6 +571,7 @@ export default class ArticleEditor extends Vue {
     this.showDeleteDraftDialog = false;
     if (this.articleId) {
       await apiArticle.deleteArticleDraft(this.token, this.articleId);
+      clearLocalEdit('article', this.articleId);
       commitAddNotification(this.$store, {
         content: this.$t('草稿已删除').toString(),
         color: 'success',

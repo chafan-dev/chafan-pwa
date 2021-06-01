@@ -218,7 +218,10 @@ import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import {
+  dispatchCaptureApiError,
+  dispatchCaptureApiErrorWithErrorHandler,
+} from '@/store/main/actions';
 
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
@@ -233,6 +236,7 @@ import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import { getArticleDraft } from '@/utils';
 import Upvote from '@/components/Upvote.vue';
+import { AxiosError } from 'axios';
 
 @Component({
   components: {
@@ -308,9 +312,27 @@ export default class Article extends Vue {
       this.showComments = true;
     }
 
-    this.article = (await apiArticle.getArticle(this.token, this.id)).data;
-    this.updateStateWithLoadedArticle(this.article);
-    this.loading = false;
+    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
+      action: async () => {
+        this.article = (await apiArticle.getArticle(this.token, this.id)).data;
+        this.updateStateWithLoadedArticle(this.article);
+        this.loading = false;
+      },
+      errorFilter: (err: AxiosError) => {
+        if (
+          err.response &&
+          err.response.data.detail === "The article doesn't exists in the system."
+        ) {
+          commitAddNotification(this.$store, {
+            content: '文章不存在',
+            color: 'error',
+          });
+          this.$router.push('/');
+          return true;
+        }
+        return false;
+      },
+    });
   }
 
   private articlePreviewBody: string = '';

@@ -415,10 +415,6 @@ const i18n = new VueI18n({
         '「茶饭」supports data and content ownership, you can export your data and content at any time. Current automated export is not implemented, please contact takeout@cha.fan and we will send your data snapshot in a week',
       管理员模式: 'Admin mode',
       普通用户模式: 'Normal user mode',
-      'Article title is too short: minimum length 5 characters.':
-        'Article title is too short: minimum length 5 characters.',
-      'Article body is too short: minimum length 5 characters.':
-        'Article body is too short: minimum length 5 characters.',
       Reward: 'Reward',
       Rewards: 'Rewards',
       'Reward is the amount of coins rewarded to the invited user when the user published an answer.':
@@ -984,8 +980,6 @@ const i18n = new VueI18n({
         '问题标题太短了，不得少于5个字。',
       'Title is too short: minimum length 5 characters.': '标题太短了，不得少于5个字。',
       'Answer is too short: minimum length 5 characters.': '回答太短了，不得少于5个字。',
-      'Article title is too short: minimum length 5 characters.': '文章标题太短了，不得少于5个字。',
-      'Article body is too short: minimum length 5 characters.': '文章内容太短了，不得少于5个字。',
       'Password must be between 8 and 30 characters long.': '密码长度必须在8到30个字符之间。',
       "Comment can't be empty.": '评论不能为空。',
       "Channel name can't be empty.": '聊天室名称不能为空',
