@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex justify-space-between">
-    <v-btn-toggle v-if="reactions" dense multiple background-color="white">
+  <div class="d-flex">
+    <v-btn-toggle v-if="reactions" dense multiple background-color="white" class="mr-1">
       <v-btn
         v-for="(count, reaction) in reactions.counters"
         :key="reaction"
