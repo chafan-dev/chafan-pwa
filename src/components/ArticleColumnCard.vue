@@ -35,7 +35,7 @@
               depressed
               @click="cancelSubscribe"
             >
-              {{ $t('取消关注') }} ({{ subscription.subscription_count }})
+              取消关注 ({{ subscription.subscription_count }})
               <v-progress-circular
                 v-show="cancelSubscribeIntermediate"
                 :size="20"
@@ -43,13 +43,14 @@
               ></v-progress-circular>
             </v-btn>
             <v-btn
+              v-else
               :disabled="subscribeIntermediate"
               color="primary"
               small
               depressed
               @click="subscribe"
             >
-              {{ $t('关注') }} ({{ subscription.subscription_count }})
+              关注 ({{ subscription.subscription_count }})
               <v-progress-circular
                 v-show="subscribeIntermediate"
                 :size="20"
@@ -68,14 +69,14 @@
       </div>
     </div>
     <div v-if="showColumnEditor">
-      <v-text-field v-model="name" :label="$t('专栏名称')" />
-      <v-textarea v-model="desc" rows="3" :label="$t('专栏描述')" />
+      <v-text-field v-model="name" label="专栏名称" />
+      <v-textarea v-model="desc" rows="3" label="专栏描述" />
       <div class="d-flex">
         <v-spacer />
         <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
-          >{{ $t('提交') }}
+          >提交
         </v-btn>
-        <v-btn small depressed @click="cancelUpdateArticleColumn">{{ $t('Cancel') }}</v-btn>
+        <v-btn small depressed @click="cancelUpdateArticleColumn">取消</v-btn>
       </div>
     </div>
   </div>
