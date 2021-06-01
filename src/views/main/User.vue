@@ -269,7 +269,7 @@
 
             <v-tab-item value="followers">
               <div v-if="followers !== null" class="my-4">
-                <p v-if="followers.length === 0">{{ $t('暂无') }}</p>
+                <EmptyPlaceholder v-if="followers.length === 0" />
                 <UserGrid :users="followers" />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
@@ -277,7 +277,7 @@
 
             <v-tab-item value="followed">
               <div v-if="followed !== null" class="my-4">
-                <p v-if="followed.length === 0">{{ $t('暂无') }}</p>
+                <EmptyPlaceholder v-if="followed.length === 0" />
                 <UserGrid :users="followed" />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
@@ -334,9 +334,11 @@ import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import { apiSite } from '@/api/site';
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 
 @Component({
   components: {
+    EmptyPlaceholder,
     UserFeed,
     RegisteredUserOnlyIcon,
     QuestionPreview,

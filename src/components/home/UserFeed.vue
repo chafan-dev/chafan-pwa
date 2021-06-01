@@ -1,6 +1,7 @@
 <template>
   <div>
     <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
+    <EmptyPlaceholder v-if="showEmptyPlaceholder" />
 
     <div>
       <v-expand-transition>
@@ -226,9 +227,11 @@ import UserGrid from '@/components/UserGrid.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { EXPLORE_SITES } from '@/common';
 import ActivitySubject from '@/components/ActivitySubject.vue';
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 
 @Component({
   components: {
+    EmptyPlaceholder,
     ActivitySubject,
     UserFeed,
     UserLogoutWelcome,
@@ -268,6 +271,7 @@ export default class UserFeed extends Vue {
   private noMoreNewActivities = false;
   private preloadMoreActivitiesIntermediate = false;
   private showExploreSites = false;
+  private showEmptyPlaceholder = false;
   private usersDialog = false;
   private usersInDialog: IUserPreview[] = [];
 
@@ -286,6 +290,9 @@ export default class UserFeed extends Vue {
         } else if (this.combinedActivities.items.length === 0) {
           this.showExploreSites = true;
         }
+      }
+      if (!this.showExploreSites && this.combinedActivities.items.length === 0) {
+        this.showEmptyPlaceholder = true;
       }
       this.loadingActivities = false;
     });
