@@ -3,14 +3,14 @@
     <v-progress-linear v-if="loading" indeterminate />
     <v-tabs v-else>
       <v-tabs-slider />
-      <v-tab>{{ $t('Memberships') }}</v-tab>
-      <v-tab>{{ $t('Settings') }}</v-tab>
-      <v-tab>{{ $t('运营') }}</v-tab>
+      <v-tab>成员管理</v-tab>
+      <v-tab>圈子设置</v-tab>
+      <v-tab>圈子运营</v-tab>
       <v-spacer />
       <v-autocomplete
         v-model="selectedSiteUUID"
         :items="moderatedSites"
-        :label="$t('Circle')"
+        label="圈子"
         class="mt-2"
         clearable
         dense
@@ -25,7 +25,7 @@
         <v-data-table :headers="applicationHeaders" :items="applications" item-key="id">
           <template v-slot:top>
             <v-toolbar flat>
-              <v-toolbar-title>Pending applications</v-toolbar-title>
+              <v-toolbar-title>待处理申请</v-toolbar-title>
             </v-toolbar>
           </template>
 
@@ -290,7 +290,7 @@
             }}}」的成员。
             <v-text-field v-model="broadcastSubmissionLink" label="「分享」链接" />
           </v-card-text>
-          <v-card-text v-else> Please select a circle.</v-card-text>
+          <v-card-text v-else>请选择一个圈子</v-card-text>
           <v-card-actions v-if="selectedSite !== null">
             <v-spacer />
             <v-btn color="primary" @click="submitNewSubmissionBroadcast">发送</v-btn>
@@ -316,6 +316,7 @@ import { commitAddNotification } from '@/store/main/mutations';
 import { apiSite } from '@/api/site';
 import { deepCopy } from '@/utils';
 import { apiWebhook } from '@/api/webhook';
+import { apiMe } from '@/api/me';
 
 const defaultWebhookCreate: IWebhookCreate = {
   site_uuid: '',
@@ -332,13 +333,13 @@ const defaultWebhookCreate: IWebhookCreate = {
 export default class Moderation extends Vue {
   private applicationHeaders = [
     {
-      text: 'Applicant',
+      text: '申请者',
       sortable: true,
       value: 'applicant',
       align: 'left',
     },
     { text: '圈子', value: 'applied_site', sortable: false },
-    { text: 'Actions', value: 'actions', sortable: false },
+    { text: '动作', value: 'actions', sortable: false },
   ];
 
   private webhookHeaders = [
@@ -370,18 +371,16 @@ export default class Moderation extends Vue {
   private broadcastSubmissionLink = '';
   private transferToNewAdminUUID: string | null = null;
   private loading = true;
+  private moderatedSites: ISite[] | null = null;
 
   get token() {
     return readToken(this.$store);
   }
 
-  get moderatedSites() {
-    return readModeratedSites(this.$store);
-  }
-
   private categoryTopics: ITopic[] | null = null;
 
   private async mounted() {
+    this.moderatedSites = (await apiMe.getModeratedSites(this.token)).data;
     if (this.moderatedSites) {
       const siteApps = await Promise.all(
         this.moderatedSites.map(async (site: ISite) => {
@@ -398,7 +397,7 @@ export default class Moderation extends Vue {
     if (this.$route.query.siteUUID) {
       this.selectedSiteUUID = this.$route.query.siteUUID.toString();
     }
-    this.onSiteSelected();
+    await this.onSiteSelected();
     this.categoryTopics = (await api.getCategoryTopics()).data;
     this.loading = false;
   }
@@ -441,7 +440,9 @@ export default class Moderation extends Vue {
             (site) => site.uuid === this.selectedSiteUUID
           )[0];
           const siteUUID = this.selectedSiteUUID;
-          this.$router.replace({ query: { ...this.$route.query, siteUUID } });
+          if (this.$route.query.siteUUID !== siteUUID) {
+            this.$router.replace({ query: { ...this.$route.query, siteUUID } });
+          }
           this.resetSiteConfig(this.selectedSite);
           this.applications = this.allApplications.get(this.selectedSiteUUID)!;
         } else {

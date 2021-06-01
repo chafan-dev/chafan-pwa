@@ -155,9 +155,9 @@ export const actions = {
       }
       if (token) {
         try {
-          const response = await apiMe.getMe(token);
           commitSetLoggedIn(context, true);
           if (readUserProfile(context) === null) {
+            const response = await apiMe.getMe(token);
             commitSetUserProfile(context, response.data);
           }
           if (readModeratedSites(context) === null) {
