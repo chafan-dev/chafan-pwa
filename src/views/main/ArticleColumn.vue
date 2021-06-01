@@ -17,9 +17,7 @@
             </div>
             <EmptyPlaceholder v-else />
           </template>
-          <div v-if="!userProfile" class="text-center grey--text">
-            {{ $t('登录后查看更多') }}
-          </div>
+          <div v-if="!userProfile" class="text-center grey--text">登录后查看更多</div>
         </div>
       </v-col>
     </v-row>
