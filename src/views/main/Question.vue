@@ -78,213 +78,131 @@
         </div>
 
         <!-- Question control -->
-        <v-row justify="space-between">
-          <v-col v-if="!showQuestionEditor" class="d-flex pl-2">
-            <v-btn
-              v-if="currentUserAnswerUUID"
-              class="ma-1 slim-btn"
-              depressed
-              small
-              @click="goToCurrentUserAnswer"
-            >
-              {{ $t('我的回答') }}
-            </v-btn>
+        <v-slide-group v-if="!showQuestionEditor" class="d-flex my-1">
+          <v-btn
+            v-if="currentUserAnswerUUID"
+            class="mr-1 slim-btn"
+            depressed
+            small
+            @click="goToCurrentUserAnswer"
+          >
+            {{ $t('我的回答') }}
+          </v-btn>
 
-            <v-btn
-              v-else-if="savedLocalEdit"
-              class="ma-1 slim-btn"
-              color="primary"
-              depressed
-              small
-              @click="loadSavedLocalEdit"
-              >{{ $t('载入本地草稿') }}
-            </v-btn>
+          <v-btn
+            v-else-if="savedLocalEdit"
+            class="mr-1 slim-btn"
+            color="primary"
+            depressed
+            small
+            @click="loadSavedLocalEdit"
+            >{{ $t('载入本地草稿') }}
+          </v-btn>
 
-            <v-btn
-              v-else-if="answerWritable"
-              class="ma-1 slim-btn"
-              color="primary"
-              depressed
-              small
-              @click="showEditor = !showEditor"
-              >{{ $t('写回答') }}
-            </v-btn>
+          <v-btn
+            v-else-if="answerWritable"
+            class="mr-1 slim-btn"
+            color="primary"
+            depressed
+            small
+            @click="showEditor = !showEditor"
+            >{{ $t('写回答') }}
+          </v-btn>
 
-            <v-tooltip v-else bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  :ripple="false"
-                  class="ma-1 slim-btn grey--text"
-                  depressed
-                  elevation="0"
-                  plain
-                  small
-                >
-                  {{ $t('写回答') }}
-                </v-btn>
-              </template>
-              <span>{{ $t('该圈子仅会员可以写回答') }}</span>
-            </v-tooltip>
+          <v-tooltip v-else bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                :ripple="false"
+                class="mr-1 slim-btn grey--text"
+                depressed
+                elevation="0"
+                plain
+                small
+              >
+                {{ $t('写回答') }}
+              </v-btn>
+            </template>
+            <span>{{ $t('该圈子仅会员可以写回答') }}</span>
+          </v-tooltip>
 
-            <CommentBtn
-              class="ma-1"
-              @click="toggleShowComments"
-              :count="question.comments.length"
-            />
+          <CommentBtn class="mr-1" @click="toggleShowComments" :count="question.comments.length" />
 
-            <Upvote
-              class="ma-1"
-              v-if="upvotes !== null"
-              :upvotes-count="upvotes.count"
-              :upvoted="upvotes.upvoted"
-              :disabled="userProfile.uuid === question.author.uuid"
-              :on-cancel-vote="cancelUpvote"
-              :on-vote="upvote"
-            />
+          <Upvote
+            class="mr-1"
+            v-if="upvotes !== null"
+            :upvotes-count="upvotes.count"
+            :upvoted="upvotes.upvoted"
+            :disabled="userProfile.uuid === question.author.uuid"
+            :on-cancel-vote="cancelUpvote"
+            :on-vote="upvote"
+          />
 
-            <v-btn
-              class="slim-btn ma-1"
-              depressed
-              small
-              :color="showUpdateDetailsButton ? 'primary' : undefined"
-              @click="showQuestionEditor = true"
-              v-show="editable"
-            >
-              <EditIcon />
-              <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
-              <span v-else>{{ $t('编辑') }}</span>
-            </v-btn>
+          <v-btn
+            class="slim-btn mr-1"
+            depressed
+            small
+            :color="showUpdateDetailsButton ? 'primary' : undefined"
+            @click="showQuestionEditor = true"
+            v-show="editable"
+          >
+            <EditIcon />
+            <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
+            <span v-else>{{ $t('编辑') }}</span>
+          </v-btn>
 
-            <ShareCardButton
-              class="my-1"
-              :link-text="question.title"
-              :link="`/questions/${question.uuid}`"
-              v-slot="{ shareQrCodeUrl }"
-            >
-              <v-card-title>
-                {{ question.title }}
-              </v-card-title>
-              <v-card-text>
-                <div class="pt-2 d-flex">
-                  <div class="text--primary text-body-1">
-                    <p v-if="question.description" style="overflow-wrap: anywhere">
-                      {{ question.description_text }}
-                    </p>
-                    <p>
-                      <CommentsIcon class="mr-1" small />
-                      <span class="text-caption">
-                        {{ $t('n条评论', { n: question.comments.length }) }}
-                      </span>
-                    </p>
-                    <p>
-                      <AnswerIcon class="mr-1" small />
-                      <span class="text-caption">
-                        {{ $t('n个回答', { n: question.answers_count }) }}
-                      </span>
-                    </p>
-                  </div>
-                  <v-spacer />
-                  <div class="pa-1 text-center" style="float: right">
-                    <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
-                    <span class="text-caption">查看原问题</span>
-                  </div>
+          <ShareCardButton
+            class="mr-1"
+            :link-text="question.title"
+            :link="`/questions/${question.uuid}`"
+            v-slot="{ shareQrCodeUrl }"
+          >
+            <v-card-title>
+              {{ question.title }}
+            </v-card-title>
+            <v-card-text>
+              <div class="pt-2 d-flex">
+                <div class="text--primary text-body-1">
+                  <p v-if="question.description" style="overflow-wrap: anywhere">
+                    {{ question.description_text }}
+                  </p>
+                  <p>
+                    <CommentsIcon class="mr-1" small />
+                    <span class="text-caption">
+                      {{ $t('n条评论', { n: question.comments.length }) }}
+                    </span>
+                  </p>
+                  <p>
+                    <AnswerIcon class="mr-1" small />
+                    <span class="text-caption">
+                      {{ $t('n个回答', { n: question.answers_count }) }}
+                    </span>
+                  </p>
                 </div>
-              </v-card-text>
-            </ShareCardButton>
+                <v-spacer />
+                <div class="pa-1 text-center" style="float: right">
+                  <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                  <span class="text-caption">查看原问题</span>
+                </div>
+              </div>
+            </v-card-text>
+          </ShareCardButton>
 
-            <BookmarkedIcon
-              v-if="questionSubscription && questionSubscription.subscribed_by_me"
-              :disabled="cancelSubscriptionIntermediate"
-              class="ma-1"
-              @click="cancelSubscription"
-            />
-            <ToBookmarkIcon
-              v-else
-              :disabled="subscribeIntermediate"
-              class="ma-1"
-              @click="subscribe"
-            />
+          <BookmarkedIcon
+            v-if="questionSubscription && questionSubscription.subscribed_by_me"
+            :disabled="cancelSubscriptionIntermediate"
+            class="mr-1"
+            @click="cancelSubscription"
+          />
+          <ToBookmarkIcon
+            v-else
+            :disabled="subscribeIntermediate"
+            class="mr-1"
+            @click="subscribe"
+          />
 
-            <HistoryIcon v-if="editable && userProfile" class="ma-1" @click="showHistoryDialog" />
-          </v-col>
-
-          <v-col v-if="showQuestionEditor && userProfile" class="d-flex">
-            <v-btn
-              v-show="editable"
-              :disabled="commitQuestionEditIntermediate"
-              class="ma-1 slim-btn"
-              color="primary"
-              depressed
-              small
-              @click="commitQuestionEdit"
-              >保存
-            </v-btn>
-            <v-btn
-              v-show="editable"
-              class="ma-1 slim-btn"
-              depressed
-              small
-              @click="cancelQuestionUpdate"
-              >取消
-            </v-btn>
-            <v-spacer />
-            <v-btn v-if="showQuestionEditor" depressed small @click="prepareShowMoveQuestionDialog">
-              {{ $t('转移问题') }}
-            </v-btn>
-            <v-dialog v-model="showMoveQuestionDialog" max-width="600">
-              <v-card>
-                <v-card-title primary-title>
-                  <div class="headline primary--text">{{ $t('转移问题') }}</div>
-                </v-card-title>
-                <v-card-text>
-                  <span>{{ $t('现问题所属圈子') }}: {{ question.site.name }}</span>
-                  <v-select
-                    v-model="newQuestionSite"
-                    :items="siteProfiles"
-                    :label="$t('新的圈子')"
-                    item-text="site.name"
-                    item-value="site"
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <span>{{ $t('没有权限？联系管理员帮助转移') }}</span>
-                  <v-spacer />
-                  <v-btn color="warning" depressed small @click="confirmMoveQuestion"
-                    >{{ $t('确认转移') }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-
-            <v-btn
-              v-if="showQuestionEditor & canHide"
-              class="ml-2"
-              color="warning"
-              depressed
-              small
-              @click="showConfirmHideQuestionDialog = true"
-            >
-              {{ $t('隐藏问题') }}
-            </v-btn>
-            <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
-              <v-card>
-                <v-card-title primary-title>
-                  <div class="headline primary--text">
-                    {{ $t('确认隐藏问题？') }}
-                  </div>
-                </v-card-title>
-                <v-card-text> 隐藏后问题将对所有用户不可见。</v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn color="warning" depressed small @click="confirmHideQuestion"
-                    >{{ $t('确认隐藏') }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-col>
+          <HistoryIcon v-if="editable && userProfile" class="mr-1" @click="showHistoryDialog" />
           <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
               <v-card-title primary-title>
@@ -317,7 +235,84 @@
               </v-expansion-panels>
             </v-card>
           </v-dialog>
-        </v-row>
+        </v-slide-group>
+
+        <!-- Question editor control -->
+        <div v-if="showQuestionEditor && userProfile" class="d-flex">
+          <v-btn
+            v-show="editable"
+            :disabled="commitQuestionEditIntermediate"
+            class="ma-1 slim-btn"
+            color="primary"
+            depressed
+            small
+            @click="commitQuestionEdit"
+            >保存
+          </v-btn>
+          <v-btn
+            v-show="editable"
+            class="ma-1 slim-btn"
+            depressed
+            small
+            @click="cancelQuestionUpdate"
+            >取消
+          </v-btn>
+          <v-spacer />
+          <v-btn v-if="showQuestionEditor" depressed small @click="prepareShowMoveQuestionDialog">
+            {{ $t('转移问题') }}
+          </v-btn>
+          <v-dialog v-model="showMoveQuestionDialog" max-width="600">
+            <v-card>
+              <v-card-title primary-title>
+                <div class="headline primary--text">{{ $t('转移问题') }}</div>
+              </v-card-title>
+              <v-card-text>
+                <span>{{ $t('现问题所属圈子') }}: {{ question.site.name }}</span>
+                <v-select
+                  v-model="newQuestionSite"
+                  :items="siteProfiles"
+                  :label="$t('新的圈子')"
+                  item-text="site.name"
+                  item-value="site"
+                />
+              </v-card-text>
+              <v-card-actions>
+                <span>{{ $t('没有权限？联系管理员帮助转移') }}</span>
+                <v-spacer />
+                <v-btn color="warning" depressed small @click="confirmMoveQuestion"
+                  >{{ $t('确认转移') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-btn
+            v-if="showQuestionEditor & canHide"
+            class="ml-2"
+            color="warning"
+            depressed
+            small
+            @click="showConfirmHideQuestionDialog = true"
+          >
+            {{ $t('隐藏问题') }}
+          </v-btn>
+          <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
+            <v-card>
+              <v-card-title primary-title>
+                <div class="headline primary--text">
+                  {{ $t('确认隐藏问题？') }}
+                </div>
+              </v-card-title>
+              <v-card-text> 隐藏后问题将对所有用户不可见。</v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn color="warning" depressed small @click="confirmHideQuestion"
+                  >{{ $t('确认隐藏') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
 
         <div class="d-flex justify-end mb-2">
           <ReactionBlock :objectId="question.uuid" objectType="question" />
