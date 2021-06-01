@@ -97,7 +97,7 @@
               </span>
             </v-col>
             <v-col class="text-center">
-              <span> {{ $t('Karma') }}: {{ userPreview.karma }} </span>
+              <span>Karma：{{ userPreview.karma }}</span>
             </v-col>
           </v-row>
 
