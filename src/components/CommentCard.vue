@@ -9,7 +9,7 @@
     </div>
 
     <!-- Commented Object Preview -->
-    <div class="quote-card">
+    <div class="quote-card pl-2">
       <QuestionPreview v-if="questionPreview" :questionPreview="questionPreview" />
       <Answer v-if="answerPreview" :answerPreview="answerPreview" />
       <ArticlePreview v-if="articlePreview" :articlePreview="articlePreview" />
