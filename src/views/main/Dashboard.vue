@@ -11,29 +11,29 @@
         <v-tabs v-model="currentTabItem" :vertical="$vuetify.breakpoint.mdAndUp" show-arrows>
           <v-tabs-slider />
           <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
-            {{ $t(item.text) }}
+            {{ item.text }}
           </v-tab>
 
           <v-tab-item value="settings">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('我的设置') }}</div>
+              <div class="headline primary--text">我的设置</div>
               <v-spacer />
               <NewInviteLinkBtn />
               <!-- Extra div wrapper to align the buttons -->
               <div v-if="userProfile">
                 <v-btn :to="`/users/${userProfile.handle}`" class="ml-2" depressed small
-                  >{{ $t('个人资料') }}
+                  >个人资料
                 </v-btn>
               </div>
               <div v-if="userProfile">
-                <v-btn class="ml-2" depressed small to="/security">{{ $t('Security') }}</v-btn>
+                <v-btn class="ml-2" depressed small to="/security">安全中心</v-btn>
               </div>
             </v-card-title>
             <div class="ma-3">
               <v-switch
                 v-model="enableEmailNotifications"
                 :disabled="changingMySettings"
-                :label="$t('发送邮件提醒未读通知')"
+                label="发送邮件提醒未读通知"
                 @change="onChangeEmailNotifications"
               />
               <v-select
@@ -41,43 +41,31 @@
                 v-model="selectedEditorMode"
                 :disabled="changingMySettings"
                 :items="editorModeItems"
-                :label="$t('默认编辑器模式')"
+                label="默认编辑器模式"
                 item-text="text"
                 item-value="value"
                 @change="onChangeEditorMode"
               />
               <div>
                 <div class="d-flex">
-                  <v-btn class="mr-2" depressed small @click="showExportDialog = true"
-                    >{{ $t('导出') }}
-                  </v-btn>
-                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true"
-                    >{{ $t('Labs') }}
-                  </v-btn>
+                  <v-btn class="mr-2" depressed small @click="showExportDialog = true">导出 </v-btn>
+                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true">实验室 </v-btn>
                 </div>
 
                 <v-dialog v-model="showExportDialog" max-width="500px">
                   <v-card>
-                    <v-card-title>
-                      {{ $t('导出') }}
-                    </v-card-title>
+                    <v-card-title> 导出 </v-card-title>
                     <v-card-text>
-                      {{
-                        $t(
-                          '「茶饭」支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系 takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。'
-                        )
-                      }}
+                      「茶饭」支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系
+                      takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。
                     </v-card-text>
                   </v-card>
                 </v-dialog>
 
                 <v-dialog v-model="showLabsDialog" max-width="500px">
                   <v-card>
-                    <v-card-title>
-                      {{ $t('Labs') }}
-                    </v-card-title>
+                    <v-card-title> 实验室 </v-card-title>
                     <v-card-text>
-                      {{ $t('试验性功能：') }}
                       <div>
                         <v-switch
                           v-model="tiptapEditorOptionOn"
@@ -95,7 +83,7 @@
 
           <v-tab-item value="drafts">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('我的草稿') }}</div>
+              <div class="headline primary--text">我的草稿</div>
               <v-spacer />
             </v-card-title>
             <div v-if="myAnswerDrafts !== null && myArticleDrafts !== null">
@@ -114,12 +102,9 @@
                 :articlePreview="article"
                 class="ma-3"
               />
-              <div
+              <EmptyPlaceholder
                 v-if="myAnswerDrafts.length === 0 && myArticleDrafts.length === 0"
-                class="text-center"
-              >
-                暂无草稿
-              </div>
+              />
             </div>
             <v-progress-linear v-else indeterminate />
           </v-tab-item>
@@ -128,12 +113,10 @@
             <!-- Dialog for creating a new article column -->
             <v-dialog v-model="dialogNewArticleColumn" max-width="500px">
               <v-card>
-                <v-card-title
-                  ><span class="headline">{{ $t('创建新专栏') }}</span></v-card-title
-                >
+                <v-card-title><span class="headline">创建新专栏</span></v-card-title>
                 <v-card-text>
-                  <v-text-field v-model="newArticleColumn.name" :label="$t('专栏名称')" required />
-                  <v-textarea v-model="newArticleColumn.description" :label="$t('专栏描述')" />
+                  <v-text-field v-model="newArticleColumn.name" label="专栏名称" required />
+                  <v-textarea v-model="newArticleColumn.description" label="专栏描述" />
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer />
@@ -143,17 +126,17 @@
                     depressed
                     small
                     @click="commitNewArticleColumn"
-                    >{{ $t('创建') }}
+                    >创建
                   </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
 
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('我的专栏') }}</div>
+              <div class="headline primary--text">我的专栏</div>
               <v-spacer />
               <v-btn color="primary" depressed small @click="dialogNewArticleColumn = true"
-                >{{ $t('创建新专栏') }}
+                >创建新专栏
               </v-btn>
             </v-card-title>
             <div v-if="!articleColumnsIntermediate">
@@ -170,7 +153,7 @@
 
           <v-tab-item value="joined_channels">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('私信') }}</div>
+              <div class="headline primary--text">私信</div>
             </v-card-title>
             <div v-if="!channelsIntermediate">
               <v-tabs :vertical="$vuetify.breakpoint.mdAndUp">
@@ -202,8 +185,7 @@
           <v-tab-item value="coins">
             <div class="d-flex ma-2">
               <div>
-                <span class="subheading secondary--text text--lighten-3">{{ $t('硬币数量') }}</span
-                >:
+                <span class="subheading secondary--text text--lighten-3">硬币</span>：
                 <span v-if="userProfile" class="title primary--text text--darken-2">{{
                   userProfile.remaining_coins
                 }}</span>
@@ -221,7 +203,7 @@
             >
               <template v-slot:top>
                 <v-toolbar flat>
-                  <v-toolbar-title>{{ $t('Rewards') }}</v-toolbar-title>
+                  <v-toolbar-title>奖励</v-toolbar-title>
                 </v-toolbar>
               </template>
               <template v-slot:item.created_at="{ item }">
@@ -238,11 +220,13 @@
                 <span v-if="item.claimed_at">{{
                   $dayjs.utc(item.claimed_at).local().fromNow()
                 }}</span>
+                <span v-else>尚未兑换</span>
               </template>
               <template v-slot:item.refunded_at="{ item }">
                 <span v-if="item.refunded_at">{{
                   $dayjs.utc(item.refunded_at).local().fromNow()
                 }}</span>
+                <span v-else>尚未退回</span>
               </template>
 
               <template v-slot:item.type="{ item }">
@@ -303,7 +287,7 @@
             >
               <template v-slot:top>
                 <v-toolbar flat>
-                  <v-toolbar-title>{{ $t('最近硬币交易记录') }}</v-toolbar-title>
+                  <v-toolbar-title>最近交易</v-toolbar-title>
                 </v-toolbar>
               </template>
               <template v-slot:item.created_at="{ item }">
@@ -371,7 +355,7 @@
 
           <v-tab-item value="bookmarked_articles">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('收藏的文章') }}</div>
+              <div class="headline primary--text">收藏的文章</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -422,9 +406,11 @@ import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 
 @Component({
   components: {
+    EmptyPlaceholder,
     DynamicItemList,
     QuestionPreview,
     Answer,
