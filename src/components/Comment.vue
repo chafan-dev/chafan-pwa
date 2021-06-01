@@ -9,12 +9,10 @@
     </div>
 
     <!-- Comment body -->
-    <template v-if="!showUpdateEditor">
+    <div v-if="!showUpdateEditor" class="ml-1">
       <SimpleViewer v-if="!isDeleted" :body="comment.body" :editor="comment.editor" />
-      <div v-else>
-        <div class="grey--text">{{ $t('Deleted.') }}</div>
-      </div>
-    </template>
+      <div v-else class="grey--text">已删除</div>
+    </div>
 
     <!-- Comment control -->
     <div class="d-flex mt-1 align-center">
