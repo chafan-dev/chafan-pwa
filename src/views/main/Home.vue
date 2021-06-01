@@ -17,14 +17,14 @@
           <v-tabs v-model="currentTabItem" height="35" hide-slider>
             <v-tab :href="'#feed'">
               <FeedIcon class="mr-1" />
-              {{ $t('Feed') }}
+              信息流
             </v-tab>
             <v-tab :href="'#submissions'">
               <SharingIcon class="mr-1" />
-              {{ $t('Sharings') }}
+              分享榜
             </v-tab>
             <v-spacer />
-            <div class="mr-2">
+            <div class="mr-3">
               <RefreshIcon @click="refreshFeed" v-if="currentTabItem === 'feed'" />
             </div>
 

@@ -1,7 +1,7 @@
 <template>
-  <v-container v-if="moderatedSites" fluid>
+  <v-container fluid>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-tabs>
+    <v-tabs v-else>
       <v-tabs-slider />
       <v-tab>{{ $t('Memberships') }}</v-tab>
       <v-tab>{{ $t('Settings') }}</v-tab>
@@ -50,11 +50,11 @@
             <v-card-title>基本信息</v-card-title>
             <v-card-text>
               <div>
-                <span class="black--text mr-1">{{ $t('Link') }}:</span>
+                <span class="black--text mr-1">链接：</span>
                 <SiteBtn :site="selectedSite" />
               </div>
               <div>
-                <span class="black--text mr-1">{{ $t('类型：') }}</span>
+                <span class="black--text mr-1">类型：</span>
                 {{ $t('site.permission_type.' + selectedSite.permission_type) }}
               </div>
             </v-card-text>
@@ -65,21 +65,21 @@
             <v-card-text>
               <div>
                 <template v-if="!showSiteConfigEditor">
-                  <span class="black--text mr-1">Name:</span>
+                  <span class="black--text mr-1">名字：</span>
                   <span>{{ selectedSite.name }}</span>
                 </template>
-                <v-text-field v-else v-model="siteConfigUpdate.name" label="Name" />
+                <v-text-field v-else v-model="siteConfigUpdate.name" label="名字" />
               </div>
 
               <div>
                 <template v-if="!showSiteConfigEditor">
-                  <span v-if="!showSiteConfigEditor" class="black--text mr-1">Description:</span>
+                  <span v-if="!showSiteConfigEditor" class="black--text mr-1">描述：</span>
                   <span>{{ selectedSite.description }}</span>
                 </template>
                 <v-text-field
                   v-else
                   v-model="siteConfigUpdate.description"
-                  label="Description"
+                  label="描述"
                   clearable
                 />
               </div>
@@ -89,21 +89,19 @@
                   v-if="showSiteConfigEditor"
                   v-model="siteConfigUpdate.category_topic_uuid"
                   :items="categoryTopics"
-                  :label="$t('类别')"
+                  label="类别"
                   item-text="name"
                   item-value="uuid"
                 />
                 <template v-else-if="selectedSite.category_topic">
-                  <span v-if="!showSiteConfigEditor" class="black--text mr-1"
-                    >{{ $t('类别') }}:</span
-                  >
+                  <span v-if="!showSiteConfigEditor" class="black--text mr-1">类别：</span>
                   <span>{{ selectedSite.category_topic.name }}</span>
                 </template>
               </div>
 
               <div>
                 <v-chip-group v-if="!showSiteConfigEditor">
-                  <span class="black--text mr-1">Topics:</span>
+                  <span class="black--text mr-1">话题：</span>
                   <v-chip
                     v-for="topic in siteTopics"
                     :key="topic.uuid"
@@ -118,7 +116,7 @@
                   v-if="showSiteConfigEditor"
                   v-model="newSiteTopicNames"
                   :delimiters="[',', '，', '、']"
-                  :label="$t('Topics')"
+                  label="话题"
                   hide-selected
                   multiple
                   small-chips
@@ -126,31 +124,29 @@
               </div>
 
               <div v-if="showSiteConfigEditor">
-                <span class="black--text mr-1">{{ $t('加入申请处理方式：') }}</span>
+                <span class="black--text mr-1">加入申请处理方式：</span>
                 <v-radio-group v-model="autoApproval">
                   <v-radio :value="true" label="自动审核" />
                   <v-radio :value="false" label="人工审核" />
                 </v-radio-group>
               </div>
               <div v-else>
-                <span class="black--text mr-1">{{ $t('加入申请处理方式：') }}</span>
-                <span v-if="selectedSite.auto_approval">{{ $t('自动审核') }}</span>
-                <span v-else>{{ $t('人工审核') }}</span>
+                <span class="black--text mr-1">加入申请处理方式：</span>
+                <span v-if="selectedSite.auto_approval">自动审核</span>
+                <span v-else>人工审核</span>
               </div>
 
               <div>
-                <span v-if="autoApproval" class="black--text mr-1">{{
-                  $t('自动通过应满足的所有条件：')
-                }}</span>
-                <span v-else class="black--text mr-1">{{
-                  $t('提交申请给人工审核前应满足的所有条件：')
-                }}</span>
+                <span v-if="autoApproval" class="black--text mr-1">
+                  自动通过应满足的所有条件：
+                </span>
+                <span v-else class="black--text mr-1"> 提交申请给人工审核前应满足的所有条件 </span>
                 <div class="ma-2">
                   <v-text-field
                     v-if="showSiteConfigEditor"
                     v-model="siteConfigUpdate.min_karma_for_application"
                     clearable
-                    label="Min karma"
+                    label="最低 karma"
                     type="number"
                   />
                   <v-text-field
@@ -161,7 +157,7 @@
                         : 'any'
                     "
                     disabled
-                    label="Min karma"
+                    label="最低 karma"
                   />
 
                   <v-combobox
@@ -169,7 +165,7 @@
                     v-model="emailSuffixes"
                     :delimiters="[',', '，', '、']"
                     clearable
-                    label="Email domain suffixes (e.g. '@harvard.edu'), ENTER to confirm each one"
+                    label="邮件地址后缀（例子，'@qq.com'），输入后 ENTER 确认"
                     multiple
                     small-chips
                   />
@@ -181,7 +177,7 @@
                         : 'any'
                     "
                     disabled
-                    label="Email domain suffixes (e.g. '@harvard.edu')"
+                    label="邮件地址后缀"
                   />
                 </div>
               </div>
@@ -195,7 +191,7 @@
                 depressed
                 small
                 @click="showSiteConfigEditor = true"
-                >Edit
+                >编辑
               </v-btn>
               <v-btn
                 v-show="showSiteConfigEditor"
@@ -204,7 +200,7 @@
                 depressed
                 small
                 @click="commitSiteConfig"
-                >{{ $t('提交') }}
+                >提交
               </v-btn>
               <v-btn
                 v-show="showSiteConfigEditor"
@@ -212,7 +208,7 @@
                 depressed
                 small
                 @click="showSiteConfigEditor = false"
-                >{{ $t('Cancel') }}
+                >取消
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -281,28 +277,23 @@
             </v-card-text>
           </v-card>
         </template>
-        <div v-else class="mt-2 text-center">Please select a circle.</div>
+        <div v-else class="mt-2 text-center">请选择一个圈子</div>
       </v-tab-item>
 
       <!-- Operation -->
       <v-tab-item>
         <v-card class="ma-2">
-          <v-card-title>
-            {{ $t('广播通知') }}
-          </v-card-title>
+          <v-card-title> 广播通知 </v-card-title>
           <v-card-text v-if="selectedSite !== null">
-            {{
-              $t(
-                '请先将广播的内容提交到「分享」板块，然后将其链接粘贴至下方发送给圈子「{circle}」的成员。',
-                { circle: selectedSite.name }
-              )
-            }}
+            请先将广播的内容提交到「分享」板块，然后将其链接粘贴至下方发送给圈子「{{
+              selectedSite.name
+            }}}」的成员。
             <v-text-field v-model="broadcastSubmissionLink" label="「分享」链接" />
           </v-card-text>
           <v-card-text v-else> Please select a circle.</v-card-text>
           <v-card-actions v-if="selectedSite !== null">
             <v-spacer />
-            <v-btn color="primary" @click="submitNewSubmissionBroadcast">{{ $t('Send') }}</v-btn>
+            <v-btn color="primary" @click="submitNewSubmissionBroadcast">发送</v-btn>
           </v-card-actions>
         </v-card>
       </v-tab-item>
@@ -313,7 +304,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
-import { readModeratedSites } from '@/store/main/getters';
+import { readModeratedSites, readToken } from '@/store/main/getters';
 import { api } from '@/api';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
@@ -363,7 +354,6 @@ export default class Moderation extends Vue {
   private showNewWebhookDialog: boolean = false;
 
   private newSiteTopicNames: string[] = [];
-  private moderatedSites: ISite[] | null = [];
   private showSiteConfigEditor: boolean = false;
   private selectedSiteUUID: string | null = null;
   private selectedSite: ISite | null = null;
@@ -382,12 +372,16 @@ export default class Moderation extends Vue {
   private loading = true;
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
+
+  get moderatedSites() {
+    return readModeratedSites(this.$store);
+  }
+
   private categoryTopics: ITopic[] | null = null;
 
   private async mounted() {
-    this.moderatedSites = readModeratedSites(this.$store);
     if (this.moderatedSites) {
       const siteApps = await Promise.all(
         this.moderatedSites.map(async (site: ISite) => {
@@ -400,6 +394,9 @@ export default class Moderation extends Vue {
       for (const siteAppsEntry of siteApps) {
         this.allApplications.set(siteAppsEntry.site.uuid, siteAppsEntry.applications);
       }
+    }
+    if (this.$route.query.siteUUID) {
+      this.selectedSiteUUID = this.$route.query.siteUUID.toString();
     }
     this.onSiteSelected();
     this.categoryTopics = (await api.getCategoryTopics()).data;
@@ -443,6 +440,8 @@ export default class Moderation extends Vue {
           this.selectedSite = this.moderatedSites.filter(
             (site) => site.uuid === this.selectedSiteUUID
           )[0];
+          const siteUUID = this.selectedSiteUUID;
+          this.$router.replace({ query: { ...this.$route.query, siteUUID } });
           this.resetSiteConfig(this.selectedSite);
           this.applications = this.allApplications.get(this.selectedSiteUUID)!;
         } else {

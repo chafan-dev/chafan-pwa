@@ -220,7 +220,6 @@ import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import CommentCard from '@/components/CommentCard.vue';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
-import SharingIcon from '@/components/icons/SharingIcon.vue';
 import SubmissionCard from '@/components/SubmissionCard.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
 import UserGrid from '@/components/UserGrid.vue';
@@ -253,7 +252,6 @@ import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
     ArticleColumnCard,
     CommentCard,
     NewContentActionBar,
-    SharingIcon,
     SubmissionCard,
     FeedIcon,
     UserGrid,
