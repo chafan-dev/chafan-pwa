@@ -422,13 +422,11 @@ const example_answer1 = {
   is_published: true,
   draft_saved_at: null,
   editor: 'wysiwyg',
-  upvotes_count: 2,
   is_hidden_by_moderator: false,
   comments: [],
   author: example_user1_preview,
   question: example_question_preview,
   site: example_site1,
-  upvoted: true,
   comment_writable: true,
   bookmark_count: 0,
   bookmarked: false,
@@ -783,8 +781,16 @@ app.get(`/api/v1/me/follows/${EXAMPLE_USER2_UUID}`, (req, res) => {
   });
 });
 
-app.get('/api/v1/answers/3b4TBWxFUnBe4aRrKq4X', (req, res) => {
+app.get(`/api/v1/answers/${example_answer1_preview.uuid}`, (req, res) => {
   res.json(example_answer1);
+});
+
+app.get(`/api/v1/answers/${example_answer1_preview.uuid}/upvotes/`, (req, res) => {
+  res.json({
+    answer_uuid: example_answer1_preview.uuid,
+    count: 2,
+    upvoted: false,
+  });
 });
 
 app.get('/api/v1/reactions/answer/3b4TBWxFUnBe4aRrKq4X', (req, res) => {
@@ -912,13 +918,11 @@ for (const answerPreview of randomAnswerPreviews) {
       is_published: true,
       draft_saved_at: null,
       editor: 'wysiwyg',
-      upvotes_count: 2,
       is_hidden_by_moderator: false,
       comments: [],
       author: example_user1_preview,
       question: example_question_preview,
       site: example_site1,
-      upvoted: true,
       comment_writable: true,
       bookmark_count: 0,
       bookmarked: false,
@@ -930,6 +934,14 @@ for (const answerPreview of randomAnswerPreviews) {
     res.json({ msg: '' });
   });
 
+  app.get(`/api/v1/answers/${answerPreview.uuid}/upvotes/`, (req, res) => {
+    res.json({
+      answer_uuid: answerPreview.uuid,
+      count: 2,
+      upvoted: false,
+    });
+  });
+
   app.get(`/api/v1/reactions/answer/${answerPreview.uuid}`, (req, res) => {
     res.json({
       counters: {},
@@ -939,6 +951,10 @@ for (const answerPreview of randomAnswerPreviews) {
 }
 
 app.get('/api/v1/notifications/unread/', (req, res) => {
+  res.json([]);
+});
+
+app.get('/api/v1/notifications/read/', (req, res) => {
   res.json([]);
 });
 
