@@ -220,13 +220,13 @@
                 <span v-if="item.claimed_at">{{
                   $dayjs.utc(item.claimed_at).local().fromNow()
                 }}</span>
-                <span v-else>尚未兑换</span>
+                <span v-else>-</span>
               </template>
               <template v-slot:item.refunded_at="{ item }">
                 <span v-if="item.refunded_at">{{
                   $dayjs.utc(item.refunded_at).local().fromNow()
                 }}</span>
-                <span v-else>尚未退回</span>
+                <span v-else>-</span>
               </template>
 
               <template v-slot:item.type="{ item }">
@@ -253,25 +253,18 @@
               </template>
               <template v-slot:item.action="{ item }">
                 <template v-if="item.giver.uuid === userProfile.uuid">
-                  <v-btn
-                    :disabled="!refundable(item)"
-                    color="primary"
-                    depressed
-                    small
-                    @click="refundReward(item)"
-                  >
-                    {{ $t('Refund') }}
+                  <span v-if="item.refunded_at"> 已取消 </span>
+                  <span v-else-if="item.claimed_at"> 已被领取 </span>
+                  <v-btn v-else color="primary" depressed small @click="refundReward(item)">
+                    取消
                   </v-btn>
                 </template>
                 <template v-else>
-                  <v-btn
-                    :disabled="!claimable(item)"
-                    color="primary"
-                    depressed
-                    small
-                    @click="claimReward(item)"
-                  >
-                    {{ $t('Claim') }}
+                  <span v-if="$dayjs.utc(item.expired_at).isBefore($dayjs.utc())"> 已过期 </span>
+                  <span v-else-if="item.claimed_at"> 已领取 </span>
+                  <span v-else-if="item.refunded_at"> 已被取消 </span>
+                  <v-btn v-else color="primary" depressed small @click="claimReward(item)">
+                    领取
                   </v-btn>
                 </template>
               </template>
@@ -492,7 +485,7 @@ export default class Dashboard extends Vue {
     { text: this.$t('Coin amount'), value: 'coin_amount' },
     { text: this.$t('Type'), value: 'type' },
     { text: this.$t('Condition'), value: 'condition' },
-    { text: this.$t('Action'), value: 'action' },
+    { text: '', value: 'action' },
   ];
   private myAnswerDrafts: IAnswerPreview[] | null = null;
   private myArticleDrafts: IArticlePreview[] | null = null;
@@ -626,30 +619,6 @@ export default class Dashboard extends Vue {
       );
       this.$router.push(`/article-columns/${response.data.uuid}`);
     });
-  }
-
-  private claimable(reward: IReward) {
-    if (
-      this.$dayjs.utc(reward.expired_at).isBefore(this.$dayjs.utc()) ||
-      reward.claimed_at ||
-      reward.refunded_at
-    ) {
-      return false;
-    }
-    if (this.userProfile) {
-      return reward.receiver.uuid === this.userProfile.uuid;
-    }
-    return false;
-  }
-
-  private refundable(reward: IReward) {
-    if (reward.claimed_at || reward.refunded_at) {
-      return false;
-    }
-    if (this.userProfile) {
-      return reward.giver.uuid === this.userProfile.uuid;
-    }
-    return false;
   }
 
   private async onChangeEmailNotifications() {
