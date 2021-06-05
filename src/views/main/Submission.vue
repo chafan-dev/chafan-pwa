@@ -83,9 +83,9 @@
           <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
               <v-card-title primary-title>
-                <div class="headline primary--text">{{ $t('分享历史') }}</div>
+                <div class="headline primary--text">分享历史</div>
                 <v-spacer />
-                <span class="text-caption grey--text">{{ $t('点击展开') }}</span>
+                <span class="text-caption grey--text">点击展开</span>
               </v-card-title>
               <v-expansion-panels>
                 <v-expansion-panel v-for="archive in archives" :key="archive.id">
@@ -97,7 +97,11 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <SimpleViewer :body="archive.description" />
+                    <SimpleViewer
+                      v-if="archive.description"
+                      :body="archive.description"
+                      :editor="archive.description_editor"
+                    />
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -144,9 +148,7 @@
                     </p>
                     <p>
                       <CommentsIcon class="mr-1" small />
-                      <span class="text-caption">
-                        {{ $t('n条评论', { n: submission.comments.length }) }}
-                      </span>
+                      <span class="text-caption"> {{ submission.comments.length }}条评论 </span>
                     </p>
                   </div>
                   <v-spacer />
@@ -228,7 +230,7 @@
             @submit-new-comment="submitNewSubmissionCommentBody"
           />
 
-          <div v-if="!userProfile" class="mt-2 text-center">{{ $t('登录后参与讨论') }}</div>
+          <div v-if="!userProfile" class="mt-2 text-center">登录后参与讨论</div>
           <div>
             <div class="text-center">
               <span
@@ -586,6 +588,7 @@ export default class Submission extends Vue {
         id: 0,
         title: this.submission.title,
         description: this.submission.description,
+        description_editor: this.submission.description_editor,
         created_at: this.submission.updated_at,
       });
       if (this.archives.length > 0) {

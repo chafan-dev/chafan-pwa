@@ -27,8 +27,8 @@
       <div>
         <AnswerIcon class="mr-1" small />
         <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
-          {{ $t('n个回答', { n: questionPreview.answers_count }) }}</span
-        >
+          {{ questionPreview.answers_count }}个回答
+        </span>
         <span v-else class="text-caption">{{ questionPreview.answers_count }}</span>
       </div>
     </div>
