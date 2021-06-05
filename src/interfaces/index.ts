@@ -1037,6 +1037,7 @@ export interface ISubmissionArchive {
   id: number;
   title: string;
   description?: string;
+  description_editor: string;
   url?: string;
   created_at: string;
 }
