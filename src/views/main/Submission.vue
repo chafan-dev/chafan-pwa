@@ -644,14 +644,3 @@ export default class Submission extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.less-left-right-padding {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-}
-
-.fixed-narrow-col {
-  max-width: 800px;
-}
-</style>

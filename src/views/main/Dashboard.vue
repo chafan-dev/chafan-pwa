@@ -617,7 +617,7 @@ export default class Dashboard extends Vue {
         this.$store.state.main.token,
         this.newArticleColumn
       );
-      this.$router.push(`/article-columns/${response.data.uuid}`);
+      await this.$router.push(`/article-columns/${response.data.uuid}`);
     });
   }
 
