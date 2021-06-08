@@ -15,7 +15,6 @@ import {
   commitSetModeratedSites,
   commitSetShowLoginPrompt,
   commitSetToken,
-  commitSetTopBanner,
   commitSetUserProfile,
 } from './mutations';
 import { AppNotification, MainState } from './state';
@@ -187,11 +186,9 @@ export const actions = {
   },
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
     if (payload.toString() === 'Error: Network Error') {
-      commitSetTopBanner(context, {
-        color: 'grey',
-        textColor: 'white',
-        text: '无法连接到服务器',
-        enabled: true,
+      commitAddNotification(context, {
+        color: 'warning',
+        content: '无法连接到服务器',
       });
     } else {
       let message = payload.message;
