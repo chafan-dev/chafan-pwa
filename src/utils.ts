@@ -24,6 +24,27 @@ export const removeLocalToken = () => {
   }
 };
 
+export const saveLocalCache = (key: string, obj: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(obj));
+  } catch (e) {
+    // TODO
+  }
+};
+
+export const getLocalCache = (key: string) => {
+  try {
+    const s = localStorage.getItem(key);
+    if (!s) {
+      return null;
+    }
+    return JSON.parse(s);
+  } catch (e) {
+    return null;
+    // TODO
+  }
+};
+
 export interface LocalEdit {
   edit: IRichEditorState | string;
   createdAt: Date;

@@ -119,6 +119,7 @@ export interface IQuestion {
   upvotes_count: number;
   answers_count: number;
   keywords?: string[];
+  answers?: IAnswerPreview[];
 }
 
 export interface IUserUpdateMe {
