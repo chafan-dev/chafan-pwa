@@ -37,7 +37,13 @@
       />
       <div class="d-flex">
         <v-spacer />
-        <v-btn :disabled="sendMsgIntermediate" color="primary" @click="commitNewMessage">
+        <v-btn
+          small
+          depressed
+          :disabled="sendMsgIntermediate"
+          color="primary"
+          @click="commitNewMessage"
+        >
           发送
           <v-progress-circular v-show="sendMsgIntermediate" indeterminate size="20" />
         </v-btn>
