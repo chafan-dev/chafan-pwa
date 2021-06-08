@@ -16,8 +16,8 @@
           <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
         </template>
       </v-banner>
-      <v-progress-linear v-if="loading" indeterminate />
-      <router-view v-else />
+      <!--<v-progress-linear v-if="loading" indeterminate />-->
+      <router-view />
       <NotificationsManager />
       <v-snackbar :timeout="-1" :value="updateExists" bottom color="primary" right>
         {{ $t('App update is available') }}
@@ -94,8 +94,8 @@ export default class App extends Vue {
         window.location.reload();
       });
     }
-    await dispatchCheckLoggedIn(this.$store);
-    this.$data.loading = false;
+    dispatchCheckLoggedIn(this.$store);
+    // this.$data.loading = false;
     setAppLocale(this, 'zh');
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }

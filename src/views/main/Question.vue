@@ -1,10 +1,6 @@
 <template>
   <v-container fluid>
-    <v-progress-linear
-      v-if="loading"
-      v-model="loadingProgress"
-      :indeterminate="loadingProgress === 0"
-    />
+    <v-progress-linear v-if="question === null" indeterminate />
     <v-row v-else class="px-2" justify="center">
       <v-col
         :class="{
@@ -464,7 +460,7 @@ import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
-import { loadLocalEdit, LocalEdit } from '@/utils';
+import { getLocalCache, loadLocalEdit, LocalEdit, saveLocalCache } from '@/utils';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
@@ -514,7 +510,6 @@ export default class Question extends Vue {
   private canHide = false;
   private showConfirmHideQuestionDialog = false;
   private loadingFullAnswer = true;
-  private loadingProgress = 0;
   private loading = true;
   private isModerator = false;
   private isShowInHome = false;
@@ -586,7 +581,6 @@ export default class Question extends Vue {
     const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
     if (matched && !isEqual(to.params, from.params)) {
       this.loading = true;
-      this.loadingProgress = 0;
       this.showEditor = false;
       this.showComments = false;
       this.answerWritable = false;
@@ -609,11 +603,24 @@ export default class Question extends Vue {
     }
   }
 
-  private async loadQuestion() {
+  private async loadQuestion(reloadOnExpire: boolean = true) {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const response = await apiQuestion.getQuestion(this.token, this.id);
-        this.question = response.data;
+        const cached = getLocalCache(`question-${this.id}`);
+        if (cached) {
+          this.question = cached;
+          if (reloadOnExpire) {
+            apiQuestion.getQuestion(this.token, this.id, true).then((r) => {
+              this.question = r.data;
+              saveLocalCache(`question-${this.id}`, r.data);
+              this.loadQuestion(false);
+            });
+          }
+        } else {
+          const response = await apiQuestion.getQuestion(this.token, this.id, true);
+          this.question = response.data;
+          saveLocalCache(`question-${this.id}`, response.data);
+        }
       },
       errorFilter: (err: AxiosError) => {
         if (
@@ -649,8 +656,6 @@ export default class Question extends Vue {
 
           updateHead(this.$route.path, this.question.title, this.question.description_text);
 
-          this.loadingProgress = 33;
-
           this.newQuestionTitle = this.question.title;
           this.newQuestionTopicNames = this.question.topics.map((topic) => topic.name);
           if (this.userProfile) {
@@ -668,8 +673,9 @@ export default class Question extends Vue {
           }
         }
         await dispatchCaptureApiError(this.$store, async () => {
-          const answerPreviews = (await api.getQuestionAnswers(this.token, this.question!.uuid))
-            .data;
+          const answerPreviews = this.question?.answers
+            ? this.question?.answers
+            : (await api.getQuestionAnswers(this.token, this.question!.uuid)).data;
           if (this.answerUUID !== null) {
             if (!answerPreviews.find((preview) => preview.uuid === this.answerUUID)) {
               commitAddNotification(this.$store, {
@@ -701,7 +707,6 @@ export default class Question extends Vue {
           if (!this.currentUserAnswerUUID) {
             this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + this.question!.uuid);
           }
-          this.loadingProgress = 66;
 
           if (this.userProfile) {
             const questionSite = this.question!.site;
@@ -722,9 +727,6 @@ export default class Question extends Vue {
               await apiMe.getQuestionSubscription(this.token, this.question!.uuid)
             ).data;
           }
-
-          this.loadingProgress = 100;
-          this.loading = false;
         });
       }
     });
