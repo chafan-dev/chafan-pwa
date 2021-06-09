@@ -17,7 +17,7 @@
         </template>
       </v-banner>
       <v-progress-linear v-if="loading" indeterminate />
-      <router-view />
+      <router-view v-else />
       <NotificationsManager />
       <v-snackbar :timeout="-1" :value="updateExists" bottom color="primary" right>
         {{ $t('App update is available') }}
@@ -94,9 +94,8 @@ export default class App extends Vue {
         window.location.reload();
       });
     }
-    dispatchCheckLoggedIn(this.$store).then(() => {
-      this.$data.loading = false;
-    });
+    await dispatchCheckLoggedIn(this.$store);
+    this.$data.loading = false;
     setAppLocale(this, 'zh');
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }
