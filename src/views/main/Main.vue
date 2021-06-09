@@ -99,121 +99,17 @@
         </div>
 
         <div>
-          <!-- Notifications -->
-          <v-menu
-            v-if="userProfile"
-            v-model="showNotifications"
-            :close-on-content-click="false"
-            :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
-            :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
-            left
-            offset-y
-            transition="slide-x-transition"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
-                dark
-                icon
-              >
-                <v-badge
-                  v-if="unreadNotificationsCount > 0"
-                  :content="unreadNotificationsCount"
-                  color="green"
-                >
-                  <NotificationIcon />
-                </v-badge>
-                <NotificationIcon v-else />
-              </v-btn>
-            </template>
-
-            <v-card>
-              <v-sheet
-                class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1"
-              >
-                <v-subheader class="font-weight-bold">通知</v-subheader>
-
-                <div class="mr-1">
-                  <v-btn depressed small @click="readAllNotifs" class="slim-btn">
-                    <MuteNotificationIcon />
-                    全部已读
-                  </v-btn>
-                </div>
-              </v-sheet>
-
-              <div style="max-height: 300px; overflow: auto">
-                <v-list class="py-0">
-                  <template v-for="(notif, idx) in notifications">
-                    <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />
-
-                    <template v-if="notif.is_read">
-                      <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
-                        <Event
-                          class="my-2"
-                          v-if="notif.event"
-                          :event="notif.event"
-                          :on-click-handler="
-                            () => {
-                              showNotifications = false;
-                            }
-                          "
-                          :enable-user-link-popup="false"
-                        />
-                      </v-list-item>
-                    </template>
-                    <template v-else>
-                      <v-list-item :key="notif.id">
-                        <Event
-                          class="my-2"
-                          v-if="notif.event"
-                          :event="notif.event"
-                          :enable-user-link-popup="false"
-                          :on-click-handler="
-                            () => {
-                              showNotifications = false;
-                              readNotif(notif);
-                            }
-                          "
-                        />
-                        <v-spacer />
-                        <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
-                      </v-list-item>
-                    </template>
-                  </template>
-                  <div class="text-center" v-if="loadNotifsIntermediate">
-                    <v-progress-circular size="20" color="primary" indeterminate />
-                  </div>
-                </v-list>
-              </div>
-            </v-card>
-          </v-menu>
-
-          <v-dialog v-model="showReadNotifications">
-            <v-list>
-              <v-card-title primary-title>
-                <div class="headline primary--text">{{ $t('已读通知') }}</div>
-              </v-card-title>
-              <v-list-item v-for="notif in notifications" :key="notif.id">
-                <Event v-if="notif.event" :event="notif.event" />
-              </v-list-item>
-            </v-list>
-          </v-dialog>
+          <Notifications v-if="userProfile" :user-profile="userProfile" />
 
           <template v-if="!userProfile">
             <FeedbackIcon class="ml-1" @click="prepareFeedbackForm" />
-            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt">
-              {{ $t('Login') }}
-            </v-btn>
+            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt"> 登录 </v-btn>
           </template>
 
           <v-dialog v-model="showFeedbackForm" max-width="500">
             <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
               <v-card>
-                <v-card-title>
-                  {{ $t('你的反馈会让「茶饭」变得更好') }}
-                </v-card-title>
+                <v-card-title> 你的反馈会让「茶饭」变得更好！ </v-card-title>
                 <v-card-text>
                   <div>
                     <div v-if="feedbackScreenshotUrl">
@@ -235,7 +131,7 @@
                         small
                         @click="showFeedbackScreenshot = !showFeedbackScreenshot"
                       >
-                        {{ $t('截图预览') }}
+                        截图预览
                       </v-btn>
                       <v-expand-transition>
                         <v-img
@@ -246,7 +142,7 @@
                       </v-expand-transition>
                     </div>
                     <span v-else>
-                      {{ $t('生成截图中...') }}
+                      生成截图中...
                       <v-progress-circular indeterminate size="20" />
                     </span>
                   </div>
@@ -260,9 +156,7 @@
                     常见问题及解决方法
                   </a>
                   <v-spacer />
-                  <v-btn depressed small @click="cancelFeedbackForm(reset)">
-                    {{ $t('取消') }}
-                  </v-btn>
+                  <v-btn depressed small @click="cancelFeedbackForm(reset)"> 取消 </v-btn>
                   <v-btn
                     :disabled="!valid || sendingFeedback"
                     color="primary"
@@ -270,7 +164,7 @@
                     small
                     @click="handleSubmit(submitFeedbackForm)"
                   >
-                    {{ $t('提交') }}
+                    提交
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -352,7 +246,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 
-import { appName, wsUrl } from '@/env';
+import { appName } from '@/env';
 import {
   readDashboardMiniDrawer,
   readHasModeratedSites,
@@ -384,15 +278,14 @@ import Avatar from '@/components/Avatar.vue';
 import LangPicker from '@/components/LangPicker.vue';
 import Event from '@/components/Event.vue';
 import SearchBox from '@/components/SearchBox.vue';
-import { INotification, IUserProfile, IWsUserMsg } from '@/interfaces';
-import { api } from '@/api';
+import { IUserProfile } from '@/interfaces';
 import { api2 } from '@/api2';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import html2canvas from 'html2canvas';
 import FeedbackIcon from '@/components/icons/FeedbackIcon.vue';
+import Notifications from '@/components/Notifications.vue';
 
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
@@ -405,6 +298,7 @@ const routeGuardMain = async (to, from, next) => {
 
 @Component({
   components: {
+    Notifications,
     FeedbackIcon,
     BaseCard,
     CreateQuestionForm,
@@ -427,12 +321,7 @@ const routeGuardMain = async (to, from, next) => {
 })
 export default class Main extends Vue {
   private appName = appName;
-  private notifications: INotification[] = [];
-  private wsConnection: WebSocket | null = null;
-  private loadNotifsIntermediate = true;
 
-  private showReadNotifications = false;
-  private showNotifications = false;
   private readonly accountItems = [
     {
       icon: 'DashboardIcon',
@@ -454,10 +343,6 @@ export default class Main extends Vue {
   private feedbackText = '';
   private feedbackEmail = '';
   private sendingFeedback = false;
-
-  get unreadNotificationsCount() {
-    return this.notifications.filter((x) => !x.is_read).length;
-  }
 
   get miniDrawer() {
     return readDashboardMiniDrawer(this.$store);
@@ -492,69 +377,11 @@ export default class Main extends Vue {
     commitSetShowLoginPrompt(this.$store, true);
   }
 
-  private async mounted() {
-    if (this.userProfile) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        const notifs = (await api.getUnreadNotifications(this.$store.state.main.token)).data;
-        if (notifs) {
-          notifs.forEach((notif) => {
-            if (notif !== null) {
-              this.notifications.push(notif);
-            }
-          });
-        }
-        this.notifications.push(
-          ...(await api2.getReadNotifications(this.$store.state.main.token)).data
-        );
-        this.loadNotifsIntermediate = false;
-
-        const wsToken = (await api2.getWsToken(this.$store.state.main.token)).data.msg;
-        this.wsConnection = new WebSocket(wsUrl + '/api/v1/ws?token=' + wsToken);
-        this.wsConnection.onmessage = (message) => {
-          const wsMsg = JSON.parse(message.data) as IWsUserMsg;
-          this.handleWsMsg(wsMsg);
-        };
-        if (process.env.NODE_ENV === 'development') {
-          this.wsConnection.onerror = (err) => {
-            console.log('ws err: ' + err);
-          };
-          this.wsConnection.onopen = () => {
-            console.log('ws opened');
-          };
-          this.wsConnection.onclose = () => {
-            console.log('ws closed');
-          };
-        }
-      });
-    }
-  }
-
-  private handleWsMsg(msg: IWsUserMsg) {
-    if (msg.type === 'notification') {
-      if (!this.notifications.find((notif) => notif.id === msg.data.id)) {
-        this.notifications.unshift(msg.data);
-      }
-    }
-  }
-
-  private readNotif(notif: INotification) {
-    notif.is_read = true;
-    api.updateNotification(this.$store.state.main.token, notif.id, {
-      is_read: true,
-    });
-  }
-
-  private async readAllNotifs() {
-    this.notifications.forEach((notif) => {
-      this.readNotif(notif);
-    });
-  }
-
-  private beforeRouteEnter(to, from, next) {
+  public beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
   }
 
-  private beforeRouteUpdate(to, from, next) {
+  public beforeRouteUpdate(to, from, next) {
     routeGuardMain(to, from, next);
   }
 
