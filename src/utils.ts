@@ -26,7 +26,7 @@ export const removeLocalToken = () => {
 
 export const saveLocalCache = (key: string, obj: any) => {
   try {
-    localStorage.setItem(key, JSON.stringify(obj));
+    localStorage.setItem('local-cache-' + key, JSON.stringify(obj));
   } catch (e) {
     // TODO
   }
@@ -34,7 +34,7 @@ export const saveLocalCache = (key: string, obj: any) => {
 
 export const getLocalCache = (key: string) => {
   try {
-    const s = localStorage.getItem(key);
+    const s = localStorage.getItem('local-cache-' + key);
     if (!s) {
       return null;
     }
@@ -73,7 +73,7 @@ export const loadLocalEdit = (
   uuid: string | null
 ): LocalEdit | null => {
   try {
-    const key = `${draftType}-${uuid}`;
+    const key = `local-edit-${draftType}-${uuid}`;
     const value = localStorage.getItem(key);
     if (value) {
       return JSON.parse(value);
