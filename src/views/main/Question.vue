@@ -255,28 +255,28 @@
           </v-btn>
           <v-spacer />
           <v-btn v-if="showQuestionEditor" depressed small @click="prepareShowMoveQuestionDialog">
-            {{ $t('转移问题') }}
+            转移问题
           </v-btn>
           <v-dialog v-model="showMoveQuestionDialog" max-width="600">
             <v-card>
               <v-card-title primary-title>
-                <div class="headline primary--text">{{ $t('转移问题') }}</div>
+                <div class="headline primary--text">转移问题</div>
               </v-card-title>
               <v-card-text>
-                <span>{{ $t('现问题所属圈子') }}: {{ question.site.name }}</span>
+                <span>现问题所属圈子: {{ question.site.name }}</span>
                 <v-select
                   v-model="newQuestionSite"
                   :items="siteProfiles"
-                  :label="$t('新的圈子')"
+                  label="新的圈子"
                   item-text="site.name"
                   item-value="site"
                 />
               </v-card-text>
               <v-card-actions>
-                <span>{{ $t('没有权限？联系管理员帮助转移') }}</span>
+                <span>没有权限？联系「Chafan猫管家」帮助转移</span>
                 <v-spacer />
-                <v-btn color="warning" depressed small @click="confirmMoveQuestion"
-                  >{{ $t('确认转移') }}
+                <v-btn color="warning" depressed small @click="confirmMoveQuestion">
+                  确认转移
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -290,20 +290,18 @@
             small
             @click="showConfirmHideQuestionDialog = true"
           >
-            {{ $t('隐藏问题') }}
+            隐藏问题
           </v-btn>
           <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
             <v-card>
               <v-card-title primary-title>
-                <div class="headline primary--text">
-                  {{ $t('确认隐藏问题？') }}
-                </div>
+                <div class="headline primary--text">确认隐藏问题</div>
               </v-card-title>
-              <v-card-text> 隐藏后问题将对所有用户不可见。</v-card-text>
+              <v-card-text>隐藏后问题将对所有用户不可见。</v-card-text>
               <v-card-actions>
                 <v-spacer />
                 <v-btn color="warning" depressed small @click="confirmHideQuestion"
-                  >{{ $t('确认隐藏') }}
+                  >确认隐藏
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -328,13 +326,11 @@
         </v-expand-transition>
 
         <div class="ml-2 text-center">
-          <span v-if="showEditor && userProfile" class="text-caption grey--text">{{
-            $t('编辑答案')
-          }}</span>
+          <span v-if="showEditor && userProfile" class="text-caption grey--text">编辑答案</span>
           <span
             v-else-if="loadedFullAnswers.length === 0 && answerPreviews.length === 0"
             class="text-caption grey--text"
-            >{{ $t('暂无答案') }}</span
+            >暂无答案</span
           >
         </div>
 
