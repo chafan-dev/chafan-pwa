@@ -26,7 +26,7 @@
     </v-menu>
     <v-text-field
       v-model="searchInput"
-      :placeholder="$t('Search')"
+      placeholder="搜索"
       dense
       filled
       hide-details
@@ -74,6 +74,9 @@ export default class SearchBox extends Vue {
   }
 
   private search() {
+    if (this.searchInput === this.currentQuery) {
+      return;
+    }
     let val = this.searchInput;
     if (val && val.startsWith('@')) {
       val = val.substring(1);
