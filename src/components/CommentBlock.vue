@@ -1,6 +1,6 @@
 <template>
-  <div v-if="comments.length > 0 || loggedIn" class="mt-4">
-    <v-divider class="mb-4" />
+  <div v-if="comments.length > 0 || loggedIn" class="mt-3">
+    <v-divider v-if="comments.length" />
     <v-list-item v-for="comment in comments" :key="comment.uuid" class="comment-item">
       <v-list-item-content>
         <Comment
@@ -18,7 +18,7 @@
         :placeholder="$t('评论')"
         class="mb-1"
       />
-      <div class="d-flex">
+      <div class="d-flex pt-1">
         <span v-if="mentioned.length" class="grey--text caption"
           >将通知用户：{{ mentioned.join(', ') }}</span
         >
@@ -30,7 +30,7 @@
           small
           @click="submitNewComment"
         >
-          {{ $t('提交评论') }}
+          提交评论
           <v-progress-circular v-show="commentSubmitIntermediate" :size="20" indeterminate />
         </v-btn>
       </div>
