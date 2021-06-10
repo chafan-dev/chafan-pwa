@@ -1,29 +1,12 @@
 <template>
   <div id="app">
     <v-app>
-      <v-banner
-        v-if="topBanner && topBanner.enabled"
-        :color="topBanner.color"
-        transition="slide-y-transition"
-      >
-        <span
-          :style="{
-            color: topBanner.textColor ? topBanner.textColor : undefined,
-          }"
-          >{{ topBanner.text }}</span
-        >
-        <template v-slot:actions="{ dismiss }">
-          <v-btn small text @click="dismiss">{{ $t('Dismiss') }}</v-btn>
-        </template>
-      </v-banner>
       <v-progress-linear v-if="loading" indeterminate />
       <router-view v-else />
       <NotificationsManager />
       <v-snackbar :timeout="-1" :value="updateExists" bottom color="primary" right>
-        {{ $t('App update is available') }}
-        <v-btn text @click="refreshApp">
-          {{ $t('Update') }}
-        </v-btn>
+        PWA 有新的更新
+        <v-btn v-if="pwaWaiting" text @click="refreshApp"> 升级 </v-btn>
       </v-snackbar>
       <v-dialog v-model="showLoginPrompt" max-width="600">
         <LoginCard :showTopBar="false" class="py-10" />
@@ -36,9 +19,9 @@
 import { Component, Vue } from 'vue-property-decorator';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
-import { readIsLoggedIn, readShowLoginPrompt, readTopBanner } from '@/store/main/getters';
+import { readIsLoggedIn, readShowLoginPrompt } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
-import { setAppLocale } from '@/utils'; // FIXME: store locale in main.store
+import { setAppLocale } from '@/utils';
 import { commitSetNarrowUI, commitSetShowLoginPrompt } from './store/main/mutations';
 import { getDefaultNarrowFeedUI } from '@/common';
 
@@ -71,10 +54,6 @@ export default class App extends Vue {
     commitSetShowLoginPrompt(this.$store, value);
   }
 
-  get topBanner() {
-    return readTopBanner(this.$store);
-  }
-
   public async mounted() {
     document.addEventListener(
       'swUpdated',
@@ -100,12 +79,16 @@ export default class App extends Vue {
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }
 
+  get pwaWaiting() {
+    return this.registration && this.registration.waiting;
+  }
+
   private refreshApp() {
     this.updateExists = false;
-    if (!this.registration || !this.registration.waiting) {
+    if (!this.pwaWaiting) {
       return;
     }
-    this.registration.waiting.postMessage({ type: 'SKIP_WAITING ' });
+    this.registration!.waiting!.postMessage({ type: 'SKIP_WAITING ' });
   }
 }
 </script>
