@@ -6,6 +6,9 @@ import {
   ISubmission,
   ISubmissionArchive,
   ISubmissionCreate,
+  ISubmissionSuggestion,
+  ISubmissionSuggestionCreate,
+  ISubmissionSuggestionUpdate,
   ISubmissionUpdate,
   ISubmissionUpvotes,
 } from '@/interfaces';
@@ -53,10 +56,34 @@ export const apiSubmission = {
       authHeaders(token)
     );
   },
+  async getSuggestions(token: string, uuid: string) {
+    return axios.get<ISubmissionSuggestion[]>(
+      `${apiUrl}/api/v1/submissions/${uuid}/suggestions/`,
+      authHeaders(token)
+    );
+  },
   async hideSubmission(token: string, uuid: string) {
     return axios.put<ISubmission>(
       `${apiUrl}/api/v1/submissions/${uuid}/hide`,
       null,
+      authHeaders(token)
+    );
+  },
+  async createSuggestion(token: string, payload: ISubmissionSuggestionCreate) {
+    return axios.post<ISubmissionSuggestion>(
+      `${apiUrl}/api/v1/submission-suggestions/`,
+      payload,
+      authHeaders(token)
+    );
+  },
+  async updateSubmissionSuggestion(
+    token: string,
+    uuid: string,
+    payload: ISubmissionSuggestionUpdate
+  ) {
+    return axios.put<ISubmissionSuggestion>(
+      `${apiUrl}/api/v1/submission-suggestions/${uuid}`,
+      payload,
       authHeaders(token)
     );
   },

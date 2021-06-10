@@ -62,7 +62,7 @@ export default class SimpleVditor extends Vue {
   }
 
   public getText() {
-    return this.$el.getElementsByClassName('vditor-wysiwyg')[0].textContent || '';
+    return (this.$el.getElementsByClassName('vditor-wysiwyg')[0] as HTMLElement).innerText || '';
   }
 
   public reset() {

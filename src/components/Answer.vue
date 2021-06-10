@@ -85,13 +85,13 @@
                     small
                     @click="loadEditor"
                   >
-                    {{ $t(editButtonText) }}
+                    {{ editButtonText }}
                   </v-btn>
 
                   <v-menu v-if="currentUserIsAuthor" offset-y>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-bind="attrs" v-on="on" class="slim-btn m2-1" depressed small
-                        >{{ $t('设置') }}
+                      <v-btn v-bind="attrs" v-on="on" class="slim-btn m2-1" depressed small>
+                        设置
                       </v-btn>
                     </template>
                     <v-list>
@@ -99,7 +99,7 @@
                         <v-list-item-icon>
                           <DeleteIcon />
                         </v-list-item-icon>
-                        <v-list-item-content>{{ $t('永久删除') }}</v-list-item-content>
+                        <v-list-item-content>永久删除</v-list-item-content>
                       </v-list-item>
                     </v-list>
                   </v-menu>
@@ -108,18 +108,13 @@
                     <v-card>
                       <v-card-title primary-title>
                         <div class="headline primary--text">
-                          {{
-                            draftMode
-                              ? $t('确定永久删除答案草稿？')
-                              : $t('确定永久删除答案及其所有历史版本？')
-                          }}
+                          <template v-if="draftMode"> 确定永久删除答案草稿？ </template>
+                          <template v-else> 确定永久删除答案及其所有历史版本？ </template>
                         </div>
                       </v-card-title>
                       <v-card-actions>
                         <v-spacer />
-                        <v-btn depressed small @click="confirmDeleteDialog = false"
-                          >{{ $t('No') }}
-                        </v-btn>
+                        <v-btn depressed small @click="confirmDeleteDialog = false"> 取消 </v-btn>
                         <v-btn
                           :disabled="deleteAnswerIntermediate"
                           color="warning"
@@ -127,7 +122,7 @@
                           small
                           @click="deleteAnswer"
                         >
-                          {{ $t('Yes') }}
+                          确认
                         </v-btn>
                       </v-card-actions>
                     </v-card>
