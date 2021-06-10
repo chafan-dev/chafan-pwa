@@ -67,6 +67,11 @@ export default new Router({
               component: () =>
                 import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
             },
+            {
+              path: 'suggestions/:submission_suggestion_id',
+              component: () =>
+                import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
+            },
           ],
         },
         {

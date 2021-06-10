@@ -304,6 +304,12 @@ export interface CreateSubmission {
   submission: ISubmission;
 }
 
+export interface CreateSubmissionSuggestion {
+  verb: 'create_submission_suggestion';
+  subject: IUserPreview;
+  submission_suggestion: ISubmissionSuggestion;
+}
+
 export interface CreateArticle {
   verb: 'create_article';
   subject: IUserPreview;
@@ -477,6 +483,7 @@ export interface IEvent {
     | UpvoteArticle
     | SubscribeArticleColumn
     | CreateSubmission
+    | CreateSubmissionSuggestion
     | CommentSubmission
     | UpvoteSubmission
     | SystemSendInvitation
@@ -1043,6 +1050,7 @@ export interface ISubmissionSuggestion {
   rejected_at?: string;
   retracted_at?: string;
   author: IUserPreview;
+  submission: ISubmission;
   topics?: ITopic[];
   accepted_diff_base?: ISubmissionEditableSnapshot;
 }
