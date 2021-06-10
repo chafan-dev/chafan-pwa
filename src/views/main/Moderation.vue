@@ -304,7 +304,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
-import { readModeratedSites, readToken } from '@/store/main/getters';
+import { readToken } from '@/store/main/getters';
 import { api } from '@/api';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
