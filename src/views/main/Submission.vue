@@ -21,6 +21,7 @@
             <!-- Submission topics display/editor -->
             <v-chip-group v-if="!showSubmissionEditor">
               <v-chip
+                small
                 v-for="topic in submission.topics"
                 :key="topic.uuid"
                 :to="'/topics/' + topic.uuid"
@@ -75,7 +76,7 @@
                 :editorProp="submission.description_editor"
                 :initialValue="submission.description"
                 placeholder="描述（选填）"
-                class="mb-2"
+                class="my-2"
               />
             </div>
           </div>
@@ -111,25 +112,12 @@
           <div v-if="!showSubmissionEditor" class="d-flex py-2">
             <Upvote
               v-if="upvotes"
-              class="mr-1"
               :upvotes-count="upvotes.count"
               :upvoted="upvotes.upvoted"
               :disabled="!userProfile || userProfile.uuid === submission.author.uuid"
               :on-cancel-vote="cancelUpvote"
               :on-vote="upvote"
             />
-            <v-btn
-              v-show="editable"
-              :color="showUpdateDetailsButton ? 'primary' : undefined"
-              class="slim-btn"
-              depressed
-              small
-              @click="showSubmissionEditor = true"
-            >
-              <EditIcon />
-              <span v-if="showUpdateDetailsButton">添加细节</span>
-              <span v-else>编辑</span>
-            </v-btn>
 
             <ShareCardButton
               v-slot="{ shareQrCodeUrl }"
@@ -160,6 +148,47 @@
               </v-card-text>
             </ShareCardButton>
 
+            <v-menu offset-y>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" class="slim-btn" depressed small>
+                  <DotsIcon small />
+                  <span class="ml-1" v-if="$vuetify.breakpoint.mdAndUp">更多</span>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item v-if="editable" @click="showSubmissionEditor = true">
+                  <EditIcon class="mr-1" />
+                  <span v-if="showUpdateDetailsButton">添加细节</span>
+                  <span v-else>编辑</span>
+                </v-list-item>
+                <v-list-item v-if="suggestionEditable" @click="showSubmissionEditor = true">
+                  <EditIcon class="mr-1" />
+                  建议编辑
+                </v-list-item>
+                <v-list-item
+                  v-if="editable && canHide"
+                  @click="showConfirmHideSubmissionDialog = true"
+                >
+                  <DeleteIcon class="mr-1" /> 隐藏分享
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
+            <v-dialog v-model="showConfirmHideSubmissionDialog" max-width="600">
+              <v-card>
+                <v-card-title primary-title>
+                  <div class="headline primary--text">确认隐藏分享？</div>
+                </v-card-title>
+                <v-card-text>隐藏后分享将对所有用户不可见。</v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn color="warning" mr-1 small depressed @click="confirmHideSubmission">
+                    确认隐藏
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+
             <BookmarkedIcon
               v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
               :disabled="cancelSubscriptionIntermediate"
@@ -174,48 +203,20 @@
             />
             <HistoryIcon v-if="editable" @click="showHistoryDialog" />
           </div>
-          <div v-if="showSubmissionEditor" class="d-flex py-2">
+          <div v-if="showSubmissionEditor" class="d-flex pt-2">
             <v-btn
-              v-show="editable"
               :disabled="commitSubmissionEditIntermediate"
               class="mr-1"
               color="primary"
               depressed
               small
               @click="handleSubmit(commitSubmissionEdit)"
-              >保存
-            </v-btn>
-            <v-btn v-show="editable" class="mr-1" depressed small @click="cancelSubmissionUpdate"
-              >取消
-            </v-btn>
-            <v-spacer />
-
-            <v-btn
-              v-if="showSubmissionEditor & canHide"
-              class="ml-2"
-              color="warning"
-              depressed
-              small
-              @click="showConfirmHideSubmissionDialog = true"
             >
-              {{ $t('隐藏分享') }}
+              <template v-if="editable">保存</template>
+              <template v-else>提交建议</template>
             </v-btn>
-            <v-dialog v-model="showConfirmHideSubmissionDialog" max-width="600">
-              <v-card>
-                <v-card-title primary-title>
-                  <div class="headline primary--text">
-                    {{ $t('确认隐藏分享？') }}
-                  </div>
-                </v-card-title>
-                <v-card-text> 隐藏后分享将对所有用户不可见。</v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn color="warning" mr-1 small @click="confirmHideSubmission"
-                    >{{ $t('确认隐藏') }}
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <v-btn class="mr-1" depressed small @click="cancelSubmissionUpdate">取消 </v-btn>
+            <v-spacer />
           </div>
           <div class="d-flex justify-end">
             <ReactionBlock :objectId="submission.uuid" objectType="submission" />
@@ -231,6 +232,164 @@
             commentLabel="评论"
             @submit-new-comment="submitNewSubmissionCommentBody"
           />
+
+          <!-- Suggestions -->
+          <v-expansion-panels v-if="submission" class="mt-2">
+            <v-expansion-panel v-for="suggestion in submissionSuggestions" :key="suggestion.uuid">
+              <v-expansion-panel-header :class="{ 'grey--text': suggestion.status !== 'pending' }">
+                <span>
+                  <UserLink :show-avatar="true" :user-preview="suggestion.author" /> 的建议编辑：
+                  <template v-if="suggestion.status === 'pending'">
+                    待处理（{{ $dayjs.utc(suggestion.created_at).local().fromNow() }}）
+                  </template>
+                  <template v-if="suggestion.status === 'accepted'">
+                    已接受（{{ $dayjs.utc(suggestion.accepted_at).local().fromNow() }}）
+                  </template>
+                  <template v-if="suggestion.status === 'rejected'">
+                    已拒绝（{{ $dayjs.utc(suggestion.rejected_at).local().fromNow() }}）
+                  </template>
+                  <template v-if="suggestion.status === 'retracted'">
+                    已撤回（{{ $dayjs.utc(suggestion.retracted_at).local().fromNow() }}）
+                  </template>
+                </span>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <template v-if="suggestion.status === 'accepted' && suggestion.accepted_diff_base">
+                  <div
+                    v-if="
+                      suggestion.accepted_diff_base.title !== suggestion.title &&
+                      suggestion.title !== undefined
+                    "
+                  >
+                    标题改动：<Diff
+                      :s1="suggestion.accepted_diff_base.title"
+                      :s2="suggestion.title"
+                    />
+                  </div>
+                  <div
+                    v-if="
+                      suggestion.accepted_diff_base.description_text !==
+                        suggestion.description_text && suggestion.description_text !== undefined
+                    "
+                  >
+                    描述改动：<Diff
+                      :s1="suggestion.accepted_diff_base.description_text || ''"
+                      :s2="suggestion.description_text"
+                    />
+                  </div>
+                </template>
+                <template v-else-if="suggestion.status !== 'accepted'">
+                  <div
+                    v-if="submission.title !== suggestion.title && suggestion.title !== undefined"
+                  >
+                    标题改动：<Diff :s1="submission.title" :s2="suggestion.title" />
+                  </div>
+                  <div
+                    v-if="
+                      submission.description_text !== suggestion.description_text &&
+                      suggestion.description_text !== undefined
+                    "
+                  >
+                    描述改动：<Diff
+                      :s1="submission.description_text || ''"
+                      :s2="suggestion.description_text"
+                    />
+                  </div>
+                  <div v-if="suggestion.topics">
+                    <!-- FIXME: the topics of stored accepted diff base is not processed properly -->
+                    话题改动：<Diff
+                      v-if="suggestion.topics"
+                      :s1="topicNames(submission.topics)"
+                      :s2="topicNames(suggestion.topics)"
+                    />
+                  </div>
+                </template>
+                <div class="d-flex justify-end mt-1">
+                  <template v-if="suggestion.status === 'pending'">
+                    <v-btn small outlined class="mr-2" @click="previewSuggestion(suggestion)">
+                      预览
+                    </v-btn>
+                    <v-btn
+                      v-if="userProfile.uuid === suggestion.author.uuid"
+                      small
+                      outlined
+                      @click="retractSuggestion(suggestion)"
+                    >
+                      撤回
+                    </v-btn>
+                    <template v-if="userProfile.uuid === submission.author.uuid">
+                      <v-btn
+                        outlined
+                        small
+                        color="green"
+                        class="mr-2"
+                        @click="acceptSuggestion(suggestion)"
+                      >
+                        接受
+                      </v-btn>
+                      <v-btn outlined small color="warning" @click="rejectSuggestion(suggestion)">
+                        拒绝
+                      </v-btn>
+                    </template>
+                  </template>
+                  <template v-if="suggestion.status === 'rejected'">
+                    <v-btn
+                      v-if="userProfile.uuid === suggestion.author.uuid"
+                      small
+                      outlined
+                      @click="retractSuggestion(suggestion)"
+                    >
+                      撤回
+                    </v-btn>
+                    <template v-if="userProfile.uuid === submission.author.uuid">
+                      <v-btn
+                        outlined
+                        small
+                        color="green"
+                        class="mr-2"
+                        @click="acceptSuggestion(suggestion)"
+                      >
+                        接受
+                      </v-btn>
+                    </template>
+                  </template>
+                  <template v-if="suggestion.status === 'retracted'">
+                    <v-btn
+                      v-if="userProfile.uuid === suggestion.author.uuid"
+                      small
+                      outlined
+                      @click="revertRetractSuggestion(suggestion)"
+                    >
+                      取消撤回
+                    </v-btn>
+                  </template>
+                </div>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+
+          <v-dialog v-model="showSuggestionPreviewDialog">
+            <v-card v-if="previewedSuggestion" :key="previewedSuggestion.uuid">
+              <v-chip-group v-if="previewedSuggestion.topics" class="px-5">
+                <v-chip
+                  small
+                  v-for="topic in previewedSuggestion.topics"
+                  :key="topic.uuid"
+                  :to="'/topics/' + topic.uuid"
+                >
+                  {{ topic.name }}
+                </v-chip>
+              </v-chip-group>
+              <v-card-title>{{ previewedSuggestion.title }}</v-card-title>
+              <v-card-text>
+                <SimpleViewer
+                  v-if="previewedSuggestion.description"
+                  :body="previewedSuggestion.description"
+                  :editor="previewedSuggestion.description_editor"
+                />
+              </v-card-text>
+            </v-card>
+          </v-dialog>
 
           <div v-if="!userProfile" class="mt-2 text-center">登录后参与讨论</div>
           <div>
@@ -305,6 +464,8 @@ import {
   ISubmissionArchive,
   IComment,
   IUserSubmissionSubscription,
+  ISubmissionSuggestion,
+  ITopic,
 } from '@/interfaces';
 import { rankComments } from '@/utils';
 import SimpleViewer from '@/components/SimpleViewer.vue';
@@ -322,9 +483,15 @@ import ShareCardButton from '@/components/ShareCardButton.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import Upvote from '@/components/Upvote.vue';
+import DotsIcon from '@/components/icons/DotsIcon.vue';
+import DeleteIcon from '@/components/icons/DeleteIcon.vue';
+import Diff from '@/components/widgets/Diff.vue';
 
 @Component({
   components: {
+    Diff,
+    DeleteIcon,
+    DotsIcon,
     Upvote,
     UpvotedBtn,
     UpvoteBtn,
@@ -378,6 +545,11 @@ export default class Submission extends Vue {
   private submissionSubscription: IUserSubmissionSubscription | null = null;
   private relatedSubmissions: ISubmission[] | null = null;
   private showUpdateDetailsButton = false;
+  private submissionSuggestions: ISubmissionSuggestion[] = [];
+
+  get suggestionEditable() {
+    return !this.editable && this.userProfile;
+  }
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -416,6 +588,7 @@ export default class Submission extends Vue {
       this.comments = [];
       this.relatedSubmissions = [];
       this.showUpdateDetailsButton = false;
+      this.submissionSuggestions = [];
       this.load();
     }
   }
@@ -438,6 +611,9 @@ export default class Submission extends Vue {
       if (this.token) {
         this.submissionSubscription = (
           await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
+        ).data;
+        this.submissionSuggestions = (
+          await apiSubmission.getSuggestions(this.token, this.submission!.uuid)
         ).data;
       }
     } catch (err) {
@@ -540,15 +716,22 @@ export default class Submission extends Vue {
           this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
-        const response = await apiSubmission.updateSubmission(this.token, this.submission.uuid, {
+        const payload: any = {
           title: this.newSubmissionTitle,
           description: descEditor.content || '',
           description_text: descEditor.getTextContent() || undefined,
           description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
-        });
-        if (response) {
-          this.submission = response.data;
+        };
+        if (this.editable) {
+          this.submission = (
+            await apiSubmission.updateSubmission(this.token, this.submission.uuid, payload)
+          ).data;
+        } else if (this.suggestionEditable) {
+          payload.submission_uuid = this.submission.uuid;
+          const submissionSuggestion = (await apiSubmission.createSuggestion(this.token, payload))
+            .data;
+          this.submissionSuggestions.splice(0, 0, submissionSuggestion);
         }
       }
       this.showSubmissionEditor = false;
@@ -608,7 +791,7 @@ export default class Submission extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       await apiSubmission.hideSubmission(this.$store.state.main.token, this.submission!.uuid);
       commitAddNotification(this.$store, {
-        content: this.$t('已隐藏').toString(),
+        content: '已隐藏',
         color: 'info',
       });
       this.$router.push(`/sites/${this.submission!.site.subdomain}`);
@@ -643,6 +826,72 @@ export default class Submission extends Vue {
         this.subscribeIntermediate = false;
       }
     });
+  }
+
+  private async acceptSuggestion(suggestion: ISubmissionSuggestion) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
+        status: 'accepted',
+        accepted_diff_base: {
+          title: this.submission!.title,
+          description: this.submission!.description,
+          description_text: this.submission!.description_text,
+          description_editor: this.submission!.description_editor,
+          topic_uuids: this.submission!.topics.map((topic) => topic.uuid),
+        },
+      });
+      this.$router.go(0);
+    });
+  }
+
+  private async rejectSuggestion(suggestion: ISubmissionSuggestion) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      const r = await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
+        status: 'rejected',
+      });
+      suggestion.status = r.data.status;
+      suggestion.rejected_at = r.data.rejected_at;
+    });
+  }
+
+  private async retractSuggestion(suggestion: ISubmissionSuggestion) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      const r = await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
+        status: 'retracted',
+      });
+      suggestion.status = r.data.status;
+      suggestion.retracted_at = r.data.retracted_at;
+    });
+  }
+
+  private async revertRetractSuggestion(suggestion: ISubmissionSuggestion) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      const r = await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
+        status: 'pending',
+      });
+      suggestion.status = r.data.status;
+    });
+  }
+
+  private topicNames(topics: ITopic[]) {
+    return topics
+      .map((topic) => topic.name)
+      .sort()
+      .join(', ');
+  }
+
+  private getDiffBase(suggestion: ISubmissionSuggestion) {
+    if (suggestion.status === 'accepted' && suggestion.accepted_diff_base) {
+      return suggestion.accepted_diff_base;
+    }
+    return this.submission;
+  }
+
+  private previewedSuggestion: ISubmissionSuggestion | null = null;
+  private showSuggestionPreviewDialog = false;
+  private previewSuggestion(suggestion: ISubmissionSuggestion) {
+    this.previewedSuggestion = suggestion;
+    this.showSuggestionPreviewDialog = true;
   }
 }
 </script>

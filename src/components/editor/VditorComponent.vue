@@ -135,8 +135,8 @@ export default class VditorComponent extends Vue {
 
   public getText(): string | null {
     return (
-      this.$el.querySelectorAll(`.vditor-${this.translateMode(this.getMode())}`)[0].textContent ||
-      null
+      (this.$el.querySelectorAll(`.vditor-${this.translateMode(this.getMode())}`)[0] as HTMLElement)
+        .innerText || null
     );
   }
 

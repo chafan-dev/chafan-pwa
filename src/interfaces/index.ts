@@ -1009,6 +1009,44 @@ export interface ISubmissionUpdate {
   topic_uuids?: string[];
 }
 
+export interface ISubmissionSuggestionCreate {
+  submission_uuid: string;
+  title: string;
+  description?: string;
+  description_text?: string;
+  description_editor?: editor_T;
+  topic_uuids?: string[];
+}
+
+export interface ISubmissionSuggestionUpdate {
+  status: 'pending' | 'accepted' | 'rejected' | 'retracted';
+  accepted_diff_base?: ISubmissionEditableSnapshot;
+}
+
+export interface ISubmissionEditableSnapshot {
+  title: string;
+  description?: string;
+  description_text?: string;
+  description_editor?: string;
+  topic_uuids?: string[];
+}
+
+export interface ISubmissionSuggestion {
+  uuid: string;
+  title: string;
+  description?: string;
+  description_text?: string;
+  description_editor?: string;
+  created_at: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'retracted';
+  accepted_at?: string;
+  rejected_at?: string;
+  retracted_at?: string;
+  author: IUserPreview;
+  topics?: ITopic[];
+  accepted_diff_base?: ISubmissionEditableSnapshot;
+}
+
 export interface ISubmission {
   uuid: string;
   title: string;

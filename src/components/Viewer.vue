@@ -41,7 +41,7 @@ export default class Viewer extends Vue {
 
   private onViewerReady(contentElem: HTMLElement) {
     postProcessViewerDOM(this.$store.state.main.token, contentElem);
-    this.textContent = contentElem.textContent;
+    this.textContent = contentElem.innerText;
   }
 
   private mounted() {
