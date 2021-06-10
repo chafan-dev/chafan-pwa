@@ -85,6 +85,13 @@
       >
 
       <router-link
+        v-if="event.content.submission_suggestion"
+        :to="`/submissions/${event.content.submission_suggestion.submission.uuid}/suggestions/${event.content.submission_suggestion.uuid}`"
+        place="submission_suggestion"
+        >{{ event.content.submission_suggestion.title }}</router-link
+      >
+
+      <router-link
         v-if="event.content.site"
         :to="`/sites/${event.content.site.subdomain}`"
         place="site"

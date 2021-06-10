@@ -236,7 +236,12 @@
           <!-- Suggestions -->
           <v-expansion-panels v-if="submission" class="mt-2">
             <v-expansion-panel v-for="suggestion in submissionSuggestions" :key="suggestion.uuid">
-              <v-expansion-panel-header :class="{ 'grey--text': suggestion.status !== 'pending' }">
+              <v-expansion-panel-header
+                :class="{
+                  'grey--text': suggestion.status !== 'pending',
+                  'primary--text': suggestion.uuid === submissionSuggestionUUID,
+                }"
+              >
                 <span>
                   <UserLink :show-avatar="true" :user-preview="suggestion.author" /> 的建议编辑：
                   <template v-if="suggestion.status === 'pending'">
@@ -557,6 +562,10 @@ export default class Submission extends Vue {
 
   get id() {
     return this.$route.params.id;
+  }
+
+  get submissionSuggestionUUID() {
+    return this.$route.params.submission_suggestion_id;
   }
 
   get userProfile() {
