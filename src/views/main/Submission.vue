@@ -217,7 +217,9 @@
               </v-card>
             </v-dialog>
           </div>
-          <ReactionBlock :objectId="submission.uuid" objectType="submission" />
+          <div class="d-flex justify-end">
+            <ReactionBlock :objectId="submission.uuid" objectType="submission" />
+          </div>
 
           <!-- Comments -->
           <CommentBlock
