@@ -3,8 +3,10 @@
     <v-row fluid justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
         <div class="mb-1">
-          <div class="headline primary--text mb-3">搜索结果</div>
-          <v-skeleton-loader type="paragraph" v-if="loading" />
+          <div class="headline primary--text mb-3">
+            搜索结果：{{ q }}
+            <v-progress-circular class="mb-1" indeterminate v-if="loading" size="20" />
+          </div>
           <SearchResults ref="searchResults" :card="true" />
         </div>
       </v-col>
