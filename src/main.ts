@@ -1018,6 +1018,7 @@ const i18n = new VueI18n({
         '{who} 兑换了回答问题「{question}」的{reward_coin_amount}个硬币的奖励',
       'verb.create_submission': '{who}创建了分享「{submission}」',
       'verb.create_submission_suggestion': '{who}添加了对分享的建议编辑「{submission_suggestion}」',
+      'verb.accept_submission_suggestion': '{who}采纳了对分享的建议编辑「{submission_suggestion}」',
       'verb.create_site': '{who}创建了圈子「{site}」',
       'verb.upvote_submission': '{who}赞了分享「{submission}」',
       'verb.comment_submission': '{who}评论了你的分享「{submission}」：「{comment}」',
