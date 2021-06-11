@@ -472,7 +472,7 @@ import {
   ISubmissionSuggestion,
   ITopic,
 } from '@/interfaces';
-import { rankComments } from '@/utils';
+import { getLocalCache, rankComments, saveLocalCache } from '@/utils';
 import SimpleViewer from '@/components/SimpleViewer.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
@@ -612,11 +612,24 @@ export default class Submission extends Vue {
     await this.load();
   }
 
-  private async load() {
+  private async load(reloadOnExpire: boolean = true) {
     try {
-      const response = await apiSubmission.getSubmission(this.token, this.id);
-      this.submission = response.data;
-      updateHead(this.$route.path, this.submission?.title, this.submission?.description_text);
+      const cached = getLocalCache(`submission-${this.id}`);
+      if (cached) {
+        this.submission = cached;
+        if (reloadOnExpire) {
+          apiSubmission.getSubmission(this.token, this.id).then((r) => {
+            this.submission = r.data;
+            saveLocalCache(`submission-${this.id}`, r.data);
+            this.load(false);
+          });
+        }
+      } else {
+        const response = await apiSubmission.getSubmission(this.token, this.id);
+        this.submission = response.data;
+        saveLocalCache(`submission-${this.id}`, response.data);
+      }
+      updateHead(this.$route.path, this.submission!.title, this.submission?.description_text);
       if (this.token) {
         this.submissionSubscription = (
           await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
