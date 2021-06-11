@@ -79,6 +79,15 @@
                 class="my-2"
               />
             </div>
+            <div class="d-flex justify-end" v-if="submission.contributors.length">
+              <span class="text-caption grey--text">
+                编辑贡献者:
+                <template v-for="(contributor, idx) in submission.contributors">
+                  <span :key="idx" v-if="idx">, </span>
+                  <UserLink :key="idx" :user-preview="contributor" :show-avatar="false" />
+                </template>
+              </span>
+            </div>
           </div>
 
           <v-dialog v-model="historyDialog" max-width="900">

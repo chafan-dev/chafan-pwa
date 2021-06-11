@@ -1067,6 +1067,7 @@ export interface ISubmission {
   topics: ITopic[];
   upvotes_count: number;
   author: IUserPreview;
+  contributors: IUserPreview[];
   comments: IComment[];
   site: ISite;
   upvoted: boolean;
