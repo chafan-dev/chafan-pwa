@@ -82,7 +82,7 @@
             small
             @click="goToCurrentUserAnswer"
           >
-            {{ $t('我的回答') }}
+            我的回答
           </v-btn>
 
           <v-btn
@@ -92,7 +92,8 @@
             depressed
             small
             @click="loadSavedLocalEdit"
-            >{{ $t('载入本地草稿') }}
+          >
+            载入本地草稿
           </v-btn>
 
           <v-btn
@@ -102,7 +103,8 @@
             depressed
             small
             @click="showEditor = !showEditor"
-            >{{ $t('写回答') }}
+          >
+            写回答
           </v-btn>
 
           <v-tooltip v-else bottom>
@@ -117,10 +119,10 @@
                 plain
                 small
               >
-                {{ $t('写回答') }}
+                写回答
               </v-btn>
             </template>
-            <span>{{ $t('该圈子仅会员可以写回答') }}</span>
+            <span>该圈子仅会员可以写回答</span>
           </v-tooltip>
 
           <CommentBtn class="mr-1" @click="toggleShowComments" :count="question.comments.length" />
@@ -144,8 +146,8 @@
             v-show="editable"
           >
             <EditIcon />
-            <span v-if="showUpdateDetailsButton">{{ $t('添加细节') }}</span>
-            <span v-else>{{ $t('编辑') }}</span>
+            <span v-if="showUpdateDetailsButton">添加细节</span>
+            <span v-else>编辑</span>
           </v-btn>
 
           <ShareCardButton
@@ -165,15 +167,11 @@
                   </p>
                   <p>
                     <CommentsIcon class="mr-1" small />
-                    <span class="text-caption">
-                      {{ $t('n条评论', { n: question.comments.length }) }}
-                    </span>
+                    <span class="text-caption"> {{ question.comments.length }}条评论 </span>
                   </p>
                   <p>
                     <AnswerIcon class="mr-1" small />
-                    <span class="text-caption">
-                      {{ $t('n个回答', { n: question.answers_count }) }}
-                    </span>
+                    <span class="text-caption"> {{ question.answers_count }}个回答 </span>
                   </p>
                 </div>
                 <v-spacer />
@@ -202,9 +200,9 @@
           <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
               <v-card-title primary-title>
-                <div class="headline primary--text">{{ $t('问题历史') }}</div>
+                <div class="headline primary--text">问题历史</div>
                 <v-spacer></v-spacer>
-                <span class="text-caption grey--text">{{ $t('点击展开') }}</span>
+                <span class="text-caption grey--text">点击展开</span>
               </v-card-title>
               <v-expansion-panels>
                 <v-expansion-panel v-for="archive in archives" :key="archive.id">

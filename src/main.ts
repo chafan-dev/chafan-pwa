@@ -695,11 +695,6 @@ const i18n = new VueI18n({
       回答问题: '回答问题',
       Rewards: '奖励',
       Reward: '奖励',
-      'Reward is the amount of coins rewarded to the invited user when the user published an answer.':
-        '当你邀请的用户回答问题后，该用户会收到制定的奖励银币数额',
-      "The coins will be first deducted from your account, and you can reclaim it after the reward expired (if the user doens't post an answer in one week).":
-        '这部分硬币会先从你的账户扣除。如果被邀请的用户没有在奖励失效前（一周）回答问题的话，你可以将预扣取的银币拿回',
-      'You can check all your rewards in ': '查看你的收到/发出的所有奖励：',
       普通用户模式: '普通用户模式',
       管理员模式: '管理员模式',
       导出: '导出',
