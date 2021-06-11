@@ -1,28 +1,28 @@
 <template>
   <div class="pb-2">
-    <div class="headline primary--text">{{ $t('问题信息') }}</div>
+    <div class="headline primary--text">问题信息</div>
     <div class="my-2">
-      {{ $t('提问者：') }}
+      提问者：
       <UserLink :userPreview="question.author"></UserLink>
     </div>
     <div v-if="questionSubscription" class="my-2">
-      {{ $t('关注人数：') }} {{ questionSubscription.subscription_count }}
+      关注人数：{{ questionSubscription.subscription_count }}
     </div>
     <div v-if="userProfile" class="my-2">
-      <v-btn color="primary" depressed small @click="showInviteToAnswerDialog = true"
-        >{{ $t('邀请回答') }}
+      <v-btn color="primary" depressed small @click="showInviteToAnswerDialog = true">
+        邀请回答
       </v-btn>
 
       <v-dialog v-model="showInviteToAnswerDialog" max-width="500">
         <v-card>
           <v-card-title primary-title>
-            <div class="headline primary--text">{{ $t('邀请回答') }}</div>
+            <div class="headline primary--text">邀请回答</div>
           </v-card-title>
           <v-card-text>
-            <UserSearch v-model="invitedUserId" />
+            <UserSearch v-model="invitedUserId" :return-self="false" />
             <v-slider
               v-model="inviteToAnswerRewardCoinAmount"
-              :label="$t('Reward')"
+              label="硬币奖励数量"
               :tick-labels="[0, 1, 2, 3, 4]"
               class="mt-2"
               max="4"
@@ -32,28 +32,22 @@
               ticks="always"
             />
             <div class="text-caption grey--text">
-              {{
-                $t(
-                  'Reward is the amount of coins rewarded to the invited user when the user published an answer.'
-                )
-              }}
-              {{
-                $t(
-                  "The coins will be first deducted from your account, and you can reclaim it after the reward expired (if the user doens't post an answer in one week)."
-                )
-              }}
-              {{ $t('You can check all your rewards in ') + $t('Dashboard') }}.
+              当你邀请的用户回答问题后，该用户会收到指定数额的硬币作为奖励，
+              这部分硬币会先从你的账户扣除。如果被邀请的用户没有在奖励失效前（一周）回答问题的话，你可以将预扣取的硬币拿回。
+              <router-link class="text-decoration-none" to="/dashboard?tab=coins"
+                >查看你的收到/发出的所有奖励</router-link
+              >。
             </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" depressed small @click="inviteAnswer">{{ $t('提交') }}</v-btn>
+            <v-btn color="primary" depressed small @click="inviteAnswer">确认</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </div>
     <span v-if="question.view_times" class="text-caption grey--text">
-      {{ $t('问题已经被浏览n次', { times: question.view_times }) }}
+      问题已经被浏览{{ question.view_times }}次
     </span>
     <template v-if="relatedQuestions">
       <v-divider class="my-2" />
