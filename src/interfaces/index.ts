@@ -1023,6 +1023,7 @@ export interface ISubmissionSuggestionCreate {
   description_text?: string;
   description_editor?: editor_T;
   topic_uuids?: string[];
+  comment?: string;
 }
 
 export interface ISubmissionSuggestionUpdate {
@@ -1053,6 +1054,7 @@ export interface ISubmissionSuggestion {
   submission: ISubmission;
   topics?: ITopic[];
   accepted_diff_base?: ISubmissionEditableSnapshot;
+  comment?: string;
 }
 
 export interface ISubmission {

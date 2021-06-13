@@ -79,7 +79,10 @@
                 class="my-2"
               />
             </div>
-            <div class="d-flex justify-end" v-if="submission.contributors.length">
+            <div
+              class="d-flex justify-end"
+              v-if="submission.contributors.length && !showSubmissionEditor"
+            >
               <span class="text-caption grey--text">
                 编辑贡献者:
                 <template v-for="(contributor, idx) in submission.contributors">
@@ -87,6 +90,11 @@
                   <UserLink :key="idx" :user-preview="contributor" :show-avatar="false" />
                 </template>
               </span>
+            </div>
+
+            <!-- Suggestion comment -->
+            <div v-if="suggestionEditable && showSubmissionEditor">
+              <v-text-field label="附言（可选）" v-model="newSuggestionCommment" clearable />
             </div>
           </div>
 
@@ -268,6 +276,9 @@
                 </span>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
+                <div v-if="suggestion.comment">
+                  <span class="font-weight-bold">附言：</span>{{ suggestion.comment }}
+                </div>
                 <template v-if="suggestion.status === 'accepted' && suggestion.accepted_diff_base">
                   <div
                     v-if="
@@ -275,10 +286,8 @@
                       suggestion.title !== undefined
                     "
                   >
-                    标题改动：<Diff
-                      :s1="suggestion.accepted_diff_base.title"
-                      :s2="suggestion.title"
-                    />
+                    <span class="font-weight-bold">标题改动：</span
+                    ><Diff :s1="suggestion.accepted_diff_base.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
@@ -286,7 +295,8 @@
                         suggestion.description_text && suggestion.description_text !== undefined
                     "
                   >
-                    描述改动：<Diff
+                    <span class="font-weight-bold">描述改动：</span
+                    ><Diff
                       :s1="suggestion.accepted_diff_base.description_text || ''"
                       :s2="suggestion.description_text"
                     />
@@ -296,7 +306,8 @@
                   <div
                     v-if="submission.title !== suggestion.title && suggestion.title !== undefined"
                   >
-                    标题改动：<Diff :s1="submission.title" :s2="suggestion.title" />
+                    <span class="font-weight-bold">标题改动：</span
+                    ><Diff :s1="submission.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
@@ -304,14 +315,16 @@
                       suggestion.description_text !== undefined
                     "
                   >
-                    描述改动：<Diff
+                    <span class="font-weight-bold">描述改动：</span
+                    ><Diff
                       :s1="submission.description_text || ''"
                       :s2="suggestion.description_text"
                     />
                   </div>
                   <div v-if="suggestion.topics">
                     <!-- FIXME: the topics of stored accepted diff base is not processed properly -->
-                    话题改动：<Diff
+                    <span class="font-weight-bold">话题改动：</span
+                    ><Diff
                       v-if="suggestion.topics"
                       :s1="topicNames(submission.topics)"
                       :s2="topicNames(suggestion.topics)"
@@ -560,6 +573,7 @@ export default class Submission extends Vue {
   private relatedSubmissions: ISubmission[] | null = null;
   private showUpdateDetailsButton = false;
   private submissionSuggestions: ISubmissionSuggestion[] = [];
+  private newSuggestionCommment: string | null = null;
 
   get suggestionEditable() {
     return !this.editable && this.userProfile;
@@ -760,6 +774,9 @@ export default class Submission extends Vue {
           ).data;
         } else if (this.suggestionEditable) {
           payload.submission_uuid = this.submission.uuid;
+          if (this.newSuggestionCommment) {
+            payload.comment = this.newSuggestionCommment;
+          }
           const submissionSuggestion = (await apiSubmission.createSuggestion(this.token, payload))
             .data;
           this.submissionSuggestions.splice(0, 0, submissionSuggestion);
