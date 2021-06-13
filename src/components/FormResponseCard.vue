@@ -8,9 +8,9 @@
     </v-card-title>
     <div v-if="welcomeTestFormUUID === formResponse.form.uuid" class="ma-2">
       <div class="ml-2">
-        {{ $t('感谢你花时间回答「新手上路问卷」！') }}
-        <v-btn color="primary" depressed small @click="checkWelcomeTestScoreAndClaimRewards"
-          >{{ $t('查看成绩和领取奖励') }}
+        感谢你花时间回答「新手上路问卷」！
+        <v-btn color="primary" depressed small @click="checkWelcomeTestScoreAndClaimRewards">
+          查看成绩和领取奖励
         </v-btn>
       </div>
       <v-dialog
@@ -21,29 +21,25 @@
         <v-card>
           <v-card-title primary-title>
             <div v-if="claimWelcomeTestScoreMsg.success" class="headline primary--text">
-              {{ $t('考核及格，发放奖励') }}
+              考试及格，发放奖励
             </div>
-            <div v-else class="headline primary--text">
-              {{ $t('考核不及格') }}
-            </div>
+            <div v-else class="headline primary--text">考试不及格，请继续尝试</div>
           </v-card-title>
           <v-card-text>
             <div class="ma-2">
-              {{ $t('成绩') }}: {{ claimWelcomeTestScoreMsg.scores.score }}/{{
+              成绩: {{ claimWelcomeTestScoreMsg.scores.score }}/{{
                 claimWelcomeTestScoreMsg.scores.full_score
               }}
             </div>
             <div v-if="claimWelcomeTestScoreMsg.success" class="ma-2">
-              {{ $t('奖励硬币数量') }}:
+              奖励硬币数量：
               {{ claimWelcomeTestScoreMsg.scores.score }}
             </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn v-if="claimWelcomeTestScoreMsg.success" depressed small to="/"
-              >{{ $t('回到首页') }}
-            </v-btn>
-            <v-btn v-else depressed small @click="retryWelcomeTest">{{ $t('重试') }}</v-btn>
+            <v-btn v-if="claimWelcomeTestScoreMsg.success" depressed small to="/"> 回到首页 </v-btn>
+            <v-btn v-else depressed small @click="retryWelcomeTest">重试</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -56,7 +52,7 @@
         flat
         outlined
       >
-        <span>{{ field.field_type.desc }}</span>
+        <span>{{ field.field_content.desc }}</span>
         <div v-if="field.field_content.field_type_name === 'text_response_field'">
           <v-textarea v-model="field.field_content.text" disabled />
         </div>
