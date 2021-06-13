@@ -33,13 +33,12 @@
   padding-right: 6px !important;
 }
 
-/* FIXME: Potential code duplication with Home.vue */
 .fixed-narrow-col {
-  max-width: 800px;
+  max-width: 800px !important;
 }
 
 .fixed-narrow-sidecol {
-  max-width: 400px;
+  max-width: 400px !important;
 }
 
 // Editor/Preview
