@@ -46,14 +46,7 @@
             <div v-if="!showQuestionEditor" class="text-h5">
               {{ question.title }}
             </div>
-            <v-textarea
-              v-else
-              v-model="newQuestionTitle"
-              :label="$t('Title')"
-              auto-grow
-              dense
-              rows="1"
-            />
+            <v-textarea v-else v-model="newQuestionTitle" label="标题" auto-grow dense rows="1" />
           </div>
 
           <!-- Question description display/editor -->
@@ -66,7 +59,7 @@
             <SimpleEditor
               ref="descEditor"
               :initialValue="question.description"
-              :placeholder="$t('描述（选填）')"
+              placeholder="描述（选填）"
               :show-menu="true"
               class="mb-2"
             />
@@ -779,14 +772,14 @@ export default class Question extends Vue {
     this.commitQuestionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       const descEditor = this.$refs.descEditor as SimpleEditor;
-      if (this.question && descEditor.content) {
+      if (this.question && (this.newQuestionTitle || descEditor.content)) {
         const responses = await Promise.all(
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
         const response = await apiQuestion.updateQuestion(this.token, this.question.uuid, {
           title: this.newQuestionTitle,
-          description: descEditor.content,
+          description: descEditor.content || undefined,
           description_text: descEditor.getTextContent() || undefined,
           description_editor: descEditor.editor,
           topic_uuids: topicsUUIDs,
