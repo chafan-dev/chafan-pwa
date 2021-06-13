@@ -41,7 +41,7 @@
             />
 
             <!-- Submission title display/editor -->
-            <div>
+            <div class="pt-1">
               <div v-if="!showSubmissionEditor" class="text-h5 mb-2">
                 {{ submission.title }}
               </div>

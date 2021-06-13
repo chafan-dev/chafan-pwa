@@ -42,7 +42,7 @@
           />
 
           <!-- Question title display/editor -->
-          <div>
+          <div class="pt-1">
             <div v-if="!showQuestionEditor" class="text-h5">
               {{ question.title }}
             </div>

@@ -128,6 +128,39 @@
                     </v-card>
                   </v-dialog>
 
+                  <ShareCardButton
+                    :link="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
+                    :link-text="answer.question.title + ` - ${answer.author.handle} 的回答`"
+                    v-slot="{ shareQrCodeUrl }"
+                  >
+                    <v-card-title>
+                      {{ answer.question.title }}
+                    </v-card-title>
+                    <v-card-text>
+                      <div class="pt-2 d-flex">
+                        <div>
+                          <div class="text--primary text-body-1">
+                            <div class="pa-1 text-center" style="float: right">
+                              <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                              <span class="text-caption">查看原文</span>
+                            </div>
+                            <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
+                          </div>
+                          <div>
+                            <UserLink :showAvatar="true" :userPreview="answer.author" />
+                            <span
+                              v-if="answer.author.personal_introduction"
+                              :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+                              class="grey--text ml-2"
+                            >
+                              {{ answer.author.personal_introduction }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </v-card-text>
+                  </ShareCardButton>
+
                   <span
                     v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
                     style="cursor: pointer"
@@ -145,39 +178,6 @@
                     <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
                   </span>
                 </template>
-
-                <ShareCardButton
-                  :link="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
-                  :link-text="answer.question.title + ` - ${answer.author.handle} 的回答`"
-                  v-slot="{ shareQrCodeUrl }"
-                >
-                  <v-card-title>
-                    {{ answer.question.title }}
-                  </v-card-title>
-                  <v-card-text>
-                    <div class="pt-2 d-flex">
-                      <div>
-                        <div class="text--primary text-body-1">
-                          <div class="pa-1 text-center" style="float: right">
-                            <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
-                            <span class="text-caption">查看原文</span>
-                          </div>
-                          <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
-                        </div>
-                        <div>
-                          <UserLink :showAvatar="true" :userPreview="answer.author" />
-                          <span
-                            v-if="answer.author.personal_introduction"
-                            :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
-                            class="grey--text ml-2"
-                          >
-                            {{ answer.author.personal_introduction }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </v-card-text>
-                </ShareCardButton>
 
                 <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
               </div>
