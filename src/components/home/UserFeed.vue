@@ -19,7 +19,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn primary small depressed @click="usersDialog = false">{{ $t('隐藏') }}</v-btn>
+            <v-btn primary small depressed @click="usersDialog = false">隐藏</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -30,11 +30,11 @@
           <!-- Column for subject and verb -->
           <div v-if="activity.verb === 'follow_user'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-            {{ $t('follows') }}
+            关注了用户
           </div>
           <div v-else-if="activity.verb === 'upvote_answer'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-            {{ $t('upvotes answer') }}
+            赞了回答
           </div>
           <div v-else-if="activity.verb === 'upvote_question'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
@@ -42,52 +42,52 @@
           </div>
           <div v-else-if="activity.verb === 'upvote_submission'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-            {{ $t('upvoted submission') }}
+            赞了分享
           </div>
           <div v-else-if="activity.verb === 'upvote_article'">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-            {{ $t('upvoted article') }}
+            赞了文章
           </div>
 
           <div v-else-if="activity.verb === 'follow_article_column'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('followed column') }}
+            关注了专栏
           </div>
           <div v-else-if="activity.verb === 'comment_question'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('commented question') }}
+            评论了问题
           </div>
           <div v-else-if="activity.verb === 'comment_submission'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('commented submission') }}
+            评论了分享
           </div>
           <div v-else-if="activity.verb === 'comment_article'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('commented article') }}
+            评论了文章
           </div>
           <div v-else-if="activity.verb === 'comment_answer'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('commented answer') }}
+            评论了回答
           </div>
           <div v-else-if="activity.verb === 'reply_comment'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('replied comment') }}
+            回复了评论
           </div>
           <div v-else-if="activity.verb === 'create_article'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('created article') }}
+            发表了文章
           </div>
           <div v-else-if="activity.verb === 'answer_question'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('answered question') }}
+            回答了问题
           </div>
           <div v-else-if="activity.verb === 'create_question'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('creates question') }}
+            提了一个问题
           </div>
           <div v-else-if="activity.verb === 'create_submission'">
             <UserLink :userPreview="activity.event.content.subject" />
-            {{ $t('created submission') }}
+            添加了分享
           </div>
           <span class="text-caption grey--text mr-3">{{
             $dayjs.utc(activity.created_at).local().fromNow()
@@ -106,11 +106,7 @@
                 class="text-decoration-none"
                 @click="showUsersDialog(activity.event.content.users)"
               >
-                {{
-                  $t('等x人', {
-                    n: activity.event.content.users.length,
-                  })
-                }}
+                等{{ activity.event.content.users.length }}人
               </a>
             </template>
             <UserCard
@@ -189,7 +185,7 @@
           color="primary"
           indeterminate
         />
-        <span v-if="noMoreNewActivities">{{ $t('No more new activities.') }}</span>
+        <span v-if="noMoreNewActivities">没有更多新动态了</span>
       </div>
     </div>
   </div>
