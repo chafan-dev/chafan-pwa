@@ -12,8 +12,8 @@ import { apiUrl } from '@/env';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiSite = {
-  async getSite(token: string, subdomain: string) {
-    return axios.get<ISite>(`${apiUrl}/api/v1/sites/${subdomain}`, authHeaders(token));
+  async getSite(subdomain: string) {
+    return axios.get<ISite>(`${apiUrl}/api/v1/sites/${subdomain}`);
   },
   async getSiteQuestions(token: string, siteUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();

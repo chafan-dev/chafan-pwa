@@ -36,6 +36,7 @@ export interface IUserProfile {
   karma: number;
   enable_deliver_unread_notifications: boolean;
   default_editor_mode: editor_T;
+  feed_settings?: IUserFeedSettings;
 }
 
 export interface IUserSiteProfile {
@@ -497,6 +498,7 @@ export interface IActivity {
   site_uuid: string;
   verb: string;
   event: IEvent;
+  origins?: IOrigin[];
 }
 
 export interface ICommentCreate {
@@ -1155,10 +1157,15 @@ export interface IWebhook {
 
 export interface IOriginSite {
   origin_type: 'site';
-  uuid: string;
+  subdomain: string;
 }
 
 export type IOrigin = IOriginSite;
+
+export interface IUpdateOrigins {
+  action: 'add' | 'remove';
+  origin: IOrigin;
+}
 
 export interface IUserFeedSettings {
   blocked_origins: IOrigin[];
