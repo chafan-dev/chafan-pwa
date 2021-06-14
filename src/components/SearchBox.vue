@@ -11,7 +11,7 @@
       offset-y
       :close-on-content-click="false"
     >
-      <div>
+      <div style="min-width: 220px">
         <SearchResults ref="searchResults" :query="currentQuery" :onReady="onReady" />
         <div style="background: white">
           <v-divider class="mx-1 mb-1" />
