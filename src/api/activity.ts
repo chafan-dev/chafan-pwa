@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IActivity } from '@/interfaces';
-import { authHeadersWithParams } from '@/utils';
+import { IActivity, IUserFeedSettings, IOrigin, IMsg } from '@/interfaces';
+import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiActivity = {
   async getActivities(
@@ -30,6 +30,19 @@ export const apiActivity = {
     return axios.get<IActivity[]>(
       `${apiUrl}/api/v1/activities/new/`,
       authHeadersWithParams(token, params)
+    );
+  },
+  async getSettings(token: string) {
+    return axios.get<IUserFeedSettings>(
+      `${apiUrl}/api/v1/activities/settings/`,
+      authHeaders(token)
+    );
+  },
+  async blockOrigin(token: string, origin: IOrigin) {
+    return axios.post<IMsg>(
+      `${apiUrl}/api/v1/activities/settings/blocked-origins/`,
+      origin,
+      authHeaders(token)
     );
   },
 };

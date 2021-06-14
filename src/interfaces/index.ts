@@ -1158,7 +1158,7 @@ export interface IOriginSite {
   uuid: string;
 }
 
-type IOrigin = IOriginSite;
+export type IOrigin = IOriginSite;
 
 export interface IUserFeedSettings {
   blocked_origins: IOrigin[];
