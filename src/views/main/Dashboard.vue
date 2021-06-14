@@ -46,6 +46,23 @@
                 item-value="value"
                 @change="onChangeEditorMode"
               />
+              <div v-if="userProfile.feed_settings">
+                <div v-if="userProfile.feed_settings.blocked_origins.length" class="pb-4">
+                  <span
+                    >动态中过滤的内容：
+                    <v-chip
+                      small
+                      v-for="(origin, idx) in userProfile.feed_settings.blocked_origins"
+                      :key="idx"
+                    >
+                      <template v-if="origin.origin_type === 'site'">
+                        <SiteName :subdomain="origin.subdomain" />
+                        <CloseIcon @click="unblockOrigin(origin)" class="ml-1" />
+                      </template>
+                    </v-chip>
+                  </span>
+                </div>
+              </div>
               <div>
                 <div class="d-flex">
                   <v-btn class="mr-2" depressed small @click="showExportDialog = true">导出 </v-btn>
@@ -364,7 +381,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { readUserProfile } from '@/store/main/getters';
+import { readToken, readUserProfile } from '@/store/main/getters';
 import {
   editor_T,
   IAnswerPreview,
@@ -373,6 +390,7 @@ import {
   IArticlePreview,
   IChannel,
   ICoinPayment,
+  IOrigin,
   IQuestionPreview,
   IReward,
   ISubmission,
@@ -397,9 +415,14 @@ import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
+import SiteName from '@/components/SiteName.vue';
+import { apiActivity } from '@/api/activity';
 
 @Component({
   components: {
+    SiteName,
+    CloseIcon,
     EmptyPlaceholder,
     DynamicItemList,
     QuestionPreview,
@@ -537,30 +560,30 @@ export default class Dashboard extends Vue {
 
         this.enableEmailNotifications = this.userProfile.enable_deliver_unread_notifications;
 
-        api.getMyArticleColumns(this.$store.state.main.token).then((r) => {
+        api.getMyArticleColumns(this.token).then((r) => {
           this.myArticleColumns = r.data;
           this.articleColumnsIntermediate = false;
         });
 
-        apiMe.getMyChannels(this.$store.state.main.token).then((r) => {
+        apiMe.getMyChannels(this.token).then((r) => {
           this.myChannels = r.data;
           this.channelsIntermediate = false;
         });
 
-        api.getRewards(this.$store.state.main.token).then((r) => {
+        api.getRewards(this.token).then((r) => {
           this.myRewards = r.data;
           this.rewardsIntermediate = false;
         });
 
-        api2.getCoinPayments(this.$store.state.main.token).then((r) => {
+        api2.getCoinPayments(this.token).then((r) => {
           this.coinPayments = r.data;
           this.coinPaymentsIntermediate = false;
         });
 
-        api.getAnswerDrafts(this.$store.state.main.token).then((r) => {
+        api.getAnswerDrafts(this.token).then((r) => {
           this.myAnswerDrafts = r.data;
         });
-        api.getArticleDrafts(this.$store.state.main.token).then((r) => {
+        api.getArticleDrafts(this.token).then((r) => {
           this.myArticleDrafts = r.data;
         });
       }
@@ -570,7 +593,7 @@ export default class Dashboard extends Vue {
   private async loadSubscribedQuestions(skip: number, limit: number) {
     let items: (IQuestionPreview | null)[] | null = null;
     await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getSubscribedQuestions(this.$store.state.main.token, skip, limit)).data;
+      items = (await apiMe.getSubscribedQuestions(this.token, skip, limit)).data;
     });
     return items;
   }
@@ -578,8 +601,7 @@ export default class Dashboard extends Vue {
   private async loadSubscribedSubmissions(skip: number, limit: number) {
     let items: (ISubmission | null)[] | null = null;
     await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getSubscribedSubmissions(this.$store.state.main.token, skip, limit))
-        .data;
+      items = (await apiMe.getSubscribedSubmissions(this.token, skip, limit)).data;
     });
     return items;
   }
@@ -587,7 +609,7 @@ export default class Dashboard extends Vue {
   private async loadBookmarkedAnswers(skip: number, limit: number) {
     let items: (IAnswerPreview | null)[] | null = null;
     await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getAnswerBookmarks(this.$store.state.main.token, skip, limit)).data;
+      items = (await apiMe.getAnswerBookmarks(this.token, skip, limit)).data;
     });
     return items;
   }
@@ -595,7 +617,7 @@ export default class Dashboard extends Vue {
   private async loadBookmarkedArticles(skip: number, limit: number) {
     let items: (IArticlePreview | null)[] | null = null;
     await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getArticleBookmarks(this.$store.state.main.token, skip, limit)).data;
+      items = (await apiMe.getArticleBookmarks(this.token, skip, limit)).data;
     });
     return items;
   }
@@ -610,10 +632,7 @@ export default class Dashboard extends Vue {
     }
     await dispatchCaptureApiError(this.$store, async () => {
       this.commitNewArticleColumnIntermediate = true;
-      const response = await apiArticle.createArticleColumn(
-        this.$store.state.main.token,
-        this.newArticleColumn
-      );
+      const response = await apiArticle.createArticleColumn(this.token, this.newArticleColumn);
       await this.$router.push(`/article-columns/${response.data.uuid}`);
     });
   }
@@ -622,7 +641,7 @@ export default class Dashboard extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.changingMySettings = true;
       const newProfile = (
-        await apiMe.updateMe(this.$store.state.main.token, {
+        await apiMe.updateMe(this.token, {
           enable_deliver_unread_notifications: this.enableEmailNotifications,
         })
       ).data;
@@ -639,7 +658,7 @@ export default class Dashboard extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.changingMySettings = true;
       const newProfile = (
-        await apiMe.updateMe(this.$store.state.main.token, {
+        await apiMe.updateMe(this.token, {
           default_editor_mode: this.selectedEditorMode,
         })
       ).data;
@@ -656,7 +675,7 @@ export default class Dashboard extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       const idx = this.myRewards.indexOf(reward);
       this.myRewards.splice(idx, 1);
-      const newReward = (await api.claimReward(this.$store.state.main.token, reward.id)).data;
+      const newReward = (await api.claimReward(this.token, reward.id)).data;
       this.myRewards.splice(idx, 0, newReward);
     });
   }
@@ -679,6 +698,19 @@ export default class Dashboard extends Vue {
     }
     this.changingMySettings = false;
     this.$router.go(0);
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
+  private async unblockOrigin(origin: IOrigin) {
+    await apiActivity.updateOrigins(this.token, { action: 'remove', origin });
+    await commitAddNotification(this.$store, {
+      color: 'info',
+      content: '过滤规则更新成功，稍后自动生效',
+    });
+    await this.$router.go(0);
   }
 }
 </script>

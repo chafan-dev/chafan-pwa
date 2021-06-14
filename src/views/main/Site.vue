@@ -220,7 +220,7 @@ export default class Site extends Vue {
 
   private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.site = (await apiSite.getSite(this.token, this.subdomain)).data;
+      this.site = (await apiSite.getSite(this.subdomain)).data;
       updateHead(this.$route.path, this.site.name, this.site?.description);
 
       if (this.userProfile) {

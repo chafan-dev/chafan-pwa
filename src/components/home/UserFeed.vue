@@ -89,10 +89,42 @@
             <UserLink :userPreview="activity.event.content.subject" />
             添加了分享
           </div>
-          <span class="text-caption grey--text mr-3">{{
-            $dayjs.utc(activity.created_at).local().fromNow()
-          }}</span>
+          <div>
+            <span class="text-caption grey--text mr-1">{{
+              $dayjs.utc(activity.created_at).local().fromNow()
+            }}</span>
+            <v-menu offset-y v-if="activity.origins">
+              <template v-slot:activator="{ on, attrs }">
+                <DotsIcon small v-bind="attrs" v-on="on" />
+              </template>
+              <v-list>
+                <!-- block origin actions -->
+                <template v-if="activity.origins">
+                  <v-list-item
+                    v-for="(origin, idx) in activity.origins"
+                    dense
+                    :key="idx"
+                    @click="blockOrigin(origin)"
+                  >
+                    <v-list-item-icon>
+                      <CloseIcon />
+                    </v-list-item-icon>
+                    <v-list-item-content class="text-caption">
+                      <span
+                        >减少
+                        <template v-if="origin.origin_type === 'site'">
+                          「<SiteName :subdomain="origin.subdomain" />」圈子
+                        </template>
+                        的推送
+                      </span>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-list>
+            </v-menu>
+          </div>
         </v-row>
+
         <!-- Row for content preview if any -->
         <div>
           <div v-if="activity.verb === 'follow_user'">
@@ -195,7 +227,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { CombinedActivities } from '@/CombinedActivities';
-import { IActivity, IUserPreview, IUserProfile } from '@/interfaces';
+import { IActivity, IOrigin, IUserPreview, IUserProfile } from '@/interfaces';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
 import UserWelcome from '@/components/home/UserWelcome.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
@@ -223,9 +255,15 @@ import { EXPLORE_SITES } from '@/common';
 import ActivitySubject from '@/components/ActivitySubject.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { apiActivity } from '@/api/activity';
+import DotsIcon from '@/components/icons/DotsIcon.vue';
+import SiteName from '@/components/SiteName.vue';
+import { readToken } from '@/store/main/getters';
+import { commitAddNotification } from '@/store/main/mutations';
 
 @Component({
   components: {
+    SiteName,
+    DotsIcon,
     EmptyPlaceholder,
     ActivitySubject,
     UserFeed,
@@ -271,7 +309,7 @@ export default class UserFeed extends Vue {
 
   private async loadActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const response = await apiActivity.getActivities(this.$store.state.main.token, {
+      const response = await apiActivity.getActivities(this.token, {
         limit: this.loadingLimit,
         subjectUserUUID: this.subjectUserUuid,
       });
@@ -322,7 +360,7 @@ export default class UserFeed extends Vue {
     const minActivityId = this.combinedActivities.minActivityId;
     if (minActivityId !== null) {
       await dispatchCaptureApiError(this.$store, async () => {
-        const response = await apiActivity.getActivities(this.$store.state.main.token, {
+        const response = await apiActivity.getActivities(this.token, {
           limit: this.loadingLimit,
           before_activity_id: minActivityId,
           subjectUserUUID: this.subjectUserUuid,
@@ -346,7 +384,7 @@ export default class UserFeed extends Vue {
       const newActivities: IActivity[] = [];
       let fetching = true;
       while (fetching) {
-        const response = await apiActivity.getActivities(this.$store.state.main.token, {
+        const response = await apiActivity.getActivities(this.token, {
           limit: this.loadingLimit,
           before_activity_id: before_activity_id,
         });
@@ -376,6 +414,19 @@ export default class UserFeed extends Vue {
   private showUsersDialog(users: IUserPreview[]) {
     this.usersInDialog = users;
     this.usersDialog = true;
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
+  private async blockOrigin(origin: IOrigin) {
+    await apiActivity.updateOrigins(this.token, { action: 'add', origin });
+    await commitAddNotification(this.$store, {
+      color: 'info',
+      content: '过滤规则更新成功，稍后自动生效',
+    });
+    await this.$router.go(0);
   }
 }
 </script>

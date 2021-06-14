@@ -103,9 +103,7 @@ export default class NewInviteLinkBtn extends Vue {
       await dispatchCaptureApiError(this.$store, async () => {
         this.siteProfiles = (await apiMe.getUserSiteProfiles(this.$store.state.main.token)).data;
         const responses = await Promise.all(
-          this.siteProfiles.map((p) =>
-            apiSite.getSite(this.$store.state.main.token, p.site.subdomain)
-          )
+          this.siteProfiles.map((p) => apiSite.getSite(p.site.subdomain))
         );
         this.sites = responses.map((r) => r.data);
       });

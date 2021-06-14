@@ -551,7 +551,7 @@ export default class User extends Vue {
     this.eduExps = (await apiPeople.getUserEducationExperiences(this.token, userPublic.uuid)).data;
     this.workExps = (await apiPeople.getUserWorkExperiences(this.token, userPublic.uuid)).data;
     const responses = await Promise.all(
-      userPublic.profiles.map((p) => apiSite.getSite(this.token, p.site.subdomain))
+      userPublic.profiles.map((p) => apiSite.getSite(p.site.subdomain))
     );
     this.sites = responses.map((r) => r.data);
   }
