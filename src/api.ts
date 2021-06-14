@@ -5,7 +5,6 @@ import {
   IUserProfileUpdate,
   IUserProfileCreate,
   IAnswer,
-  IActivity,
   IAuditLog,
   IAnswerPreview,
   IUserSiteProfile,
@@ -33,7 +32,7 @@ import {
   ITaskDefinition,
   ITopic,
 } from './interfaces';
-import { authHeaders, authHeadersWithParams } from './utils';
+import { authHeaders } from './utils';
 
 export const api = {
   async logInGetToken(username: string, password: string, hcaptcha_token: string) {
@@ -85,34 +84,6 @@ export const api = {
     );
   },
 
-  async getActivities(
-    token: string,
-    payload: { limit: number; before_activity_id?: number; subjectUserUUID?: number }
-  ) {
-    const params = new URLSearchParams();
-    params.set('limit', payload.limit.toString());
-    if (payload.before_activity_id !== undefined) {
-      params.set('before_activity_id', payload.before_activity_id.toString());
-    }
-    if (payload.subjectUserUUID !== undefined) {
-      params.set('subject_user_uuid', payload.subjectUserUUID.toString());
-    }
-    return axios.get<IActivity[]>(
-      `${apiUrl}/api/v1/activities/`,
-      authHeadersWithParams(token, params)
-    );
-  },
-  async getNewActivities(token: string, payload: { limit: number; after_activity_id?: number }) {
-    const params = new URLSearchParams();
-    params.set('limit', payload.limit.toString());
-    if (payload.after_activity_id !== undefined) {
-      params.set('after_activity_id', payload.after_activity_id.toString());
-    }
-    return axios.get<IActivity[]>(
-      `${apiUrl}/api/v1/activities/new/`,
-      authHeadersWithParams(token, params)
-    );
-  },
   async getSiteProfiles(token: string, siteUUID: string) {
     return axios.get<IUserSiteProfile[]>(
       `${apiUrl}/api/v1/profiles/members/${siteUUID}`,

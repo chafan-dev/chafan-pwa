@@ -198,7 +198,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
-import { api } from '@/api';
 import { CombinedActivities } from '@/CombinedActivities';
 import { IActivity, IUserPreview, IUserProfile } from '@/interfaces';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
@@ -227,6 +226,7 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { EXPLORE_SITES } from '@/common';
 import ActivitySubject from '@/components/ActivitySubject.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+import { apiActivity } from '@/api/activity';
 
 @Component({
   components: {
@@ -275,7 +275,7 @@ export default class UserFeed extends Vue {
 
   private async loadActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const response = await api.getActivities(this.$store.state.main.token, {
+      const response = await apiActivity.getActivities(this.$store.state.main.token, {
         limit: this.loadingLimit,
         subjectUserUUID: this.subjectUserUuid,
       });
@@ -326,7 +326,7 @@ export default class UserFeed extends Vue {
     const minActivityId = this.combinedActivities.minActivityId;
     if (minActivityId !== null) {
       await dispatchCaptureApiError(this.$store, async () => {
-        const response = await api.getActivities(this.$store.state.main.token, {
+        const response = await apiActivity.getActivities(this.$store.state.main.token, {
           limit: this.loadingLimit,
           before_activity_id: minActivityId,
           subjectUserUUID: this.subjectUserUuid,
@@ -350,7 +350,7 @@ export default class UserFeed extends Vue {
       const newActivities: IActivity[] = [];
       let fetching = true;
       while (fetching) {
-        const response = await api.getActivities(this.$store.state.main.token, {
+        const response = await apiActivity.getActivities(this.$store.state.main.token, {
           limit: this.loadingLimit,
           before_activity_id: before_activity_id,
         });
