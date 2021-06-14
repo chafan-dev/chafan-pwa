@@ -1152,3 +1152,14 @@ export interface IWebhook {
   callback_url: string;
   site: ISite;
 }
+
+export interface IOriginSite {
+  origin_type: 'site';
+  uuid: string;
+}
+
+type IOrigin = IOriginSite;
+
+export interface IUserFeedSettings {
+  blocked_origins: IOrigin[];
+}
