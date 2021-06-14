@@ -3,9 +3,9 @@
     <v-row justify="center">
       <v-col :class="{ 'col-10': $vuetify.breakpoint.mdAndUp }" fluid>
         <div class="ma-3 d-flex">
-          <span class="headline primary--text">{{ $t('Dashboard') }}</span>
+          <span class="headline primary--text">用户中心</span>
           <v-spacer />
-          <span class="text-caption grey--text">{{ $t('本页中的信息只有自己可见') }}</span>
+          <span class="text-caption grey--text">本页中的信息只有自己可见</span>
         </div>
 
         <v-tabs v-model="currentTabItem" :vertical="$vuetify.breakpoint.mdAndUp" show-arrows>
@@ -253,11 +253,8 @@
               </template>
               <template v-slot:item.action="{ item }">
                 <template v-if="item.giver.uuid === userProfile.uuid">
-                  <span v-if="item.refunded_at"> 已取消 </span>
+                  <span v-if="item.refunded_at"> 已撤回 </span>
                   <span v-else-if="item.claimed_at"> 已被领取 </span>
-                  <v-btn v-else color="primary" depressed small @click="refundReward(item)">
-                    取消
-                  </v-btn>
                 </template>
                 <template v-else>
                   <span v-if="$dayjs.utc(item.expired_at).isBefore($dayjs.utc())"> 已过期 </span>
@@ -660,15 +657,6 @@ export default class Dashboard extends Vue {
       const idx = this.myRewards.indexOf(reward);
       this.myRewards.splice(idx, 1);
       const newReward = (await api.claimReward(this.$store.state.main.token, reward.id)).data;
-      this.myRewards.splice(idx, 0, newReward);
-    });
-  }
-
-  private async refundReward(reward: IReward) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const idx = this.myRewards.indexOf(reward);
-      this.myRewards.splice(idx, 1);
-      const newReward = (await api.refundReward(this.$store.state.main.token, reward.id)).data;
       this.myRewards.splice(idx, 0, newReward);
     });
   }
