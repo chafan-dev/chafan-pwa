@@ -116,9 +116,11 @@
           :onMentionedHandles="onMentionedHandles"
         />
         <div class="d-flex">
-          <span v-if="mentioned.length" class="grey--text caption"
-            >将通知用户：{{ mentioned.join(', ') }}</span
-          >
+          <span v-if="mentioned.length">
+            将通知用户：<v-chip small v-for="handle in mentioned" :key="handle">{{
+              handle
+            }}</v-chip>
+          </span>
           <v-spacer />
           <v-btn
             :disabled="submitIntermediate"
@@ -146,9 +148,11 @@
             class="mt-2 mb-2"
           />
           <div class="d-flex">
-            <span v-if="mentioned.length" class="grey--text caption"
-              >将通知用户：{{ mentioned.join(', ') }}</span
-            >
+            <span v-if="mentioned.length" class="grey--text caption">
+              将通知用户：<v-chip small v-for="handle in mentioned" :key="handle">{{
+                handle
+              }}</v-chip>
+            </span>
             <v-spacer />
             <v-btn
               :disabled="submitIntermediate"
