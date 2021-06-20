@@ -535,7 +535,7 @@ export default class Moderation extends Vue {
       await apiSite.updateSiteConfig(this.token, this.selectedSite.uuid, {
         moderator_uuid: this.transferToNewAdminUUID,
       });
-      this.$router.go(0);
+      await this.$router.push('/');
     }
   }
 
