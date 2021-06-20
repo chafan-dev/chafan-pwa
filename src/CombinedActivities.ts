@@ -1,6 +1,7 @@
 import {
   AnswerQuestion,
   CreateArticle,
+  CreateQuestion,
   FollowUser,
   IActivity,
   UpvoteAnswer,
@@ -28,8 +29,9 @@ export class CombinedActivities {
       } else {
         guardActivity = this.items[0];
       }
-      if (newActivity.verb == guardActivity.verb) {
-        if (newActivity.verb === 'upvote_question') {
+      if (newActivity.verb === guardActivity.verb) {
+        const verb = newActivity.verb;
+        if (verb === 'upvote_question') {
           const newEvent = newActivity.event.content as UpvoteQuestion;
           const guardEvent = guardActivity.event.content as UpvoteQuestion;
           if (newEvent.question.uuid === guardEvent.question.uuid) {
@@ -39,7 +41,7 @@ export class CombinedActivities {
             guardEvent.subjects.push(newEvent.subject);
             return;
           }
-        } else if (newActivity.verb === 'upvote_submission') {
+        } else if (verb === 'upvote_submission') {
           const newEvent = newActivity.event.content as UpvoteSubmission;
           const guardEvent = guardActivity.event.content as UpvoteSubmission;
           if (newEvent.submission.uuid === guardEvent.submission.uuid) {
@@ -49,7 +51,7 @@ export class CombinedActivities {
             guardEvent.subjects.push(newEvent.subject);
             return;
           }
-        } else if (newActivity.verb === 'upvote_answer') {
+        } else if (verb === 'upvote_answer') {
           const newEvent = newActivity.event.content as UpvoteAnswer;
           const guardEvent = guardActivity.event.content as UpvoteAnswer;
           if (newEvent.answer.uuid === guardEvent.answer.uuid) {
@@ -59,7 +61,7 @@ export class CombinedActivities {
             guardEvent.subjects.push(newEvent.subject);
             return;
           }
-        } else if (newActivity.verb === 'upvote_article') {
+        } else if (verb === 'upvote_article') {
           const newEvent = newActivity.event.content as UpvoteArticle;
           const guardEvent = guardActivity.event.content as UpvoteArticle;
           if (newEvent.article.uuid === guardEvent.article.uuid) {
@@ -69,7 +71,7 @@ export class CombinedActivities {
             guardEvent.subjects.push(newEvent.subject);
             return;
           }
-        } else if (newActivity.verb === 'follow_user') {
+        } else if (verb === 'follow_user') {
           const newEvent = newActivity.event.content as FollowUser;
           const guardEvent = guardActivity.event.content as FollowUser;
           if (newEvent.user.uuid === guardEvent.user.uuid) {
@@ -85,17 +87,33 @@ export class CombinedActivities {
             guardEvent.users.push(newEvent.user);
             return;
           }
-        } else if (newActivity.verb === 'create_article') {
+        } else if (verb === 'create_article') {
           const newEvent = newActivity.event.content as CreateArticle;
           const guardEvent = guardActivity.event.content as CreateArticle;
-          if (newEvent.subject.uuid === guardEvent.subject.uuid) {
+          if (
+            newEvent.subject.uuid === guardEvent.subject.uuid &&
+            newEvent.article.uuid === guardEvent.article.uuid
+          ) {
             // Prevent sequential publication event on timeline
             return;
           }
-        } else if (newActivity.verb === 'answer_question') {
+        } else if (verb === 'answer_question') {
           const newEvent = newActivity.event.content as AnswerQuestion;
           const guardEvent = guardActivity.event.content as AnswerQuestion;
-          if (newEvent.subject.uuid === guardEvent.subject.uuid) {
+          if (
+            newEvent.subject.uuid === guardEvent.subject.uuid &&
+            newEvent.answer.uuid === guardEvent.answer.uuid
+          ) {
+            // Prevent sequential publication event on timeline
+            return;
+          }
+        } else if (verb === 'create_question') {
+          const newEvent = newActivity.event.content as CreateQuestion;
+          const guardEvent = guardActivity.event.content as CreateQuestion;
+          if (
+            newEvent.subject.uuid === guardEvent.subject.uuid &&
+            newEvent.question.uuid === guardEvent.question.uuid
+          ) {
             // Prevent sequential publication event on timeline
             return;
           }
