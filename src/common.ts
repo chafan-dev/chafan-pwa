@@ -68,24 +68,33 @@ const linkPreviewHosts = new Set(['www.flickr.com', 'github.com', 'www.zhihu.com
 
 export const postProcessViewerDOM = async (token: string, viewer: HTMLElement) => {
   for (const a of viewer.getElementsByTagName('a')) {
-    if (a.href !== a.innerText) {
-      continue;
-    }
-    const url = new URL(a.href);
-    if (url.origin === window.origin) {
-      const match = url.pathname.match(/^\/questions\/(\w+)$/);
-      if (match) {
-        const questionUUID = match[1];
-        const question = (await apiQuestion.getQuestion(token, questionUUID)).data;
-        a.innerText = question.title;
+    try {
+      const url = new URL(a.href);
+      if (a.href === a.innerText) {
+        // Replace nodes
+        if (url.origin === window.origin) {
+          const match = url.pathname.match(/^\/questions\/(\w+)$/);
+          if (match) {
+            const questionUUID = match[1];
+            const question = (await apiQuestion.getQuestion(token, questionUUID)).data;
+            a.innerText = question.title;
+            continue;
+          }
+        }
+        if (linkPreviewHosts.has(url.host)) {
+          const props = (await api.generateLinkPreview(a.href)).data;
+          const card = getOpenGraphCard(a.href, props);
+          if (card) {
+            a.parentNode!.replaceChild(card, a);
+            continue;
+          }
+        }
       }
-    }
-    if (linkPreviewHosts.has(url.host)) {
-      const props = (await api.generateLinkPreview(a.href)).data;
-      const card = getOpenGraphCard(a.href, props);
-      if (card) {
-        a.parentNode!.replaceChild(card, a);
+      // Open in new window
+      if (url.origin !== window.origin) {
+        a.target = '_blank';
       }
+    } finally {
     }
   }
 };
