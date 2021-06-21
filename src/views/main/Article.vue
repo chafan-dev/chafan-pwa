@@ -216,7 +216,7 @@ import {
   dispatchCaptureApiErrorWithErrorHandler,
 } from '@/store/main/actions';
 
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
+import { commitAddNotification } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
 import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
