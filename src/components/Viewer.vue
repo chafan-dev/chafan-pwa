@@ -9,7 +9,7 @@
       />
     </template>
     <template v-else-if="!bodyFormat || bodyFormat === 'markdown'">
-      <div ref="vditorViewer" />
+      <VditorViewerCF :body="body" :on-viewer-ready="onViewerReadyForVditor" />
     </template>
     <template v-if="contentElem">
       <LightboxGroup :container="contentElem" />
@@ -19,14 +19,15 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import Vditor from '@chafan/vditor';
+import { VditorViewerCF } from 'chafan-vue-editors';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
-import { vditorCDN, postProcessViewerDOM } from '@/common';
+import { postProcessViewerDOM } from '@/common';
 import { body_format_T, editor_T } from '@/interfaces';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
+import { readToken } from '@/store/main/getters';
 
 @Component({
-  components: { ChafanTiptap, LightboxGroup },
+  components: { ChafanTiptap, LightboxGroup, VditorViewerCF },
   data: function () {
     return {
       contentElem: null,
@@ -39,25 +40,15 @@ export default class Viewer extends Vue {
   @Prop() private readonly editor!: editor_T;
   public textContent: string | null = null;
 
-  private onViewerReady(contentElem: HTMLElement) {
-    postProcessViewerDOM(this.$store.state.main.token, contentElem);
-    this.textContent = contentElem.innerText;
+  private onViewerReadyForVditor() {
+    const viewer = this.$refs.viewer as HTMLElement;
+    this.onViewerReady(viewer);
   }
 
-  private mounted() {
-    if (this.editor !== 'tiptap') {
-      const viewer = this.$refs.viewer as HTMLElement;
-      if (!this.bodyFormat || this.bodyFormat === 'markdown') {
-        Vditor.preview(this.$refs.vditorViewer as HTMLDivElement, this.body, {
-          mode: 'light',
-          cdn: vditorCDN,
-          after: () => {
-            this.$data.contentElem = viewer;
-            this.onViewerReady(viewer);
-          },
-        });
-      }
-    }
+  private onViewerReady(contentElem: HTMLElement) {
+    this.$data.contentElem = contentElem;
+    postProcessViewerDOM(readToken(this.$store), contentElem);
+    this.textContent = contentElem.innerText;
   }
 }
 </script>

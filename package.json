@@ -11,12 +11,11 @@
     "analyze": "source-map-explorer 'dist/js/*.js' --no-border-checks"
   },
   "dependencies": {
-    "@chafan/vditor": "3.8.2-chafan.3",
     "@hcaptcha/vue-hcaptcha": "^0.3.0",
     "@sentry/tracing": "^6.5.1",
     "@sentry/vue": "^6.5.1",
     "axios": "^0.21.1",
-    "chafan-vue-editors": "^0.5.3",
+    "chafan-vue-editors": "^0.6.2",
     "core-js": "^3.8.3",
     "dayjs": "^1.10.4",
     "dompurify": "^2.2.7",

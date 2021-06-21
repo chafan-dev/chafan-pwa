@@ -2,7 +2,6 @@ import { apiQuestion } from '@/api/question';
 import { apiUrl, appName } from '@/env';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
-export const vditorCDN = 'https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.2-chafan.3';
 
 export const NARROW_FEED_UI_KEY = 'narrowFeedUI';
 export const LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
@@ -91,7 +90,7 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement) =
   }
 };
 
-export const vditorUploadConfig = (token: string) => {
+export const getVditorUploadConfig = (token: string) => {
   return {
     max: 5 * 1024 * 1024,
     // TODO: token for CORS validation

@@ -26,7 +26,7 @@
             :onEditorChange="onEditorChange"
             class="mb-2 mt-2"
           />
-          <VditorComponent
+          <VditorCF
             v-show="topLevelEditor === 'vditor'"
             ref="vditor"
             :onEditorChange="onEditorChange"
@@ -183,7 +183,7 @@ import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { saveLocalEdit, uuidv4 } from '@/utils';
 import { editor_T, IArchive, IArticleArchive } from '@/interfaces';
 
-import VditorComponent from '@/components/editor/VditorComponent.vue';
+import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
@@ -196,7 +196,7 @@ import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
     EditorHelp,
     ChafanTiptap,
     EditIcon,
-    VditorComponent,
+    VditorCF,
     HistoryIcon,
     DeleteIcon,
     SettingsIcon,
@@ -315,7 +315,7 @@ export default class ArticleEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return 'tiptap';
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getMode();
+      return (this.$refs.vditor as any).getMode();
     }
     commitAddNotification(this.$store, {
       content: this.$t('编辑器错误').toString(),
@@ -328,7 +328,7 @@ export default class ArticleEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return (this.$refs.tiptap as ChafanTiptap).content;
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getContent();
+      return (this.$refs.vditor as any).getContent();
     }
     commitAddNotification(this.$store, {
       content: this.$t('编辑器错误').toString(),
@@ -341,7 +341,7 @@ export default class ArticleEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return (this.$refs.tiptap as ChafanTiptap).getText();
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getText();
+      return (this.$refs.vditor as any).getText();
     }
     commitAddNotification(this.$store, {
       content: this.$t('编辑器错误').toString(),
@@ -369,7 +369,7 @@ export default class ArticleEditor extends Vue {
       }
     } else {
       this.topLevelEditor = 'vditor';
-      (this.$refs.vditor as VditorComponent).init(editor, body || '');
+      (this.$refs.vditor as any).init(editor, body || '');
     }
   }
 
@@ -590,7 +590,7 @@ export default class ArticleEditor extends Vue {
   }
 
   get vditorComponent() {
-    return this.$refs.vditor as VditorComponent;
+    return this.$refs.vditor as any;
   }
 
   private onChangeTopLevelEditor() {

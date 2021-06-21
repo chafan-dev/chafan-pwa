@@ -113,10 +113,12 @@
                             :onEditorChange="onEditorChange"
                           />
 
-                          <VditorComponent
+                          <VditorCF
                             v-show="aboutEditor !== 'tiptap'"
                             ref="vditor"
                             :onEditorChange="onEditorChange"
+                            :isMobile="isMobile"
+                            :vditorUploadConfig="vditorUploadConfig"
                           />
                         </div>
                       </v-expand-transition>
@@ -124,41 +126,37 @@
                       <!-- TODO: validate -->
                       <v-text-field
                         v-model="userUpdateMe.homepage_url"
-                        :label="$t('个人主页')"
+                        label="个人主页"
                         clearable
                       />
                       <v-text-field
                         v-model="userUpdateMe.github_username"
-                        :label="$t('Github 用户名')"
+                        label="Github 用户名"
                         clearable
                       />
                       <v-text-field
                         v-model="userUpdateMe.twitter_username"
-                        :label="$t('Twitter 用户名')"
+                        label="Twitter 用户名"
                         clearable
                       />
                       <v-text-field
                         v-model="userUpdateMe.linkedin_url"
-                        :label="$t('Linkedin 主页地址')"
+                        label="Linkedin 主页地址"
                         clearable
                       />
 
                       <v-combobox
                         v-model="newResidencyTopicNames"
                         :delimiters="[',', '，', '、']"
-                        :label="$t('居住过的地方')"
+                        label="居住过的地方"
                         hide-selected
                         multiple
                         small-chips
                       />
-                      <v-text-field
-                        v-model="newProfessionTopicName"
-                        :label="$t('所在行业')"
-                        clearable
-                      />
+                      <v-text-field v-model="newProfessionTopicName" label="所在行业" clearable />
 
                       <div>
-                        <span class="title">{{ $t('教育经历') }}</span>
+                        <span class="title">教育经历</span>
                         <v-row v-for="(exp, index) in eduExps" :key="index">
                           <v-col>{{ exp.school_topic_name }}</v-col>
                           <v-col>{{ $t(exp.level_name) }}</v-col>
@@ -169,19 +167,20 @@
                               depressed
                               small
                               @click="removeEduExp(index)"
-                              >{{ $t('删除') }}
+                            >
+                              删除
                             </v-btn>
                           </v-col>
                         </v-row>
                         <v-row>
                           <v-col>
-                            <v-text-field v-model="newEduExpSchooolName" :label="$t('学校名')" />
+                            <v-text-field v-model="newEduExpSchooolName" label="学校名" />
                           </v-col>
                           <v-col>
                             <v-combobox
                               v-model="newEduExpLevelName"
                               :items="eduExpLeveNames"
-                              :label="$t('教育水平')"
+                              label="教育水平"
                             />
                           </v-col>
                           <v-col align-self="center">
@@ -191,14 +190,15 @@
                               depressed
                               small
                               @click="addNewEduExp"
-                              >{{ $t('确认添加') }}
+                            >
+                              确认添加
                             </v-btn>
                           </v-col>
                         </v-row>
                       </div>
 
                       <div>
-                        <span class="title">{{ $t('工作经历') }}</span>
+                        <span class="title">工作经历</span>
                         <v-row v-for="(exp, index) in workExps" :key="index">
                           <v-col>{{ exp.company_topic_name }}</v-col>
                           <v-col>{{ exp.position_topic_name }}</v-col>
@@ -209,16 +209,17 @@
                               depressed
                               small
                               @click="removeWorkExp(index)"
-                              >{{ $t('删除') }}
+                            >
+                              删除
                             </v-btn>
                           </v-col>
                         </v-row>
                         <v-row>
                           <v-col>
-                            <v-text-field v-model="newWorkExpCompanyName" :label="$t('机构名')" />
+                            <v-text-field v-model="newWorkExpCompanyName" label="机构名" />
                           </v-col>
                           <v-col>
-                            <v-text-field v-model="newWorkExpPositionName" :label="$t('职位名')" />
+                            <v-text-field v-model="newWorkExpPositionName" label="职位名" />
                           </v-col>
                           <v-col align-self="center">
                             <v-btn
@@ -227,7 +228,8 @@
                               depressed
                               small
                               @click="addNewWorkExp"
-                              >{{ $t('确认添加') }}
+                            >
+                              确认添加
                             </v-btn>
                           </v-col>
                         </v-row>
@@ -274,8 +276,9 @@ import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
-import VditorComponent from '@/components/editor/VditorComponent.vue';
+import { VditorCF } from 'chafan-vue-editors';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { getVditorUploadConfig } from '@/common';
 
 interface IUserWorkExperienceInput {
   company_topic_name: string;
@@ -288,7 +291,7 @@ interface IUserEducationExperienceInput {
 }
 
 @Component({
-  components: { CloseIcon, VditorComponent, ChafanTiptap, ProfileIcon },
+  components: { CloseIcon, VditorCF, ChafanTiptap, ProfileIcon },
 })
 export default class UserProfileEdit extends Vue {
   public valid = true;
@@ -343,7 +346,7 @@ export default class UserProfileEdit extends Vue {
           chafanTiptap.loadJSON(JSON.parse(userProfile.about));
         }
       } else {
-        const vditor = this.$refs.vditor as VditorComponent;
+        const vditor = this.$refs.vditor as any;
         vditor.init(this.aboutEditor, userProfile.about || '');
       }
       if (userProfile.avatar_url) {
@@ -588,7 +591,7 @@ export default class UserProfileEdit extends Vue {
       const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
       this.userUpdateMe.about = chafanTiptap.content || undefined;
     } else {
-      const vditor = this.$refs.vditor as VditorComponent;
+      const vditor = this.$refs.vditor as any;
       this.userUpdateMe.about = vditor.getContent() || undefined;
     }
     this.userUpdateMe.about_editor = this.aboutEditor;
@@ -599,21 +602,20 @@ export default class UserProfileEdit extends Vue {
       const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
       chafanTiptap.reset();
     } else {
-      const vditor = this.$refs.vditor as VditorComponent;
+      const vditor = this.$refs.vditor as any;
       vditor.init(this.aboutEditor, '');
     }
     this.showAboutEditor = false;
     this.showClearAboutMe = false;
     this.userUpdateMe.about = null;
   }
+
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
+  }
 }
 </script>
-<style scoped>
-.avatarDiv {
-  border: 1px solid grey;
-}
-
-.avatar-col {
-  max-width: 180px !important;
-}
-</style>

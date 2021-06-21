@@ -48,7 +48,7 @@
       >
 
       <span v-if="event.content.message" place="message">
-        <SimpleViewer :body="event.content.message" />
+        <Viewer :body="event.content.message" />
       </span>
 
       <span v-if="event.content.reply" place="reply">
@@ -129,11 +129,11 @@ import { IEvent } from '@/interfaces';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import UserLink from '@/components/UserLink.vue';
 import CommentPreview from '@/components/CommentPreview.vue';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import { readUserProfile } from '@/store/main/getters';
 
 @Component({
-  components: { UserLink, CommentPreview, SimpleViewer },
+  components: { UserLink, CommentPreview, Viewer },
 })
 export default class Event extends Vue {
   @Prop() public readonly event!: IEvent;

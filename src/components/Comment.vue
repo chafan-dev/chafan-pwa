@@ -10,7 +10,7 @@
 
     <!-- Comment body -->
     <div v-if="!showUpdateEditor" class="ml-1">
-      <SimpleViewer v-if="!isDeleted" :body="comment.body" :editor="comment.editor" />
+      <Viewer v-if="!isDeleted" :body="comment.body" :editor="comment.editor" />
       <div v-else class="grey--text">已删除</div>
     </div>
 
@@ -39,7 +39,7 @@
             <span class="ml-1 text-caption">{{ childComments.length }}</span>
           </div>
         </template>
-        <span>{{ $t('查看回复') }}</span>
+        <span>查看回复</span>
       </v-tooltip>
 
       <template v-if="!isDeleted && !currentUserIsAuthor">
@@ -49,7 +49,7 @@
           style="cursor: pointer"
           @click="showEditor = true"
         >
-          <ReplyIcon /> {{ $t('回复') }}
+          <ReplyIcon /> 回复
         </span>
         <v-spacer />
         <ReactionBlock :objectId="comment.uuid" objectType="comment" />
@@ -69,7 +69,7 @@
               <EditIcon class="mr-2" @click="showUpdateEditor = true" />
             </div>
           </template>
-          <span>{{ $t('编辑') }}</span>
+          <span>编辑</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -81,7 +81,7 @@
               />
             </div>
           </template>
-          <span>{{ $t('转发给我的关注者') }}</span>
+          <span>转发给我的关注者</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -89,16 +89,16 @@
               <DeleteIcon class="mr-2" @click="showDeleteConfirm = true" />
             </div>
           </template>
-          <span>{{ $t('删除') }}</span>
+          <span>删除</span>
         </v-tooltip>
         <v-dialog v-model="showDeleteConfirm" max-width="300">
           <v-card>
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('确定删除？') }}</div>
+              <div class="headline primary--text">确定删除？</div>
             </v-card-title>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="warning" depressed small @click="deleteComment">{{ $t('Yes') }}</v-btn>
+              <v-btn color="warning" depressed small @click="deleteComment">确认</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -130,12 +130,10 @@
             small
             @click="submitUpdateCommentBody"
           >
-            {{ $t('提交') }}
+            提交
             <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
           </v-btn>
-          <v-btn depressed small @click="showUpdateEditor = false">
-            {{ $t('Cancel') }}
-          </v-btn>
+          <v-btn depressed small @click="showUpdateEditor = false"> 取消 </v-btn>
         </div>
       </div>
 
@@ -162,12 +160,10 @@
               small
               @click="submitNewReplyBody"
             >
-              {{ $t('发送回复') }}
+              发送回复
               <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
             </v-btn>
-            <v-btn depressed small @click="showEditor = false">
-              {{ $t('Cancel') }}
-            </v-btn>
+            <v-btn depressed small @click="showEditor = false"> 取消 </v-btn>
           </div>
         </div>
       </v-expand-transition>
@@ -205,7 +201,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import BroadcastIcon from '@/components/icons/BroadcastIcon.vue';
@@ -236,7 +232,7 @@ import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
     BroadcastIcon,
     DeleteIcon,
     UpvoteIcon,
-    SimpleViewer,
+    Viewer,
   },
 })
 export default class Comment extends Vue {

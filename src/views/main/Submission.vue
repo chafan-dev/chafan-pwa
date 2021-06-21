@@ -65,7 +65,7 @@
             </div>
 
             <!-- Submission description display/editor -->
-            <SimpleViewer
+            <Viewer
               v-if="!showSubmissionEditor && submission.description"
               :body="submission.description"
               :editor="submission.description_editor"
@@ -115,7 +115,7 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <SimpleViewer
+                    <Viewer
                       v-if="archive.description"
                       :body="archive.description"
                       :editor="archive.description_editor"
@@ -409,7 +409,7 @@
               </v-chip-group>
               <v-card-title>{{ previewedSuggestion.title }}</v-card-title>
               <v-card-text>
-                <SimpleViewer
+                <Viewer
                   v-if="previewedSuggestion.description"
                   :body="previewedSuggestion.description"
                   :editor="previewedSuggestion.description_editor"
@@ -495,7 +495,7 @@ import {
   ITopic,
 } from '@/interfaces';
 import { getLocalCache, rankComments, saveLocalCache } from '@/utils';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import { apiTopic } from '@/api/topic';
@@ -539,7 +539,7 @@ import Diff from '@/components/widgets/Diff.vue';
     HistoryIcon,
     InfoIcon,
     CommentsIcon,
-    SimpleViewer,
+    Viewer,
     SimpleEditor,
   },
 })

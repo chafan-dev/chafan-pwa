@@ -44,7 +44,7 @@ class AnswerEditHandler {
       if (!payload.edit.rendered_body_text || payload.edit.rendered_body_text.length < 5) {
         if (!payload.isAutosaved) {
           commitAddNotification(this.vueInstance.$store, {
-            content: this.vueInstance.$t('Answer is too short').toString(),
+            content: '答案内容太短了',
             color: 'error',
           });
         }
@@ -54,7 +54,7 @@ class AnswerEditHandler {
       if (!payload.edit.body || payload.edit.body.length < 5) {
         if (!payload.isAutosaved) {
           commitAddNotification(this.vueInstance.$store, {
-            content: this.vueInstance.$t('Answer is too short').toString(),
+            content: '答案内容太短了',
             color: 'error',
           });
         }
@@ -80,9 +80,7 @@ class AnswerEditHandler {
           }
           if (!payload.isAutosaved) {
             commitAddNotification(this.vueInstance.$store, {
-              content: this.vueInstance
-                .$t(payload.edit.is_draft ? '草稿已保存' : '已发表')
-                .toString(),
+              content: payload.edit.is_draft ? '草稿已保存' : '已发表',
               color: 'success',
             });
           }
@@ -99,9 +97,7 @@ class AnswerEditHandler {
         if (response) {
           if (!payload.isAutosaved) {
             commitAddNotification(this.vueInstance.$store, {
-              content: this.vueInstance
-                .$t(payload.edit.is_draft ? '答案草稿已更新' : '更新已发表')
-                .toString(),
+              content: payload.edit.is_draft ? '答案草稿已更新' : '更新已发表',
               color: 'success',
             });
           }

@@ -8,11 +8,13 @@
       class="mb-2"
     />
 
-    <VditorComponent
+    <VditorCF
       v-show="topLevelEditor === 'vditor'"
       ref="vditor"
       :class="{ 'mt-2': focusMode }"
       :onEditorChange="onEditorChange"
+      :isMobile="isMobile"
+      :vditorUploadConfig="vditorUploadConfig"
       class="mb-2"
     />
 
@@ -25,7 +27,7 @@
         @click="submitEdit(true)"
         :disabled="savingIntermediate"
       >
-        {{ $t('发表答案') }}
+        发表答案
       </v-btn>
 
       <span class="ml-2">
@@ -37,12 +39,12 @@
           @click="submitEdit(false)"
           :disabled="savingIntermediate"
         >
-          {{ $t('Save draft') }}
+          保存草稿
         </v-btn>
       </span>
 
-      <v-btn class="ml-2" depressed small @click="$emit('cancel-edit')">{{ $t('Cancel') }} </v-btn>
-      <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">{{ $t('Help') }} </v-btn>
+      <v-btn class="ml-2" depressed small @click="$emit('cancel-edit')">取消</v-btn>
+      <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
       <v-progress-circular
         class="ml-2"
         v-if="savingIntermediate"
@@ -55,7 +57,7 @@
         v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp"
         class="mr-2 text-caption grey--text"
       >
-        {{ $t('自动保存于') }}
+        自动保存于
         {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
       </span>
 
@@ -65,7 +67,7 @@
             <HistoryIcon class="ml-2" @click="showHistoryDialog" />
           </div>
         </template>
-        <span>{{ $t('版本历史') }}</span>
+        <span>版本历史</span>
       </v-tooltip>
 
       <v-menu :close-on-content-click="false" offset-y top>
@@ -77,7 +79,7 @@
             <v-list-item-icon>
               <DeleteIcon />
             </v-list-item-icon>
-            <v-list-item-content>{{ $t('删除') }}</v-list-item-content>
+            <v-list-item-content>删除</v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-icon class="pl-1 pt-2">
@@ -114,15 +116,11 @@
 
       <v-dialog v-model="showDeleteDraftDialog" max-width="400">
         <v-card>
-          <v-card-title primary-title>
-            {{ $t('删除当前草稿？') }}
-          </v-card-title>
-          <v-card-text>
-            {{ $t('不影响已发表版本') }}
-          </v-card-text>
+          <v-card-title primary-title> 删除当前草稿？ </v-card-title>
+          <v-card-text> 不影响已发表版本 </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="warning" @click="deleteDraft">{{ $t('确认') }}</v-btn>
+            <v-btn color="warning" @click="deleteDraft">确认</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -130,16 +128,16 @@
       <v-dialog v-model="historyDialog" max-width="900">
         <v-card>
           <v-card-title primary-title>
-            <div class="headline primary--text">{{ $t('版本历史') }}</div>
+            <div class="headline primary--text">版本历史</div>
             <v-spacer />
-            <span class="text-caption grey--text">{{ $t('点击展开') }}</span>
+            <span class="text-caption grey--text">点击展开</span>
           </v-card-title>
 
           <v-expansion-panels v-if="archives">
             <v-expansion-panel v-for="archive in archives" :key="archive.id">
               <v-expansion-panel-header>
-                <v-btn class="mr-4" depressed max-width="100px" small @click="loadArchive(archive)"
-                  >{{ $t('加载该版本') }}
+                <v-btn class="mr-4" depressed max-width="100px" small @click="loadArchive(archive)">
+                  加载该版本
                 </v-btn>
                 {{ $dayjs.utc(archive.created_at).local().fromNow() }}
                 <v-spacer />
@@ -170,16 +168,16 @@ import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
 import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import { readUserProfile, readWorkingDraft } from '@/store/main/getters';
+import { readToken, readUserProfile, readWorkingDraft } from '@/store/main/getters';
 import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
 import { editor_T, IAnswer, IArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { env } from '@/env';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import VditorComponent from '@/components/editor/VditorComponent.vue';
+import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
-import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { AnswerEditHandler } from '@/handlers';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
@@ -189,7 +187,7 @@ import EditorHelp from '@/components/editor/EditorHelp.vue';
     EditorHelp,
     ChafanTiptap,
     EditIcon,
-    VditorComponent,
+    VditorCF,
     HistoryIcon,
     DeleteIcon,
     SettingsIcon,
@@ -212,7 +210,7 @@ export default class AnswerEditor extends Vue {
   private topLevelEditorItems: { text: string; value: string }[] | null = null;
   private readonly visibilityItems = [
     {
-      text: this.$t('仅注册用户可读').toString(),
+      text: '仅注册用户可读',
       value: 'registered',
     },
   ].concat(
@@ -220,7 +218,7 @@ export default class AnswerEditor extends Vue {
       ? []
       : [
           {
-            text: this.$t('公开可读').toString(),
+            text: '公开可读',
             value: 'anyone',
           },
         ]
@@ -271,7 +269,7 @@ export default class AnswerEditor extends Vue {
     const userProfile = readUserProfile(this.$store);
     if (userProfile!.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
       topLevelEditorItems.push({
-        text: this.$t('tiptap').toString(),
+        text: 'Tiptap 编辑器',
         value: 'tiptap',
       });
     }
@@ -284,10 +282,10 @@ export default class AnswerEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return 'tiptap';
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getMode();
+      return (this.$refs.vditor as any).getMode();
     }
     commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
+      content: '编辑器错误',
       color: 'error',
     });
     return 'wysiwyg';
@@ -297,10 +295,10 @@ export default class AnswerEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return (this.$refs.tiptap as ChafanTiptap).content;
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getContent();
+      return (this.$refs.vditor as any).getContent();
     }
     commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
+      content: '编辑器错误',
       color: 'error',
     });
     return '';
@@ -310,10 +308,10 @@ export default class AnswerEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return (this.$refs.tiptap as ChafanTiptap).getText();
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as VditorComponent).getText();
+      return (this.$refs.vditor as any).getText();
     }
     commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
+      content: '编辑器错误',
       color: 'error',
     });
     return null;
@@ -337,7 +335,7 @@ export default class AnswerEditor extends Vue {
       }
     } else {
       this.topLevelEditor = 'vditor';
-      (this.$refs.vditor as VditorComponent).init(editor, body || '');
+      (this.$refs.vditor as any).init(editor, body || '');
     }
   }
 
@@ -391,7 +389,10 @@ export default class AnswerEditor extends Vue {
       answerId: this.answerId ? this.answerId : undefined,
       writingSessionUUID: this.writingSessionUUID,
       saveCallback: (answer: IAnswer) => {
-        clearLocalEdit('answer', this.contentId);
+        if (this.answerId) {
+          clearLocalEdit('answer', 'answer-of-' + this.answerId);
+        }
+        clearLocalEdit('answer', 'answer-of-' + this.questionIdProp);
         this.lastAutoSavedAt = answer.updated_at;
       },
     });
@@ -484,12 +485,20 @@ export default class AnswerEditor extends Vue {
 
   private onChangeTopLevelEditor() {
     if (this.topLevelEditor === 'tiptap') {
-      const oldContent = (this.$refs.vditor as VditorComponent).getHTML();
+      const oldContent = (this.$refs.vditor as any).getHTML();
       (this.$refs.tiptap as ChafanTiptap).loadHTML(oldContent);
     } else if (this.topLevelEditor === 'vditor') {
       const oldContent = (this.$refs.tiptap as ChafanTiptap).getHTML();
-      (this.$refs.vditor as VditorComponent).init('wysiwyg', undefined, oldContent);
+      (this.$refs.vditor as any).init('wysiwyg', undefined, oldContent);
     }
+  }
+
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

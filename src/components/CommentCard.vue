@@ -2,7 +2,7 @@
   <div class="pa-2">
     <!-- Comment -->
     <div class="d-flex mb-2">
-      <SimpleViewer :body="comment.body" :editor="comment.editor" />
+      <Viewer :body="comment.body" :editor="comment.editor" />
       <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
         <OpenInNewIcon small />
       </router-link>
@@ -33,7 +33,7 @@ import SubmissionCard from '@/components/SubmissionCard.vue';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 
@@ -46,7 +46,7 @@ import BaseCard from '@/components/base/BaseCard.vue';
     Answer,
     OpenInNewIcon,
     SubmissionCard,
-    SimpleViewer,
+    Viewer,
   },
 })
 export default class CommentCard extends Vue {

@@ -20,7 +20,7 @@
             />
             <span v-else>{{ $t('我') }}</span
             >:
-            <SimpleViewer :body="message.body" />
+            <Viewer :body="message.body" />
             <span class="ml-2 float-right text-caption grey--text">
               {{ $dayjs.utc(message.created_at).local().fromNow() }}
             </span>
@@ -58,13 +58,13 @@ import { api } from '@/api';
 import { IChannel, IMessage, IMessageCreate } from '@/interfaces';
 import ChannelCard from '@/components/ChannelCard.vue';
 import UserLink from '@/components/UserLink.vue';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readToken, readUserProfile } from '@/store/main/getters';
 
 @Component({
-  components: { UserLink, ChannelCard, ChannelIcon, SimpleViewer },
+  components: { UserLink, ChannelCard, ChannelIcon, Viewer },
 })
 export default class ChatWindow extends Vue {
   @Prop() public readonly channel!: IChannel;
