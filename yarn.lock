@@ -3919,10 +3919,10 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.6.2.tgz#6c1214963e4c2ef62ca180bdc85158485d76d54a"
-  integrity sha512-OFx0BqFASajzGc7c5Pg+SKoGTjZTjUezU6PbE7s5k+jIA5WZ39IGXS0xaymV0lnXbyNmH06Vg0kl/4dobVUc8w==
+chafan-vue-editors@^0.7.5:
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.7.5.tgz#e4716bb8d6f495ac0a63ed423eb2a729858f0db6"
+  integrity sha512-pE/JFIAz3acaVVHErfnqae5QoK58ZNCLv9XqR7spNkS7Eax88iqah2eDvI3Hx+WN3/xEGkkevWIUTeov7K6Ufg==
   dependencies:
     "@chafan/vditor" "3.8.2-chafan.3"
     "@tiptap/core" "^2.0.0-beta.38"
@@ -3935,6 +3935,7 @@ chafan-vue-editors@^0.6.2:
     "@tiptap/starter-kit" "^2.0.0-beta.34"
     "@tiptap/vue-2" "^2.0.0-beta.21"
     core-js "^3.10.0"
+    get-youtube-id "^1.0.1"
     highlightjs "^9.16.2"
     lodash "^4.17.21"
     prosemirror-commands "^1.1.7"

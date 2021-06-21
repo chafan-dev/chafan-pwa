@@ -1,72 +1,18 @@
 <template>
-  <div>
-    <v-dialog v-model="showImageDialog" max-width="700">
-      <v-card>
-        <v-card-title> Add image </v-card-title>
-        <v-card-text>
-          <v-text-field v-model="insertImageUrl" label="image URL" type="text" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            small
-            depressed
-            @click="
-              insertImageUrl = '';
-              showImageDialog = false;
-            "
-          >
-            Close
-          </v-btn>
-          <v-btn small color="primary" depressed @click="insertImage"> Insert </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showVideoDialog" max-width="700">
-      <v-card>
-        <v-card-title> Add video </v-card-title>
-        <v-card-text>
-          <v-text-field v-model="youtubeUrl" label="YouTube URL" type="text" />
-          <v-text-field v-model="bilibiliEmbedCode" label="Bilibili Embed Code" type="text" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            small
-            depressed
-            @click="
-              youtubeUrl = '';
-              showVideoDialog = false;
-            "
-          >
-            Close
-          </v-btn>
-          <v-btn small color="primary" depressed @click="insertVideo"> Insert </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <div class="d-flex pb-1" v-if="editable && !commentMode">
-      <v-spacer />
-      <v-btn small outlined color="grey" @click="showImageDialog = true">Image</v-btn>
-      <v-btn small class="ml-1" outlined color="grey" @click="showVideoDialog = true">Video</v-btn>
-    </div>
-    <TiptapCF
-      ref="base"
-      v-bind="$attrs"
-      v-on="$listeners"
-      class="tiptap"
-      :editable="editable"
-      :comment-mode="commentMode"
-      :search-users="searchUsers"
-      :user-href="userHref"
-      :user-label="userLabel"
-      :upload="upload"
-      :video-dialog-controller="videoDialogController"
-      :image-dialog-controller="imageDialogController"
-      :on-editor-change="onChange"
-      :on-editor-ready="onEditorReadyInternal"
-    />
-  </div>
+  <TiptapCF
+    ref="base"
+    v-bind="$attrs"
+    v-on="$listeners"
+    class="tiptap"
+    :editable="editable"
+    :comment-mode="commentMode"
+    :search-users="searchUsers"
+    :user-href="userHref"
+    :user-label="userLabel"
+    :upload="upload"
+    :on-editor-change="onChange"
+    :on-editor-ready="onEditorReadyInternal"
+  />
 </template>
 
 <script lang="ts">
@@ -82,11 +28,6 @@ import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
 import { api2 } from '@/api2';
 import { readToken } from '@/store/main/getters';
-import getYouTubeID from 'get-youtube-id';
-
-interface ITiptapDialogController {
-  onUrl: ((url: string) => void) | undefined;
-}
 
 declare const renderMathInElement: any;
 
@@ -135,51 +76,6 @@ export default class ChafanTiptap extends Vue {
     if (this.onEditorChange) {
       this.onEditorChange(this.getText() || '');
     }
-  }
-
-  private showVideoDialog = false;
-  readonly videoDialogController: ITiptapDialogController = {
-    onUrl: undefined,
-  };
-  private showImageDialog = false;
-  readonly imageDialogController: ITiptapDialogController = {
-    onUrl: undefined,
-  };
-  private insertImageUrl = '';
-  private insertImage() {
-    if (this.imageDialogController.onUrl) {
-      this.imageDialogController.onUrl(this.insertImageUrl);
-    }
-    this.showImageDialog = false;
-  }
-
-  private youtubeUrl = '';
-  private bilibiliEmbedCode = '';
-  private insertVideo() {
-    let url = '';
-    if (this.youtubeUrl) {
-      const youtubeId = getYouTubeID(this.youtubeUrl);
-      if (youtubeId) {
-        url = `https://www.youtube.com/embed/${youtubeId}`;
-      }
-    } else if (this.bilibiliEmbedCode) {
-      const bilibiliEmbedDOM = new DOMParser().parseFromString(this.bilibiliEmbedCode, 'text/html');
-      const iframe = bilibiliEmbedDOM.getElementsByTagName('iframe')[0];
-      if (iframe) {
-        const iframeUrl = new URL(iframe.src);
-        if (iframeUrl.hostname === 'player.bilibili.com') {
-          url = iframeUrl.href;
-        }
-      }
-    }
-
-    if (!url) {
-      return;
-    }
-    if (this.videoDialogController.onUrl) {
-      this.videoDialogController.onUrl(url);
-    }
-    this.showVideoDialog = false;
   }
 
   get base() {
