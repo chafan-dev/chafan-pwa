@@ -194,7 +194,7 @@
             <v-card>
               <v-card-title primary-title>
                 <div class="headline primary--text">问题历史</div>
-                <v-spacer></v-spacer>
+                <v-spacer />
                 <span class="text-caption grey--text">点击展开</span>
               </v-card-title>
               <v-expansion-panels>
@@ -216,7 +216,7 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <Viewer :body="archive.description" />
+                    <Viewer :body="archive.description" :editor="archive.editor" />
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
