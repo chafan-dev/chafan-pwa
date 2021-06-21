@@ -11,7 +11,7 @@
           <div>
             <v-textarea
               v-model="articleTitle"
-              :label="$t('Title')"
+              label="标题"
               auto-grow
               class="headline mt-2"
               dense
@@ -31,6 +31,8 @@
             ref="vditor"
             :onEditorChange="onEditorChange"
             class="mb-2 mt-2"
+            :isMobile="isMobile"
+            :vditorUploadConfig="vditorUploadConfig"
           />
 
           <!-- Controls -->
@@ -188,8 +190,8 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
 import { env } from '@/env';
-import { readUserProfile } from '@/store/main/getters';
-import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { readToken, readUserProfile } from '@/store/main/getters';
+import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 
 @Component({
   components: {
@@ -266,7 +268,7 @@ export default class ArticleEditor extends Vue {
       );
       if (articleDraft) {
         commitAddNotification(this.$store, {
-          content: this.$t('载入最近的草稿').toString(),
+          content: '载入最近的草稿',
           color: 'success',
         });
         article.title = articleDraft.title || '';
@@ -318,7 +320,7 @@ export default class ArticleEditor extends Vue {
       return (this.$refs.vditor as any).getMode();
     }
     commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
+      content: '编辑器错误',
       color: 'error',
     });
     return 'wysiwyg';
@@ -331,7 +333,7 @@ export default class ArticleEditor extends Vue {
       return (this.$refs.vditor as any).getContent();
     }
     commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
+      content: '编辑器错误',
       color: 'error',
     });
     return '';
@@ -344,7 +346,7 @@ export default class ArticleEditor extends Vue {
       return (this.$refs.vditor as any).getText();
     }
     commitAddNotification(this.$store, {
-      content: this.$t('编辑器错误').toString(),
+      content: '编辑器错误',
       color: 'error',
     });
     return null;
@@ -436,7 +438,7 @@ export default class ArticleEditor extends Vue {
           this.historyDialog = true;
         } else {
           commitAddNotification(this.$store, {
-            content: this.$t('尚无历史发表存档').toString(),
+            content: '尚无历史发表存档',
             color: 'info',
           });
         }
@@ -523,7 +525,7 @@ export default class ArticleEditor extends Vue {
           this.newArticleId = article.uuid;
           if (!payload.isAutosaved) {
             commitAddNotification(this.$store, {
-              content: this.$t(payload.edit.is_draft ? '草稿已保存' : '已发表').toString(),
+              content: payload.edit.is_draft ? '草稿已保存' : '已发表',
               color: 'success',
             });
           }
@@ -548,7 +550,7 @@ export default class ArticleEditor extends Vue {
           clearLocalEdit('article', response.data.uuid);
           if (!payload.isAutosaved) {
             commitAddNotification(this.$store, {
-              content: this.$t(payload.edit.is_draft ? '文章草稿已更新' : '更新已发表').toString(),
+              content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
               color: 'success',
             });
             this.$router.push(`/articles/${articleId}`);
@@ -573,13 +575,13 @@ export default class ArticleEditor extends Vue {
       await apiArticle.deleteArticleDraft(this.token, this.articleId);
       clearLocalEdit('article', this.articleId);
       commitAddNotification(this.$store, {
-        content: this.$t('草稿已删除').toString(),
+        content: '草稿已删除',
         color: 'success',
       });
       this.cancelHandler();
     } else {
       commitAddNotification(this.$store, {
-        content: this.$t('无法删除草稿').toString(),
+        content: '无法删除草稿',
         color: 'success',
       });
     }
@@ -603,6 +605,14 @@ export default class ArticleEditor extends Vue {
         this.vditorComponent.init('wysiwyg', undefined, oldContent);
       }
     }
+  }
+
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

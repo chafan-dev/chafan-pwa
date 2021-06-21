@@ -247,6 +247,7 @@
             :siteId="submission.site ? submission.site.uuid : undefined"
             :writable="commentWritable"
             commentLabel="评论"
+            :show-title="true"
             @submit-new-comment="submitNewSubmissionCommentBody"
           />
 
