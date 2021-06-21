@@ -127,7 +127,7 @@ export default class ChafanTiptap extends Vue {
         const url = new URL(anchor.href);
         const segments = url.pathname.split('/');
         if (segments.length === 3 && segments[1] === 'users') {
-          handles.push(segments[2]);
+          handles.push(decodeURI(segments[2]));
         }
       });
       this.onMentionedHandles(handles);
