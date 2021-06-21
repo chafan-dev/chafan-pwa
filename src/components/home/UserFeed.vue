@@ -93,7 +93,7 @@
             <span class="text-caption grey--text mr-1">{{
               $dayjs.utc(activity.created_at).local().fromNow()
             }}</span>
-            <v-menu offset-y v-if="activity.origins">
+            <v-menu offset-y v-if="activity.origins && activity.origins.length">
               <template v-slot:activator="{ on, attrs }">
                 <DotsIcon small v-bind="attrs" v-on="on" />
               </template>
