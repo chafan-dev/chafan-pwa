@@ -8,24 +8,27 @@
       :placeholder="placeholder"
       :onMentionedHandles="onMentionedHandles"
     />
-    <SimpleVditor
+    <LiteVditorCF
       v-else
       ref="simpleVditor"
       :initial-value="initialValue"
       :placeholder="placeholder"
       :showMenu="showMenu"
+      :vditorUploadConfig="vditorUploadConfig"
     />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import SimpleVditor from '@/components/editor/SimpleVditor.vue';
+import { LiteVditorCF } from 'chafan-vue-editors';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { editor_T } from '@/interfaces';
+import { getVditorUploadConfig } from '@/common';
+import { readToken } from '@/store/main/getters';
 
 @Component({
-  components: { ChafanTiptap, SimpleVditor },
+  components: { ChafanTiptap, LiteVditorCF },
 })
 export default class SimpleEditor extends Vue {
   @Prop() public readonly initialValue: string | undefined;
@@ -35,7 +38,7 @@ export default class SimpleEditor extends Vue {
   @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
 
   get simpleVditor() {
-    return this.$refs.simpleVditor as SimpleVditor;
+    return this.$refs.simpleVditor as any;
   }
 
   get editor() {
@@ -87,6 +90,10 @@ export default class SimpleEditor extends Vue {
     } else {
       this.simpleVditor.initVditor();
     }
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

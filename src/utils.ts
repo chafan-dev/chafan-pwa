@@ -32,6 +32,14 @@ export const saveLocalCache = (key: string, obj: any) => {
   }
 };
 
+export const clearLocalCache = (key: string) => {
+  try {
+    localStorage.removeItem('local-cache-' + key);
+  } catch (e) {
+    // TODO
+  }
+};
+
 export const getLocalCache = (key: string) => {
   try {
     const s = localStorage.getItem('local-cache-' + key);
@@ -161,7 +169,8 @@ export const newAnswerHandler = async (
       ).data;
       const answerUUID = newAnswer.uuid;
       if (!isAutosaved) {
-        vueInstance.$router.push(`/questions/${questionUUID}/answers/${answerUUID}`);
+        clearLocalCache(`question-${questionUUID}`);
+        await vueInstance.$router.push(`/questions/${questionUUID}/answers/${answerUUID}`);
       }
       return newAnswer;
     }

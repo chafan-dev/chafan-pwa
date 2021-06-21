@@ -50,7 +50,7 @@
       <v-btn small outlined color="grey" @click="showImageDialog = true">Image</v-btn>
       <v-btn small class="ml-1" outlined color="grey" @click="showVideoDialog = true">Video</v-btn>
     </div>
-    <Tiptap
+    <TiptapCF
       ref="base"
       v-bind="$attrs"
       v-on="$listeners"
@@ -77,7 +77,7 @@ import { IUserPreview } from '@/interfaces';
 import 'tippy.js/dist/tippy.css';
 import 'highlight.js/styles/github.css';
 
-import { Tiptap } from 'chafan-vue-editors';
+import { TiptapCF } from 'chafan-vue-editors';
 import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
 import { api2 } from '@/api2';
@@ -92,7 +92,7 @@ declare const renderMathInElement: any;
 
 @Component({
   components: {
-    Tiptap,
+    TiptapCF,
   },
 })
 export default class ChafanTiptap extends Vue {

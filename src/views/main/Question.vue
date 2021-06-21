@@ -50,7 +50,7 @@
           </div>
 
           <!-- Question description display/editor -->
-          <SimpleViewer
+          <Viewer
             v-if="!showQuestionEditor && question.description"
             :body="question.description"
             :editor="question.description_editor"
@@ -216,7 +216,7 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <SimpleViewer :body="archive.description" />
+                    <Viewer :body="archive.description" />
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -434,7 +434,7 @@ import {
   IUserQuestionSubscription,
   IUserSiteProfile,
 } from '@/interfaces';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import {
   dispatchCaptureApiError,
@@ -475,7 +475,7 @@ import Upvote from '@/components/Upvote.vue';
     HistoryIcon,
     InfoIcon,
     CommentsIcon,
-    SimpleViewer,
+    Viewer,
     SimpleEditor,
   },
 })
@@ -569,6 +569,7 @@ export default class Question extends Vue {
     if (matched && !isEqual(to.params, from.params)) {
       this.loading = true;
       this.showEditor = false;
+      this.showQuestionEditor = false;
       this.showComments = false;
       this.answerWritable = false;
       this.commentWritable = false;
@@ -666,7 +667,7 @@ export default class Question extends Vue {
           if (this.answerUUID !== null) {
             if (!answerPreviews.find((preview) => preview.uuid === this.answerUUID)) {
               commitAddNotification(this.$store, {
-                content: this.$t('答案不存在').toString(),
+                content: '答案不存在',
                 color: 'error',
               });
             }
@@ -857,7 +858,7 @@ export default class Question extends Vue {
         this.historyDialog = true;
       } else {
         commitAddNotification(this.$store, {
-          content: this.$t('尚无历史存档').toString(),
+          content: '尚无历史存档',
           color: 'info',
         });
       }

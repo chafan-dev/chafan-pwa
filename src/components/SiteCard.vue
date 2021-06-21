@@ -3,7 +3,7 @@
     <div class="headline primary--text">{{ site.name }}</div>
     <div v-if="site !== null">
       <div v-if="site.description">
-        <SimpleViewer :body="site.description" />
+        <Viewer :body="site.description" />
       </div>
       <template v-if="!compactMode">
         <div v-if="site.topics.length > 0">
@@ -101,7 +101,7 @@ import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import Invite from '@/components/Invite.vue';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 import SiteJoinConditions from '@/components/SiteJoinConditions.vue';
-import SimpleViewer from '@/components/SimpleViewer.vue';
+import Viewer from '@/components/Viewer.vue';
 import {
   dispatchCaptureApiError,
   dispatchCaptureApiErrorWithErrorHandler,
@@ -124,7 +124,7 @@ import { apiSite } from '@/api/site';
     NewInviteLinkBtn,
     DoorIcon,
     SettingsIcon,
-    SimpleViewer,
+    Viewer,
   },
 })
 export default class SiteCard extends Vue {

@@ -107,7 +107,6 @@
   margin-bottom: 10px;
 }
 
-.simple-viewer .ProseMirror,
 .viewer .ProseMirror {
   padding-left: 0;
   padding-right: 0;
@@ -146,22 +145,6 @@
 //// For ChafanTiptap
 .v-application code {
   background: none !important;
-}
-
-.simple-vditor .vditor-reset {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.vditor-without-menu .vditor-toolbar {
-  height: 0px;
-  border-bottom: 0px;
-}
-
-.simple-vditor h1::before,
-.simple-vditor h2::before,
-.simple-vditor h3::before {
-  content: '';
 }
 
 .vditor {
@@ -222,4 +205,10 @@
 .v-list-item__action:first-child,
 .v-list-item__icon:first-child {
   margin-right: 14px !important;
+}
+
+// User profile edit
+
+.avatar-col {
+  max-width: 180px !important;
 }
