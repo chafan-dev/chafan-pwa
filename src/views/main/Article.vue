@@ -62,13 +62,6 @@
                 :on-cancel-vote="cancelUpvote"
                 :on-vote="upvote"
               />
-
-              <CommentBtn
-                class="mr-1"
-                @click="toggleShowComments"
-                :count="article.comments.length"
-              />
-
               <v-btn
                 v-show="currentUserIsAuthor"
                 :to="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
@@ -186,9 +179,9 @@
           </div>
 
           <!-- Comments -->
-          <v-expand-transition>
+          <div>
             <CommentBlock
-              v-show="showComments"
+              :show-title="true"
               :commentSubmitIntermediate="commentSubmitIntermediate"
               :comments="article.comments"
               :writable="token"
@@ -197,7 +190,7 @@
               @submit-new-comment="submitNewArticleCommentBody"
             >
             </CommentBlock>
-          </v-expand-transition>
+          </div>
         </div>
       </div>
     </v-col>
@@ -260,7 +253,6 @@ import { AxiosError } from 'axios';
 export default class Article extends Vue {
   private article: IArticle | null = null;
   private upvotes: IArticleUpvotes | null = null;
-  private showComments: boolean = false;
   private userBookmark: IUserArticleBookmark | null = null;
   private confirmDeleteDialog = false;
   private loading = true;
@@ -288,30 +280,16 @@ export default class Article extends Vue {
     return this.$route.params.id;
   }
 
-  get articleCommentId() {
-    const acid = this.$route.params.article_comment_id;
-    if (acid) {
-      return acid;
-    } else {
-      return null;
-    }
-  }
-
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'article');
     if (matched && !isEqual(to.params, from.params)) {
-      this.showComments = false;
       this.loading = true;
       this.load();
     }
   }
 
   private async load() {
-    if (this.articleCommentId) {
-      this.showComments = true;
-    }
-
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
         this.article = (await apiArticle.getArticle(this.token, this.id)).data;
@@ -438,16 +416,8 @@ export default class Article extends Vue {
         color: 'success',
       });
       this.confirmDeleteDialog = false;
-      this.$router.push(`/article-columns/${this.article.article_column.uuid}`);
+      await this.$router.push(`/article-columns/${this.article.article_column.uuid}`);
     }
-  }
-
-  private toggleShowComments() {
-    if (!this.userProfile?.uuid && this.article!.comments.length === 0) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
-    }
-    this.showComments = !this.showComments;
   }
 }
 </script>
