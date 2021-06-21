@@ -270,14 +270,13 @@
               </template>
               <template v-slot:item.action="{ item }">
                 <span v-if="$dayjs.utc(item.expired_at).isBefore($dayjs.utc())"> 已过期 </span>
-
-                <template v-if="item.giver.uuid === userProfile.uuid">
+                <template v-else-if="item.giver.uuid === userProfile.uuid">
                   <span v-if="item.refunded_at"> 已撤回 </span>
                   <span v-if="item.claimed_at"> 已被领取 </span>
                 </template>
                 <template v-else>
                   <span v-if="item.claimed_at"> 已领取 </span>
-                  <span v-if="item.refunded_at"> 已被取消 </span>
+                  <span v-else-if="item.refunded_at"> 已被取消 </span>
                   <v-btn v-else color="primary" depressed small @click="claimReward(item)">
                     领取
                   </v-btn>
