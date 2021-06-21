@@ -15,7 +15,7 @@
       <SimpleEditor
         ref="simpleEditor"
         :onMentionedHandles="onMentionedHandles"
-        :placeholder="$t('评论')"
+        placeholder="评论"
         class="mb-1"
       />
       <div class="d-flex pt-1">
@@ -35,9 +35,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-else-if="loggedIn" class="text-caption grey--text pl-2">
-      {{ $t('Only site member can comment') }}
-    </div>
+    <div v-else-if="loggedIn" class="text-caption grey--text pl-2">仅圈子成员可评论</div>
   </div>
 </template>
 
