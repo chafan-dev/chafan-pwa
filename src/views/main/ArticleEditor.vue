@@ -183,7 +183,7 @@ import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { saveLocalEdit, uuidv4 } from '@/utils';
-import { editor_T, IArchive, IArticleArchive } from '@/interfaces';
+import { editor_T, IArticleArchive } from '@/interfaces';
 
 import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
@@ -299,14 +299,14 @@ export default class ArticleEditor extends Vue {
 
     const topLevelEditorItems = [
       {
-        text: this.$t('Vditor').toString(),
+        text: 'Vditor 编辑器',
         value: 'vditor',
       },
     ];
     const userProfile = readUserProfile(this.$store);
     if (userProfile!.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
       topLevelEditorItems.push({
-        text: this.$t('tiptap').toString(),
+        text: 'Tiptap 编辑器',
         value: 'tiptap',
       });
     }
@@ -317,7 +317,7 @@ export default class ArticleEditor extends Vue {
     if (this.topLevelEditor === 'tiptap') {
       return 'tiptap';
     } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as any).getMode();
+      return this.vditorComponent.getMode();
     }
     commitAddNotification(this.$store, {
       content: '编辑器错误',
@@ -444,11 +444,6 @@ export default class ArticleEditor extends Vue {
         }
       }
     });
-  }
-
-  private loadArchive(archive: IArchive) {
-    this.initEditor(archive.body, this.getEditorMode());
-    this.historyDialog = false;
   }
 
   private loadArticleArchive(archive: IArticleArchive) {
