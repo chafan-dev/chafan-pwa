@@ -13,7 +13,7 @@
       {{ shortBodyText }}
     </div>
     <div class="d-flex" v-if="showColumnName">
-      <span class="grey--text">
+      <span class="grey--text text-caption">
         发表于专栏：
         <router-link
           :to="`/article-columns/${articlePreview.article_column.uuid}`"
