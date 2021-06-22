@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@hcaptcha/vue-hcaptcha": "^0.3.0",
-    "@sentry/tracing": "^6.5.1",
-    "@sentry/vue": "^6.5.1",
+    "@sentry/tracing": "^6.7.2",
+    "@sentry/vue": "^6.7.2",
     "axios": "^0.21.1",
     "chafan-vue-editors": "^0.7.7",
     "core-js": "^3.8.3",
