@@ -147,11 +147,3 @@ export default class ChafanTiptap extends Vue {
   }
 }
 </script>
-
-<style>
-.tiptap-cf-confirm-btn {
-  color: white !important;
-  height: fit-content;
-  margin-top: 12px;
-}
-</style>
