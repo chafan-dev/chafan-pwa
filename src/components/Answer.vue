@@ -1,7 +1,7 @@
 <template>
   <div v-if="!showEditor" class="pa-1">
     <div v-if="isHiddenByMod">
-      <v-card-text>内容已被折叠</v-card-text>
+      <v-card-text>内容已被隐藏</v-card-text>
     </div>
     <div v-else>
       <div v-if="showQuestionInCard" class="title mb-2">
@@ -46,7 +46,7 @@
               此为初稿仅自己可见
             </v-chip>
             <v-chip v-else-if="showHasDraftBadge" color="info" small>
-              {{ $t('编辑器中有未发表的草稿') }}
+              编辑器中有未发表的草稿
             </v-chip>
 
             <Viewer
@@ -185,9 +185,7 @@
 
             <!-- Column of variable width -->
             <v-col v-if="$vuetify.breakpoint.mdAndUp & !preview && userProfile" md="auto">
-              <span class="text-caption grey--text mt-2">{{
-                $t('已被阅读n次', { times: answer.view_times })
-              }}</span>
+              <span class="text-caption grey--text mt-2"> 已被阅读{{ answer.view_times }}次 </span>
             </v-col>
           </v-row>
 
@@ -218,7 +216,7 @@
     <div v-if="isModerator && !isUserMode">
       <v-row justify="end">
         <v-col md="auto">
-          {{ $t('管理：') }}
+          管理：
           <!-- Moderator -->
           <v-btn
             v-if="isHiddenByMod"
@@ -228,7 +226,8 @@
             depressed
             small
             @click="toggleHideAnswer"
-            >{{ $t('取消隐藏') }}
+          >
+            取消隐藏
           </v-btn>
           <v-btn
             v-else
@@ -238,7 +237,8 @@
             depressed
             small
             @click="toggleHideAnswer"
-            >{{ $t('隐藏') }}
+          >
+            隐藏
           </v-btn>
         </v-col>
       </v-row>
