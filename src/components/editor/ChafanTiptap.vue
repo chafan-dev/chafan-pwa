@@ -3,7 +3,6 @@
     ref="base"
     v-bind="$attrs"
     v-on="$listeners"
-    class="tiptap"
     :editable="editable"
     :comment-mode="commentMode"
     :search-users="searchUsers"
@@ -61,9 +60,8 @@ export default class ChafanTiptap extends Vue {
 
   private onChange() {
     if (this.onMentionedHandles) {
-      const tiptapElement = this.$el.getElementsByClassName('tiptap')[0];
       const handles: string[] = [];
-      tiptapElement.querySelectorAll('a.mention').forEach((elem: Element) => {
+      this.$el.querySelectorAll('a.mention').forEach((elem: Element) => {
         const anchor = elem as HTMLAnchorElement;
         const url = new URL(anchor.href);
         const segments = url.pathname.split('/');
