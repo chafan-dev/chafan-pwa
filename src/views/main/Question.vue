@@ -217,7 +217,7 @@
                       {{ archive.title }}
                     </div>
                     <Viewer
-                      v-if="archive.description_text"
+                      v-if="archive.description_editor"
                       :body="archive.description"
                       :editor="archive.description_editor"
                     />
