@@ -8,7 +8,6 @@ import 'intersection-observer';
 
 // styles
 import './styles/app.scss';
-import 'chafan-vue-editors/dist/chafan-vue-editors.min.css';
 
 // plugins
 import vuetify from './plugins/vuetify';
