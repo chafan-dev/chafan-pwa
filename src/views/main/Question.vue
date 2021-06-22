@@ -216,7 +216,11 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <Viewer :body="archive.description" :editor="archive.editor" />
+                    <Viewer
+                      v-if="archive.description_text"
+                      :body="archive.description"
+                      :editor="archive.description_editor"
+                    />
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -850,6 +854,8 @@ export default class Question extends Vue {
         id: 0,
         title: this.question.title,
         description: this.question.description,
+        description_text: this.question.description_text,
+        description_editor: this.question.description_editor,
         topics: this.question.topics,
         created_at: this.question.updated_at,
         editor: this.question.editor,

@@ -736,6 +736,8 @@ export interface IQuestionArchive {
   id: number;
   title?: string;
   description?: string;
+  description_text?: string;
+  description_editor?: editor_T;
   topics: ITopic[];
   created_at: string;
   editor?: IUserPreview;
