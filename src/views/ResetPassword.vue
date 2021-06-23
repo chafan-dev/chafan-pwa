@@ -8,7 +8,6 @@
               <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} - 密码重置</v-toolbar-title>
                 <v-spacer />
-                <LangPicker></LangPicker>
               </v-toolbar>
               <v-card-text>
                 <p class="subheading">在下方输入你的新密码</p>
@@ -67,11 +66,7 @@ import { appName } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchResetPassword } from '@/store/main/actions';
 
-import LangPicker from '@/components/LangPicker.vue';
-
-@Component({
-  components: { LangPicker },
-})
+@Component
 export default class UserProfileEdit extends Vue {
   public appName = appName;
   public valid = true;

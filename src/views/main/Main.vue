@@ -275,7 +275,6 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import PasswordIcon from '@/components/icons/PasswordIcon.vue';
 
 import Avatar from '@/components/Avatar.vue';
-import LangPicker from '@/components/LangPicker.vue';
 import Event from '@/components/Event.vue';
 import SearchBox from '@/components/SearchBox.vue';
 import { IUserProfile } from '@/interfaces';
@@ -303,7 +302,6 @@ const routeGuardMain = async (to, from, next) => {
     BaseCard,
     CreateQuestionForm,
     AccountIcon,
-    LangPicker,
     SearchBox,
     Event,
     Avatar,
