@@ -59,6 +59,7 @@
             <SimpleEditor
               ref="descEditor"
               :initialValue="question.description"
+              :editor-prop="question.description_editor"
               placeholder="描述（选填）"
               :show-menu="true"
               class="mb-2"
@@ -130,19 +131,6 @@
             :on-vote="upvote"
           />
 
-          <v-btn
-            class="slim-btn mr-1"
-            depressed
-            small
-            :color="showUpdateDetailsButton ? 'primary' : undefined"
-            @click="showQuestionEditor = true"
-            v-show="editable"
-          >
-            <EditIcon />
-            <span v-if="showUpdateDetailsButton">添加细节</span>
-            <span v-else>编辑</span>
-          </v-btn>
-
           <ShareCardButton
             class="mr-1"
             :link-text="question.title"
@@ -176,20 +164,39 @@
             </v-card-text>
           </ShareCardButton>
 
-          <BookmarkedIcon
-            v-if="questionSubscription && questionSubscription.subscribed_by_me"
-            :disabled="cancelSubscriptionIntermediate"
-            class="mr-1"
-            @click="cancelSubscription"
-          />
-          <ToBookmarkIcon
-            v-else
-            :disabled="subscribeIntermediate"
-            class="mr-1"
-            @click="subscribe"
-          />
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" class="slim-btn" depressed small>
+                <DotsIcon small />
+                <span class="ml-1" v-if="$vuetify.breakpoint.mdAndUp">更多</span>
+              </v-btn>
+            </template>
+            <v-list dense>
+              <v-list-item v-if="editable" @click="showQuestionEditor = true" dense>
+                <EditIcon class="mr-1" />
+                <span v-if="showUpdateDetailsButton">添加细节</span>
+                <span v-else>编辑</span>
+              </v-list-item>
+              <v-list-item @click="showHistoryDialog" dense>
+                <HistoryIcon v-if="editable && userProfile" class="mr-1" />
+                问题历史
+              </v-list-item>
+              <v-list-item
+                v-if="questionSubscription && questionSubscription.subscribed_by_me"
+                :disabled="cancelSubscriptionIntermediate"
+                @click="cancelSubscription"
+                dense
+              >
+                <ToBookmarkIcon class="mr-1" />
+                收藏
+              </v-list-item>
+              <v-list-item v-else :disabled="subscribeIntermediate" @click="subscribe" dense>
+                <BookmarkedIcon class="mr-1" />
+                取消收藏
+              </v-list-item>
+            </v-list>
+          </v-menu>
 
-          <HistoryIcon v-if="editable && userProfile" class="mr-1" @click="showHistoryDialog" />
           <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
               <v-card-title primary-title>
@@ -458,9 +465,11 @@ import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import Upvote from '@/components/Upvote.vue';
+import DotsIcon from '@/components/icons/DotsIcon.vue';
 
 @Component({
   components: {
+    DotsIcon,
     Upvote,
     CommentBtn,
     UpvotedBtn,
