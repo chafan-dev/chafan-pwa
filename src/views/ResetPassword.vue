@@ -6,14 +6,12 @@
           <ValidationObserver v-slot="{ handleSubmit, reset }">
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark>
-                <v-toolbar-title>{{ appName }} - {{ $t('Reset Password') }}</v-toolbar-title>
+                <v-toolbar-title>{{ appName }} - 密码重置</v-toolbar-title>
                 <v-spacer />
                 <LangPicker></LangPicker>
               </v-toolbar>
               <v-card-text>
-                <p class="subheading">
-                  {{ $t('Enter your new password below') }}
-                </p>
+                <p class="subheading">在下方输入你的新密码</p>
                 <v-form
                   ref="form"
                   v-model="valid"
@@ -26,19 +24,14 @@
                     name="password"
                     rules="required|min:3|password|password1:@confirm"
                   >
-                    <v-text-field
-                      v-model="password"
-                      :label="$t('Password')"
-                      required
-                      type="password"
-                    />
+                    <v-text-field v-model="password" label="密码" required type="password" />
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
                     <v-text-field
                       v-model="confirmation"
-                      :label="$t('Password confirmation')"
+                      label="确认密码"
                       required
                       type="password"
                     />
@@ -48,15 +41,16 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn small depressed @click="cancel">{{ $t('Cancel') }}</v-btn>
-                <v-btn small depressed @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+                <v-btn small depressed @click="cancel">取消</v-btn>
+                <v-btn small depressed @click="resetAll(reset)">重置</v-btn>
                 <v-btn
                   small
                   depressed
                   :disabled="!valid"
                   color="primary"
                   @click="handleSubmit(submit)"
-                  >{{ $t('Save') }}
+                >
+                  保存
                 </v-btn>
               </v-card-actions>
             </v-card>
