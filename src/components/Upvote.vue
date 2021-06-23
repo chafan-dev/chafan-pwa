@@ -8,14 +8,15 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn small depressed @click="showCancelUpvoteDialog = false">{{ $t('No') }} </v-btn>
+          <v-btn small depressed @click="showCancelUpvoteDialog = false">取消</v-btn>
           <v-btn
             :disabled="cancelUpvoteIntermediate"
             color="warning"
             small
             depressed
             @click="onConfirmCancel"
-            >{{ $t('Yes') }}
+          >
+            确认
           </v-btn>
         </v-card-actions>
       </v-card>

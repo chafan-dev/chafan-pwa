@@ -1,6 +1,8 @@
 <template>
   <v-btn v-bind="$attrs" v-on="$listeners" small depressed class="slim-btn">
-    <UpvoteIcon /> 赞 ({{ count }})
+    <UpvoteIcon />
+    <template v-if="$vuetify.breakpoint.mdAndUp">赞 ({{ count }})</template>
+    <template v-else>{{ count }}</template>
   </v-btn>
 </template>
 <script>
