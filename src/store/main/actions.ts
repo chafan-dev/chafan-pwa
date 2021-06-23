@@ -226,20 +226,18 @@ export const actions = {
   },
   async passwordRecovery(context: MainContext, payload: { email: string }) {
     const loadingNotification = {
-      content: 'Sending password recovery email',
+      content: '密码找回邮件正在发送',
       showProgress: true,
     };
     try {
       commitAddNotification(context, loadingNotification);
-      (
-        await Promise.all([
-          api.passwordRecovery(payload.email),
-          await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
-        ])
-      )[0];
+      await Promise.all([
+        api.passwordRecovery(payload.email),
+        await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
+      ]);
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, {
-        content: 'Password recovery email sent',
+        content: '密码找回邮件已发送',
         color: 'success',
       });
       await dispatchLogOut(context);
@@ -247,7 +245,7 @@ export const actions = {
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, {
         color: 'error',
-        content: 'Incorrect email',
+        content: '邮箱地址有误',
       });
     }
   },
@@ -258,12 +256,10 @@ export const actions = {
     };
     try {
       commitAddNotification(context, loadingNotification);
-      (
-        await Promise.all([
-          api.resetPassword(payload.password, payload.token),
-          await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
-        ])
-      )[0];
+      await Promise.all([
+        api.resetPassword(payload.password, payload.token),
+        await new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
+      ]);
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, {
         content: 'Password successfully reset',

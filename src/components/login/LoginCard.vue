@@ -9,9 +9,7 @@
                 {{ appName }}
               </h1>
 
-              <h3 class="text-xl-h3 text-md-h4 mt-4">
-                {{ $t('In-depth social Q&A site') }}
-              </h3>
+              <h3 class="text-xl-h3 text-md-h4 mt-4">有深度的社交问答网站</h3>
             </div>
           </v-container>
         </v-sheet>
@@ -27,15 +25,7 @@
               cols="12"
             >
               <ValidationObserver v-slot="{ handleSubmit, valid }">
-                <h3 class="text-h3 font-weight-bold text-center">
-                  {{ $t('Login') }}
-                </h3>
-
-                <div class="text-right mt-4">
-                  <RouterLink class="text-decoration-none" to="/signup">
-                    {{ $t('No account') }}?
-                  </RouterLink>
-                </div>
+                <h3 class="text-h3 font-weight-bold text-center">登录</h3>
 
                 <div class="mt-4">
                   <!-- NOTE(zhen): v-if doesn't work on ValidationProvider -->
@@ -43,7 +33,7 @@
                     <ValidationProvider v-slot="{ errors }" name="email" rules="email">
                       <v-text-field
                         v-model="email"
-                        :label="$t('Email')"
+                        label="邮箱地址"
                         name="login"
                         type="text"
                         @keyup.enter="submit"
@@ -59,7 +49,7 @@
                       <v-text-field
                         id="password"
                         v-model="password"
-                        :label="$t('Password')"
+                        label="密码"
                         name="password"
                         required
                         type="password"
@@ -72,23 +62,15 @@
                       <span class="error--text">{{ errors[0] }}</span>
                     </ValidationProvider>
 
-                    <div class="text-center">
+                    <div class="text-center" v-if="enableCaptcha">
                       <vue-hcaptcha :sitekey="hCaptchaSiteKey" @verify="verifiedCaptchaToken" />
                     </div>
 
                     <v-sheet class="mb-2">
                       <div v-if="loginError">
                         <v-alert :value="loginError" transition="fade-transition" type="error">
-                          Incorrect email or password
+                          邮箱地址或密码不正确
                         </v-alert>
-                      </div>
-                      <div class="text-right">
-                        <a
-                          class="text-decoration-none caption"
-                          href="/recover-password"
-                          target="_blank"
-                          >{{ $t('Forgot your password?') }}
-                        </a>
                       </div>
                     </v-sheet>
                   </template>
@@ -101,7 +83,7 @@
                     >
                       <v-text-field
                         v-model="phoneNumber"
-                        :label="$t('Cellphone number')"
+                        label="手机号"
                         name="phonenumber"
                         type="text"
                         @keyup.enter="submit"
@@ -116,7 +98,7 @@
                     <div class="d-flex">
                       <v-text-field
                         v-model="verificationCode"
-                        :label="$t('验证码')"
+                        label="验证码"
                         name="verification-code"
                         type="text"
                       >
@@ -133,7 +115,7 @@
                         small
                         @click="sendVerificationCode"
                       >
-                        {{ $t('Send me verification code') }}
+                        发送验证码
                       </v-btn>
                     </div>
                   </v-sheet>
@@ -143,7 +125,7 @@
                       :disabled="
                         submitIntermediate ||
                         (loginMethod === 'cellphone' && !verificationCode) ||
-                        (loginMethod === 'email' && !captchaToken) ||
+                        (loginMethod === 'email' && enableCaptcha && !captchaToken) ||
                         !valid
                       "
                       block
@@ -153,12 +135,24 @@
                       @click.prevent="handleSubmit(submit)"
                       class="white--text"
                     >
-                      {{ $t('Login') }}
+                      登录
                       <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
                     </v-btn>
                   </v-sheet>
 
                   <v-sheet class="mt-4 d-flex align-center justify-end">
+                    <v-btn
+                      class="text-capitalize"
+                      depressed
+                      href="/recover-password"
+                      link
+                      small
+                      text
+                    >
+                      <HelpIcon class="mr-1" />
+                      忘记密码？
+                    </v-btn>
+
                     <v-btn
                       class="text-capitalize"
                       depressed
@@ -168,7 +162,7 @@
                       text
                     >
                       <HelpCircleOutline class="mr-1" />
-                      {{ $t('如何加入「茶饭」?') }}
+                      如何注册「茶饭」账号?
                     </v-btn>
 
                     <v-btn
@@ -180,10 +174,8 @@
                       text
                     >
                       <EmailEditOutline class="mr-1" />
-                      {{ $t('联系我们') }}
+                      联系我们
                     </v-btn>
-
-                    <lang-picker :dark="false" />
                   </v-sheet>
                 </div>
 
@@ -199,12 +191,10 @@
 
                 <div class="text-center">
                   <v-btn class="text-capitalize" depressed large @click="switchLoginMethod">
-                    {{
-                      loginMethod === 'email'
-                        ? $t('Cellphone number').toString()
-                        : $t('Email').toString()
-                    }}
-                    {{ $t('Login') }}
+                    使用
+                    <template v-if="loginMethod === 'email'"> 邮箱 </template>
+                    <template v-else> 手机号 </template>
+                    登录
                   </v-btn>
                 </div>
               </ValidationObserver>
@@ -225,7 +215,7 @@ import EmailIcon from '@/components/icons/EmailIcon.vue';
 import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
 import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
-import { appName } from '@/env';
+import { appName, enableCaptcha } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchCaptureApiError, dispatchLogIn } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
@@ -238,9 +228,11 @@ import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
 import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
 import { hCaptchaSiteKey } from '@/env';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
+import HelpIcon from '@/components/icons/HelpIcon.vue';
 
 @Component({
   components: {
+    HelpIcon,
     EmailEditOutline,
     HelpCircleOutline,
     LockOutlineIcon,
@@ -268,6 +260,10 @@ export default class LoginCard extends Vue {
   private verificationCode: string | null = null;
   private captchaVerified = false;
   private captchaToken: string | null = null;
+
+  get enableCaptcha() {
+    return enableCaptcha;
+  }
 
   get hCaptchaSiteKey() {
     return hCaptchaSiteKey;
@@ -306,7 +302,7 @@ export default class LoginCard extends Vue {
     this.submitIntermediate = true;
     try {
       if (this.loginMethod === 'email') {
-        if (!this.captchaToken) {
+        if (this.enableCaptcha && !this.captchaToken) {
           this.submitIntermediate = false;
           return;
         }
@@ -314,7 +310,7 @@ export default class LoginCard extends Vue {
           type: this.loginMethod,
           username: this.email,
           password: this.password,
-          hcaptcha_token: this.captchaToken,
+          hcaptcha_token: this.enableCaptcha && this.captchaToken ? this.captchaToken : undefined,
         });
       } else {
         if (this.verificationCode) {
