@@ -203,6 +203,13 @@ export default new Router({
         import(/* webpackChunkName: "invitation-link" */ './views/InvitationLink.vue'),
     },
     {
+      path: '/reset-password',
+      meta: {
+        title: constants.reset_password,
+      },
+      component: () => import(/* webpackChunkName: "reset-password" */ './views/ResetPassword.vue'),
+    },
+    {
       path: '/main/*',
       redirect: (to) => {
         return to.fullPath.substring('/main'.length);

@@ -6,12 +6,10 @@
           <ValidationObserver v-slot="{ handleSubmit }">
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark>
-                <v-toolbar-title>{{ appName }} - {{ $t('Password Recovery') }}</v-toolbar-title>
+                <v-toolbar-title>{{ appName }} - 密码找回</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <p class="subheading">
-                  {{ $t('A password recovery email will be sent to the registered account') }}
-                </p>
+                <p class="subheading">一封用于找回密码的邮件会发送到你的邮箱</p>
                 <v-form
                   ref="form"
                   v-model="valid"
@@ -22,7 +20,7 @@
                   <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
                     <v-text-field
                       v-model="email"
-                      :label="$t('Email')"
+                      label="邮箱地址"
                       required
                       type="text"
                       @keyup.enter="handleSubmit(submit)"
@@ -37,14 +35,14 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn depressed @click="cancel">{{ $t('Cancel') }}</v-btn>
+                <v-btn depressed @click="cancel">取消</v-btn>
                 <v-btn
                   depressed
                   :disabled="!valid"
                   color="primary"
                   @click.prevent="handleSubmit(submit)"
                 >
-                  {{ $t('Send') }}
+                  发送
                 </v-btn>
               </v-card-actions>
             </v-card>
