@@ -41,6 +41,7 @@ export default class ChafanTiptap extends Vue {
   @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
   @Prop() public readonly onEditorChange: ((text: string) => void) | undefined;
   @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
+  @Prop() public readonly initialContent: string | undefined;
 
   private onEditorReadyInternal(contentElem: HTMLElement) {
     if (this.onEditorReady) {
@@ -144,6 +145,12 @@ export default class ChafanTiptap extends Vue {
     }
     const response = await api2.uploadFile(readToken(this.$store), formData);
     return response.data.msg;
+  }
+
+  mounted() {
+    if (this.initialContent) {
+      this.loadJSON(JSON.parse(this.initialContent));
+    }
   }
 }
 </script>

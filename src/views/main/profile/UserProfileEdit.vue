@@ -111,6 +111,7 @@
                             v-show="aboutEditor === 'tiptap'"
                             ref="tiptap"
                             :onEditorChange="onEditorChange"
+                            :initial-content="userProfile.about"
                           />
 
                           <VditorCF
@@ -119,6 +120,8 @@
                             :onEditorChange="onEditorChange"
                             :isMobile="isMobile"
                             :vditorUploadConfig="vditorUploadConfig"
+                            :initial-content="userProfile.about"
+                            :editor-mode="aboutEditor"
                           />
                         </div>
                       </v-expand-transition>
@@ -241,8 +244,8 @@
             </div>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn depressed smal @click="cancel">{{ $t('Cancel') }}</v-btn>
-              <v-btn depressed smal @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+              <v-btn depressed smal @click="cancel">取消</v-btn>
+              <v-btn depressed smal @click="resetAll(reset)">重置</v-btn>
               <v-btn
                 :disabled="!valid || submitIntermediate"
                 color="primary"
@@ -250,7 +253,7 @@
                 smal
                 @click="handleSubmit(submit)"
               >
-                {{ $t('Save') }}
+                保存
               </v-btn>
             </v-card-actions>
           </div>
@@ -340,15 +343,6 @@ export default class UserProfileEdit extends Vue {
     this.categoryTopics = (await api.getCategoryTopics()).data;
     if (userProfile) {
       this.aboutEditor = userProfile.about_editor;
-      if (this.aboutEditor === 'tiptap') {
-        const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
-        if (userProfile.about) {
-          chafanTiptap.loadJSON(JSON.parse(userProfile.about));
-        }
-      } else {
-        const vditor = this.$refs.vditor as any;
-        vditor.init(this.aboutEditor, userProfile.about || '');
-      }
       if (userProfile.avatar_url) {
         this.avatarURL = userProfile.avatar_url;
       } else {
