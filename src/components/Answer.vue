@@ -290,7 +290,7 @@ import {
 } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
-import { clearLocalEdit, getLocalCache, loadLocalEdit, LocalEdit, saveLocalCache } from '@/utils';
+import { clearLocalEdit, loadLocalEdit, LocalEdit } from '@/utils';
 import BaseCard from '@/components/base/BaseCard.vue';
 import AnswerEditor from '@/components/AnswerEditor.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
@@ -381,18 +381,8 @@ export default class Answer extends Vue {
     if (this.answerProp) {
       await this.updateStateWithLoadedAnswer(this.answerProp);
     } else {
-      const cached = getLocalCache(`answer-${this.answerPreview.uuid}`);
-      if (cached) {
-        apiAnswer.getAnswer(this.token, this.answerPreview.uuid).then((r) => {
-          saveLocalCache(`answer-${this.answerPreview.uuid}`, r.data);
-          this.updateStateWithLoadedAnswer(r.data);
-        });
-        await this.updateStateWithLoadedAnswer(cached);
-      } else {
-        const response = await apiAnswer.getAnswer(this.token, this.answerPreview.uuid);
-        await this.updateStateWithLoadedAnswer(response.data);
-        saveLocalCache(`answer-${this.answerPreview.uuid}`, response.data);
-      }
+      const response = await apiAnswer.getAnswer(this.token, this.answerPreview.uuid);
+      await this.updateStateWithLoadedAnswer(response.data);
     }
 
     if (this.loadFull) {

@@ -495,7 +495,7 @@ import {
   ISubmissionSuggestion,
   ITopic,
 } from '@/interfaces';
-import { getLocalCache, rankComments, saveLocalCache } from '@/utils';
+import { rankComments } from '@/utils';
 import Viewer from '@/components/Viewer.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
@@ -636,23 +636,10 @@ export default class Submission extends Vue {
     await this.load();
   }
 
-  private async load(reloadOnExpire: boolean = true) {
+  private async load() {
     try {
-      const cached = getLocalCache(`submission-${this.id}`);
-      if (cached) {
-        this.submission = cached;
-        if (reloadOnExpire) {
-          apiSubmission.getSubmission(this.token, this.id).then((r) => {
-            this.submission = r.data;
-            saveLocalCache(`submission-${this.id}`, r.data);
-            this.load(false);
-          });
-        }
-      } else {
-        const response = await apiSubmission.getSubmission(this.token, this.id);
-        this.submission = response.data;
-        saveLocalCache(`submission-${this.id}`, response.data);
-      }
+      const response = await apiSubmission.getSubmission(this.token, this.id);
+      this.submission = response.data;
       updateHead(this.$route.path, this.submission!.title, this.submission?.description_text);
       if (this.token) {
         this.submissionSubscription = (
@@ -664,10 +651,10 @@ export default class Submission extends Vue {
       }
     } catch (err) {
       commitAddNotification(this.$store, {
-        content: this.$t('分享不存在，返回主页').toString(),
+        content: '分享不存在，返回主页',
         color: 'error',
       });
-      this.$router.push('/');
+      await this.$router.push('/');
     }
 
     await dispatchCaptureApiError(this.$store, async () => {
