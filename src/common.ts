@@ -66,7 +66,10 @@ function getOpenGraphCard(
 
 const linkPreviewHosts = new Set(['www.flickr.com', 'github.com', 'www.zhihu.com']);
 
-export const postProcessViewerDOM = async (token: string, viewer: HTMLElement) => {
+export const postProcessViewerDOM = async (token: string, viewer: HTMLElement | undefined) => {
+  if (!viewer) {
+    return;
+  }
   for (const a of viewer.getElementsByTagName('a')) {
     try {
       const url = new URL(a.href);
