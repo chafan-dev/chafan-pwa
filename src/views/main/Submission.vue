@@ -182,6 +182,26 @@
                   <EditIcon class="mr-1" />
                   建议编辑
                 </v-list-item>
+
+                <v-list-item @click="showHistoryDialog" dense>
+                  <HistoryIcon v-if="editable" class="mr-1" />
+                  问题历史
+                </v-list-item>
+
+                <v-list-item
+                  v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
+                  :disabled="cancelSubscriptionIntermediate"
+                  @click="cancelSubscription"
+                  dense
+                >
+                  <ToBookmarkIcon class="mr-1" />
+                  收藏
+                </v-list-item>
+                <v-list-item v-else :disabled="subscribeIntermediate" @click="subscribe" dense>
+                  <BookmarkedIcon class="mr-1" />
+                  取消收藏
+                </v-list-item>
+
                 <v-list-item
                   v-if="editable && canHide"
                   @click="showConfirmHideSubmissionDialog = true"
@@ -205,20 +225,6 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-
-            <BookmarkedIcon
-              v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
-              :disabled="cancelSubscriptionIntermediate"
-              class="ml-1"
-              @click="cancelSubscription"
-            />
-            <ToBookmarkIcon
-              v-else
-              :disabled="subscribeIntermediate"
-              class="ml-1"
-              @click="subscribe"
-            />
-            <HistoryIcon v-if="editable" @click="showHistoryDialog" />
           </div>
           <div v-if="showSubmissionEditor" class="d-flex pt-2">
             <v-btn
