@@ -458,7 +458,7 @@ import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual, updateHead } from '@/common';
-import { getLocalCache, loadLocalEdit, LocalEdit, saveLocalCache } from '@/utils';
+import { loadLocalEdit, LocalEdit } from '@/utils';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
@@ -604,24 +604,11 @@ export default class Question extends Vue {
     }
   }
 
-  private async loadQuestion(reloadOnExpire: boolean = true) {
+  private async loadQuestion() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const cached = getLocalCache(`question-${this.id}`);
-        if (cached) {
-          this.question = cached;
-          if (reloadOnExpire) {
-            apiQuestion.getQuestion(this.token, this.id, true).then((r) => {
-              this.question = r.data;
-              saveLocalCache(`question-${this.id}`, r.data);
-              this.loadQuestion(false);
-            });
-          }
-        } else {
-          const response = await apiQuestion.getQuestion(this.token, this.id, true);
-          this.question = response.data;
-          saveLocalCache(`question-${this.id}`, response.data);
-        }
+        const response = await apiQuestion.getQuestion(this.token, this.id, true);
+        this.question = response.data;
       },
       errorFilter: (err: AxiosError) => {
         if (
@@ -629,7 +616,7 @@ export default class Question extends Vue {
           err.response.data.detail === "The question doesn't exists in the system."
         ) {
           commitAddNotification(this.$store, {
-            content: this.$t('问题不存在，返回主页').toString(),
+            content: '问题不存在，返回主页',
             color: 'error',
           });
           this.$router.push('/');

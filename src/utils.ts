@@ -24,35 +24,6 @@ export const removeLocalToken = () => {
   }
 };
 
-export const saveLocalCache = (key: string, obj: any) => {
-  try {
-    localStorage.setItem('local-cache-' + key, JSON.stringify(obj));
-  } catch (e) {
-    // TODO
-  }
-};
-
-export const clearLocalCache = (key: string) => {
-  try {
-    localStorage.removeItem('local-cache-' + key);
-  } catch (e) {
-    // TODO
-  }
-};
-
-export const getLocalCache = (key: string) => {
-  try {
-    const s = localStorage.getItem('local-cache-' + key);
-    if (!s) {
-      return null;
-    }
-    return JSON.parse(s);
-  } catch (e) {
-    return null;
-    // TODO
-  }
-};
-
 export interface LocalEdit {
   edit: IRichEditorState | string;
   createdAt: Date;
@@ -169,7 +140,6 @@ export const newAnswerHandler = async (
       ).data;
       const answerUUID = newAnswer.uuid;
       if (!isAutosaved) {
-        clearLocalCache(`question-${questionUUID}`);
         await vueInstance.$router.push(`/questions/${questionUUID}/answers/${answerUUID}`);
       }
       return newAnswer;
