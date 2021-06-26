@@ -33,6 +33,8 @@
             class="mb-2 mt-2"
             :isMobile="isMobile"
             :vditorUploadConfig="vditorUploadConfig"
+            :editor-mode="editor"
+            :initial-content="body"
           />
 
           <!-- Controls -->
@@ -369,9 +371,6 @@ export default class ArticleEditor extends Vue {
       if (body) {
         (this.$refs.tiptap as ChafanTiptap).loadJSON(JSON.parse(body));
       }
-    } else {
-      this.topLevelEditor = 'vditor';
-      (this.$refs.vditor as any).init(editor, body || '');
     }
   }
 
