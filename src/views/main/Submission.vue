@@ -175,8 +175,7 @@
               <v-list dense>
                 <v-list-item v-if="editable" @click="showSubmissionEditor = true">
                   <EditIcon class="mr-1" />
-                  <span v-if="showUpdateDetailsButton">添加细节</span>
-                  <span v-else>编辑</span>
+                  编辑
                 </v-list-item>
                 <v-list-item v-if="suggestionEditable" @click="showSubmissionEditor = true">
                   <EditIcon class="mr-1" />
@@ -578,7 +577,6 @@ export default class Submission extends Vue {
   private commentSubmitIntermediate = false;
   private submissionSubscription: IUserSubmissionSubscription | null = null;
   private relatedSubmissions: ISubmission[] | null = null;
-  private showUpdateDetailsButton = false;
   private submissionSuggestions: ISubmissionSuggestion[] = [];
   private newSuggestionCommment: string | null = null;
 
@@ -626,7 +624,6 @@ export default class Submission extends Vue {
       this.archives = [];
       this.comments = [];
       this.relatedSubmissions = [];
-      this.showUpdateDetailsButton = false;
       this.submissionSuggestions = [];
       this.load();
     }
@@ -635,7 +632,10 @@ export default class Submission extends Vue {
   private async mounted() {
     try {
       if (localStorage.getItem('new-submission')) {
-        this.showUpdateDetailsButton = true;
+        commitAddNotification(this.$store, {
+          content: '点击「更多」编辑细节',
+          color: 'info',
+        });
         localStorage.removeItem('new-submission');
       }
     } catch (e) {}
