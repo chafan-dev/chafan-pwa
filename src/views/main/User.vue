@@ -11,6 +11,173 @@
         />
         <v-skeleton-loader v-else type="card" />
 
+        <div class="pa-4 c-card mb-5" v-if="userPublic">
+          <div class="d-flex pb-2">
+            <h2>个人资料</h2>
+            <v-spacer />
+            <v-btn
+              depressed
+              v-if="currentUserId === userPublic.uuid"
+              color="primary"
+              small
+              to="/profile/edit"
+              >编辑</v-btn
+            >
+          </div>
+          <div v-if="userPublic.about">
+            <span class="subheading secondary--text text--lighten-3">关于我：</span>
+            <Viewer :body="userPublic.about" :editor="userPublic.about_editor" />
+          </div>
+
+          <div
+            v-if="
+              userPublic.homepage_url ||
+              userPublic.github_username ||
+              userPublic.twitter_username ||
+              userPublic.linkedin_url
+            "
+            class="my-3"
+          >
+            <span class="subheading secondary--text text--lighten-3"> 链接： </span>
+            <a
+              v-if="userPublic.homepage_url"
+              :href="userPublic.homepage_url"
+              class="text-decoration-none"
+              target="_blank"
+            >
+              <WebIcon />
+              个人主页
+            </a>
+            <a
+              v-if="userPublic.github_username"
+              :href="canonicalURLfromUsername(userPublic.github_username, 'github.com')"
+              class="text-decoration-none"
+              target="_blank"
+            >
+              <GithubIcon />
+              Github
+            </a>
+            <a
+              v-if="userPublic.twitter_username"
+              :href="canonicalURLfromUsername(userPublic.twitter_username, 'twitter.com')"
+              class="text-decoration-none"
+              target="_blank"
+            >
+              <TwitterIcon />
+              Twitter
+            </a>
+            <a
+              v-if="userPublic.linkedin_url"
+              :href="userPublic.linkedin_url"
+              class="text-decoration-none"
+              target="_blank"
+            >
+              <LinkedinIcon />
+              Linkedin
+            </a>
+          </div>
+
+          <div v-if="userPublic.residency_topics.length > 0" class="my-3">
+            <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
+            <div>
+              <v-chip-group :column="!$vuetify.breakpoint.mobile">
+                <v-chip
+                  v-for="topic in userPublic.residency_topics"
+                  :key="topic.uuid"
+                  :to="'/topics/' + topic.uuid"
+                  >{{ topic.name }}
+                </v-chip>
+              </v-chip-group>
+            </div>
+          </div>
+          <div v-if="userPublic.profession_topic" class="my-3">
+            <div class="subheading secondary--text text--lighten-3">所在行业</div>
+            <div class="title primary--text text--darken-2">
+              <v-chip :to="'/topics/' + userPublic.profession_topic.uuid"
+                >{{ userPublic.profession_topic.name }}
+              </v-chip>
+            </div>
+          </div>
+
+          <template v-if="eduExps">
+            <div v-if="eduExps.length > 0" class="my-3">
+              <div class="subheading secondary--text text--lighten-3">教育经历</div>
+              <div
+                v-for="(eduExp, index) in eduExps"
+                :key="index"
+                class="title primary--text text--darken-2"
+              >
+                <router-link
+                  :to="'/topics/' + eduExp.school_topic.uuid"
+                  class="text-decoration-none"
+                >
+                  {{ eduExp.school_topic.name }}
+                </router-link>
+                ({{ $t(eduExp.level) }})
+              </div>
+            </div>
+          </template>
+          <v-skeleton-loader v-else type="text" />
+
+          <template v-if="workExps" class="my-3">
+            <div v-if="workExps.length > 0" class="my-3">
+              <div class="subheading secondary--text text--lighten-3">工作经历</div>
+              <div
+                v-for="(workExp, index) in workExps"
+                :key="index"
+                class="title primary--text text--darken-2"
+              >
+                <router-link
+                  :to="'/topics/' + workExp.position_topic.uuid"
+                  class="text-decoration-none"
+                >
+                  {{ workExp.position_topic.name }}
+                </router-link>
+                @
+                <router-link
+                  :to="'/topics/' + workExp.company_topic.uuid"
+                  class="text-decoration-none"
+                >
+                  {{ workExp.company_topic.name }}
+                </router-link>
+              </div>
+            </div>
+          </template>
+          <v-skeleton-loader v-else type="text" />
+
+          <template v-if="sites !== null">
+            <div v-if="sites.length > 0">
+              <div
+                v-if="$vuetify.breakpoint.mdAndUp"
+                class="subheading secondary--text text--lighten-3"
+              >
+                加入的圈子：
+                <span>
+                  <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
+                </span>
+              </div>
+              <div v-else>
+                <span class="subheading secondary--text text--lighten-3 mr-2"> 加入的圈子： </span>
+                <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
+              </div>
+            </div>
+          </template>
+          <v-skeleton-loader v-else type="text" />
+
+          <div v-if="userPublic.subscribed_topics.length > 0" class="my-3">
+            <div class="subheading secondary--text text--lighten-3">关注的话题：</div>
+            <v-chip
+              v-for="topic in userPublic.subscribed_topics"
+              :key="topic.uuid"
+              :to="'/topics/' + topic.uuid"
+              class="mr-1 mb-1"
+              small
+              >{{ topic.name }}
+            </v-chip>
+          </div>
+        </div>
+        <v-skeleton-loader v-else type="card" />
+
         <div v-if="loggedIn">
           <v-tabs v-model="currentTabItem" :fixed-tabs="$vuetify.breakpoint.mdAndUp" show-arrows>
             <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
@@ -19,196 +186,6 @@
                 ({{ item.tabExtraCount(userPublic) }})
               </span>
             </v-tab>
-
-            <v-tab-item class="pt-2" value="profile">
-              <template v-if="userPublic">
-                <div v-if="userPublic.about">
-                  <span class="subheading secondary--text text--lighten-3">关于我:</span>
-                  <Viewer :body="userPublic.about" :editor="userPublic.about_editor" />
-                </div>
-
-                <div
-                  v-if="
-                    userPublic.homepage_url ||
-                    userPublic.github_username ||
-                    userPublic.twitter_username ||
-                    userPublic.linkedin_url
-                  "
-                  class="my-3"
-                >
-                  <span class="subheading secondary--text text--lighten-3"
-                    >{{ $t('Links') }}:
-                  </span>
-                  <a
-                    v-if="userPublic.homepage_url"
-                    :href="userPublic.homepage_url"
-                    class="text-decoration-none"
-                    target="_blank"
-                  >
-                    <WebIcon />
-                    {{ $t('个人主页') }}
-                  </a>
-                  <a
-                    v-if="userPublic.github_username"
-                    :href="canonicalURLfromUsername(userPublic.github_username, 'github.com')"
-                    class="text-decoration-none"
-                    target="_blank"
-                  >
-                    <GithubIcon />
-                    Github
-                  </a>
-                  <a
-                    v-if="userPublic.twitter_username"
-                    :href="canonicalURLfromUsername(userPublic.twitter_username, 'twitter.com')"
-                    class="text-decoration-none"
-                    target="_blank"
-                  >
-                    <TwitterIcon />
-                    Twitter
-                  </a>
-                  <a
-                    v-if="userPublic.linkedin_url"
-                    :href="userPublic.linkedin_url"
-                    class="text-decoration-none"
-                    target="_blank"
-                  >
-                    <LinkedinIcon />
-                    Linkedin
-                  </a>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="userPublic">
-                <div v-if="userPublic.residency_topics.length > 0" class="my-3">
-                  <div class="subheading secondary--text text--lighten-3">
-                    {{ $t('居住过的地方') }}
-                  </div>
-                  <div>
-                    <v-chip-group :column="!$vuetify.breakpoint.mobile">
-                      <v-chip
-                        v-for="topic in userPublic.residency_topics"
-                        :key="topic.uuid"
-                        :to="'/topics/' + topic.uuid"
-                        >{{ topic.name }}
-                      </v-chip>
-                    </v-chip-group>
-                  </div>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="userPublic">
-                <div v-if="userPublic.profession_topic" class="my-3">
-                  <div class="subheading secondary--text text--lighten-3">
-                    {{ $t('所在行业') }}
-                  </div>
-                  <div class="title primary--text text--darken-2">
-                    <v-chip :to="'/topics/' + userPublic.profession_topic.uuid"
-                      >{{ userPublic.profession_topic.name }}
-                    </v-chip>
-                  </div>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="eduExps">
-                <div v-if="eduExps.length > 0" class="my-3">
-                  <div class="subheading secondary--text text--lighten-3">
-                    {{ $t('教育经历') }}
-                  </div>
-                  <div
-                    v-for="(eduExp, index) in eduExps"
-                    :key="index"
-                    class="title primary--text text--darken-2"
-                  >
-                    <router-link
-                      :to="'/topics/' + eduExp.school_topic.uuid"
-                      class="text-decoration-none"
-                    >
-                      {{ eduExp.school_topic.name }}
-                    </router-link>
-                    ({{ $t(eduExp.level) }})
-                  </div>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="workExps" class="my-3">
-                <div v-if="workExps.length > 0" class="my-3">
-                  <div class="subheading secondary--text text--lighten-3">
-                    {{ $t('工作经历') }}
-                  </div>
-                  <div
-                    v-for="(workExp, index) in workExps"
-                    :key="index"
-                    class="title primary--text text--darken-2"
-                  >
-                    <router-link
-                      :to="'/topics/' + workExp.position_topic.uuid"
-                      class="text-decoration-none"
-                    >
-                      {{ workExp.position_topic.name }}
-                    </router-link>
-                    @
-                    <router-link
-                      :to="'/topics/' + workExp.company_topic.uuid"
-                      class="text-decoration-none"
-                    >
-                      {{ workExp.company_topic.name }}
-                    </router-link>
-                  </div>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="sites !== null">
-                <div v-if="sites.length > 0">
-                  <div
-                    v-if="$vuetify.breakpoint.mdAndUp"
-                    class="subheading secondary--text text--lighten-3"
-                  >
-                    {{ $t('Circles') }}:
-                    <span>
-                      <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
-                    </span>
-                  </div>
-                  <div v-else>
-                    <span class="subheading secondary--text text--lighten-3 mr-2"
-                      >{{ $t('Circles') }}:</span
-                    >
-                    <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
-                  </div>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="userPublic">
-                <div v-if="userPublic.subscribed_topics.length > 0" class="my-3">
-                  <div class="subheading secondary--text text--lighten-3">
-                    {{ $t('关注的话题') }}
-                  </div>
-                  <v-chip
-                    v-for="topic in userPublic.subscribed_topics"
-                    :key="topic.uuid"
-                    :to="'/topics/' + topic.uuid"
-                    class="mr-1 mb-1"
-                    small
-                    >{{ topic.name }}
-                  </v-chip>
-                </div>
-              </template>
-              <v-skeleton-loader v-else type="text" />
-
-              <template v-if="userPublic">
-                <div v-if="currentUserId === userPublic.uuid" class="text-center mt-2">
-                  <v-btn color="primary" small to="/profile/edit">{{ $t('编辑个人页面') }}</v-btn>
-                </div>
-              </template>
-              <div v-else class="d-flex justify-center">
-                <v-skeleton-loader type="button" />
-              </div>
-            </v-tab-item>
 
             <v-tab-item class="pt-2" value="recent">
               <UserFeed
@@ -287,7 +264,7 @@
         <div v-else class="ml-7 mr-7">
           <div class="text-center">
             <RegisteredUserOnlyIcon class="mr-2" />
-            <span>{{ $t('登录后查看更多') }}</span>
+            <span>登录后查看更多</span>
           </div>
         </div>
       </v-col>
@@ -358,11 +335,6 @@ import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 })
 export default class User extends Vue {
   private tabItems = [
-    {
-      code: 'profile',
-      text: 'Profile',
-      render: this.renderProfileTab,
-    },
     {
       code: 'recent',
       text: 'Recent',
@@ -464,6 +436,7 @@ export default class User extends Vue {
         let title = this.userPublic!.full_name || this.userPublic!.handle;
         updateHead(this.$route.path, title, this.userPublic!.personal_introduction);
 
+        await this.renderProfileTab(this.userPublic);
         const currentItem = this.tabItems.find((item) => item.code === this.currentTabItem);
         if (currentItem && currentItem.render) {
           await currentItem.render(this.userPublic);
