@@ -174,8 +174,7 @@
             <v-list dense>
               <v-list-item v-if="editable" @click="showQuestionEditor = true" dense>
                 <EditIcon class="mr-1" />
-                <span v-if="showUpdateDetailsButton">添加细节</span>
-                <span v-else>编辑</span>
+                编辑
               </v-list-item>
               <v-list-item @click="showHistoryDialog" dense>
                 <HistoryIcon v-if="editable && userProfile" class="mr-1" />
@@ -526,7 +525,6 @@ export default class Question extends Vue {
   private newQuestionSite: ISite | null = null;
   private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
-  private showUpdateDetailsButton = false;
   private savedLocalEdit: LocalEdit | null = null;
 
   get userProfile() {
@@ -599,7 +597,6 @@ export default class Question extends Vue {
       this.archives = [];
       this.siteProfiles = [];
       this.currentUserAnswerUUID = null;
-      this.showUpdateDetailsButton = false;
       this.loadQuestion();
     }
   }
@@ -723,7 +720,10 @@ export default class Question extends Vue {
   private async mounted() {
     try {
       if (localStorage.getItem('new-question')) {
-        this.showUpdateDetailsButton = true;
+        commitAddNotification(this.$store, {
+          content: '点击「更多」编辑细节',
+          color: 'info',
+        });
         localStorage.removeItem('new-question');
       }
     } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
