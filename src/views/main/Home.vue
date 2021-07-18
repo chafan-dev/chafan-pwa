@@ -46,21 +46,11 @@
       >
         <HomeSideCard />
       </v-col>
-      <v-bottom-sheet v-else class="bottom-info-panel">
+      <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-bind="attrs"
-            v-on="on"
-            bottom
-            class="fab"
-            color="primary"
-            fab
-            fixed
-            right
-            @click="onFabClicked"
-          >
-            <HomeFabIcon />
-          </v-btn>
+          <div v-bind="attrs" v-on="on" class="bottom-btn" @click="onFabClicked">
+            <div class="mb-4"><HomeFabIcon /><span class="ml-1 grey--text">导航</span></div>
+          </div>
         </template>
         <v-sheet class="pa-2">
           <HomeSideCard />
@@ -139,20 +129,3 @@ export default class Home extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.bottom-info-panel,
-.fab {
-  z-index: 30;
-}
-
-.fixed-narrow-col {
-  max-width: 800px;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.fixed-narrow-sidecol {
-  max-width: 400px;
-}
-</style>

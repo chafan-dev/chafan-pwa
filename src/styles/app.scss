@@ -2,6 +2,16 @@
 @import 'variables';
 
 // General
+.bottom-btn {
+  box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
+  position: fixed;
+  bottom: 0;
+  width: 120%;
+  text-align: center;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
 .compact-row {
   margin-top: 0 !important;
 }
