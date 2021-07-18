@@ -138,6 +138,7 @@ for (var i = 0; i < 10; i++) {
 
 const example_question_preview = {
   uuid: '6gpPVpfHJnEh4NfbZ4VY',
+  author: example_user1_preview,
   title: 'Twitter, Facebook 类型的社交网络在未来会不会变成政府依靠税收运营的公共基础设施？',
   description: null,
   site: example_site1,
@@ -151,6 +152,7 @@ for (var i = 0; i < 40; i++) {
   const uuid = randomString();
   randomQuestionPreviews.push({
     uuid: uuid,
+    author: example_user1_preview,
     title: `Question ${uuid} is a question???`,
     description: null,
     site: example_site1,
@@ -452,6 +454,14 @@ app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
   });
 });
 
+app.get(`/api/v1/questions/${example_question_preview.uuid}/upvotes/`, (req, res) => {
+  res.json({
+    question_uuid: example_question_preview.uuid,
+    upvoted: false,
+    count: 2,
+  });
+});
+
 const example_activity_upvote_random_questions = [];
 
 let randomQuestionActivityIdCounter = 4000;
@@ -472,6 +482,13 @@ for (const randomQuestion of randomQuestionPreviews) {
       upvoted: false,
       upvotes_count: 0,
       answers_count: 0,
+    });
+  });
+  app.get(`/api/v1/questions/${randomQuestion.uuid}/upvotes/`, (req, res) => {
+    res.json({
+      question_uuid: randomQuestion.uuid,
+      upvoted: false,
+      count: 2,
     });
   });
   app.post(`/api/v1/questions/${randomQuestion.uuid}/views/`, (req, res) => {
@@ -582,6 +599,14 @@ app.post(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/views/`, (req, r
   res.json({ msg: '' });
 });
 
+app.get(`/api/v1/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}/upvotes/`, (req, res) => {
+  res.json({
+    question_uuid: EXAMPLE_USER1_SUBMISSION1_UUID,
+    upvoted: false,
+    count: 2,
+  });
+});
+
 app.post(`/api/v1/questions/${example_question_preview.uuid}/views/`, (req, res) => {
   res.json({ msg: '' });
 });
@@ -633,6 +658,16 @@ app.get('/api/v1/me/article-columns/', (req, res) => {
 app.get('/api/v1/submissions/', (req, res) => {
   res.json(randomSubmissions);
 });
+
+for (let submission of randomSubmissions) {
+  app.get(`/api/v1/submissions/${submission.uuid}/upvotes/`, (req, res) => {
+    res.json({
+      submission_uuid: submission.uuid,
+      count: 2,
+      upvoted: false,
+    });
+  });
+}
 
 app.get('/api/v1/discovery/pending-questions/', (req, res) => {
   res.json(randomQuestionPreviews);
