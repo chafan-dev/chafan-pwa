@@ -179,12 +179,12 @@
                 </v-list-item>
                 <v-list-item v-if="suggestionEditable" @click="showSubmissionEditor = true">
                   <EditIcon class="mr-1" />
-                  建议编辑
+                  提交编辑建议
                 </v-list-item>
 
                 <v-list-item @click="showHistoryDialog" dense>
-                  <HistoryIcon v-if="editable" class="mr-1" />
-                  问题历史
+                  <HistoryIcon class="mr-1" />
+                  查看编辑历史
                 </v-list-item>
 
                 <v-list-item
@@ -822,7 +822,7 @@ export default class Submission extends Vue {
         this.historyDialog = true;
       } else {
         commitAddNotification(this.$store, {
-          content: this.$t('尚无历史存档').toString(),
+          content: '尚无历史存档',
           color: 'info',
         });
       }
