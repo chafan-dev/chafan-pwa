@@ -138,7 +138,7 @@
           <SimpleEditor
             ref="commentReplyEditor"
             :onMentionedHandles="onMentionedHandles"
-            :placeholder="$t('回复')"
+            placeholder="回复"
             class="mt-2 mb-2"
           />
           <div class="d-flex">
@@ -186,7 +186,7 @@
     </v-expand-transition>
 
     <div v-else-if="!writable && !isDeleted && loggedIn" class="pl-2 text-caption grey--text">
-      {{ $t('Only site member can reply') }}
+      仅圈子成员可以评论
     </div>
   </div>
 </template>
@@ -325,7 +325,7 @@ export default class Comment extends Vue {
     const editor = this.$refs.commentReplyEditor as SimpleEditor;
     if (!editor.content) {
       commitAddNotification(this.$store, {
-        content: this.$t("Comment can't be empty.").toString(),
+        content: '评论内容不能为空',
         color: 'error',
       });
       return;
@@ -356,7 +356,7 @@ export default class Comment extends Vue {
     const editor = this.$refs.commentUpdateEditor as SimpleEditor;
     if (!editor.content) {
       commitAddNotification(this.$store, {
-        content: this.$t("Comment can't be empty.").toString(),
+        content: '评论内容不能为空',
         color: 'error',
       });
       return;
@@ -369,7 +369,7 @@ export default class Comment extends Vue {
         mentioned: this.mentioned,
       });
       commitAddNotification(this.$store, {
-        content: this.$t('评论更新成功').toString(),
+        content: '评论更新成功',
         color: 'success',
       });
       this.showUpdateEditor = false;
@@ -381,7 +381,7 @@ export default class Comment extends Vue {
   private async broadcastComment() {
     if (this.comment.shared_to_timeline) {
       commitAddNotification(this.$store, {
-        content: this.$t('已经转发过了').toString(),
+        content: '已经转发过了',
         color: 'info',
       });
       return;
@@ -396,7 +396,7 @@ export default class Comment extends Vue {
   private async deleteComment() {
     await apiComment.deleteComment(this.token, this.comment.uuid);
     commitAddNotification(this.$store, {
-      content: this.$t('已删除').toString(),
+      content: '已删除',
       color: 'info',
     });
     this.showDeleteConfirm = false;

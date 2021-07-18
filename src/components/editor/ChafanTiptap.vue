@@ -1,17 +1,21 @@
 <template>
-  <TiptapCF
-    ref="base"
-    v-bind="$attrs"
-    v-on="$listeners"
-    :editable="editable"
-    :comment-mode="commentMode"
-    :search-users="searchUsers"
-    :user-href="userHref"
-    :user-label="userLabel"
-    :upload="upload"
-    :on-editor-change="onChange"
-    :on-editor-ready="onEditorReadyInternal"
-  />
+  <div>
+    <span v-if="initialContent === '[DELETED]'" class="grey--text"> 已删除 </span>
+    <TiptapCF
+      v-else
+      ref="base"
+      v-bind="$attrs"
+      v-on="$listeners"
+      :editable="editable"
+      :comment-mode="commentMode"
+      :search-users="searchUsers"
+      :user-href="userHref"
+      :user-label="userLabel"
+      :upload="upload"
+      :on-editor-change="onChange"
+      :on-editor-ready="onEditorReadyInternal"
+    />
+  </div>
 </template>
 
 <script lang="ts">
