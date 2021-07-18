@@ -65,9 +65,9 @@ export default class SubmissionPreview extends Vue {
   }
 
   async mounted() {
-    this.upvotes = (
-      await apiSubmission.getUpvotes(readToken(this.$store), this.submission.uuid)
-    ).data;
+    // this.upvotes = (
+    //   await apiSubmission.getUpvotes(readToken(this.$store), this.submission.uuid)
+    // ).data;
   }
 
   private shortUrl(d: string) {

@@ -28,7 +28,7 @@ export default class CommentPreview extends Vue {
   private upvotes: ICommentUpvotes | null = null;
 
   async mounted() {
-    this.upvotes = (await apiComment.getUpvotes(readToken(this.$store), this.comment.uuid)).data;
+    // this.upvotes = (await apiComment.getUpvotes(readToken(this.$store), this.comment.uuid)).data;
   }
 
   get shortComment() {
