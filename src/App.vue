@@ -88,7 +88,7 @@ export default class App extends Vue {
     if (!this.pwaWaiting) {
       return;
     }
-    this.registration!.waiting!.postMessage({ type: 'SKIP_WAITING ' });
+    this.registration?.waiting?.postMessage({ type: 'SKIP_WAITING ' });
   }
 }
 </script>
