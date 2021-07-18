@@ -3,23 +3,36 @@
     <v-progress-linear
       v-if="loading"
       v-model="loadingProgress"
-      :indeterminate="loadingProgress == 0"
+      :indeterminate="loadingProgress === 0"
     />
-    <v-row v-else class="mb-12">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
-        <v-card class="ma-3 pa-3">
-          <v-card-title primary-title>
-            <div class="headline primary--text">{{ $t('Questions') }}</div>
-          </v-card-title>
-          <ul>
-            <li v-for="question in questions" :key="question.uuid">
-              <QuestionLink :questionPreview="question"></QuestionLink>
-            </li>
-          </ul>
-        </v-card>
+    <v-row v-else justify="center" class="mb-12">
+      <v-col
+        :class="{
+          'col-8': $vuetify.breakpoint.mdAndUp,
+          'fixed-narrow-col': isNarrowFeedUI,
+          'less-left-right-padding': !$vuetify.breakpoint.mdAndUp,
+        }"
+        fluid
+      >
+        <v-tabs>
+          <v-tab>问题</v-tab>
+          <v-tab-item>
+            <DynamicItemList
+              v-slot="{ item }"
+              :loadItems="loadQuestions"
+              emptyItemsText="暂无"
+              nullItemsText=""
+            >
+              <QuestionPreview :questionPreview="item" />
+            </DynamicItemList>
+          </v-tab-item>
+        </v-tabs>
       </v-col>
 
-      <v-col v-if="$vuetify.breakpoint.mdAndUp" class="col-4">
+      <v-col
+        v-if="$vuetify.breakpoint.mdAndUp"
+        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
+      >
         <TopicCard :topic="topic" />
       </v-col>
       <v-bottom-sheet v-else>
@@ -46,9 +59,12 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
 import { isEqual } from '@/common';
+import QuestionPreview from '@/components/question/QuestionPreview.vue';
+import DynamicItemList from '@/components/DynamicItemList.vue';
+import { readNarrowUI, readToken } from '@/store/main/getters';
 
 @Component({
-  components: { QuestionLink, TopicCard, InfoIcon },
+  components: { DynamicItemList, QuestionPreview, QuestionLink, TopicCard, InfoIcon },
 })
 export default class Topic extends Vue {
   private topic: ITopic | null = null;
@@ -81,18 +97,32 @@ export default class Topic extends Vue {
       this.loadingProgress = 33;
       if (response) {
         this.topic = response.data;
-        const response2 = await apiTopic.getQuestionsOfTopic(
-          this.$store.state.main.token,
-          this.topic.uuid
-        );
-        this.loadingProgress = 66;
-        if (response2) {
-          this.questions = response2.data;
-        }
         this.loadingProgress = 100;
         this.loading = false;
       }
     });
+  }
+
+  private async loadQuestions(skip: number, limit: number) {
+    // TODO: implement pagination
+    if (skip > 0) {
+      return [];
+    }
+    let items: IQuestionPreview[] | null = null;
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.topic !== null) {
+        items = (await apiTopic.getQuestionsOfTopic(this.token, this.topic.uuid)).data;
+      }
+    });
+    return items;
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
   }
 }
 </script>
