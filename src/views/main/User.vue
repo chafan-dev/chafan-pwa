@@ -212,11 +212,11 @@ export default class User extends Vue {
   }
 
   get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'profile';
+    return this.$route.query.tab ? this.$route.query.tab : 'recent';
   }
 
   set currentTabItem(tab) {
-    if (tab !== 'profile') {
+    if (tab !== 'recent') {
       this.$router.replace({ query: { ...this.$route.query, tab } });
     } else {
       this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
