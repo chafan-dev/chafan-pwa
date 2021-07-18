@@ -14,7 +14,7 @@
       <Answer v-if="answerPreview" :answerPreview="answerPreview" />
       <ArticlePreview v-if="articlePreview" :articlePreview="articlePreview" />
       <CommentCard v-if="parentComment" :comment="parentComment" />
-      <SubmissionCard v-if="submission" :submission="submission" />
+      <SubmissionPreview v-if="submission" :submission="submission" />
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ import {
   ISubmission,
 } from '@/interfaces';
 
-import SubmissionCard from '@/components/SubmissionCard.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
@@ -45,7 +45,7 @@ import BaseCard from '@/components/base/BaseCard.vue';
     ArticlePreview,
     Answer,
     OpenInNewIcon,
-    SubmissionCard,
+    SubmissionPreview,
     Viewer,
   },
 })

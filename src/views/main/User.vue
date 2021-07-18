@@ -73,7 +73,7 @@
                 emptyItemsText="暂无"
                 nullItemsText=""
               >
-                <SubmissionCard :submission="item" />
+                <SubmissionPreview :submission="item" />
               </DynamicItemList>
             </v-tab-item>
 
@@ -124,7 +124,7 @@ import Answer from '@/components/Answer.vue';
 import UserProfileCard from '@/components/UserProfileCard.vue';
 
 import SiteBtn from '@/components/SiteBtn.vue';
-import SubmissionCard from '@/components/SubmissionCard.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import UserLink from '@/components/UserLink.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
@@ -149,7 +149,7 @@ import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
     SiteBtn,
     UserGrid,
     ArticlePreview,
-    SubmissionCard,
+    SubmissionPreview,
     DynamicItemList,
   },
 })

@@ -161,7 +161,7 @@
             <QuestionPreview :questionPreview="activity.event.content.question" />
           </div>
           <div v-else-if="activity.verb === 'upvote_submission'">
-            <SubmissionCard :submission="activity.event.content.submission" />
+            <SubmissionPreview :submission="activity.event.content.submission" />
           </div>
           <div v-else-if="activity.verb === 'comment_question'">
             <CommentCard
@@ -206,7 +206,7 @@
             <QuestionPreview :questionPreview="activity.event.content.question" />
           </div>
           <div v-else-if="activity.verb === 'create_submission'">
-            <SubmissionCard :submission="activity.event.content.submission" />
+            <SubmissionPreview :submission="activity.event.content.submission" />
           </div>
         </div>
       </div>
@@ -247,7 +247,7 @@ import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import CommentCard from '@/components/CommentCard.vue';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
-import SubmissionCard from '@/components/SubmissionCard.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
@@ -286,7 +286,7 @@ import { commitAddNotification } from '@/store/main/mutations';
     ArticleColumnCard,
     CommentCard,
     NewContentActionBar,
-    SubmissionCard,
+    SubmissionPreview,
     FeedIcon,
     UserGrid,
     CloseIcon,

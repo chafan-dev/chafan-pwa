@@ -267,6 +267,7 @@ export interface IUserPreview {
 
 export interface IQuestionPreview {
   uuid: string;
+  author: IUserPreview;
   title: string;
   description?: string;
   description_text?: string;

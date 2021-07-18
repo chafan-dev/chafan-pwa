@@ -121,14 +121,10 @@
 
           <CommentBtn class="mr-1" @click="toggleShowComments" :count="question.comments.length" />
 
-          <Upvote
+          <QuestionUpvotes
             class="mr-1"
-            v-if="upvotes !== null"
-            :upvotes-count="upvotes.count"
-            :upvoted="upvotes.upvoted"
+            :uuid="question.uuid"
             :disabled="userProfile.uuid === question.author.uuid"
-            :on-cancel-vote="cancelUpvote"
-            :on-vote="upvote"
           />
 
           <ShareCardButton
@@ -460,19 +456,15 @@ import { isEqual, updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
-import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
-import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
-import Upvote from '@/components/Upvote.vue';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
+import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
 
 @Component({
   components: {
+    QuestionUpvotes,
     DotsIcon,
-    Upvote,
     CommentBtn,
-    UpvotedBtn,
-    UpvoteBtn,
     ShareCardButton,
     AnswerIcon,
     Answer,
@@ -816,24 +808,6 @@ export default class Question extends Vue {
         const r = await apiMe.subscribeQuestion(this.token, this.question.uuid);
         this.questionSubscription = r.data;
         this.subscribeIntermediate = false;
-      }
-    });
-  }
-
-  private async upvote() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
-        this.upvotes = (await apiQuestion.upvoteQuestion(this.token, this.question.uuid)).data;
-      }
-    });
-  }
-
-  private async cancelUpvote() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
-        this.upvotes = (
-          await apiQuestion.cancelUpvoteQuestion(this.token, this.question.uuid)
-        ).data;
       }
     });
   }

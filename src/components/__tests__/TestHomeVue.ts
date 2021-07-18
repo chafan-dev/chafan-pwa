@@ -20,6 +20,11 @@ test('TestHomeVue', () => {
           },
           question: {
             uuid: 'q1',
+            author: {
+              uuid: 'u1',
+              handle: 'u1',
+              karma: 0,
+            },
             title: 'q1 title',
             site: null!,
             is_placed_at_home: false,
@@ -54,6 +59,11 @@ test('TestHomeVue', () => {
         question: {
           uuid: 'q1',
           title: 'q1 title',
+          author: {
+            uuid: 'u3',
+            handle: 'u3',
+            karma: 0,
+          },
           site: null!,
           is_placed_at_home: false,
           created_at: '2021-01-29T23:31:21.630841-08:00',
@@ -82,6 +92,11 @@ test('TestHomeVue', () => {
         question: {
           uuid: 'q1',
           title: 'q1 title',
+          author: {
+            uuid: 'u3',
+            handle: 'u3',
+            karma: 0,
+          },
           site: null!,
           is_placed_at_home: false,
           created_at: '2021-01-29T23:31:21.630841-08:00',

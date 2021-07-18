@@ -12,6 +12,14 @@
       {{ shortDesc }}
     </div>
     <div class="d-flex">
+      <QuestionUpvotes
+        :class="{
+          'mr-2': $vuetify.breakpoint.mobile,
+          'mr-6': !$vuetify.breakpoint.mobile,
+        }"
+        :uuid="questionPreview.uuid"
+        :disabled="userProfile.uuid === questionPreview.author.uuid"
+      />
       <div
         :class="{
           'mr-2': $vuetify.breakpoint.mobile,
@@ -20,8 +28,8 @@
       >
         <CommentsIcon class="mr-1" small />
         <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
-          {{ $t('n条评论', { n: questionPreview.comments_count }) }}</span
-        >
+          {{ questionPreview.comments_count }}条评论
+        </span>
         <span v-else class="text-caption">{{ questionPreview.comments_count }}</span>
       </div>
       <div>
@@ -43,9 +51,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
+import { readUserProfile } from '@/store/main/getters';
+import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
 
 @Component({
-  components: { BaseCard, SiteBtn, AnswerIcon, CommentsIcon },
+  components: { QuestionUpvotes, BaseCard, SiteBtn, AnswerIcon, CommentsIcon },
 })
 export default class QuestionPreview extends Vue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
@@ -57,6 +67,10 @@ export default class QuestionPreview extends Vue {
     } else {
       return d;
     }
+  }
+
+  get userProfile() {
+    return readUserProfile(this.$store);
   }
 }
 </script>

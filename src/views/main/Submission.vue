@@ -472,7 +472,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import Answer from '@/components/Answer.vue';
-import SubmissionCard from '@/components/SubmissionCard.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
@@ -530,7 +530,7 @@ import Diff from '@/components/widgets/Diff.vue';
     RotationList,
     MoreIcon,
     Answer,
-    SubmissionCard,
+    SubmissionPreview,
     CommentBlock,
     UserLink,
     EditIcon,
