@@ -76,7 +76,7 @@
             <router-link :to="'/topics/' + eduExp.school_topic.uuid" class="text-decoration-none">
               {{ eduExp.school_topic.name }}
             </router-link>
-            ({{ $t(eduExp.level) }})
+            ({{ eduExp.level }})
           </div>
         </div>
       </template>
@@ -150,7 +150,12 @@
         </v-chip>
       </div>
     </template>
-    <div style="cursor: pointer" @click="full = !full" v-else>
+    <div
+      style="cursor: pointer"
+      @click="full = !full"
+      :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }"
+      v-else
+    >
       <v-chip v-if="userPublic.profession_topic" color="amber lighten-4">
         「{{ userPublic.profession_topic.name }}」行业
       </v-chip>
@@ -164,14 +169,21 @@
       </v-chip>
     </div>
 
-    <div class="d-flex mt-1" v-if="currentUserId === userPublic.uuid">
+    <div
+      class="mt-1"
+      :class="{
+        'd-flex': $vuetify.breakpoint.mdAndUp,
+        'text-center': !$vuetify.breakpoint.mdAndUp,
+      }"
+      v-if="currentUserId === userPublic.uuid"
+    >
       <div v-if="enableFull" class="mr-1">
         <a @click="full = !full">
           <span v-if="full">收起</span>
           <span v-else>展开全部</span>
         </a>
       </div>
-      <v-spacer />
+      <v-spacer :class="{ 'mb-3': !$vuetify.breakpoint.mdAndUp }" />
       <v-btn depressed color="primary" small to="/profile/edit"> 编辑 </v-btn>
     </div>
   </div>
