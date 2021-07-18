@@ -3,8 +3,11 @@
     <v-progress-linear indeterminate />
   </div>
   <div v-else>
+    <span v-if="channel && channel.private_with_user" class="title">
+      和<UserLink :user-preview="channel.private_with_user" />的聊天记录
+    </span>
     <div v-if="messages.length === 0">
-      {{ $t('暂无历史消息') }}
+      <EmptyPlaceholder />
     </div>
     <v-list-item v-for="message in messages" :key="message.id">
       <v-list-item-content>
@@ -18,8 +21,7 @@
               v-if="message.author.uuid !== userProfile.uuid"
               :userPreview="message.author"
             />
-            <span v-else>{{ $t('我') }}</span
-            >:
+            <span v-else>我</span>:
             <Viewer :body="message.body" />
             <span class="ml-2 float-right text-caption grey--text">
               {{ $dayjs.utc(message.created_at).local().fromNow() }}
@@ -28,14 +30,15 @@
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    <div class="ma-4">
+    <div class="mt-2">
       <v-textarea
         v-model="messageCreate.body"
         :disabled="sendMsgIntermediate"
-        :label="$t('新消息')"
+        label="新消息"
         outlined
+        hide-details
       />
-      <div class="d-flex">
+      <div class="d-flex py-2">
         <v-spacer />
         <v-btn
           small
@@ -55,16 +58,16 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { api } from '@/api';
-import { IChannel, IMessage, IMessageCreate } from '@/interfaces';
-import ChannelCard from '@/components/ChannelCard.vue';
+import { IChannel, IMessage, IMessageCreate, IUserPreview } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readToken, readUserProfile } from '@/store/main/getters';
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 
 @Component({
-  components: { UserLink, ChannelCard, ChannelIcon, Viewer },
+  components: { EmptyPlaceholder, UserLink, ChannelIcon, Viewer },
 })
 export default class ChatWindow extends Vue {
   @Prop() public readonly channel!: IChannel;

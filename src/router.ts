@@ -121,8 +121,7 @@ export default new Router({
         {
           name: 'channel',
           path: 'channels/:id',
-          component: () =>
-            import(/* webpackChunkName: "main-channels" */ './views/main/Channel.vue'),
+          component: () => import(/* webpackChunkName: "main-channels" */ './views/main/Chat.vue'),
         },
         {
           path: 'dashboard',
