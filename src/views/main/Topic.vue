@@ -37,9 +37,9 @@
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" bottom fab fixed right>
-            <InfoIcon />
-          </v-btn>
+          <div v-bind="attrs" v-on="on" class="bottom-btn">
+            <InfoIcon /><span class="ml-1 grey--text">话题信息</span>
+          </div>
         </template>
         <v-sheet class="pa-2">
           <TopicCard :topic="topic" />
