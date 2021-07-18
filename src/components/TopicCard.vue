@@ -1,23 +1,32 @@
 <template>
   <div class="ma-3 pa-3">
     <v-card-title primary-title>
-      <div class="headline primary--text">{{ $t('话题：') }} {{ topic.name }}</div>
+      <div class="headline primary--text">话题：{{ topic.name }}</div>
     </v-card-title>
     <v-card-text v-if="topicSubscription">
       <div v-if="parentTopic">
-        <span>{{ $t('所属话题：') }}</span>
+        <span>所属话题：</span>
         <v-chip :to="'/topics/' + parentTopic.uuid">{{ parentTopic.name }}</v-chip>
       </div>
       <div class="mt-2">
         <v-btn
+          small
+          depressed
           v-if="topicSubscription.subscribed_by_me"
           :disabled="cancelSubscriptionIntermediate"
           @click="cancelSubscription"
         >
-          {{ $t('已关注') }} ({{ topicSubscription.subscription_count }})
+          已关注 ({{ topicSubscription.subscription_count }})
         </v-btn>
-        <v-btn v-else :disabled="subscribeIntermediate" color="primary" @click="subscribe">
-          {{ $t('关注') }} ({{ topicSubscription.subscription_count }})
+        <v-btn
+          small
+          depressed
+          v-else
+          :disabled="subscribeIntermediate"
+          color="primary"
+          @click="subscribe"
+        >
+          关注 ({{ topicSubscription.subscription_count }})
         </v-btn>
       </div>
     </v-card-text>
