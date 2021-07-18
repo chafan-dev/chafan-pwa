@@ -12,14 +12,16 @@
       {{ shortDesc }}
     </div>
     <div class="d-flex">
-      <QuestionUpvotes
-        :class="{
-          'mr-2': $vuetify.breakpoint.mobile,
-          'mr-6': !$vuetify.breakpoint.mobile,
-        }"
-        :uuid="questionPreview.uuid"
-        :disabled="userProfile.uuid === questionPreview.author.uuid"
-      />
+      <v-lazy>
+        <QuestionUpvotes
+          :class="{
+            'mr-2': $vuetify.breakpoint.mobile,
+            'mr-6': !$vuetify.breakpoint.mobile,
+          }"
+          :uuid="questionPreview.uuid"
+          :disabled="userProfile.uuid === questionPreview.author.uuid"
+        />
+      </v-lazy>
       <div
         :class="{
           'mr-2': $vuetify.breakpoint.mobile,
