@@ -178,7 +178,7 @@
               </v-list-item>
               <v-list-item @click="showHistoryDialog" dense>
                 <HistoryIcon v-if="editable && userProfile" class="mr-1" />
-                问题历史
+                编辑历史
               </v-list-item>
               <v-list-item
                 v-if="questionSubscription && questionSubscription.subscribed_by_me"
@@ -199,7 +199,7 @@
           <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
               <v-card-title primary-title>
-                <div class="headline primary--text">问题历史</div>
+                <div class="headline primary--text">编辑历史</div>
                 <v-spacer />
                 <span class="text-caption grey--text">点击展开</span>
               </v-card-title>
