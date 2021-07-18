@@ -49,7 +49,7 @@
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" class="bottom-btn" @click="onFabClicked">
-            <div class="mb-4"><HomeFabIcon /><span class="ml-1 grey--text">导航</span></div>
+            <HomeFabIcon /><span class="ml-1 grey--text">导航</span>
           </div>
         </template>
         <v-sheet class="pa-2">

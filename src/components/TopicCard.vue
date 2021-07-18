@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-3 pa-3">
+  <div>
     <v-card-title primary-title>
       <div class="headline primary--text">话题：{{ topic.name }}</div>
     </v-card-title>

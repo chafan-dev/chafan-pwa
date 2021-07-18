@@ -58,7 +58,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { api } from '@/api';
-import { IChannel, IMessage, IMessageCreate, IUserPreview } from '@/interfaces';
+import { IChannel, IMessage, IMessageCreate } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
