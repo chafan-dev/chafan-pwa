@@ -1,112 +1,110 @@
 <template>
   <div>
-    <div v-if="userPublic.about">
-      <span class="subheading secondary--text text--lighten-3">关于我：</span>
-      <Viewer :body="userPublic.about" :editor="userPublic.about_editor" />
-    </div>
-
-    <div
-      v-if="
-        userPublic.homepage_url ||
-        userPublic.github_username ||
-        userPublic.twitter_username ||
-        userPublic.linkedin_url
-      "
-      class="my-3"
-    >
-      <span class="subheading secondary--text text--lighten-3"> 链接： </span>
-      <a
-        v-if="userPublic.homepage_url"
-        :href="userPublic.homepage_url"
-        class="text-decoration-none"
-        target="_blank"
-      >
-        <WebIcon />
-        个人主页
-      </a>
-      <a
-        v-if="userPublic.github_username"
-        :href="canonicalURLfromUsername(userPublic.github_username, 'github.com')"
-        class="text-decoration-none"
-        target="_blank"
-      >
-        <GithubIcon />
-        Github
-      </a>
-      <a
-        v-if="userPublic.twitter_username"
-        :href="canonicalURLfromUsername(userPublic.twitter_username, 'twitter.com')"
-        class="text-decoration-none"
-        target="_blank"
-      >
-        <TwitterIcon />
-        Twitter
-      </a>
-      <a
-        v-if="userPublic.linkedin_url"
-        :href="userPublic.linkedin_url"
-        class="text-decoration-none"
-        target="_blank"
-      >
-        <LinkedinIcon />
-        Linkedin
-      </a>
-    </div>
-
-    <template v-if="userPublic.profession_topic">
-      <div v-if="full" class="my-3">
-        <div class="subheading secondary--text text--lighten-3">所在行业</div>
-        <div class="title primary--text text--darken-2">
-          <v-chip :to="'/topics/' + userPublic.profession_topic.uuid"
-            >{{ userPublic.profession_topic.name }}
-          </v-chip>
-        </div>
-      </div>
-      <div v-else>
-        所在行业：<span>{{ userPublic.profession_topic.name }}</span>
-      </div>
-    </template>
-
-    <template v-if="eduExps && eduExps.length > 0">
-      <div v-if="full" class="my-3">
-        <div class="subheading secondary--text text--lighten-3">教育经历</div>
-        <div
-          v-for="(eduExp, index) in eduExps"
-          :key="index"
-          class="title primary--text text--darken-2"
-        >
-          <router-link :to="'/topics/' + eduExp.school_topic.uuid" class="text-decoration-none">
-            {{ eduExp.school_topic.name }}
-          </router-link>
-          ({{ $t(eduExp.level) }})
-        </div>
-      </div>
-      <div v-else>教育经历：{{ eduExps[0].school_topic.name }} 等</div>
-    </template>
-    <v-skeleton-loader v-else-if="eduExps === null && loggedIn" type="text" />
-
-    <template v-if="workExps && workExps.length > 0">
-      <div v-if="full" class="my-3">
-        <div class="subheading secondary--text text--lighten-3">工作经历</div>
-        <div
-          v-for="(workExp, index) in workExps"
-          :key="index"
-          class="title primary--text text--darken-2"
-        >
-          <router-link :to="'/topics/' + workExp.position_topic.uuid" class="text-decoration-none">
-            {{ workExp.position_topic.name }}
-          </router-link>
-          @
-          <router-link :to="'/topics/' + workExp.company_topic.uuid" class="text-decoration-none">
-            {{ workExp.company_topic.name }}
-          </router-link>
-        </div>
-      </div>
-      <div v-else>工作经历：{{ workExps[0].company_topic.name }} 等</div>
-    </template>
-    <v-skeleton-loader v-else-if="workExps === null && loggedIn" type="text" />
-
     <template v-if="full">
+      <div v-if="userPublic.about">
+        <span class="subheading secondary--text text--lighten-3">关于我：</span>
+        <Viewer :body="userPublic.about" :editor="userPublic.about_editor" />
+      </div>
+
+      <div
+        v-if="
+          userPublic.homepage_url ||
+          userPublic.github_username ||
+          userPublic.twitter_username ||
+          userPublic.linkedin_url
+        "
+        class="my-3"
+      >
+        <span class="subheading secondary--text text--lighten-3"> 链接： </span>
+        <a
+          v-if="userPublic.homepage_url"
+          :href="userPublic.homepage_url"
+          class="text-decoration-none"
+          target="_blank"
+        >
+          <WebIcon />
+          个人主页
+        </a>
+        <a
+          v-if="userPublic.github_username"
+          :href="canonicalURLfromUsername(userPublic.github_username, 'github.com')"
+          class="text-decoration-none"
+          target="_blank"
+        >
+          <GithubIcon />
+          Github
+        </a>
+        <a
+          v-if="userPublic.twitter_username"
+          :href="canonicalURLfromUsername(userPublic.twitter_username, 'twitter.com')"
+          class="text-decoration-none"
+          target="_blank"
+        >
+          <TwitterIcon />
+          Twitter
+        </a>
+        <a
+          v-if="userPublic.linkedin_url"
+          :href="userPublic.linkedin_url"
+          class="text-decoration-none"
+          target="_blank"
+        >
+          <LinkedinIcon />
+          Linkedin
+        </a>
+      </div>
+
+      <template v-if="userPublic.profession_topic">
+        <div class="my-3">
+          <div class="subheading secondary--text text--lighten-3">所在行业</div>
+          <div class="title primary--text text--darken-2">
+            <v-chip :to="'/topics/' + userPublic.profession_topic.uuid"
+              >{{ userPublic.profession_topic.name }}
+            </v-chip>
+          </div>
+        </div>
+      </template>
+
+      <template v-if="eduExps && eduExps.length > 0">
+        <div class="my-3">
+          <div class="subheading secondary--text text--lighten-3">教育经历</div>
+          <div
+            v-for="(eduExp, index) in eduExps"
+            :key="index"
+            class="title primary--text text--darken-2"
+          >
+            <router-link :to="'/topics/' + eduExp.school_topic.uuid" class="text-decoration-none">
+              {{ eduExp.school_topic.name }}
+            </router-link>
+            ({{ $t(eduExp.level) }})
+          </div>
+        </div>
+      </template>
+      <v-skeleton-loader v-else-if="eduExps === null && loggedIn" type="text" />
+
+      <template v-if="workExps && workExps.length > 0">
+        <div class="my-3">
+          <div class="subheading secondary--text text--lighten-3">工作经历</div>
+          <div
+            v-for="(workExp, index) in workExps"
+            :key="index"
+            class="title primary--text text--darken-2"
+          >
+            <router-link
+              :to="'/topics/' + workExp.position_topic.uuid"
+              class="text-decoration-none"
+            >
+              {{ workExp.position_topic.name }}
+            </router-link>
+            @
+            <router-link :to="'/topics/' + workExp.company_topic.uuid" class="text-decoration-none">
+              {{ workExp.company_topic.name }}
+            </router-link>
+          </div>
+        </div>
+      </template>
+      <v-skeleton-loader v-else-if="workExps === null && loggedIn" type="text" />
+
       <div v-if="userPublic.residency_topics.length > 0" class="my-3">
         <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
         <div>
@@ -152,24 +150,29 @@
         </v-chip>
       </div>
     </template>
+    <div style="cursor: pointer" @click="full = !full" v-else>
+      <v-chip v-if="userPublic.profession_topic" color="amber lighten-4">
+        「{{ userPublic.profession_topic.name }}」行业
+      </v-chip>
 
-    <div class="d-flex">
+      <v-chip class="ml-1" v-if="eduExps && eduExps.length > 0" color="light-blue lighten-4">
+        {{ eduExps[0].school_topic.name }}
+      </v-chip>
+
+      <v-chip class="ml-1" v-if="workExps && workExps.length > 0" color="light-green lighten-4">
+        {{ workExps[0].company_topic.name }}
+      </v-chip>
+    </div>
+
+    <div class="d-flex mt-1" v-if="currentUserId === userPublic.uuid">
       <div v-if="enableFull" class="mr-1">
         <a @click="full = !full">
-          <span v-if="full"> 收起 </span>
-          <span v-else> ...展开更多 </span>
+          <span v-if="full">收起</span>
+          <span v-else>展开全部</span>
         </a>
       </div>
       <v-spacer />
-      <v-btn
-        depressed
-        v-if="currentUserId === userPublic.uuid"
-        color="primary"
-        small
-        to="/profile/edit"
-      >
-        编辑
-      </v-btn>
+      <v-btn depressed color="primary" small to="/profile/edit"> 编辑 </v-btn>
     </div>
   </div>
 </template>
