@@ -124,7 +124,7 @@
           <QuestionUpvotes
             class="mr-1"
             :uuid="question.uuid"
-            :disabled="userProfile.uuid === question.author.uuid"
+            :disabled="!userProfile || userProfile.uuid === question.author.uuid"
           />
 
           <ShareCardButton

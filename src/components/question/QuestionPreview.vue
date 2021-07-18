@@ -19,7 +19,7 @@
             'mr-6': !$vuetify.breakpoint.mobile,
           }"
           :uuid="questionPreview.uuid"
-          :disabled="userProfile.uuid === questionPreview.author.uuid"
+          :disabled="!userProfile || userProfile.uuid === questionPreview.author.uuid"
         />
       </v-lazy>
       <div

@@ -1,22 +1,27 @@
 <template>
   <div>
-    <ChafanTiptap
-      v-show="topLevelEditor === 'tiptap'"
-      ref="tiptap"
-      :class="{ 'mt-2': focusMode }"
-      :onEditorChange="onEditorChange"
-      class="mb-2"
-    />
+    <template v-if="contentLoaded">
+      <ChafanTiptap
+        v-show="topLevelEditor === 'tiptap'"
+        ref="tiptap"
+        :class="{ 'mt-2': focusMode }"
+        :onEditorChange="onEditorChange"
+        class="mb-2"
+        :initial-content="initialContent"
+      />
 
-    <VditorCF
-      v-show="topLevelEditor === 'vditor'"
-      ref="vditor"
-      :class="{ 'mt-2': focusMode }"
-      :onEditorChange="onEditorChange"
-      :isMobile="isMobile"
-      :vditorUploadConfig="vditorUploadConfig"
-      class="mb-2"
-    />
+      <VditorCF
+        v-show="topLevelEditor === 'vditor'"
+        ref="vditor"
+        :class="{ 'mt-2': focusMode }"
+        :onEditorChange="onEditorChange"
+        :isMobile="isMobile"
+        :vditorUploadConfig="vditorUploadConfig"
+        class="mb-2"
+        :initial-content="initialContent"
+        :editorMode="contentEditor"
+      />
+    </template>
 
     <!-- Editor controls -->
     <div class="d-flex align-center">
@@ -327,16 +332,19 @@ export default class AnswerEditor extends Vue {
     };
   }
 
+  private contentLoaded: boolean = false;
+  private initialContent: string = '';
+  private contentEditor: editor_T = 'wysiwyg';
+
   private initEditor(body: string | null, editor: editor_T) {
     if (editor === 'tiptap') {
       this.topLevelEditor = 'tiptap';
-      if (body) {
-        (this.$refs.tiptap as ChafanTiptap).loadJSON(JSON.parse(body));
-      }
     } else {
       this.topLevelEditor = 'vditor';
-      (this.$refs.vditor as any).init(editor, body || '');
     }
+    this.contentEditor = editor;
+    this.initialContent = body || '';
+    this.contentLoaded = true;
   }
 
   private autoSaveEdit(): INewEditEvent {
