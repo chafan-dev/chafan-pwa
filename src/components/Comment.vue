@@ -10,14 +10,14 @@
 
     <!-- Comment body -->
     <div v-if="!showUpdateEditor" class="ml-1">
-      <Viewer v-if="!isDeleted" :body="comment.body" :editor="comment.editor" />
+      <Viewer v-if="!comment.is_deleted" :body="comment.body" :editor="comment.editor" />
       <div v-else class="grey--text">已删除</div>
     </div>
 
     <!-- Comment control -->
     <div class="d-flex mt-1 align-center">
       <!-- Part I -->
-      <template v-if="upvotes && !isDeleted">
+      <template v-if="upvotes && !comment.is_deleted">
         <UpvoteStat v-if="currentUserIsAuthor" :count="upvotes.count" class="mr-2" />
         <span v-else class="d-flex align-center mr-2" style="cursor: pointer" @click="toggleUpvote">
           <UpvotedIcon v-if="upvotes.upvoted" />
@@ -42,7 +42,7 @@
         <span>查看回复</span>
       </v-tooltip>
 
-      <template v-if="!isDeleted && !currentUserIsAuthor">
+      <template v-if="!comment.is_deleted && !currentUserIsAuthor">
         <span
           v-if="writable && !showEditor"
           class="text-caption d-flex align-center"
@@ -56,7 +56,7 @@
       </template>
 
       <!-- Part II -->
-      <template v-if="!isDeleted && currentUserIsAuthor && !showUpdateEditor">
+      <template v-if="!comment.is_deleted && currentUserIsAuthor && !showUpdateEditor">
         <v-divider v-if="childComments && childComments.length > 0" class="mr-2" vertical />
 
         <v-tooltip bottom>
@@ -102,7 +102,7 @@
     </div>
 
     <!-- Editor -->
-    <div v-if="writable && !isDeleted">
+    <div v-if="writable && !comment.is_deleted">
       <div v-if="showUpdateEditor">
         <SimpleEditor
           ref="commentUpdateEditor"
@@ -185,7 +185,10 @@
       </div>
     </v-expand-transition>
 
-    <div v-else-if="!writable && !isDeleted && loggedIn" class="pl-2 text-caption grey--text">
+    <div
+      v-else-if="!writable && !comment.is_deleted && loggedIn"
+      class="pl-2 text-caption grey--text"
+    >
       仅圈子成员可以评论
     </div>
   </div>
@@ -239,7 +242,6 @@ export default class Comment extends Vue {
   private showUpdateEditor: boolean = false;
   private childComments: IComment[] | null = null;
   private sharedToTimeline = false;
-  private isDeleted = false;
   private childCommentsExpanded = false;
   private submitIntermediate = false;
   private showDeleteConfirm = false;
@@ -318,7 +320,6 @@ export default class Comment extends Vue {
     };
     this.childComments = rankComments(this.$dayjs, comments);
     this.sharedToTimeline = this.comment.shared_to_timeline;
-    this.isDeleted = this.comment.is_deleted;
   }
 
   private async submitNewReplyBody() {
@@ -400,7 +401,7 @@ export default class Comment extends Vue {
       color: 'info',
     });
     this.showDeleteConfirm = false;
-    this.isDeleted = true;
+    this.comment.is_deleted = true;
   }
 
   private async upvote() {
