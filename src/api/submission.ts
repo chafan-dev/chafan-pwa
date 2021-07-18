@@ -30,6 +30,12 @@ export const apiSubmission = {
       authHeaders(token)
     );
   },
+  async getUpvotes(token: string, uuid: string) {
+    return axios.get<ISubmissionUpvotes>(
+      `${apiUrl}/api/v1/submissions/${uuid}/upvotes/`,
+      authHeaders(token)
+    );
+  },
   async updateSubmission(token: string, uuid: string, payload: ISubmissionUpdate) {
     return axios.put<ISubmission>(
       `${apiUrl}/api/v1/submissions/${uuid}`,

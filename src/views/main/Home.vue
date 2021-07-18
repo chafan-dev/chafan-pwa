@@ -2,7 +2,7 @@
   <v-container :class="{ 'pa-1': !$vuetify.breakpoint.mdAndUp }" fluid>
     <user-agreement v-if="userProfile" ref="userAgreement" :user-profile="userProfile" />
 
-    <v-row class="py-3" justify="center">
+    <v-row class="pt-3 pb-10" justify="center">
       <!-- Feed column -->
       <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }" fluid>
         <template v-if="userProfile">

@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { ISubmission } from '@/interfaces';
+import { ICommentUpvotes, ISubmission, ISubmissionUpvotes } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
@@ -45,12 +45,15 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
+import { apiSubmission } from '@/api/submission';
+import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { UpvoteStat, BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
-export default class submission extends Vue {
+export default class SubmissionPreview extends Vue {
   @Prop() private readonly submission!: ISubmission;
+  private upvotes: ISubmissionUpvotes | null = null;
 
   get shortDesc() {
     const d = this.submission.description_text!;
@@ -59,6 +62,12 @@ export default class submission extends Vue {
     } else {
       return d;
     }
+  }
+
+  async mounted() {
+    this.upvotes = (
+      await apiSubmission.getUpvotes(readToken(this.$store), this.submission.uuid)
+    ).data;
   }
 
   private shortUrl(d: string) {

@@ -49,7 +49,7 @@
               :loadItems="loadSubmissions"
               emptyItemsText="No submissions for now"
             >
-              <SubmissionCard :submission="item" />
+              <SubmissionPreview :submission="item" />
             </DynamicItemList>
             <div v-else-if="userProfile" class="my-4 text-center">
               {{ $t('Only site members can view its content.') }}
@@ -123,7 +123,7 @@ import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interf
 import SiteCard from '@/components/SiteCard.vue';
 import UserCard from '@/components/UserCard.vue';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
-import SubmissionCard from '@/components/SubmissionCard.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import InfoIcon from '@/components/icons/InfoIcon.vue';
@@ -140,7 +140,7 @@ import { apiSite } from '@/api/site';
     SiteCard,
     UserCard,
     InfoIcon,
-    SubmissionCard,
+    SubmissionPreview,
     DynamicItemList,
   },
 })

@@ -30,6 +30,12 @@ export const apiQuestion = {
       authHeaders(token)
     );
   },
+  async getUpvotes(token: string, questionUUID: string) {
+    return axios.get<IQuestionUpvotes>(
+      `${apiUrl}/api/v1/questions/${questionUUID}/upvotes/`,
+      authHeaders(token)
+    );
+  },
   async bumpViewsCounter(token: string, questionUUID: string) {
     return axios.post<IMsg>(
       `${apiUrl}/api/v1/questions/${questionUUID}/views/`,

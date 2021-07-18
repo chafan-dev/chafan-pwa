@@ -356,7 +356,7 @@
               emptyItemsText="暂无"
               nullItemsText=""
             >
-              <SubmissionCard :submission="item" />
+              <SubmissionPreview :submission="item" />
             </DynamicItemList>
           </v-tab-item>
 
@@ -403,7 +403,7 @@ import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import ChatWindow from '@/components/ChatWindow.vue';
 import Answer from '@/components/Answer.vue';
-import SubmissionCard from '@/components/SubmissionCard.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
@@ -428,7 +428,7 @@ import { apiActivity } from '@/api/activity';
     QuestionPreview,
     Answer,
     ArticleColumnCard,
-    SubmissionCard,
+    SubmissionPreview,
     SiteBtn,
     ArticlePreview,
     UserLink,
