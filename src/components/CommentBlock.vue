@@ -4,12 +4,7 @@
     <span v-if="showTitle" class="pt-1 pl-1 grey--text">共{{ comments.length }}条评论</span>
     <v-list-item v-for="comment in comments" :key="comment.uuid" class="comment-item">
       <v-list-item-content>
-        <Comment
-          :comment="comment"
-          :enableUpvotes="enableUpvotes"
-          :siteId="siteId"
-          :writable="writable"
-        />
+        <Comment :comment="comment" :siteId="siteId" :writable="writable" />
       </v-list-item-content>
     </v-list-item>
     <div v-if="writable" class="pb-1">
@@ -48,6 +43,7 @@ import Comment from '@/components/Comment.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { IComment } from '@/interfaces';
 import { readIsLoggedIn } from '@/store/main/getters';
+import { rankComments } from '@/utils';
 
 @Component({
   components: { UserLink, Comment, SimpleEditor },
@@ -59,12 +55,16 @@ export default class CommentBlock extends Vue {
   @Prop() public readonly commentLabel!: string;
   @Prop({ default: false }) public readonly showTitle!: boolean;
   @Prop({ default: false }) public commentSubmitIntermediate!: boolean;
-  @Prop({ default: false }) public readonly enableUpvotes!: boolean;
 
   private mentioned: string[] = [];
+  private rankedComments: IComment[] = [];
 
   get loggedIn() {
     return readIsLoggedIn(this.$store);
+  }
+
+  mounted() {
+    this.rankedComments = rankComments(this.$dayjs, this.comments);
   }
 
   @Emit('submit-new-comment')

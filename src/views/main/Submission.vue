@@ -248,7 +248,6 @@
           <CommentBlock
             :commentSubmitIntermediate="commentSubmitIntermediate"
             :comments="comments"
-            :enableUpvotes="true"
             :siteId="submission.site ? submission.site.uuid : undefined"
             :writable="commentWritable"
             commentLabel="评论"
@@ -500,7 +499,6 @@ import {
   ISubmissionSuggestion,
   ITopic,
 } from '@/interfaces';
-import { rankComments } from '@/utils';
 import Viewer from '@/components/Viewer.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
@@ -665,7 +663,7 @@ export default class Submission extends Vue {
 
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.submission) {
-        this.comments = rankComments(this.$dayjs, this.submission.comments);
+        this.comments = this.submission.comments;
 
         if (this.token) {
           apiSubmission.bumpViewsCounter(this.token, this.submission.uuid);
