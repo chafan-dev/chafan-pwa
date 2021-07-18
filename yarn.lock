@@ -3907,10 +3907,10 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.8.1.tgz#ea619cfaf163ef1cf5e7e315096cbdea7dfd0425"
-  integrity sha512-9seUBFlCCwW0AwwL4F6+ir+SnqyfCM+Imzyw8FN7tl2oFdGFjVypxVnSAN0S17+gr3f3PrQZPi0LsI6S/oyrtQ==
+chafan-vue-editors@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.8.2.tgz#792627595b33b5453ef0061aeb19ceb4fe5139f1"
+  integrity sha512-YDrhqiBrj7+LK07iiwRbCC7+uEPxBG0Cdxu57G5DVPepkgRUHfzYkqLScWt87A4xbfxvfP6xMCvtMAcOWDCLbA==
   dependencies:
     "@chafan/vditor" "3.8.2-chafan.3"
     "@tiptap/core" "^2.0.0-beta.38"

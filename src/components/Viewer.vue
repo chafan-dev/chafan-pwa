@@ -1,5 +1,5 @@
 <template>
-  <div ref="viewer" :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }" class="viewer">
+  <div :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }" class="viewer">
     <template v-if="editor === 'tiptap'">
       <ChafanTiptap
         :body="body"
@@ -9,7 +9,7 @@
       />
     </template>
     <template v-else-if="!bodyFormat || bodyFormat === 'markdown'">
-      <VditorViewerCF :body="body" :on-viewer-ready="onViewerReadyForVditor" />
+      <VditorViewerCF :body="body" :on-viewer-ready="onViewerReady" />
     </template>
     <template v-if="contentElem">
       <LightboxGroup :container="contentElem" />
@@ -39,11 +39,6 @@ export default class Viewer extends Vue {
   @Prop() private readonly bodyFormat: body_format_T | undefined;
   @Prop() private readonly editor!: editor_T;
   public textContent: string | null = null;
-
-  private onViewerReadyForVditor() {
-    const viewer = this.$refs.viewer as HTMLElement;
-    this.onViewerReady(viewer);
-  }
 
   private onViewerReady(contentElem: HTMLElement) {
     this.$data.contentElem = contentElem;
