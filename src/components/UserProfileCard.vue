@@ -4,7 +4,7 @@
       <div class="pb-4" :class="{ 'col-12': !$vuetify.breakpoint.mdAndUp }">
         <div v-if="avatarURL" class="px-2" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }">
           <router-link :to="`/users/${userPreview.handle}`">
-            <v-avatar class="avatarDiv" size="180" tile>
+            <v-avatar class="avatarDiv" size="150" tile>
               <v-img :src="avatarURL" alt="Avatar" />
             </v-avatar>
           </router-link>
