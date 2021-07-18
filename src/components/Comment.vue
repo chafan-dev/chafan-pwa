@@ -17,7 +17,7 @@
     <!-- Comment control -->
     <div class="d-flex mt-1 align-center">
       <!-- Part I -->
-      <template v-if="enableUpvotes && upvotes && !isDeleted">
+      <template v-if="upvotes && !isDeleted">
         <UpvoteStat v-if="currentUserIsAuthor" :count="upvotes.count" class="mr-2" />
         <span v-else class="d-flex align-center mr-2" style="cursor: pointer" @click="toggleUpvote">
           <UpvotedIcon v-if="upvotes.upvoted" />
@@ -57,11 +57,7 @@
 
       <!-- Part II -->
       <template v-if="!isDeleted && currentUserIsAuthor && !showUpdateEditor">
-        <v-divider
-          v-if="(childComments && childComments.length > 0) || enableUpvotes"
-          class="mr-2"
-          vertical
-        />
+        <v-divider v-if="childComments && childComments.length > 0" class="mr-2" vertical />
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
@@ -181,7 +177,6 @@
             <Comment
               :comment="childComment"
               :depth="depth + 1"
-              :enableUpvotes="enableUpvotes"
               :siteId="siteId"
               :writable="writable"
             />
@@ -240,7 +235,6 @@ export default class Comment extends Vue {
   @Prop() private readonly writable!: boolean;
   @Prop({ default: 0 }) private readonly depth!: number;
   @Prop() private readonly siteId: string | undefined;
-  @Prop({ default: false }) private readonly enableUpvotes!: boolean;
   private showEditor: boolean = false;
   private showUpdateEditor: boolean = false;
   private childComments: IComment[] | null = null;
@@ -317,16 +311,12 @@ export default class Comment extends Vue {
       this.questionCommentId !== null ||
       this.depth >= 1;
     const comments = (await api2.getChildComments(this.token, this.comment.uuid)).data;
-    if (this.enableUpvotes) {
-      this.upvotes = {
-        comment_uuid: this.comment.uuid,
-        count: this.comment.upvotes_count,
-        upvoted: this.comment.upvoted,
-      };
-      this.childComments = rankComments(this.$dayjs, comments);
-    } else {
-      this.childComments = comments;
-    }
+    this.upvotes = {
+      comment_uuid: this.comment.uuid,
+      count: this.comment.upvotes_count,
+      upvoted: this.comment.upvoted,
+    };
+    this.childComments = rankComments(this.$dayjs, comments);
     this.sharedToTimeline = this.comment.shared_to_timeline;
     this.isDeleted = this.comment.is_deleted;
   }
