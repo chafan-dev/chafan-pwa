@@ -163,15 +163,21 @@
                         <v-row v-for="(exp, index) in eduExps" :key="index">
                           <v-col>{{ exp.school_topic_name }}</v-col>
                           <v-col>{{ $t(exp.level_name) }}</v-col>
-                          <v-col>
+                          <v-col class="ml-2">
                             <v-btn
-                              class="ml-2"
                               color="warning"
                               depressed
                               small
-                              @click="removeEduExp(index)"
+                              @click="removeFrom(index, eduExps)"
+                              class="mr-2"
                             >
                               删除
+                            </v-btn>
+                            <v-btn depressed small class="mr-2" @click="moveUpFrom(index, eduExps)">
+                              <UpIcon />
+                            </v-btn>
+                            <v-btn depressed small @click="moveDownFrom(index, eduExps)">
+                              <DownIcon />
                             </v-btn>
                           </v-col>
                         </v-row>
@@ -205,15 +211,26 @@
                         <v-row v-for="(exp, index) in workExps" :key="index">
                           <v-col>{{ exp.company_topic_name }}</v-col>
                           <v-col>{{ exp.position_topic_name }}</v-col>
-                          <v-col>
+                          <v-col class="ml-2">
                             <v-btn
-                              class="ma-2"
                               color="warning"
+                              class="mr-2"
                               depressed
                               small
-                              @click="removeWorkExp(index)"
+                              @click="removeFrom(index, workExps)"
                             >
                               删除
+                            </v-btn>
+                            <v-btn
+                              depressed
+                              small
+                              class="mr-2"
+                              @click="moveUpFrom(index, workExps)"
+                            >
+                              <UpIcon />
+                            </v-btn>
+                            <v-btn depressed small @click="moveDownFrom(index, workExps)">
+                              <DownIcon />
                             </v-btn>
                           </v-col>
                         </v-row>
@@ -282,6 +299,8 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { VditorCF } from 'chafan-vue-editors';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { getVditorUploadConfig } from '@/common';
+import UpIcon from '@/components/icons/UpIcon.vue';
+import DownIcon from '@/components/icons/DownIcon.vue';
 
 interface IUserWorkExperienceInput {
   company_topic_name: string;
@@ -294,7 +313,7 @@ interface IUserEducationExperienceInput {
 }
 
 @Component({
-  components: { CloseIcon, VditorCF, ChafanTiptap, ProfileIcon },
+  components: { DownIcon, UpIcon, CloseIcon, VditorCF, ChafanTiptap, ProfileIcon },
 })
 export default class UserProfileEdit extends Vue {
   public valid = true;
@@ -309,13 +328,7 @@ export default class UserProfileEdit extends Vue {
   private newWorkExpPositionName = '';
   private newEduExpSchooolName = '';
   private newEduExpLevelName = '';
-  private readonly eduExpLeveNames = [
-    this.$t('high_school_or_lower'),
-    this.$t('dazhuan'),
-    this.$t('bachelor'),
-    this.$t('master'),
-    this.$t('phd_or_higher'),
-  ];
+  private readonly eduExpLeveNames = ['高中及以下', '大专', '本科', '硕士', '博士及以上'];
   private eduExps: IUserEducationExperienceInput[] = [];
   private workExps: IUserWorkExperienceInput[] = [];
   private submitIntermediate = false;
@@ -478,10 +491,6 @@ export default class UserProfileEdit extends Vue {
     this.newWorkExpPositionName = '';
   }
 
-  public removeWorkExp(index: number) {
-    this.workExps.splice(index, 1);
-  }
-
   public addNewEduExp() {
     if (!this.newEduExpSchooolName || !this.newEduExpLevelName) {
       commitAddNotification(this.$store, {
@@ -498,8 +507,26 @@ export default class UserProfileEdit extends Vue {
     this.newEduExpLevelName = '';
   }
 
-  public removeEduExp(index: number) {
-    this.eduExps.splice(index, 1);
+  public removeFrom(index: number, arr) {
+    arr.splice(index, 1);
+  }
+
+  public moveUpFrom(index: number, arr) {
+    if (index === 0) {
+      return;
+    }
+    const e = arr[index];
+    arr.splice(index, 1);
+    arr.splice(index - 1, 0, e);
+  }
+
+  public moveDownFrom(index: number, arr) {
+    if (index === arr.length - 1) {
+      return;
+    }
+    const e = arr[index];
+    arr.splice(index, 1);
+    arr.splice(index + 1, 0, e);
   }
 
   private async uploadAvatar() {
