@@ -123,9 +123,9 @@
         <div v-if="sites.length > 0">
           <div
             v-if="$vuetify.breakpoint.mdAndUp"
-            class="subheading secondary--text text--lighten-3"
+            class="subheading secondary--text text--lighten-3 d-flex align-center"
           >
-            加入的圈子：
+            <span>加入的圈子：</span>
             <span>
               <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
             </span>
@@ -150,7 +150,7 @@
         </v-chip>
       </div>
 
-      <div>
+      <div class="pt-2">
         <span class="subheading secondary--text text--lighten-3">加入茶饭的日子：</span>
         <span>{{ $dayjs.utc(userPublic.created_at).format('YYYY-MM-DD') }}</span>
       </div>
@@ -161,16 +161,26 @@
       :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }"
       v-else
     >
-      <v-chip v-if="userPublic.profession_topic" color="amber lighten-4">
-        「{{ userPublic.profession_topic.name }}」行业
+      <v-chip v-if="userPublic.profession_topic" color="amber lighten-4 mb-1">
+        {{ userPublic.profession_topic.name }}
       </v-chip>
 
-      <v-chip class="ml-1" v-if="eduExps && eduExps.length > 0" color="light-blue lighten-4">
-        {{ eduExps[0].school_topic.name }}
+      <v-chip
+        class="ml-1"
+        v-for="(eduExp, i) in eduExps"
+        :key="i"
+        color="light-blue lighten-4 mb-1"
+      >
+        {{ eduExp.school_topic.name }}
       </v-chip>
 
-      <v-chip class="ml-1" v-if="workExps && workExps.length > 0" color="light-green lighten-4">
-        {{ workExps[0].company_topic.name }}
+      <v-chip
+        class="ml-1"
+        v-for="(workExp, i) in workExps"
+        :key="i"
+        color="light-green lighten-4 mb-1"
+      >
+        {{ workExp.company_topic.name }}
       </v-chip>
     </div>
 
