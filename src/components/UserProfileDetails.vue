@@ -190,7 +190,6 @@
         'd-flex': $vuetify.breakpoint.mdAndUp,
         'text-center': !$vuetify.breakpoint.mdAndUp,
       }"
-      v-if="currentUserId === userPublic.uuid"
     >
       <div class="mr-1">
         <a @click="full = !full">
@@ -199,7 +198,15 @@
         </a>
       </div>
       <v-spacer :class="{ 'mb-3': !$vuetify.breakpoint.mdAndUp }" />
-      <v-btn depressed color="primary" small to="/profile/edit"> 编辑 </v-btn>
+      <v-btn
+        v-if="currentUserId === userPublic.uuid"
+        depressed
+        color="primary"
+        small
+        to="/profile/edit"
+      >
+        编辑
+      </v-btn>
     </div>
   </div>
 </template>
