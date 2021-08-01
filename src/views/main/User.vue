@@ -76,22 +76,6 @@
                 <SubmissionPreview :submission="item" />
               </DynamicItemList>
             </v-tab-item>
-
-            <v-tab-item value="followers">
-              <div v-if="followers !== null" class="my-4">
-                <EmptyPlaceholder v-if="followers.length === 0" />
-                <UserGrid :users="followers" />
-              </div>
-              <v-skeleton-loader v-else type="paragraph" />
-            </v-tab-item>
-
-            <v-tab-item value="followed">
-              <div v-if="followed !== null" class="my-4">
-                <EmptyPlaceholder v-if="followed.length === 0" />
-                <UserGrid :users="followed" />
-              </div>
-              <v-skeleton-loader v-else type="paragraph" />
-            </v-tab-item>
           </v-tabs>
         </div>
         <div v-else class="ml-7 mr-7">
@@ -179,21 +163,9 @@ export default class User extends Vue {
       text: 'Sharings',
       tabExtraCount: (userPublic: IUserPublic) => userPublic.submissions_count,
     },
-    {
-      code: 'followers',
-      text: 'Followers',
-      render: this.renderFollowers,
-    },
-    {
-      code: 'followed',
-      text: 'Followed',
-      render: this.renderFollowed,
-    },
   ];
   private userPublic: IUserPublic | null = null;
   private userPublicForVisitor: IUserPublicForVisitor | null = null;
-  private followers: IUserPreview[] | null = null;
-  private followed: IUserPreview[] | null = null;
 
   get loggedIn() {
     return readIsLoggedIn(this.$store);
@@ -233,8 +205,6 @@ export default class User extends Vue {
     if (matched && !isEqual(to.params, from.params)) {
       this.userPublic = null;
       this.userPublicForVisitor = null;
-      this.followers = null;
-      this.followed = null;
       this.load();
     }
   }
@@ -249,20 +219,6 @@ export default class User extends Vue {
         this.userPublic = (await apiPeople.getUserPublic(this.token, this.handle)).data;
         let title = this.userPublic!.full_name || this.userPublic!.handle;
         updateHead(this.$route.path, title, this.userPublic!.personal_introduction);
-
-        const currentItem = this.tabItems.find((item) => item.code === this.currentTabItem);
-        if (currentItem && currentItem.render) {
-          await currentItem.render(this.userPublic);
-        }
-        await Promise.all(
-          this.tabItems.map(async (item) => {
-            if (item.code !== this.currentTabItem && this.userPublic) {
-              if (item.render) {
-                await item.render(this.userPublic);
-              }
-            }
-          })
-        );
       } else {
         this.userPublicForVisitor = (await apiPeople.getUserPublic(this.token, this.handle)).data;
       }
@@ -313,14 +269,6 @@ export default class User extends Vue {
       }
     });
     return items;
-  }
-
-  private async renderFollowers(userPublic: IUserPublic) {
-    this.followers = (await apiPeople.getUserFollowers(this.token, userPublic.uuid)).data;
-  }
-
-  private async renderFollowed(userPublic: IUserPublic) {
-    this.followed = (await apiPeople.getUserFollowed(this.token, userPublic.uuid)).data;
   }
 }
 </script>

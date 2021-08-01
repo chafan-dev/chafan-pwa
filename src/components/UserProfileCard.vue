@@ -16,24 +16,56 @@
         />
         <div v-if="follows" class="text-center">
           <div>
-            <router-link
-              v-if="loggedIn"
-              :to="`/users/${userPreview.handle}?tab=followers`"
+            <a
+              v-if="loggedIn && follows.followers_count > 0"
               class="text-decoration-none"
+              @click="showFollowers"
             >
               有{{ follows.followers_count }}个关注者
-            </router-link>
+              <v-dialog v-model="showFollowersDialog" max-width="600">
+                <v-card class="pt-6">
+                  <v-card-title
+                    >关注TA的人
+                    <v-spacer />
+                    <v-btn primary small depressed @click="showFollowersDialog = false"
+                      ><CloseIcon
+                    /></v-btn>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-lazy>
+                      <UserGrid :users="followers" />
+                    </v-lazy>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </a>
             <span v-else> 有{{ follows.followers_count }}个关注者 </span>
           </div>
 
           <div>
-            <router-link
-              v-if="loggedIn"
-              :to="`/users/${userPreview.handle}?tab=followed`"
+            <a
+              v-if="loggedIn && follows.followed_count > 0"
               class="text-decoration-none"
+              @click="showFollowed"
             >
               关注了{{ follows.followed_count }}个人
-            </router-link>
+              <v-dialog v-model="showFollowedDialog" max-width="600">
+                <v-card class="pt-6">
+                  <v-card-title
+                    >TA关注的人
+                    <v-spacer />
+                    <v-btn primary small depressed @click="showFollowedDialog = false"
+                      ><CloseIcon
+                    /></v-btn>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-lazy>
+                      <UserGrid :users="followed" />
+                    </v-lazy>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
+            </a>
             <span v-else> 关注了{{ follows.followed_count }}个人 </span>
           </div>
           <div>
@@ -107,8 +139,11 @@ import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { readIsLoggedIn, readUserProfile, readToken } from '@/store/main/getters';
 import UserProfileDetails from '@/components/UserProfileDetails.vue';
 import UserNameHeadline from '@/components/UserNameHeadline.vue';
+import UserGrid from '@/components/UserGrid.vue';
+import { apiPeople } from '@/api/people';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 @Component({
-  components: { UserNameHeadline, UserProfileDetails },
+  components: { CloseIcon, UserGrid, UserNameHeadline, UserProfileDetails },
 })
 export default class UserProfileCard extends Vue {
   @Prop() public readonly userPreview!: IUserPreview;
@@ -120,6 +155,10 @@ export default class UserProfileCard extends Vue {
   private cancelFollowIntermediate = false;
   private privateMessageIntermediate = false;
   private avatarURL: string | null = null;
+  private followers: IUserPreview[] | null = null;
+  private followed: IUserPreview[] | null = null;
+  private showFollowersDialog = false;
+  private showFollowedDialog = false;
 
   get currentUserId() {
     return readUserProfile(this.$store)?.uuid;
@@ -192,6 +231,16 @@ export default class UserProfileCard extends Vue {
       const channelId = r0.data.id;
       await this.$router.push(`/channels/${channelId}`);
     });
+  }
+
+  private async showFollowers() {
+    this.showFollowersDialog = true;
+    this.followers = (await apiPeople.getUserFollowers(this.token, this.userPreview.uuid)).data;
+  }
+
+  private async showFollowed() {
+    this.showFollowedDialog = true;
+    this.followed = (await apiPeople.getUserFollowed(this.token, this.userPreview.uuid)).data;
   }
 }
 </script>
