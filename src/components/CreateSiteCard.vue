@@ -2,61 +2,47 @@
   <v-card>
     <ValidationObserver v-slot="{ handleSubmit, reset, valid }">
       <v-card-title primary-title>
-        <div class="headline primary--text">{{ $t('创建圈子') }}</div>
+        <div class="headline primary--text">创建圈子</div>
       </v-card-title>
       <v-card-text>
         <template>
           <v-form v-if="categoryTopics !== null">
-            <ValidationProvider v-slot="{ errors }" :name="$t('显示名')" rules="required">
-              <v-text-field v-model="siteCreate.name" :label="$t('显示名') + '*'" />
+            <ValidationProvider v-slot="{ errors }" name="显示名" rules="required">
+              <v-text-field v-model="siteCreate.name" label="显示名*" />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
-            <ValidationProvider
-              v-slot="{ errors }"
-              :name="$t('Unique sub-domain name')"
-              rules="required|subdomain"
-            >
-              <v-text-field
-                v-model="siteCreate.subdomain"
-                :label="$t('Unique sub-domain name') + '*'"
-                required
-              />
+            <ValidationProvider v-slot="{ errors }" name="唯一域名" rules="required|subdomain">
+              <v-text-field v-model="siteCreate.subdomain" label="唯一域名*" required />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
             <v-select
               v-model="siteCreate.category_topic_uuid"
               :items="categoryTopics"
-              :label="$t('类别')"
+              label="类别*"
               item-text="name"
               item-value="uuid"
             />
             <v-select
               v-model="siteCreate.permission_type"
               :items="permissionTypeItems"
-              :label="$t('Permission type') + '*'"
+              item-text="text"
+              item-value="value"
+              label="圈子类型*"
             />
             <div v-if="siteCreate.permission_type === 'public'">
-              {{
-                $t(
-                  '提示：公开站点一般适合话题型的圈子，内容对所有人可见，注册用户可以参与讨论，但是不能做公共编辑等操作。申请加入可以附加条件。'
-                )
-              }}
+              提示：「公开」类型一般适合话题型的圈子，内容对所有人可见，注册用户可以参与讨论，但是不能做公共编辑等操作。申请加入可以附加条件。
             </div>
             <div v-else-if="siteCreate.permission_type === 'private'">
-              {{
-                $t(
-                  '提示：私有站点一般适合有确定的人群范围的圈子，内容仅对成员可见。申请加入可以附加条件。'
-                )
-              }}
+              提示：「私密」类型一般适合有确定的人群范围的圈子，内容仅对成员可见。申请加入可以附加条件。
             </div>
-            <v-textarea v-model="siteCreate.description" :label="$t('Description')" n-n />
+            <v-textarea v-model="siteCreate.description" label="描述" hide-details />
           </v-form>
         </template>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn depressed small @click="cancel">{{ $t('Cancel') }}</v-btn>
-        <v-btn depressed small @click="resetAll(reset)">{{ $t('Reset') }}</v-btn>
+        <v-btn depressed small @click="cancel">取消</v-btn>
+        <v-btn depressed small @click="resetAll(reset)">重置</v-btn>
         <v-btn
           :disabled="intermediate || !valid"
           color="primary"
@@ -64,12 +50,8 @@
           small
           @click="handleSubmit(submit)"
         >
-          <template v-if="canCreateSite">
-            {{ $t('创建') }}
-          </template>
-          <template v-else>
-            {{ $t('提交申请') }}
-          </template>
+          <template v-if="canCreateSite"> 创建 </template>
+          <template v-else> 提交申请 </template>
           <v-progress-circular v-if="intermediate" color="primary" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
@@ -102,7 +84,16 @@ export default class CreateSite extends Vue {
     permission_type: 'public',
   };
 
-  private readonly permissionTypeItems = ['public', 'private'];
+  private readonly permissionTypeItems = [
+    {
+      text: '公开',
+      value: 'public',
+    },
+    {
+      text: '私密',
+      value: 'private',
+    },
+  ];
   private intermediate = false;
   private categoryTopics: ITopic[] | null = null;
 
@@ -146,7 +137,7 @@ export default class CreateSite extends Vue {
         action: async () => {
           const site = (await apiSite.createSite(this.$store.state.main.token, this.siteCreate))
             .data;
-          this.$router.push(`/sites/${site.subdomain}`);
+          await this.$router.push(`/sites/${site.subdomain}`);
         },
         errorFilter: (err: AxiosError) => {
           if (
@@ -155,7 +146,7 @@ export default class CreateSite extends Vue {
               'The site with this subdomain already exists in the system.'
           ) {
             commitAddNotification(this.$store, {
-              content: this.$t('圈子域名已存在').toString(),
+              content: '圈子域名已存在',
               color: 'error',
             });
             return true;
@@ -177,13 +168,13 @@ export default class CreateSite extends Vue {
             body: '申请创建圈子：\n' + siteCreateInfo,
           });
           commitAddNotification(this.$store, {
-            content: this.$t('因 Karma 不足，已发送申请消息').toString(),
+            content: '因 Karma 不足，已发送申请消息',
             color: 'info',
           });
           this.$router.push(`/channels/${channelId}`);
         } else {
           commitAddNotification(this.$store, {
-            content: this.$t('网站内部错误，请联系管理员').toString(),
+            content: '网站内部错误，请联系管理员',
             color: 'error',
           });
         }
