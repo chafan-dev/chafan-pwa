@@ -149,6 +149,11 @@
           >{{ topic.name }}
         </v-chip>
       </div>
+
+      <div>
+        <span class="subheading secondary--text text--lighten-3">加入茶饭的日子：</span>
+        <span>{{ $dayjs.utc(userPublic.created_at).format('YYYY-MM-DD') }}</span>
+      </div>
     </template>
     <div
       style="cursor: pointer"
@@ -177,7 +182,7 @@
       }"
       v-if="currentUserId === userPublic.uuid"
     >
-      <div v-if="enableFull" class="mr-1">
+      <div class="mr-1">
         <a @click="full = !full">
           <span v-if="full">收起</span>
           <span v-else>展开全部</span>
@@ -216,7 +221,6 @@ export default class UserProfileDetails extends Vue {
   private workExps: IUserWorkExperience[] | null = null;
   private sites: ISite[] | null = null;
   private full: boolean = false;
-  private enableFull: boolean = false;
 
   get currentUserId() {
     return readUserProfile(this.$store)?.uuid;
@@ -234,10 +238,6 @@ export default class UserProfileDetails extends Vue {
         this.userPublic.profiles.map((p) => apiSite.getSite(p.site.subdomain))
       );
       this.sites = responses.map((r) => r.data);
-      this.enableFull =
-        this.userPublic.subscribed_topics.length > 0 ||
-        this.userPublic.residency_topics.length > 0 ||
-        this.sites?.length > 0;
     }
   }
 

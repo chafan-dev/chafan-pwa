@@ -576,6 +576,7 @@ export interface IUserPublic {
   submissions_count: number;
   questions_count: number;
   articles_count: number;
+  created_at: string;
 }
 
 export interface IUserPublicForVisitor {
@@ -588,6 +589,7 @@ export interface IUserPublicForVisitor {
   submissions_count: number;
   questions_count: number;
   articles_count: number;
+  created_at: string;
 }
 
 export interface ITopic {
