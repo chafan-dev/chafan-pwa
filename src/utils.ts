@@ -93,16 +93,9 @@ import { localize } from 'vee-validate';
 import { apiAnswer } from '@/api/answer';
 import { apiArticle } from '@/api/article';
 
-export const setAppLocale = (vueInstance: any, selectedLang: string) => {
-  vueInstance.$i18n.locale = selectedLang;
-  vueInstance.$vuetify.lang.current = selectedLang;
-  if (selectedLang === 'zh') {
-    localize('zh_CN');
-    vueInstance.$dayjs.locale('zh-cn');
-  } else {
-    localize(selectedLang);
-    vueInstance.$dayjs.locale(selectedLang);
-  }
+export const setAppLocale = (vueInstance: any) => {
+  localize('zh_CN');
+  vueInstance.$dayjs.locale('zh-cn');
 };
 
 import { commitAddNotification } from '@/store/main/mutations';

@@ -75,7 +75,7 @@ export default class App extends Vue {
     }
     await dispatchCheckLoggedIn(this.$store);
     this.$data.loading = false;
-    setAppLocale(this, 'zh');
+    setAppLocale(this);
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
   }
 
