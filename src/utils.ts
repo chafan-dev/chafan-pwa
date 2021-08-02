@@ -147,6 +147,12 @@ export const newAnswerHandler = async (
   }
 };
 
+export const logDebug = (msg: string) => {
+  if (env === 'development') {
+    console.log(msg);
+  }
+};
+
 export const newArticleHandler = async (
   vueInstance: any,
   edit: IRichEditorState,
@@ -165,9 +171,11 @@ export const newArticleHandler = async (
     const newArticle = (
       await apiArticle.postArticle(vueInstance.$store.state.main.token, {
         title: edit.title,
-        body: edit.body,
-        body_text: edit.rendered_body_text || '',
-        editor: edit.editor,
+        content: {
+          source: edit.body,
+          rendered_text: edit.rendered_body_text || '',
+          editor: edit.editor,
+        },
         visibility: edit.visibility,
         is_published: !edit.is_draft,
         writing_session_uuid: writingSessionUUID,
@@ -176,7 +184,7 @@ export const newArticleHandler = async (
     ).data;
     const articleId = newArticle.uuid;
     if (!isAutosaved) {
-      vueInstance.$router.push(`/articles/${articleId}`);
+      await vueInstance.$router.push(`/articles/${articleId}`);
     }
     return newArticle;
   } catch (err) {
@@ -254,14 +262,14 @@ export const getArticleDraft = async (
   const response = await apiArticle.getArticleDraft(token, uuid);
   const draft = response.data;
   if (
-    (draft.title_draft || draft.body_draft) &&
+    (draft.title_draft || draft.content_draft) &&
     (localSavedEdit === null ||
       dayjs.utc(draft.draft_saved_at).isAfter(dayjs(localSavedEdit.createdAt)))
   ) {
     return {
       title: draft.title_draft,
-      body: draft.body_draft,
-      editor: draft.editor,
+      body: draft.content_draft?.source,
+      editor: draft.content_draft?.editor || 'wysiwyg',
     };
   } else if (localSavedEdit) {
     return {

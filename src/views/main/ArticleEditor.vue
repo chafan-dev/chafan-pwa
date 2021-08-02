@@ -27,6 +27,7 @@
             class="mb-2 mt-2"
           />
           <VditorCF
+            v-if="editor !== null && body !== null"
             v-show="topLevelEditor === 'vditor'"
             ref="vditor"
             :onEditorChange="onEditorChange"
@@ -153,7 +154,7 @@
                       <div class="title">
                         {{ archive.title }}
                       </div>
-                      <Viewer :body="archive.body" :editor="archive.editor" />
+                      <Viewer :content="archive.content" />
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
@@ -175,7 +176,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { clearLocalEdit, getArticleDraft, newArticleHandler } from '@/utils';
+import { clearLocalEdit, getArticleDraft, logDebug, newArticleHandler } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { IRichEditorState, IArticle } from '@/interfaces';
 import { apiArticle } from '@/api/article';
@@ -229,9 +230,11 @@ export default class ArticleEditor extends Vue {
   private showDeleteDraftDialog = false;
   private savingIntermediate: boolean = false;
   private archivesCount: number | undefined = undefined;
+  private editor: editor_T | null = null;
+  private body: string | null = null;
 
   get token() {
-    return this.$store.state.main.token;
+    return readToken(this.$store);
   }
 
   private topLevelEditor: 'vditor' | 'tiptap' = 'vditor';
@@ -259,35 +262,30 @@ export default class ArticleEditor extends Vue {
   public async mounted() {
     let workingDraft: IRichEditorState | null = null;
     if (this.articleId) {
-      const article: IArticle = (
-        await apiArticle.getArticle(this.$store.state.main.token, this.articleId)
-      ).data;
+      const article: IArticle = (await apiArticle.getArticle(this.token, this.articleId)).data;
       this.archivesCount = article.archives_count;
-      const articleDraft = await getArticleDraft(
-        this.$dayjs,
-        this.$store.state.main.token,
-        article.uuid
-      );
+      const articleDraft = await getArticleDraft(this.$dayjs, this.token, article.uuid);
       if (articleDraft) {
         commitAddNotification(this.$store, {
           content: '载入最近的草稿',
           color: 'success',
         });
         article.title = articleDraft.title || '';
-        article.body = articleDraft.body || '';
-        article.editor = articleDraft.editor;
+        article.content.source = articleDraft.body || '';
+        article.content.editor = articleDraft.editor;
       }
       workingDraft = {
         title: article.title,
-        body: article.body,
-        rendered_body_text: null,
-        editor: article.editor,
+        body: article.content.source,
+        rendered_body_text: article.content.rendered_text || null,
+        editor: article.content.editor,
         visibility: article.visibility,
         is_draft: true,
       };
     }
 
-    if (workingDraft && workingDraft.body) {
+    logDebug(`mounted workingDraft: ${JSON.stringify(workingDraft)}`);
+    if (workingDraft && workingDraft.body !== null) {
       this.articleTitle = workingDraft.title || '';
       this.initEditor(workingDraft.body, workingDraft.editor);
       this.lastSaveLength = workingDraft.body.length;
@@ -366,12 +364,15 @@ export default class ArticleEditor extends Vue {
   }
 
   private initEditor(body: string | null, editor: editor_T) {
+    logDebug(`initEditor(${body}, ${editor}})`);
     if (editor === 'tiptap') {
       this.topLevelEditor = 'tiptap';
       if (body) {
         (this.$refs.tiptap as ChafanTiptap).loadJSON(JSON.parse(body));
       }
     }
+    this.editor = editor;
+    this.body = body || '';
   }
 
   private autoSaveEdit() {
@@ -447,7 +448,7 @@ export default class ArticleEditor extends Vue {
 
   private loadArticleArchive(archive: IArticleArchive) {
     this.articleTitle = archive.title;
-    this.initEditor(archive.body, this.getEditorMode());
+    this.initEditor(archive.content.source, this.getEditorMode());
     this.historyDialog = false;
   }
 
@@ -534,11 +535,13 @@ export default class ArticleEditor extends Vue {
           this.newArticleId = articleId;
           const response = await apiArticle.updateArticle(this.$store.state.main.token, articleId, {
             updated_title: payload.edit.title,
-            updated_body: payload.edit.body,
-            updated_body_text: payload.edit.rendered_body_text || undefined,
-            editor: payload.edit.editor,
             visibility: payload.edit.visibility,
             is_draft: payload.edit.is_draft,
+            updated_content: {
+              source: payload.edit.body,
+              rendered_text: payload.edit.rendered_body_text || undefined,
+              editor: payload.edit.editor,
+            },
           });
           payload.saveArticleCallback(response.data);
           clearLocalEdit('article', response.data.uuid);
@@ -547,7 +550,7 @@ export default class ArticleEditor extends Vue {
               content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
               color: 'success',
             });
-            this.$router.push(`/articles/${articleId}`);
+            await this.$router.push(`/articles/${articleId}`);
           }
         }
       }

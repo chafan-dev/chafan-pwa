@@ -42,7 +42,7 @@
           <v-chip v-else-if="showHasDraftBadge" class="mb-1" color="info" small
             >编辑器中有未发表的草稿
           </v-chip>
-          <Viewer ref="viewer" :body="article.body" :editor="article.editor" />
+          <Viewer ref="viewer" :content="article.content" />
         </div>
 
         <div class="mx-1">
@@ -68,8 +68,8 @@
 
               <v-menu v-if="currentUserIsAuthor" offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on" class="mr-1 slim-btn" depressed small
-                    >{{ $t('设置') }}
+                  <v-btn v-bind="attrs" v-on="on" class="mr-1 slim-btn" depressed small>
+                    设置
                   </v-btn>
                 </template>
                 <v-list>
@@ -77,7 +77,7 @@
                     <v-list-item-icon>
                       <DeleteIcon />
                     </v-list-item-icon>
-                    <v-list-item-content>{{ $t('永久删除') }}</v-list-item-content>
+                    <v-list-item-content>永久删除</v-list-item-content>
                   </v-list-item>
                 </v-list>
               </v-menu>
