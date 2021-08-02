@@ -88,9 +88,7 @@ export interface IAnswer {
   question: IQuestionPreview;
   updated_at: string;
   draft_saved_at?: string;
-  body: string;
   is_published: boolean;
-  editor: editor_T;
   comments: IComment[];
   is_hidden_by_moderator: boolean;
   view_times: number;
@@ -100,6 +98,7 @@ export interface IAnswer {
   bookmarked: boolean;
   visibility: 'anyone' | 'registered';
   keywords?: string[];
+  content: IRichText;
 }
 
 export interface IQuestion {
@@ -111,9 +110,7 @@ export interface IQuestion {
   updated_at: string;
   title: string;
   topics: ITopic[];
-  description?: string;
-  description_text?: string;
-  description_editor: editor_T;
+  desc?: IRichText;
   comments: IComment[];
   view_times: number;
   is_placed_at_home: boolean;
@@ -204,19 +201,15 @@ export interface ISite {
 
 export interface IAnswerCreate {
   question_uuid: string;
-  body: string;
-  body_text: string;
   is_published: boolean;
-  editor: editor_T;
   visibility: 'anyone' | 'registered';
   writing_session_uuid: string;
+  content: IRichText;
 }
 
 export interface IAnswerUpdate {
-  updated_body: string;
-  updated_body_text: string;
+  updated_content: IRichText;
   is_draft: boolean;
-  editor: editor_T;
   visibility: 'anyone' | 'registered';
 }
 
@@ -270,8 +263,7 @@ export interface IQuestionPreview {
   uuid: string;
   author: IUserPreview;
   title: string;
-  description?: string;
-  description_text?: string;
+  desc?: IRichText;
   site: ISite;
   is_placed_at_home: boolean;
   created_at: string;
@@ -526,9 +518,7 @@ export interface ICommentUpdate {
 
 export interface IQuestionUpdate {
   title?: string;
-  description?: string;
-  description_text?: string;
-  description_editor?: editor_T;
+  desc?: IRichText;
   topic_uuids?: string[];
 }
 
@@ -713,16 +703,14 @@ export interface IWsUserMsg {
 }
 
 export interface IAnswerDraft {
-  body_draft?: string;
+  content_draft?: IRichText;
   draft_saved_at?: string;
-  editor: editor_T;
 }
 
-export interface IArchive {
+export interface IAnswerArchive {
   id: number;
-  body: string;
-  editor: editor_T;
   created_at: string;
+  content: IRichText;
 }
 
 export interface IReactions {
@@ -740,9 +728,7 @@ export interface IReaction {
 export interface IQuestionArchive {
   id: number;
   title?: string;
-  description?: string;
-  description_text?: string;
-  description_editor?: editor_T;
+  desc?: IRichText;
   topics: ITopic[];
   created_at: string;
   editor?: IUserPreview;

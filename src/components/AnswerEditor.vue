@@ -148,7 +148,7 @@
                 <v-spacer />
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <Viewer :body="archive.body" :editor="archive.editor" />
+                <Viewer :cotent="archive.body" :editor="archive.editor" />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
@@ -175,7 +175,7 @@ import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIco
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readToken, readUserProfile, readWorkingDraft } from '@/store/main/getters';
 import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
-import { editor_T, IAnswer, IArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
+import { editor_T, IAnswer, IAnswerArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { env } from '@/env';
 
@@ -241,7 +241,7 @@ export default class AnswerEditor extends Vue {
   private lastSaveLength = 0;
   private lastSaveIntermediate = false;
   private lastSaveTimerId: any = null;
-  private archives: IArchive[] = [];
+  private archives: IAnswerArchive[] = [];
   private showDeleteDraftDialog = false;
   private topLevelEditor: 'tiptap' | 'vditor' = 'vditor';
   private savingIntermediate: boolean = false;
@@ -456,8 +456,8 @@ export default class AnswerEditor extends Vue {
     });
   }
 
-  private loadArchive(archive: IArchive) {
-    this.initEditor(archive.body, this.getEditorMode());
+  private loadArchive(archive: IAnswerArchive) {
+    this.initEditor(archive.content.source, this.getEditorMode());
     this.historyDialog = false;
   }
 

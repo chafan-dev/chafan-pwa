@@ -6,7 +6,7 @@ import {
   IAnswerDraft,
   IAnswerUpdate,
   IAnswerUpvotes,
-  IArchive,
+  IAnswerArchive,
   IMsg,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
@@ -70,7 +70,7 @@ export const apiAnswer = {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<IArchive[]>(
+    return axios.get<IAnswerArchive[]>(
       `${apiUrl}/api/v1/answers/${answerUUID}/archives/`,
       authHeadersWithParams(token, params)
     );

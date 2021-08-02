@@ -122,11 +122,13 @@ export const newAnswerHandler = async (
     if (edit.body) {
       const newAnswer = (
         await apiAnswer.postAnswer(vueInstance.$store.state.main.token, {
-          body: edit.body,
-          editor: edit.editor,
+          content: {
+            source: edit.body,
+            editor: edit.editor,
+            rendered_text: edit.rendered_body_text || '',
+          },
           question_uuid: questionUUID,
           visibility: edit.visibility,
-          body_text: edit.rendered_body_text || '',
           writing_session_uuid: writingSessionUUID,
           is_published: !edit.is_draft,
         })
