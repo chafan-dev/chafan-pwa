@@ -106,9 +106,9 @@
       <div v-if="showUpdateEditor">
         <SimpleEditor
           ref="commentUpdateEditor"
-          :initialValue="comment.body"
+          :initialValue="comment.content.source"
           class="mt-2 mb-2"
-          :editor-prop="comment.editor"
+          :editor-prop="comment.content.editor"
           :onMentionedHandles="onMentionedHandles"
         />
         <div class="d-flex">
@@ -304,7 +304,7 @@ export default class Comment extends Vue {
     return this.userProfile?.uuid === this.comment.author.uuid;
   }
 
-  private async mounted() {
+  async mounted() {
     // FIX: make this more precise
     this.childCommentsExpanded =
       this.answerCommentId !== null ||

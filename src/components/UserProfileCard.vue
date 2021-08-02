@@ -32,7 +32,7 @@
                     /></v-btn>
                   </v-card-title>
                   <v-card-text>
-                    <v-lazy>
+                    <v-lazy v-if="followers">
                       <UserGrid :users="followers" />
                     </v-lazy>
                   </v-card-text>
@@ -59,7 +59,7 @@
                     /></v-btn>
                   </v-card-title>
                   <v-card-text>
-                    <v-lazy>
+                    <v-lazy v-if="followed">
                       <UserGrid :users="followed" />
                     </v-lazy>
                   </v-card-text>
