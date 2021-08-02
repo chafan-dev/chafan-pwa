@@ -546,8 +546,7 @@ export interface IUserPublic {
   uuid: string;
   full_name?: string;
   handle: string;
-  about?: string;
-  about_editor: editor_T;
+  about_content?: IRichText;
   profiles: IUserSiteProfile[];
   profile_view_times: number;
   personal_introduction?: string;
@@ -993,18 +992,14 @@ export interface ISubmissionCreate {
 
 export interface ISubmissionUpdate {
   title?: string;
-  description?: string;
-  description_text?: string;
-  description_editor?: editor_T;
+  desc?: IRichText;
   topic_uuids?: string[];
 }
 
 export interface ISubmissionSuggestionCreate {
   submission_uuid: string;
   title: string;
-  description?: string;
-  description_text?: string;
-  description_editor?: editor_T;
+  desc?: IRichText;
   topic_uuids?: string[];
   comment?: string;
 }
@@ -1043,9 +1038,7 @@ export interface ISubmissionSuggestion {
 export interface ISubmission {
   uuid: string;
   title: string;
-  description?: string;
-  description_text: string;
-  description_editor: editor_T;
+  desc?: IRichText;
   url?: string;
   created_at: string;
   updated_at: string;
@@ -1069,8 +1062,7 @@ export interface ISubmissionUpvotes {
 export interface ISubmissionArchive {
   id: number;
   title: string;
-  description?: string;
-  description_editor: string;
+  desc?: IRichText;
   url?: string;
   created_at: string;
 }

@@ -22,7 +22,7 @@
               :userPreview="message.author"
             />
             <span v-else>我</span>:
-            <Viewer :body="message.body" />
+            {{ message.body }}
             <span class="ml-2 float-right text-caption grey--text">
               {{ $dayjs.utc(message.created_at).local().fromNow() }}
             </span>

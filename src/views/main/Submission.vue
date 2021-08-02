@@ -65,16 +65,12 @@
             </div>
 
             <!-- Submission description display/editor -->
-            <Viewer
-              v-if="!showSubmissionEditor && submission.description"
-              :body="submission.description"
-              :editor="submission.description_editor"
-            />
+            <Viewer v-if="!showSubmissionEditor && submission.desc" :content="submission.desc" />
             <div v-else-if="showSubmissionEditor">
               <SimpleEditor
                 ref="descEditor"
-                :editorProp="submission.description_editor"
-                :initialValue="submission.description"
+                :editorProp="submission.desc.editor"
+                :initialValue="submission.desc.source"
                 placeholder="描述（选填）"
                 class="my-2"
               />
@@ -115,11 +111,7 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <Viewer
-                      v-if="archive.description"
-                      :body="archive.description"
-                      :editor="archive.description_editor"
-                    />
+                    <Viewer v-if="archive.desc" :content="archive.desc" />
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -498,6 +490,7 @@ import {
   IUserSubmissionSubscription,
   ISubmissionSuggestion,
   ITopic,
+  IRichText,
 } from '@/interfaces';
 import Viewer from '@/components/Viewer.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
@@ -644,7 +637,7 @@ export default class Submission extends Vue {
     try {
       const response = await apiSubmission.getSubmission(this.token, this.id);
       this.submission = response.data;
-      updateHead(this.$route.path, this.submission!.title, this.submission?.description_text);
+      updateHead(this.$route.path, this.submission!.title, this.submission?.desc?.rendered_text);
       if (this.token) {
         this.submissionSubscription = (
           await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
@@ -755,11 +748,14 @@ export default class Submission extends Vue {
           this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
+        const desc: IRichText = {
+          source: descEditor.content || '',
+          rendered_text: descEditor.getTextContent() || undefined,
+          editor: descEditor.editor,
+        };
         const payload: any = {
           title: this.newSubmissionTitle,
-          description: descEditor.content || '',
-          description_text: descEditor.getTextContent() || undefined,
-          description_editor: descEditor.editor,
+          desc: desc,
           topic_uuids: topicsUUIDs,
         };
         if (this.editable) {
@@ -814,8 +810,7 @@ export default class Submission extends Vue {
       this.archives.unshift({
         id: 0,
         title: this.submission.title,
-        description: this.submission.description,
-        description_editor: this.submission.description_editor,
+        desc: this.submission.desc,
         created_at: this.submission.updated_at,
       });
       if (this.archives.length > 0) {
@@ -876,9 +871,9 @@ export default class Submission extends Vue {
         status: 'accepted',
         accepted_diff_base: {
           title: this.submission!.title,
-          description: this.submission!.description,
-          description_text: this.submission!.description_text,
-          description_editor: this.submission!.description_editor,
+          description: this.submission!.desc?.source,
+          description_text: this.submission!.desc?.rendered_text,
+          description_editor: this.submission!.desc?.editor,
           topic_uuids: this.submission!.topics.map((topic) => topic.uuid),
         },
       });

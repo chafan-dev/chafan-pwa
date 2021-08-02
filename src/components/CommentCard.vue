@@ -2,7 +2,7 @@
   <div class="pa-2">
     <!-- Comment -->
     <div class="d-flex mb-2">
-      <Viewer :body="comment.body" :editor="comment.editor" />
+      <Viewer :content="comment.content" />
       <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
         <OpenInNewIcon small />
       </router-link>

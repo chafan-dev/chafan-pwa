@@ -148,7 +148,7 @@
                 <v-spacer />
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <Viewer :cotent="archive.body" :editor="archive.editor" />
+                <Viewer :content="archive.content" />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>

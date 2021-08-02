@@ -214,11 +214,7 @@
                     <div class="headline primary--text">
                       {{ archive.title }}
                     </div>
-                    <Viewer
-                      v-if="archive.description_editor"
-                      :body="archive.description"
-                      :editor="archive.description_editor"
-                    />
+                    <Viewer v-if="archive.desc" :content="archive.desc" />
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
