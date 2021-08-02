@@ -165,23 +165,27 @@
         {{ userPublic.profession_topic.name }}
       </v-chip>
 
-      <v-chip
-        class="ml-1"
-        v-for="(eduExp, i) in eduExps"
-        :key="i"
-        color="light-blue lighten-4 mb-1"
-      >
-        {{ eduExp.school_topic.name }}
-      </v-chip>
+      <span>
+        <v-chip
+          class="ml-1"
+          v-for="(eduExp, i) in eduExps"
+          :key="i"
+          color="light-blue lighten-4 mb-1"
+        >
+          {{ eduExp.school_topic.name }}
+        </v-chip>
+      </span>
 
-      <v-chip
-        class="ml-1"
-        v-for="(workExp, i) in workExps"
-        :key="i"
-        color="light-green lighten-4 mb-1"
-      >
-        {{ workExp.company_topic.name }}
-      </v-chip>
+      <span>
+        <v-chip
+          class="ml-1"
+          v-for="(workExp, i) in workExps"
+          :key="i"
+          color="light-green lighten-4 mb-1"
+        >
+          {{ workExp.company_topic.name }}
+        </v-chip>
+      </span>
     </div>
 
     <div
