@@ -54,8 +54,8 @@
           <div v-else-if="showQuestionEditor">
             <SimpleEditor
               ref="descEditor"
-              :initialValue="question.desc.source"
-              :editor-prop="question.desc.editor"
+              :initialValue="question.desc ? question.desc.source : undefined"
+              :editor-prop="question.desc ? question.desc.editor : undefined"
               placeholder="描述（选填）"
               :show-menu="true"
               class="mb-2"
