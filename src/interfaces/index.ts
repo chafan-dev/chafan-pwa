@@ -5,6 +5,12 @@ export type editor_T =
   | 'markdown_splitview'
   | 'markdown_realtime_rendering';
 
+export interface IRichText {
+  source: string;
+  rendered_text?: string;
+  editor: editor_T;
+}
+
 export interface IUserProfile {
   id: number;
   uuid: string;
@@ -751,40 +757,33 @@ export interface ITopBanner {
 
 export interface IArticleCreate {
   title: string;
-  body: string;
-  body_text?: string;
   article_column_uuid: string;
   is_published: boolean;
-  editor: editor_T;
   visibility: 'anyone' | 'registered';
   writing_session_uuid: string;
+  content: IRichText;
 }
 
 export interface IArticleUpdate {
   updated_title: string;
-  updated_body: string;
-  updated_body_text?: string;
   is_draft: boolean;
-  editor: editor_T;
   visibility: 'anyone' | 'registered';
+  updated_content: IRichText;
 }
 
 export interface IArticleDraft {
   title_draft?: string;
-  body_draft?: string;
   draft_saved_at?: number[];
-  editor: editor_T;
+  content_draft?: IRichText;
 }
 
 export interface IArticle {
   uuid: string;
   title: string;
-  body: string;
   updated_at: string;
   initial_published_at: string;
   draft_saved_at?: string;
   is_published: boolean;
-  editor: editor_T;
   visibility: 'anyone' | 'registered';
   topics: ITopic[];
   upvotes_count: number;
@@ -796,6 +795,8 @@ export interface IArticle {
   bookmark_count: number;
   archives_count: number;
   bookmarked: boolean;
+
+  content: IRichText;
 }
 
 export interface IArticleUpvotes {
@@ -835,10 +836,9 @@ export interface IArticlePreview {
 export interface IArticleArchive {
   uuid: string;
   title: string;
-  body: string;
-  editor: editor_T;
   topics: ITopic[];
   created_at: string;
+  content: IRichText;
 }
 
 export interface IUserArticleBookmark {

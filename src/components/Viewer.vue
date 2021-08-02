@@ -1,10 +1,10 @@
 <template>
   <div :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }" class="viewer">
-    <template v-if="editor === 'tiptap'">
-      <ChafanTiptap :body="body" :editable="false" :on-editor-ready="onViewerReady" />
+    <template v-if="content.editor === 'tiptap'">
+      <ChafanTiptap :body="content.source" :editable="false" :on-editor-ready="onViewerReady" />
     </template>
     <template v-else>
-      <VditorViewerCF :body="body" :on-viewer-ready="onViewerReady" />
+      <VditorViewerCF :body="content.source" :on-viewer-ready="onViewerReady" />
     </template>
 
     <template v-if="contentElem">
@@ -18,7 +18,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { VditorViewerCF } from 'chafan-vue-editors';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { postProcessViewerDOM } from '@/common';
-import { editor_T } from '@/interfaces';
+import { IRichText } from '@/interfaces';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { readToken } from '@/store/main/getters';
 
@@ -31,8 +31,7 @@ import { readToken } from '@/store/main/getters';
   },
 })
 export default class Viewer extends Vue {
-  @Prop() private readonly body!: string;
-  @Prop() private readonly editor!: editor_T;
+  @Prop() private readonly content!: IRichText;
   public textContent: string | null = null;
 
   private onViewerReady(contentElem: HTMLElement) {
