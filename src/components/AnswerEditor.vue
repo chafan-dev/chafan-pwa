@@ -7,7 +7,7 @@
         :class="{ 'mt-2': focusMode }"
         :onEditorChange="onEditorChange"
         class="mb-2"
-        :initial-content="initialContent"
+        :initial-content="topLevelEditor === 'tiptap' ? initialContent : undefined"
       />
 
       <VditorCF
@@ -18,7 +18,7 @@
         :isMobile="isMobile"
         :vditorUploadConfig="vditorUploadConfig"
         class="mb-2"
-        :initial-content="initialContent"
+        :initial-content="topLevelEditor === 'vditor' ? initialContent : undefined"
         :editorMode="contentEditor"
       />
     </template>
@@ -174,7 +174,7 @@ import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
 import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readToken, readUserProfile, readWorkingDraft } from '@/store/main/getters';
-import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
+import { clearLocalEdit, logDebug, saveLocalEdit, uuidv4 } from '@/utils';
 import { editor_T, IAnswer, IAnswerArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { env } from '@/env';
@@ -386,7 +386,7 @@ export default class AnswerEditor extends Vue {
   }
 
   private async newEditHandler(payload: INewEditEvent) {
-    this.answerEditHandler.newEditHandler(payload);
+    await this.answerEditHandler.newEditHandler(payload);
   }
 
   private submitEdit(isPublished: boolean) {
@@ -465,7 +465,7 @@ export default class AnswerEditor extends Vue {
   async deleteDraft() {
     this.showDeleteDraftDialog = false;
     clearLocalEdit('answer', this.contentId);
-    dispatchCaptureApiError(this.$store, async () => {
+    await dispatchCaptureApiError(this.$store, async () => {
       if (this.answerId) {
         await apiAnswer.deleteAnswerDraft(this.token, this.answerId);
         commitAddNotification(this.$store, {
@@ -494,9 +494,11 @@ export default class AnswerEditor extends Vue {
   private onChangeTopLevelEditor() {
     if (this.topLevelEditor === 'tiptap') {
       const oldContent = (this.$refs.vditor as any).getHTML();
+      this.contentEditor = 'tiptap';
       (this.$refs.tiptap as ChafanTiptap).loadHTML(oldContent);
     } else if (this.topLevelEditor === 'vditor') {
       const oldContent = (this.$refs.tiptap as ChafanTiptap).getHTML();
+      this.contentEditor = 'wysiwyg';
       (this.$refs.vditor as any).init('wysiwyg', undefined, oldContent);
     }
   }

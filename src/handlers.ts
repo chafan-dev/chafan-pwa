@@ -2,7 +2,7 @@ import { apiAnswer } from './api/answer';
 import { IAnswer, INewEditEvent } from './interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification } from './store/main/mutations';
-import { newAnswerHandler } from './utils';
+import { logDebug, newAnswerHandler } from './utils';
 
 export interface IVueInstance {
   $store: any;
@@ -61,8 +61,8 @@ class AnswerEditHandler {
         this.handlingNewEdit = false;
         return;
       }
+      // new answer to question
       if (!this.answerUUID && !payload.answerId) {
-        // new answer to question
         const answer = await newAnswerHandler(
           this.vueInstance,
           payload.edit,
@@ -86,7 +86,9 @@ class AnswerEditHandler {
           }
         }
       } else {
+        // Existing answer
         const answerUUID = this.answerUUID ? this.answerUUID : payload.answerId!;
+        logDebug(`newEditHandler existing answer payload.edit: ${JSON.stringify(payload.edit)}`);
         const response = await apiAnswer.updateAnswer(this.token, answerUUID, {
           updated_content: {
             source: payload.edit.body,
