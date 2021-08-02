@@ -48,7 +48,7 @@
       >
 
       <span v-if="event.content.message" place="message">
-        <Viewer :body="event.content.message" />
+        {{ event.content.message }}
       </span>
 
       <span v-if="event.content.reply" place="reply">

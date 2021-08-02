@@ -1,9 +1,9 @@
 <template>
   <div>
     <template v-if="full">
-      <div v-if="userPublic.about">
+      <div v-if="userPublic.about_content">
         <span class="subheading secondary--text text--lighten-3">关于我：</span>
-        <Viewer :body="userPublic.about" :editor="userPublic.about_editor" />
+        <Viewer :content="userPublic.about_content" />
       </div>
 
       <div

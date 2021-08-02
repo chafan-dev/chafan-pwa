@@ -27,17 +27,14 @@
         </a>
       </div>
     </div>
-    <div
-      v-if="submission.description_text && submission.description_text.trim()"
-      class="grey--text subtitle-2"
-    >
+    <div v-if="shortDesc" class="grey--text subtitle-2">
       {{ shortDesc }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ICommentUpvotes, ISubmission, ISubmissionUpvotes } from '@/interfaces';
+import { ISubmission } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
@@ -45,18 +42,18 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
-import { apiSubmission } from '@/api/submission';
-import { readToken } from '@/store/main/getters';
 
 @Component({
   components: { UpvoteStat, BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
 export default class SubmissionPreview extends Vue {
   @Prop() private readonly submission!: ISubmission;
-  private upvotes: ISubmissionUpvotes | null = null;
 
   get shortDesc() {
-    const d = this.submission.description_text!;
+    if (!this.submission.desc || !this.submission.desc.rendered_text) {
+      return null;
+    }
+    const d = this.submission.desc.rendered_text.trim();
     if (d.length > 60) {
       return d.substring(0, 60) + '..';
     } else {

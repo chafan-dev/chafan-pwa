@@ -3,11 +3,11 @@
     <div class="headline primary--text">{{ site.name }}</div>
     <div v-if="site !== null">
       <div v-if="site.description">
-        <Viewer :body="site.description" />
+        {{ site.description }}
       </div>
       <template v-if="!compactMode">
         <div v-if="site.topics.length > 0">
-          <b>{{ $t('话题：') }}</b>
+          <b>话题：</b>
           <v-chip-group>
             <v-chip v-for="topic in site.topics" :key="topic.uuid" :to="'/topics/' + topic.uuid">
               {{ topic.name }}
@@ -15,11 +15,11 @@
           </v-chip-group>
         </div>
         <div v-if="site.permission_type">
-          <b>{{ $t('类型：') }}</b>
+          <b>类型：</b>
           {{ $t('site.permission_type.' + site.permission_type) }}
         </div>
         <div>
-          <b>{{ $t('管理员：') }}</b>
+          <b>管理员：</b>
           <UserLink :userPreview="site.moderator" />
         </div>
       </template>
@@ -29,7 +29,7 @@
       <div v-if="notMember" class="mt-2">
         <v-skeleton-loader v-if="loading" type="button" />
         <template v-else>
-          <v-btn v-if="siteApplied" depressed disabled small>{{ $t('申请审核中') }}</v-btn>
+          <v-btn v-if="siteApplied" depressed disabled small>申请审核中</v-btn>
           <v-btn
             v-else
             :disabled="applyToJoinIntermediate"
@@ -37,7 +37,8 @@
             depressed
             small
             @click="applyToJoin"
-            >{{ $t('加入') }}
+          >
+            加入
           </v-btn>
         </template>
       </div>
@@ -50,7 +51,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" class="ml-2" depressed small>
             <SettingsIcon small />
-            <span v-if="!$vuetify.breakpoint.mobile" class="ml-1">{{ $t('设置') }}</span>
+            <span v-if="!$vuetify.breakpoint.mobile" class="ml-1">设置</span>
           </v-btn>
         </template>
         <v-list>
@@ -58,15 +59,15 @@
             <v-list-item-icon>
               <DoorIcon />
             </v-list-item-icon>
-            <v-list-item-content>{{ $t('离开') }}</v-list-item-content>
+            <v-list-item-content>离开</v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>
     </div>
 
     <v-tabs v-if="showQuestionEditor || showSubmissionEditor">
-      <v-tab v-if="showQuestionEditor">{{ $t('提问') }}</v-tab>
-      <v-tab v-if="showSubmissionEditor">{{ $t('分享') }}</v-tab>
+      <v-tab v-if="showQuestionEditor">提问</v-tab>
+      <v-tab v-if="showSubmissionEditor">分享</v-tab>
       <v-tabs-slider />
 
       <v-tab-item v-if="showQuestionEditor">
@@ -80,9 +81,7 @@
 
     <v-dialog v-model="showJoinConditionsDialog" max-width="400">
       <v-card>
-        <v-card-title>
-          {{ $t('申请加入圈子的条件') }}
-        </v-card-title>
+        <v-card-title> 申请加入圈子的条件 </v-card-title>
         <v-card-text>
           <SiteJoinConditions :showHint="true" :site="site" />
         </v-card-text>
