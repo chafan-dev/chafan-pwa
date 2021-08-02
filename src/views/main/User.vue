@@ -98,7 +98,6 @@ import {
   IArticlePreview,
   IQuestionPreview,
   ISubmission,
-  IUserPreview,
   IUserPublic,
   IUserPublicForVisitor,
 } from '@/interfaces';
