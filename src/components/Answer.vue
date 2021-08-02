@@ -35,11 +35,7 @@
         <div class="mt-1">
           <template v-if="draftMode">
             <v-chip v-if="answer" color="info" small> 草稿 </v-chip>
-            <Viewer
-              v-if="bodyDraft !== null && draftEditor !== null"
-              :body="bodyDraft"
-              :editor="draftEditor"
-            />
+            <Viewer v-if="draftContent !== null" :content="draftContent" />
           </template>
           <template v-else>
             <v-chip v-if="answer && !answer.is_published" color="warning" small>
@@ -49,12 +45,7 @@
               编辑器中有未发表的草稿
             </v-chip>
 
-            <Viewer
-              v-intersect.once="onReadFullAnswer"
-              :body="answer.body"
-              :bodyFormat="answer.body_format"
-              :editor="answer.editor"
-            />
+            <Viewer v-intersect.once="onReadFullAnswer" :content="answer.content" />
           </template>
         </div>
 
@@ -260,12 +251,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
-  editor_T,
   IAnswer,
   IAnswerDraft,
   IAnswerPreview,
   IAnswerUpvotes,
   IRichEditorState,
+  IRichText,
   IUserAnswerBookmark,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
@@ -350,8 +341,7 @@ export default class Answer extends Vue {
   private bodyDraftFromLocalSavedEdit: LocalEdit | null = null;
   private draftPromise: Promise<IAnswerDraft> | null = null;
   private commentSubmitIntermediate = false;
-  private bodyDraft: string | null = null;
-  private draftEditor: editor_T | null = null;
+  private draftContent: IRichText | null = null;
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -482,18 +472,19 @@ export default class Answer extends Vue {
         this.draftPromise = apiAnswer.getAnswerDraft(this.token, answer.uuid).then((response) => {
           const draft = response.data;
           if (
-            draft.body_draft &&
+            draft.content_draft &&
             (localSavedEdit === null ||
               this.$dayjs.utc(draft.draft_saved_at).isAfter(this.$dayjs(localSavedEdit.createdAt)))
           ) {
             this.editButtonText = '编辑草稿';
-            this.bodyDraft = draft.body_draft;
-            this.draftEditor = draft.editor;
+            this.draftContent = draft.content_draft;
             this.showHasDraftBadge = true;
           } else if (localSavedEdit) {
             this.editButtonText = '编辑草稿';
-            this.bodyDraft = (localSavedEdit.edit as IRichEditorState).body;
-            this.draftEditor = (localSavedEdit.edit as IRichEditorState).editor;
+            this.draftContent = {
+              source: (localSavedEdit.edit as IRichEditorState).body || '',
+              editor: (localSavedEdit.edit as IRichEditorState).editor,
+            };
             this.bodyDraftFromLocalSavedEdit = localSavedEdit;
             this.showHasDraftBadge = true;
           }
@@ -534,31 +525,31 @@ export default class Answer extends Vue {
       const draft = await this.draftPromise;
       if (this.bodyDraftFromLocalSavedEdit) {
         commitAddNotification(this.$store, {
-          content: this.$t('载入最近的草稿').toString(),
+          content: '载入最近的草稿',
           color: 'success',
         });
         commitSetWorkingDraft(
           this.$store,
           this.bodyDraftFromLocalSavedEdit.edit as IRichEditorState
         );
-      } else if (draft && draft.body_draft) {
+      } else if (draft && draft.content_draft) {
         commitAddNotification(this.$store, {
-          content: this.$t('载入最近的草稿').toString(),
+          content: '载入最近的草稿',
           color: 'success',
         });
         commitSetWorkingDraft(this.$store, {
-          body: draft.body_draft,
+          body: draft.content_draft?.source || '',
           rendered_body_text: null,
           is_draft: true,
-          editor: draft.editor,
+          editor: draft.content_draft?.editor || 'wysiwyg',
           visibility: this.answer.visibility,
         });
       } else {
         commitSetWorkingDraft(this.$store, {
-          body: this.answer.body,
+          body: this.answer.content.source,
           rendered_body_text: null,
           visibility: this.answer.visibility,
-          editor: this.answer.editor,
+          editor: this.answer.content.editor,
           is_draft: false,
         });
       }

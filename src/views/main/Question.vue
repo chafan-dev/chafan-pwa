@@ -50,16 +50,12 @@
           </div>
 
           <!-- Question description display/editor -->
-          <Viewer
-            v-if="!showQuestionEditor && question.description"
-            :body="question.description"
-            :editor="question.description_editor"
-          />
+          <Viewer v-if="!showQuestionEditor && question.desc" :content="question.desc" />
           <div v-else-if="showQuestionEditor">
             <SimpleEditor
               ref="descEditor"
-              :initialValue="question.description"
-              :editor-prop="question.description_editor"
+              :initialValue="question.desc.source"
+              :editor-prop="question.desc.editor"
               placeholder="描述（选填）"
               :show-menu="true"
               class="mb-2"
@@ -436,6 +432,7 @@ import {
   IQuestionArchive,
   IQuestionUpvotes,
   IRichEditorState,
+  IRichText,
   ISite,
   IUserQuestionSubscription,
   IUserSiteProfile,
@@ -631,7 +628,7 @@ export default class Question extends Vue {
 
           this.isShowInHome = this.question.is_placed_at_home;
 
-          updateHead(this.$route.path, this.question.title, this.question.description_text);
+          updateHead(this.$route.path, this.question.title, this.question.desc?.rendered_text);
 
           this.newQuestionTitle = this.question.title;
           this.newQuestionTopicNames = this.question.topics.map((topic) => topic.name);
@@ -770,11 +767,17 @@ export default class Question extends Vue {
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
+        let desc: IRichText | undefined = undefined;
+        if (descEditor.content) {
+          desc = {
+            source: descEditor.content,
+            rendered_text: descEditor.getTextContent() || undefined,
+            editor: descEditor.editor,
+          };
+        }
         const response = await apiQuestion.updateQuestion(this.token, this.question.uuid, {
           title: this.newQuestionTitle,
-          description: descEditor.content || undefined,
-          description_text: descEditor.getTextContent() || undefined,
-          description_editor: descEditor.editor,
+          desc: desc,
           topic_uuids: topicsUUIDs,
         });
         if (response) {
@@ -790,8 +793,9 @@ export default class Question extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.cancelSubscriptionIntermediate = true;
-        const r = await apiMe.unsubscribeQuestion(this.token, this.question.uuid);
-        this.questionSubscription = r.data;
+        this.questionSubscription = (
+          await apiMe.unsubscribeQuestion(this.token, this.question.uuid)
+        ).data;
         this.cancelSubscriptionIntermediate = false;
       }
     });
@@ -805,8 +809,9 @@ export default class Question extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.question) {
         this.subscribeIntermediate = true;
-        const r = await apiMe.subscribeQuestion(this.token, this.question.uuid);
-        this.questionSubscription = r.data;
+        this.questionSubscription = (
+          await apiMe.subscribeQuestion(this.token, this.question.uuid)
+        ).data;
         this.subscribeIntermediate = false;
       }
     });
@@ -823,9 +828,7 @@ export default class Question extends Vue {
       this.archives.unshift({
         id: 0,
         title: this.question.title,
-        description: this.question.description,
-        description_text: this.question.description_text,
-        description_editor: this.question.description_editor,
+        desc: this.question.desc,
         topics: this.question.topics,
         created_at: this.question.updated_at,
         editor: this.question.editor,

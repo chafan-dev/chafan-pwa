@@ -88,11 +88,13 @@ class AnswerEditHandler {
       } else {
         const answerUUID = this.answerUUID ? this.answerUUID : payload.answerId!;
         const response = await apiAnswer.updateAnswer(this.token, answerUUID, {
-          updated_body: payload.edit.body,
+          updated_content: {
+            source: payload.edit.body,
+            rendered_text: payload.edit.rendered_body_text || '',
+            editor: payload.edit.editor,
+          },
           is_draft: payload.edit.is_draft,
-          updated_body_text: payload.edit.rendered_body_text || '',
           visibility: payload.edit.visibility,
-          editor: payload.edit.editor,
         });
         if (response) {
           if (!payload.isAutosaved) {
