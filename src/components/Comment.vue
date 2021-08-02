@@ -10,7 +10,7 @@
 
     <!-- Comment body -->
     <div v-if="!showUpdateEditor" class="ml-1">
-      <Viewer v-if="!comment.is_deleted" :body="comment.body" :editor="comment.editor" />
+      <Viewer v-if="!comment.is_deleted" :content="comment.content" />
       <div v-else class="grey--text">已删除</div>
     </div>
 
@@ -336,9 +336,11 @@ export default class Comment extends Vue {
       const response = await apiComment.postComment(this.token, {
         site_uuid: this.siteId,
         parent_comment_uuid: this.comment.uuid,
-        body: editor.content!,
-        body_text: editor.getTextContent() || '',
-        editor: editor.editor,
+        content: {
+          source: editor.content!,
+          rendered_text: editor.getTextContent() || '',
+          editor: editor.editor,
+        },
         mentioned: this.mentioned,
       });
       const comment = response.data;
@@ -365,8 +367,11 @@ export default class Comment extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.submitIntermediate = true;
       await apiComment.updateComment(this.token, this.comment.uuid, {
-        body: editor.content!,
-        body_text: editor.getTextContent() || '',
+        content: {
+          source: editor.content!,
+          rendered_text: editor.getTextContent() || '',
+          editor: editor.editor,
+        },
         mentioned: this.mentioned,
       });
       commitAddNotification(this.$store, {
@@ -374,7 +379,7 @@ export default class Comment extends Vue {
         color: 'success',
       });
       this.showUpdateEditor = false;
-      this.comment.body = editor.content!;
+      this.comment.content.source = editor.content!;
       this.submitIntermediate = false;
     });
   }

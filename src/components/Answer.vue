@@ -429,9 +429,11 @@ export default class Answer extends Vue {
         const response = await apiComment.postComment(this.token, {
           site_uuid: this.answer.site.uuid,
           answer_uuid: this.answer.uuid,
-          body,
-          editor,
-          body_text,
+          content: {
+            source: body,
+            rendered_text: body_text,
+            editor,
+          },
           mentioned,
         });
         const comment = response.data;
