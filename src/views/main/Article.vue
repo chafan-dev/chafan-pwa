@@ -42,12 +42,7 @@
           <v-chip v-else-if="showHasDraftBadge" class="mb-1" color="info" small
             >编辑器中有未发表的草稿
           </v-chip>
-          <Viewer
-            ref="viewer"
-            :body="article.body"
-            :bodyFormat="article.body_format"
-            :editor="article.editor"
-          />
+          <Viewer ref="viewer" :body="article.body" :editor="article.editor" />
         </div>
 
         <div class="mx-1">

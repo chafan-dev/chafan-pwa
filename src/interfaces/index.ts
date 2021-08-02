@@ -4,7 +4,6 @@ export type editor_T =
   | 'markdown'
   | 'markdown_splitview'
   | 'markdown_realtime_rendering';
-export type body_format_T = 'markdown' | 'html' | 'tiptap_json';
 
 export interface IUserProfile {
   id: number;
@@ -84,15 +83,11 @@ export interface IAnswer {
   updated_at: string;
   draft_saved_at?: string;
   body: string;
-  body_format: body_format_T;
   is_published: boolean;
   editor: editor_T;
   comments: IComment[];
   is_hidden_by_moderator: boolean;
   view_times: number;
-  // TODO: deprecate them from API
-  // upvoted: boolean;
-  // upvotes_count: number;
   comment_writable: boolean;
   bookmark_count: number;
   archives_count: number;
@@ -789,7 +784,6 @@ export interface IArticle {
   initial_published_at: string;
   draft_saved_at?: string;
   is_published: boolean;
-  body_format: body_format_T;
   editor: editor_T;
   visibility: 'anyone' | 'registered';
   topics: ITopic[];
