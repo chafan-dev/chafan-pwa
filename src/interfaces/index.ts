@@ -71,9 +71,7 @@ export interface IComment {
   author: IUserPreview;
   created_at: string;
   updated_at: string;
-  body: string;
-  body_text?: string;
-  editor: editor_T;
+  content: IRichText;
   root_route?: string;
   shared_to_timeline: boolean;
   is_deleted: boolean;
@@ -497,9 +495,7 @@ export interface IActivity {
 
 export interface ICommentCreate {
   site_uuid?: string;
-  body: string;
-  body_text: string;
-  editor: editor_T;
+  content: IRichText;
   question_uuid?: string;
   submission_uuid?: string;
   article_uuid?: string;
@@ -510,8 +506,7 @@ export interface ICommentCreate {
 }
 
 export interface ICommentUpdate {
-  body?: string;
-  body_text?: string;
+  content?: IRichText;
   shared_to_timeline?: true;
   mentioned?: string[];
 }

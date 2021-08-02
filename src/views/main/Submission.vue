@@ -732,9 +732,11 @@ export default class Submission extends Vue {
         const response = await apiComment.postComment(this.token, {
           site_uuid: this.submission?.site.uuid,
           submission_uuid: this.id,
-          body,
-          body_text,
-          editor,
+          content: {
+            source: body,
+            rendered_text: body_text,
+            editor,
+          },
           mentioned,
         });
         const comment = response.data;
