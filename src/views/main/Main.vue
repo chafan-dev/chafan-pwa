@@ -1,161 +1,171 @@
 <template>
   <div>
     <v-app-bar color="primary" dark>
-      <div class="d-flex justify-space-between app-bar-inner">
-        <div class="d-flex align-center">
-          <div v-if="$vuetify.breakpoint.mdAndUp">
-            <router-link class="white--text title text-decoration-none" to="/"
-              >{{ appName }}
-            </router-link>
+      <v-container style="max-width: 1300px">
+        <div class="d-flex justify-space-between app-bar-inner pl-16">
+          <div class="d-flex align-center">
+            <div v-if="$vuetify.breakpoint.mdAndUp">
+              <router-link class="white--text title text-decoration-none" to="/"
+                >{{ appName }}
+              </router-link>
+            </div>
+
+            <v-btn v-else active-class="opacity-none" icon to="/">
+              <HomeIcon />
+            </v-btn>
           </div>
 
-          <v-btn v-else active-class="opacity-none" icon to="/">
-            <HomeIcon />
-          </v-btn>
-        </div>
+          <div class="d-flex align-center">
+            <div v-if="userProfile" class="search-box">
+              <SearchBox />
+            </div>
 
-        <div v-if="userProfile" class="d-flex align-center search-box">
-          <SearchBox />
-        </div>
+            <Notifications v-if="userProfile" :user-profile="userProfile" />
 
-        <div>
-          <Notifications v-if="userProfile" :user-profile="userProfile" />
-
-          <template v-if="!userProfile">
-            <FeedbackIcon class="ml-1" @click="prepareFeedbackForm" />
-            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt"> 登录 </v-btn>
-          </template>
-
-          <v-dialog v-model="showFeedbackForm" max-width="500">
-            <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
-              <v-card>
-                <v-card-title> 你的反馈会让「茶饭」变得更好！ </v-card-title>
-                <v-card-text>
-                  <div>
-                    <div v-if="feedbackScreenshotUrl">
-                      <ValidationProvider v-slot="{ errors }" name="description" rules="required">
-                        <v-textarea v-model="feedbackText" label="问题/建议描述（必填）" rows="3" />
-                        <span class="error--text">{{ errors[0] }}</span>
-                      </ValidationProvider>
-                      <template v-if="userProfile === null">
-                        <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
-                          <v-text-field v-model="feedbackEmail" label="Email（必填）" />
-                          <span class="error--text">{{ errors[0] }}</span>
-                        </ValidationProvider>
-                      </template>
-                      <v-switch v-model="feedbackIncludesScreenshot" label="包含截图？" />
-                      <v-btn
-                        depressed
-                        info
-                        outlined
-                        small
-                        @click="showFeedbackScreenshot = !showFeedbackScreenshot"
-                      >
-                        截图预览
-                      </v-btn>
-                      <v-expand-transition>
-                        <v-img
-                          v-show="showFeedbackScreenshot"
-                          :src="feedbackScreenshotUrl"
-                          class="ma-2"
-                        />
-                      </v-expand-transition>
-                    </div>
-                    <span v-else>
-                      生成截图中...
-                      <v-progress-circular indeterminate size="20" />
-                    </span>
-                  </div>
-                </v-card-text>
-                <v-card-actions>
-                  <a
-                    class="text-decoration-none"
-                    href="https://about.cha.fan/docs/troubleshooting/"
-                    target="_blank"
-                  >
-                    常见问题及解决方法
-                  </a>
-                  <v-spacer />
-                  <v-btn depressed small @click="cancelFeedbackForm(reset)"> 取消 </v-btn>
-                  <v-btn
-                    :disabled="!valid || sendingFeedback"
-                    color="primary"
-                    depressed
-                    small
-                    @click="handleSubmit(submitFeedbackForm)"
-                  >
-                    提交
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </ValidationObserver>
-          </v-dialog>
-
-          <!-- ... menu -->
-          <v-menu
-            v-if="userProfile"
-            v-model="showTopMenu"
-            left
-            offset-y
-            transition="slide-x-transition"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
-                icon
-              >
-                <Avatar v-if="userProfile && userProfile.avatar_url" :userPreview="userProfile" />
-                <AccountIcon v-else />
-              </v-btn>
+            <template v-if="!userProfile">
+              <FeedbackIcon class="ml-1" @click="prepareFeedbackForm" />
+              <v-btn class="ml-2" depressed outlined @click="showLoginPrompt"> 登录 </v-btn>
             </template>
 
-            <v-list dense min-width="48" nav>
-              <v-list-item
-                v-for="item in accountItems"
-                :key="item.text"
-                :to="item.toRequiresUserProfile ? item.to(userProfile) : item.to"
-                link
-              >
-                <v-list-item-icon>
-                  <component v-bind:is="item.icon" />
-                </v-list-item-icon>
+            <v-dialog v-model="showFeedbackForm" max-width="500">
+              <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
+                <v-card>
+                  <v-card-title> 你的反馈会让「茶饭」变得更好！ </v-card-title>
+                  <v-card-text>
+                    <div>
+                      <div v-if="feedbackScreenshotUrl">
+                        <ValidationProvider v-slot="{ errors }" name="description" rules="required">
+                          <v-textarea
+                            v-model="feedbackText"
+                            label="问题/建议描述（必填）"
+                            rows="3"
+                          />
+                          <span class="error--text">{{ errors[0] }}</span>
+                        </ValidationProvider>
+                        <template v-if="userProfile === null">
+                          <ValidationProvider
+                            v-slot="{ errors }"
+                            name="email"
+                            rules="required|email"
+                          >
+                            <v-text-field v-model="feedbackEmail" label="Email（必填）" />
+                            <span class="error--text">{{ errors[0] }}</span>
+                          </ValidationProvider>
+                        </template>
+                        <v-switch v-model="feedbackIncludesScreenshot" label="包含截图？" />
+                        <v-btn
+                          depressed
+                          info
+                          outlined
+                          small
+                          @click="showFeedbackScreenshot = !showFeedbackScreenshot"
+                        >
+                          截图预览
+                        </v-btn>
+                        <v-expand-transition>
+                          <v-img
+                            v-show="showFeedbackScreenshot"
+                            :src="feedbackScreenshotUrl"
+                            class="ma-2"
+                          />
+                        </v-expand-transition>
+                      </div>
+                      <span v-else>
+                        生成截图中...
+                        <v-progress-circular indeterminate size="20" />
+                      </span>
+                    </div>
+                  </v-card-text>
+                  <v-card-actions>
+                    <a
+                      class="text-decoration-none"
+                      href="https://about.cha.fan/docs/troubleshooting/"
+                      target="_blank"
+                    >
+                      常见问题及解决方法
+                    </a>
+                    <v-spacer />
+                    <v-btn depressed small @click="cancelFeedbackForm(reset)"> 取消 </v-btn>
+                    <v-btn
+                      :disabled="!valid || sendingFeedback"
+                      color="primary"
+                      depressed
+                      small
+                      @click="handleSubmit(submitFeedbackForm)"
+                    >
+                      提交
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </ValidationObserver>
+            </v-dialog>
 
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ item.text }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+            <!-- ... menu -->
+            <v-menu
+              v-if="userProfile"
+              v-model="showTopMenu"
+              left
+              offset-y
+              transition="slide-x-transition"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+                  icon
+                >
+                  <Avatar v-if="userProfile && userProfile.avatar_url" :userPreview="userProfile" />
+                  <AccountIcon v-else />
+                </v-btn>
+              </template>
 
-              <v-list-item @click="prepareFeedbackForm">
-                <v-list-item-icon>
-                  <FeedbackIcon />
-                </v-list-item-icon>
+              <v-list dense min-width="48" nav>
+                <v-list-item
+                  v-for="item in accountItems"
+                  :key="item.text"
+                  :to="item.toRequiresUserProfile ? item.to(userProfile) : item.to"
+                  link
+                >
+                  <v-list-item-icon>
+                    <component v-bind:is="item.icon" />
+                  </v-list-item-icon>
 
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ $t('问题反馈') }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ item.text }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
 
-              <v-divider />
+                <v-list-item @click="prepareFeedbackForm">
+                  <v-list-item-icon>
+                    <FeedbackIcon />
+                  </v-list-item-icon>
 
-              <v-list-item @click="logout">
-                <v-list-item-icon>
-                  <LogoutIcon />
-                </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ $t('问题反馈') }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
 
-                <v-list-item-content>
-                  <v-list-item-title> {{ $t('Logout') }}</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+                <v-divider />
+
+                <v-list-item @click="logout">
+                  <v-list-item-icon>
+                    <LogoutIcon />
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title> {{ $t('Logout') }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
         </div>
-      </div>
+      </v-container>
     </v-app-bar>
     <v-main>
       <router-view></router-view>
