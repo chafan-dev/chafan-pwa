@@ -42,6 +42,10 @@
   @extend %c-card-base;
   padding: 8px;
   background: #fff;
+
+  @media screen and (max-width: 600px) {
+    box-shadow: none !important;
+  }
 }
 
 .less-top-padding {
