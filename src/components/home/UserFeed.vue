@@ -25,7 +25,8 @@
       </v-dialog>
 
       <div
-        class="mx-4 mt-3 shadow-card rounded-lg"
+        class="mt-3 shadow-card rounded-lg"
+        :class="{ 'mx-4': $vuetify.breakpoint.smAndUp }"
         v-for="activity in combinedActivities.items"
         :key="activity.id"
       >
@@ -148,7 +149,7 @@
         </div>
       </div>
 
-      <div class="text-center">
+      <div class="text-center mt-4">
         <v-progress-circular
           v-if="preloadMoreActivitiesIntermediate"
           color="primary"

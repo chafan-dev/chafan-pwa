@@ -2,7 +2,10 @@
   <div>
     <v-app-bar color="primary" dark>
       <v-container style="max-width: 1300px">
-        <div class="d-flex justify-space-between app-bar-inner pl-16">
+        <div
+          class="d-flex justify-space-between app-bar-inner"
+          :class="{ 'pl-16': $vuetify.breakpoint.smAndUp }"
+        >
           <div class="d-flex align-center">
             <div v-if="$vuetify.breakpoint.mdAndUp">
               <router-link class="white--text title text-decoration-none" to="/"
