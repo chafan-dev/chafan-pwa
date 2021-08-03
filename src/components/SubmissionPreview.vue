@@ -1,11 +1,14 @@
 <template>
-  <div class="pa-2">
+  <div class="pa-1">
     <div class="title" style="word-break: normal">
-      <router-link :to="'/submissions/' + submission.uuid" class="text-decoration-none">
+      <router-link
+        :to="'/submissions/' + submission.uuid"
+        class="text-decoration-none black--text font-weight-bold"
+      >
         {{ submission.title }}
       </router-link>
     </div>
-    <div class="d-flex align-center">
+    <div class="d-flex align-center mt-2">
       <router-link
         :to="'/submissions/' + submission.uuid"
         class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
