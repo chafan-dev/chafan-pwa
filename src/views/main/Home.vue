@@ -14,7 +14,7 @@
             </div>
           </div>
 
-          <v-tabs v-model="currentTabItem" height="35" hide-slider>
+          <v-tabs v-model="currentTabItem" height="35" hide-slider background-color="transparent">
             <v-tab :href="'#feed'">
               <FeedIcon class="mr-1" />
               信息流

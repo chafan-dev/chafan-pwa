@@ -12,7 +12,7 @@
           <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
         </span>
         {{ answerPreviewBody }}
-        <span class="primary--text">展开全文</span>
+        <span class="grey--text">展开全文</span>
         <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading && expandClicked" />
       </div>
       <div v-if="answer" v-show="!preview">
@@ -49,9 +49,9 @@
           </template>
         </div>
 
-        <div v-if="userBookmark">
+        <div v-if="userBookmark" class="my-2">
           <v-row>
-            <v-col align-self="end" class="d-flex pl-3 pb-0">
+            <v-col align-self="end" class="d-flex pb-0">
               <div class="d-flex mt-1">
                 <Upvote
                   v-if="upvotes"
@@ -124,7 +124,7 @@
                     :link-text="answer.question.title + ` - ${answer.author.handle} 的回答`"
                     v-slot="{ shareQrCodeUrl }"
                   >
-                    <v-card-title>
+                    <v-card-title class="font-weight-bold">
                       {{ answer.question.title }}
                     </v-card-title>
                     <v-card-text>
@@ -183,7 +183,7 @@
           <!--
             NOTE: Layout of this part is tricky since it can be quite wide when there are six emojis.
             Let's fix them later.
-          -->
+                      -->
           <div class="d-flex justify-end mt-2">
             <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
           </div>

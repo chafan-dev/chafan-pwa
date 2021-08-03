@@ -13,7 +13,7 @@
         <router-link
           v-if="userPreview"
           :to="'/users/' + userPreview.handle"
-          class="text-decoration-none grey--text text--darken-2"
+          class="text-decoration-none"
         >
           <Avatar v-if="showAvatar" size="25" :userPreview="userPreview" />
           <span class="ml-1">{{ name }}</span>
