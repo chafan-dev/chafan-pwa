@@ -27,12 +27,14 @@
       :disabled="disabled || cancelUpvoteIntermediate"
       @click="showCancelUpvoteDialog = true"
       :count="upvotesCount"
+      class="primary"
     />
     <UpvoteBtn
       v-else
       :disabled="disabled || upvoteIntermediate"
       @click="_onUpvoteClick"
       :count="upvotesCount"
+      outlined
     />
   </span>
 </template>
