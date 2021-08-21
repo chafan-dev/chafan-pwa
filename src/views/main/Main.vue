@@ -10,15 +10,13 @@
     >
       <v-layout column fill-height>
         <v-list>
-          <v-subheader>
-            {{ $t('Main menu') }}
-          </v-subheader>
+          <v-subheader> 主菜单 </v-subheader>
           <v-list-item to="/">
             <v-list-item-action>
               <HomeIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ $t('Home') }}</v-list-item-title>
+              <v-list-item-title>首页</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/dashboard">
@@ -26,7 +24,7 @@
               <DashboardIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ $t('Dashboard') }}</v-list-item-title>
+              <v-list-item-title>个人中心</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/profile/edit">
@@ -34,7 +32,7 @@
               <EditIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ $t('Edit Profile') }}</v-list-item-title>
+              <v-list-item-title>编辑我的主页</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/security">
@@ -42,7 +40,7 @@
               <PasswordIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ $t('Security') }}</v-list-item-title>
+              <v-list-item-title>安全中心</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -59,7 +57,7 @@
         </v-list>
 
         <div v-if="isModerator" class="ma-2">
-          <v-switch v-model="userMode" :label="$t('普通用户模式')" @change="switchUseMode" />
+          <v-switch v-model="userMode" label="普通用户模式" @change="switchUseMode" />
         </div>
 
         <v-spacer />
@@ -69,7 +67,7 @@
               <LogoutIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ $t('Logout') }}</v-list-item-title>
+              <v-list-item-title>登出</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -215,9 +213,7 @@
                 </v-list-item-icon>
 
                 <v-list-item-content>
-                  <v-list-item-title>
-                    {{ $t('问题反馈') }}
-                  </v-list-item-title>
+                  <v-list-item-title> 问题反馈 </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
 
@@ -229,7 +225,7 @@
                 </v-list-item-icon>
 
                 <v-list-item-content>
-                  <v-list-item-title> {{ $t('Logout') }}</v-list-item-title>
+                  <v-list-item-title>登出</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -323,12 +319,12 @@ export default class Main extends Vue {
   private readonly accountItems = [
     {
       icon: 'DashboardIcon',
-      text: this.$t('Dashboard'),
+      text: '个人中心',
       to: '/dashboard',
     },
     {
       icon: 'ProfileIcon',
-      text: this.$t('个人资料'),
+      text: '我的主页',
       toRequiresUserProfile: true,
       to: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
     },

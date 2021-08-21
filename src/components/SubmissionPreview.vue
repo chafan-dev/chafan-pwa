@@ -65,8 +65,6 @@ export default class SubmissionPreview extends CVue {
     }
   }
 
-  async mounted() {}
-
   private shortUrl(d: string) {
     if (this.$vuetify.breakpoint.mdAndUp) {
       if (d.length > 40) {

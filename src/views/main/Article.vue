@@ -405,7 +405,7 @@ export default class Article extends Vue {
     if (this.article) {
       await apiArticle.deleteArticle(this.token, this.article.uuid);
       commitAddNotification(this.$store, {
-        content: this.$t('文章已永久删除').toString(),
+        content: '文章已永久删除',
         color: 'success',
       });
       this.confirmDeleteDialog = false;

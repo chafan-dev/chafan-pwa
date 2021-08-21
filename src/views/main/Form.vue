@@ -16,7 +16,7 @@
               <div v-if="field.field_type.field_type_name === 'text_field'">
                 <v-textarea
                   v-model="responseFields.get(field.unique_name).field_content.text"
-                  :label="$t('Content')"
+                  label="内容"
                 />
               </div>
               <div v-else-if="field.field_type.field_type_name === 'single_choice_field'">
@@ -42,7 +42,7 @@
             </v-card>
           </div>
           <div class="ma-2 text-center">
-            <v-btn color="primary" depressed @click="submitResponse">{{ $t('提交') }}</v-btn>
+            <v-btn color="primary" depressed @click="submitResponse">提交</v-btn>
           </div>
         </div>
         <FormResponseCard v-else :formResponse="formResponse" />
@@ -120,7 +120,7 @@ export default class Form extends Vue {
       if (responseField.field_content.field_type_name === 'single_choice_response_field') {
         if (!responseField.field_content.selected_choice) {
           commitAddNotification(this.$store, {
-            content: this.$t('是否有单选没有选择？').toString(),
+            content: '是否有单选没有选择？',
             color: 'error',
           });
           return;

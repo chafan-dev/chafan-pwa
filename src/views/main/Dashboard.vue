@@ -266,10 +266,10 @@
               <template v-slot:item.type="{ item }">
                 {{
                   item.giver.uuid === userProfile.uuid
-                    ? $t('Give') + ' → '
+                    ? '给予 → '
                     : item.receiver.uuid === userProfile.uuid
-                    ? $t('Receive') + ' ← '
-                    : $t('Unknown')
+                    ? '收到 ← '
+                    : '未知'
                 }}
                 <UserLink
                   :userPreview="item.giver.uuid === userProfile.uuid ? item.receiver : item.giver"
@@ -277,12 +277,13 @@
               </template>
               <template v-slot:item.condition="{ item }">
                 <span v-if="item.condition.content.condition_type === 'answered_question'">
-                  {{ $t('回答问题') }}:
+                  回答问题：
                   <router-link
                     :to="'/questions/' + item.condition.content.question_uuid"
                     class="text-decoration-none"
-                    >{{ $t('Link') }}</router-link
                   >
+                    超链接
+                  </router-link>
                 </span>
               </template>
               <template v-slot:item.action="{ item }">
@@ -320,10 +321,10 @@
               <template v-slot:item.type="{ item }">
                 {{
                   item.payer.uuid === userProfile.uuid
-                    ? $t('Expense') + ' → '
+                    ? '支出 → '
                     : item.payee.uuid === userProfile.uuid
-                    ? $t('Income') + ' ← '
-                    : $t('Unknown')
+                    ? '收入 ← '
+                    : '未知'
                 }}
                 <UserLink
                   :userPreview="item.payer.uuid === userProfile.uuid ? item.payee : item.payer"
@@ -337,7 +338,7 @@
 
           <v-tab-item value="bookmarked_answers">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('收藏的答案') }}</div>
+              <div class="headline primary--text">收藏的答案</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -365,7 +366,7 @@
 
           <v-tab-item value="subscribed_submissions">
             <v-card-title primary-title>
-              <div class="headline primary--text">{{ $t('收藏的分享') }}</div>
+              <div class="headline primary--text">收藏的分享</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -520,19 +521,19 @@ export default class Dashboard extends CVue {
     },
   ];
   private readonly coinPaymentHeaders = [
-    { text: this.$t('Created at'), value: 'created_at' },
-    { text: this.$t('Amount'), value: 'amount' },
-    { text: this.$t('Type'), value: 'type' },
-    { text: this.$t('Reference'), value: 'reference' },
+    { text: '创建于', value: 'created_at' },
+    { text: '数量', value: 'amount' },
+    { text: '类型', value: 'type' },
+    { text: '参考', value: 'reference' },
   ];
   private readonly rewardHeaders = [
-    { text: this.$t('Created at'), value: 'created_at' },
-    { text: this.$t('Refunded at'), value: 'refunded_at' },
-    { text: this.$t('Expired at'), value: 'expired_at' },
-    { text: this.$t('Claimed at'), value: 'claimed_at' },
-    { text: this.$t('Coin amount'), value: 'coin_amount' },
-    { text: this.$t('Type'), value: 'type' },
-    { text: this.$t('Condition'), value: 'condition' },
+    { text: '创建于', value: 'created_at' },
+    { text: '退回于', value: 'refunded_at' },
+    { text: '过期于', value: 'expired_at' },
+    { text: '找回于', value: 'claimed_at' },
+    { text: '硬币数量', value: 'coin_amount' },
+    { text: '类型', value: 'type' },
+    { text: '条件', value: 'condition' },
     { text: '', value: 'action' },
   ];
   private myAnswerDrafts: IAnswerPreview[] | null = null;
@@ -567,21 +568,21 @@ export default class Dashboard extends CVue {
 
         const editorModeItems = [
           {
-            text: this.$t('wysiwyg').toString(),
+            text: '所见即所得',
             value: 'wysiwyg',
           },
           {
-            text: this.$t('markdown_realtime_rendering').toString(),
+            text: 'Markdown（实时渲染）',
             value: 'markdown_realtime_rendering',
           },
           {
-            text: this.$t('markdown_splitview').toString(),
+            text: 'Markdown（分屏渲染）',
             value: 'markdown_splitview',
           },
         ];
         if (this.tiptapEditorOptionOn) {
           editorModeItems.push({
-            text: this.$t('tiptap').toString(),
+            text: 'Tiptap 编辑器',
             value: 'tiptap',
           });
         }
@@ -668,7 +669,7 @@ export default class Dashboard extends CVue {
   private async commitNewArticleColumn() {
     if (this.newArticleColumn.name.length === 0) {
       commitAddNotification(this.$store, {
-        content: this.$t("Article column name can't be empty.").toString(),
+        content: '专栏名不能为空',
         color: 'error',
       });
       return;
@@ -691,7 +692,7 @@ export default class Dashboard extends CVue {
       commitSetUserProfile(this.$store, newProfile);
       this.changingMySettings = false;
       commitAddNotification(this.$store, {
-        content: this.$t('Saved.').toString(),
+        content: '已保存',
         color: 'info',
       });
     });

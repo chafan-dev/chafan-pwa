@@ -55,7 +55,7 @@
               </div>
               <div>
                 <span class="black--text mr-1">类型：</span>
-                {{ $t('site.permission_type.' + selectedSite.permission_type) }}
+                {{ selectedSite.permission_type === 'public' ? '公开' : '私有' }}
               </div>
             </v-card-text>
           </v-card>
