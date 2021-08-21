@@ -3,7 +3,7 @@
     <div class="title" style="word-break: normal">
       <router-link
         :to="'/submissions/' + submission.uuid"
-        class="text-decoration-none black--text font-weight-bold"
+        :class="theme.feed.submissionPreview.link.classes"
       >
         {{ submission.title }}
       </router-link>
