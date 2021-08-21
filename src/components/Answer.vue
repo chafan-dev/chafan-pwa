@@ -12,7 +12,7 @@
           <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
         </span>
         {{ answerPreviewBody }}
-        <span class="grey--text">展开全文</span>
+        <span :class="theme.answer.expand.text.classes">展开全文</span>
         <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading && expandClicked" />
       </div>
       <div v-if="answer" v-show="!preview">
@@ -49,9 +49,9 @@
           </template>
         </div>
 
-        <div v-if="userBookmark" class="my-2">
+        <div :class="theme.answer.controls.classes">
           <v-row>
-            <v-col align-self="end" class="d-flex pb-0">
+            <v-col align-self="end" :class="theme.answer.controls.buttonsCol.classes">
               <div class="d-flex mt-1">
                 <Upvote
                   v-if="upvotes"
@@ -152,22 +152,24 @@
                     </v-card-text>
                   </ShareCardButton>
 
-                  <span
-                    v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                    style="cursor: pointer"
-                    @click="unbookmark"
-                  >
-                    <BookmarkedIcon :disabled="unbookmarkIntermediate" />
-                    <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
-                  </span>
-                  <span
-                    v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                    style="cursor: pointer"
-                    @click="bookmark"
-                  >
-                    <ToBookmarkIcon :disabled="bookmarkIntermediate" />
-                    <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
-                  </span>
+                  <template v-if="userBookmark">
+                    <span
+                      v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
+                      style="cursor: pointer"
+                      @click="unbookmark"
+                    >
+                      <BookmarkedIcon :disabled="unbookmarkIntermediate" />
+                      <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
+                    </span>
+                    <span
+                      v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
+                      style="cursor: pointer"
+                      @click="bookmark"
+                    >
+                      <ToBookmarkIcon :disabled="bookmarkIntermediate" />
+                      <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
+                    </span>
+                  </template>
                 </template>
 
                 <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
@@ -249,7 +251,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import {
   IAnswer,
   IAnswerDraft,
@@ -260,7 +262,6 @@ import {
   IUserAnswerBookmark,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
-import { readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
@@ -288,6 +289,7 @@ import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import Upvote from '@/components/Upvote.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: {
@@ -309,7 +311,7 @@ import Upvote from '@/components/Upvote.vue';
     CollapseUpIcon,
   },
 })
-export default class Answer extends Vue {
+export default class Answer extends CVue {
   @Prop() private readonly answerPreview!: IAnswerPreview;
   @Prop() private readonly answerProp: IAnswer | undefined;
   @Prop({ default: false }) private readonly loadFull!: boolean;
@@ -342,18 +344,6 @@ export default class Answer extends Vue {
   private draftPromise: Promise<IAnswerDraft> | null = null;
   private commentSubmitIntermediate = false;
   private draftContent: IRichText | null = null;
-
-  get isUserMode() {
-    return readUserMode(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
 
   private async mounted() {
     if (this.showCommentId) {
@@ -565,14 +555,14 @@ export default class Answer extends Vue {
       clearLocalEdit('answer', this.answerPreview.uuid);
       await apiAnswer.deleteAnswerDraft(this.token, this.answerPreview.uuid);
       commitAddNotification(this.$store, {
-        content: this.$t('草稿已删除').toString(),
+        content: '草稿已删除',
         color: 'success',
       });
     } else {
       dispatchCaptureApiError(this.$store, async () => {
         await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
         commitAddNotification(this.$store, {
-          content: this.$t('答案已永久删除').toString(),
+          content: '答案已永久删除',
           color: 'success',
         });
         this.confirmDeleteDialog = false;

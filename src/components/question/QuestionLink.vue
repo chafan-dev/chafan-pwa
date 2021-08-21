@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="'/questions/' + id" class="text-decoration-none black--text font-weight-bold">
+  <router-link :to="'/questions/' + id" :class="theme.questionLink.link.classes">
     {{ title }}
   </router-link>
 </template>
@@ -7,9 +7,10 @@
 <script lang="ts">
 import { IQuestionPreview } from '@/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { CVue } from '@/common';
 
 @Component
-export default class QuestionLink extends Vue {
+export default class QuestionLink extends CVue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
 
   get id() {

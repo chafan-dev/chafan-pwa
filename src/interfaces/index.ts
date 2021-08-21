@@ -1143,3 +1143,5 @@ export interface IUpdateOrigins {
 export interface IUserFeedSettings {
   blocked_origins: IOrigin[];
 }
+
+export type ThemeType = 'default' | 'blue';

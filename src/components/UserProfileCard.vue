@@ -1,5 +1,5 @@
 <template>
-  <div class="c-card pa-3">
+  <div class="pa-3" :class="theme.baseCard.classKey">
     <div class="row">
       <div class="pb-4" :class="{ 'col-12': !$vuetify.breakpoint.mdAndUp }">
         <div v-if="avatarURL" class="px-2" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }">
@@ -142,10 +142,11 @@ import UserNameHeadline from '@/components/UserNameHeadline.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import { apiPeople } from '@/api/people';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { CVue } from '@/common';
 @Component({
   components: { CloseIcon, UserGrid, UserNameHeadline, UserProfileDetails },
 })
-export default class UserProfileCard extends Vue {
+export default class UserProfileCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
   @Prop() public readonly userPublic: IUserPublic | undefined;
   @Prop() private readonly siteKarmas: number | undefined;

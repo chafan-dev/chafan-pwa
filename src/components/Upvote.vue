@@ -27,14 +27,14 @@
       :disabled="disabled || cancelUpvoteIntermediate"
       @click="showCancelUpvoteDialog = true"
       :count="upvotesCount"
-      class="primary"
+      :class="theme.upvotedBtn.classes"
     />
     <UpvoteBtn
       v-else
       :disabled="disabled || upvoteIntermediate"
       @click="_onUpvoteClick"
       :count="upvotesCount"
-      outlined
+      :outlined="theme.upvoteBtn.outlined"
     />
   </span>
 </template>
@@ -42,11 +42,12 @@
 import { Prop, Component, Vue } from 'vue-property-decorator';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: { UpvoteBtn, UpvotedBtn },
 })
-export default class Upvote extends Vue {
+export default class Upvote extends CVue {
   @Prop() public readonly upvotesCount!: number;
   @Prop() public readonly upvoted!: boolean;
   @Prop() public readonly disabled!: boolean;

@@ -41,10 +41,20 @@
                 v-model="selectedEditorMode"
                 :disabled="changingMySettings"
                 :items="editorModeItems"
-                label="默认编辑器模式"
+                label="编辑器偏好"
                 item-text="text"
                 item-value="value"
                 @change="onChangeEditorMode"
+              />
+              <v-select
+                v-if="themeItems"
+                v-model="selectedTheme"
+                :disabled="changingMySettings"
+                :items="themeItems"
+                label="主题偏好"
+                item-text="text"
+                item-value="value"
+                @change="onChangeTheme"
               />
               <div v-if="userProfile.feed_settings">
                 <div v-if="userProfile.feed_settings.blocked_origins.length" class="pb-4">
@@ -88,6 +98,13 @@
                           v-model="tiptapEditorOptionOn"
                           label="Tiptap 编辑器选项"
                           @change="updateLabs"
+                        />
+                      </div>
+                      <div>
+                        <v-switch
+                          v-model="devThemeOptionsOn"
+                          label="开发中主题选项"
+                          @change="updateThemes"
                         />
                       </div>
                       <v-progress-circular v-if="changingMySettings" indeterminate />
@@ -380,8 +397,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { readToken, readUserProfile } from '@/store/main/getters';
+import { Component } from 'vue-property-decorator';
 import {
   editor_T,
   IAnswerPreview,
@@ -394,11 +410,16 @@ import {
   IQuestionPreview,
   IReward,
   ISubmission,
+  ThemeType,
 } from '@/interfaces';
 import { api } from '@/api';
 import { api2 } from '@/api2';
 import { apiArticle } from '@/api/article';
-import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
+import {
+  commitAddNotification,
+  commitSetTheme,
+  commitSetUserProfile,
+} from '@/store/main/mutations';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import ChatWindow from '@/components/ChatWindow.vue';
@@ -412,12 +433,18 @@ import Event from '@/components/Event.vue';
 import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
-import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import {
+  CVue,
+  LABS_DEV_THEME_OPTION,
+  LABS_TIPTAP_EDITOR_OPTION,
+  themeLocalStorageKey,
+} from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SiteName from '@/components/SiteName.vue';
 import { apiActivity } from '@/api/activity';
+import { getLocalValue, setLocalValue } from '@/utils';
 
 @Component({
   components: {
@@ -438,7 +465,7 @@ import { apiActivity } from '@/api/activity';
     ChatWindow,
   },
 })
-export default class Dashboard extends Vue {
+export default class Dashboard extends CVue {
   private coinPayments: ICoinPayment[] = [];
   private myChannels: IChannel[] = [];
   private myRewards: IReward[] = [];
@@ -453,6 +480,7 @@ export default class Dashboard extends Vue {
   private showExportDialog = false;
   private showLabsDialog = false;
   private tiptapEditorOptionOn = false;
+  private devThemeOptionsOn = false;
   private tabItems = [
     {
       text: '我的设置',
@@ -512,11 +540,9 @@ export default class Dashboard extends Vue {
   private enableEmailNotifications = false;
   private changingMySettings = false;
   private selectedEditorMode: editor_T = 'wysiwyg';
+  private selectedTheme: ThemeType = 'default';
   private editorModeItems: { text: string; value: string }[] | null = null;
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
+  private themeItems: { text: string; value: string }[] | null = null;
 
   get currentTabItem() {
     return this.$route.query.tab ? this.$route.query.tab : 'settings';
@@ -531,6 +557,10 @@ export default class Dashboard extends Vue {
   }
 
   private async mounted() {
+    const theme = getLocalValue(themeLocalStorageKey) as ThemeType;
+    if (theme) {
+      this.selectedTheme = theme;
+    }
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.userProfile) {
         this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION);
@@ -556,6 +586,19 @@ export default class Dashboard extends Vue {
           });
         }
         this.editorModeItems = editorModeItems;
+
+        const themeItems = [
+          {
+            text: '默认主题',
+            value: 'default',
+          },
+          {
+            text: '蓝色主题（开发中）',
+            value: 'blue',
+          },
+        ];
+        this.themeItems = themeItems;
+
         this.selectedEditorMode = this.userProfile.default_editor_mode;
 
         this.enableEmailNotifications = this.userProfile.enable_deliver_unread_notifications;
@@ -665,7 +708,19 @@ export default class Dashboard extends Vue {
       commitSetUserProfile(this.$store, newProfile);
       this.changingMySettings = false;
       commitAddNotification(this.$store, {
-        content: this.$t('Saved.').toString(),
+        content: '已保存',
+        color: 'info',
+      });
+    });
+  }
+  private async onChangeTheme() {
+    await dispatchCaptureApiError(this.$store, async () => {
+      this.changingMySettings = true;
+      commitSetTheme(this.$store, this.selectedTheme);
+      setLocalValue(themeLocalStorageKey, this.selectedTheme);
+      this.changingMySettings = false;
+      commitAddNotification(this.$store, {
+        content: '已保存',
         color: 'info',
       });
     });
@@ -700,8 +755,15 @@ export default class Dashboard extends Vue {
     this.$router.go(0);
   }
 
-  get token() {
-    return readToken(this.$store);
+  private async updateThemes() {
+    this.changingMySettings = true;
+    if (this.devThemeOptionsOn) {
+      await dispatchAddFlag(this.$store, LABS_DEV_THEME_OPTION);
+    } else {
+      await dispatchRemoveFlag(this.$store, LABS_DEV_THEME_OPTION);
+    }
+    this.changingMySettings = false;
+    this.$router.go(0);
   }
 
   private async unblockOrigin(origin: IOrigin) {

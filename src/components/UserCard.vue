@@ -1,6 +1,6 @@
 <template>
   <v-card
-    :class="{ 'c-card': !embedded && !hoverMode }"
+    :class="!embedded && !hoverMode ? theme.baseCard.classKey : ''"
     :flat="embedded"
     :max-width="hoverMode ? 400 : undefined"
     class="pa-3"
@@ -170,11 +170,12 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { readIsLoggedIn } from '@/store/main/getters';
+import { CVue } from '@/common';
 
 @Component({
   name: 'UserCard',
 })
-export default class UserCard extends Vue {
+export default class UserCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
   @Prop() public readonly userPublic: IUserPublic | undefined;
   @Prop({ default: false }) public readonly compactMode!: boolean;

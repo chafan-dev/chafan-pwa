@@ -1,5 +1,21 @@
 const CHAFAN_TOKEN = 'chafan:token';
 
+export const getLocalValue = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch (e) {
+    return null;
+  }
+};
+
+export const setLocalValue = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    // Do nothing
+  }
+};
+
 export const getLocalToken = () => {
   try {
     return localStorage.getItem(CHAFAN_TOKEN);

@@ -25,8 +25,7 @@
       </v-dialog>
 
       <div
-        class="mt-3 shadow-card rounded-lg"
-        :class="{ 'mx-4': $vuetify.breakpoint.smAndUp }"
+        :class="theme.feed.activityCard.classes + $vuetify.breakpoint.smAndUp ? ' mx-4' : ''"
         v-for="activity in combinedActivities.items"
         :key="activity.id"
       >
@@ -36,14 +35,14 @@
           <div v-if="activityData.subjects.includes(activity.verb)">
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
 
-            <span class="grey--text">
+            <span :class="theme.feed.activityCard.verb.classes">
               {{ activity.verb | activityVerbActivity }}
             </span>
           </div>
 
           <div v-else>
             <UserLink :userPreview="activity.event.content.subject" />
-            <span class="grey--text">
+            <span :class="theme.feed.activityCard.verb.classes">
               {{ activity.verb | activityVerbPreview }}
             </span>
           </div>
@@ -162,10 +161,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { CombinedActivities } from '@/CombinedActivities';
-import { IActivity, IOrigin, IUserPreview, IUserProfile } from '@/interfaces';
+import { IActivity, IOrigin, IUserPreview } from '@/interfaces';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
 import UserWelcome from '@/components/home/UserWelcome.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
@@ -189,13 +188,12 @@ import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { EXPLORE_SITES } from '@/common';
+import { CVue, EXPLORE_SITES } from '@/common';
 import ActivitySubject from '@/components/ActivitySubject.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { apiActivity } from '@/api/activity';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import SiteName from '@/components/SiteName.vue';
-import { readToken } from '@/store/main/getters';
 import { commitAddNotification } from '@/store/main/mutations';
 import { filter } from 'lodash';
 
@@ -275,8 +273,7 @@ import { filter } from 'lodash';
     },
   },
 })
-export default class UserFeed extends Vue {
-  @Prop() public readonly userProfile!: IUserProfile;
+export default class UserFeed extends CVue {
   @Prop({ default: true }) public readonly enableShowExploreSites!: boolean;
   @Prop() public readonly subjectUserUuid: number | undefined;
 
@@ -414,10 +411,6 @@ export default class UserFeed extends Vue {
   private showUsersDialog(users: IUserPreview[]) {
     this.usersInDialog = users;
     this.usersDialog = true;
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   private async blockOrigin(origin: IOrigin) {
