@@ -1,12 +1,10 @@
 <template>
   <div>
-    <v-btn color="primary" depressed small @click="showDialog = true"
-      >{{ $t('添加站内用户') }}
-    </v-btn>
+    <v-btn color="primary" depressed small @click="showDialog = true"> 添加站内用户 </v-btn>
     <v-dialog v-model="showDialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{ $t('添加站内用户') }}</span>
+          <span class="headline">添加站内用户</span>
         </v-card-title>
         <v-card-text>
           <UserSearch v-model="friendId" />
@@ -20,7 +18,7 @@
             small
             @click="submitInviteFriends"
           >
-            {{ $t('确认添加') }}
+            确认添加
             <v-progress-circular v-if="intermediate" indeterminate size="20" />
           </v-btn>
         </v-card-actions>
@@ -57,7 +55,7 @@ export default class Invite extends Vue {
       const payload: IUserInvite = { site_uuid: this.site.uuid };
       if (!this.friendId) {
         commitAddNotification(this.$store, {
-          content: this.$t('用户不能为空').toString(),
+          content: '用户不能为空',
           color: 'error',
         });
         return;
@@ -66,7 +64,7 @@ export default class Invite extends Vue {
       const response = await api2.inviteUser(readToken(this.$store), payload);
       if (response) {
         commitAddNotification(this.$store, {
-          content: this.$t(response.data.msg).toString(),
+          content: response.data.msg,
           color: 'success',
         });
         this.intermediate = false;

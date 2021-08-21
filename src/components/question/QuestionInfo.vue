@@ -130,7 +130,7 @@ export default class QuestionInfo extends Vue {
           });
         }
         commitAddNotification(this.$store, {
-          content: this.$t(response.data.msg).toString(),
+          content: response.data.msg,
           color: 'success',
         });
         this.showInviteToAnswerDialog = false;

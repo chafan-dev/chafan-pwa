@@ -3,7 +3,7 @@
     v-model="selectedUserUUID"
     :item-text="getItemText"
     :items="userPreviews"
-    :label="$t('Username')"
+    label="用户名"
     :loading="loading"
     :search-input.sync="search"
     cache-items

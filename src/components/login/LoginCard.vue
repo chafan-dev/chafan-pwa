@@ -323,7 +323,7 @@ export default class LoginCard extends Vue {
     } catch (err) {
       if (err.toString() === 'Error: Incorrect email or password') {
         commitAddNotification(this.$store, {
-          content: this.$t('Incorrect email or password').toString(),
+          content: '邮箱地址或密码不正确',
           color: 'error',
         });
       } else {

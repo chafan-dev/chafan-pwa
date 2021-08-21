@@ -2,7 +2,7 @@
   <v-tabs show-arrows>
     <template v-for="config in d">
       <v-tab v-if="config.items.length" :key="config.type">
-        {{ $t(config.type) }} ({{ config.items.length }})
+        {{ configTypeText[config.type] }} ({{ config.items.length }})
       </v-tab>
     </template>
 
@@ -30,6 +30,15 @@ import { readToken } from '@/store/main/getters';
 export default class SearchResults extends Vue {
   @Prop() private readonly query: string | undefined;
   @Prop() private readonly onReady: (() => void) | undefined;
+
+  private readonly configTypeText = {
+    user: '用户',
+    question: '问题',
+    site: '圈子',
+    submission: '分享',
+    answer: '答案',
+    article: '文章',
+  };
 
   private d: { type: string; api: any; items: any[] }[] = [
     {

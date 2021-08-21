@@ -3,7 +3,7 @@
     v-model="selectedTopicId"
     :item-text="getItemText"
     :items="topics"
-    :label="$t('Topic name')"
+    label="话题名"
     :loading="loading"
     :search-input.sync="search"
     cache-items

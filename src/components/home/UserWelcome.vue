@@ -7,9 +7,7 @@
             <InfoIcon />
           </v-btn>
         </template>
-
-        {{ $t('刚刚加入？') }}
-
+        刚刚加入？
         <template v-slot:close>
           <v-btn icon @click="$emit('on-close-explore-sites')">
             <CloseIcon />
@@ -21,18 +19,16 @@
         <v-stepper v-model="stepperValue" class="elevation-0" vertical>
           <v-stepper-step :complete="stepperValue > 1" step="1">
             <div class="d-flex">
-              {{ $t('完善') }}
-
+              完善你的
               <a
                 class="text-decoration-none"
                 href="/profile/edit"
                 target="_blank"
                 @click="stepperValue = 2"
               >
-                {{ $t('个人页面') }}
+                个人页面
               </a>
-
-              {{ $t('来告诉朋友们你是谁') }}
+              来告诉朋友们你是谁
             </div>
           </v-stepper-step>
 

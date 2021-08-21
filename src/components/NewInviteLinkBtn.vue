@@ -1,12 +1,10 @@
 <template>
   <div>
-    <v-btn color="primary" depressed small @click="showDialog = true"
-      >{{ $t('生成邀请链接') }}
-    </v-btn>
+    <v-btn color="primary" depressed small @click="showDialog = true"> 生成邀请链接 </v-btn>
     <v-dialog v-model="showDialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="headline">{{ $t('生成邀请链接') }}</span>
+          <span class="headline">生成邀请链接</span>
         </v-card-title>
         <v-card-text v-if="!invitationLinkHref">
           <div v-if="!site" class="mt-3">
@@ -14,7 +12,7 @@
               v-if="sites"
               v-model="invitedSiteId"
               :items="sites"
-              :label="`${$t('Circle')}` + ` (${$t('可选')})`"
+              label="圈子（可选）"
               item-text="name"
               item-value="uuid"
             >
@@ -24,15 +22,15 @@
             </v-autocomplete>
           </div>
           <div v-else>
-            {{ $t('加入圈子：') }}
+            加入圈子：
             <SiteBtn :site="site" />
           </div>
         </v-card-text>
         <div v-if="invitationLinkHref" class="body-1 mx-6">
-          <p class="black--text">{{ $t('✅ 未注册用户可直接通过以下链接进入注册界面') }}:</p>
-          <a :href="invitationLinkHref" class="text-decoration-none ml-1" target="_blank"
-            >https://cha.fan{{ invitationLinkHref }}</a
-          >
+          <p class="black--text">✅ 未注册用户可直接通过以下链接进入注册界面：</p>
+          <a :href="invitationLinkHref" class="text-decoration-none ml-1" target="_blank">
+            https://cha.fan{{ invitationLinkHref }}
+          </a>
         </div>
         <v-card-actions>
           <v-spacer />
@@ -44,7 +42,7 @@
             small
             @click="createInvitationLink"
           >
-            {{ $t('生成邀请链接') }}
+            生成邀请链接
             <v-progress-circular v-if="intermediate" indeterminate size="20" />
           </v-btn>
         </v-card-actions>
@@ -84,15 +82,15 @@ export default class NewInviteLinkBtn extends Vue {
   private invitedPersonalRelation: string = 'unknown';
   private readonly invitedPersonalRelationItems = [
     {
-      text: this.$t('知道实名身份的朋友'),
+      text: '知道实名身份的朋友',
       code: 'real',
     },
     {
-      text: this.$t('仅知道线上身份的朋友'),
+      text: '仅知道线上身份的朋友',
       code: 'online',
     },
     {
-      text: this.$t('不了解其任何身份'),
+      text: '不了解其任何身份',
       code: 'unknown',
     },
   ];

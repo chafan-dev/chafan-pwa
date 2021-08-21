@@ -49,10 +49,10 @@
                 :to="`/users/${userPreview.handle}?tab=followers`"
                 class="text-decoration-none text-caption mr-2"
               >
-                {{ $t('有n个关注者', { count: follows.followers_count }) }}
+                有{{ follows.followers_count }}个关注者
               </router-link>
               <span v-else class="text-caption mr-2">
-                {{ $t('有n个关注者', { count: follows.followers_count }) }}
+                有{{ follows.followers_count }}个关注者
               </span>
 
               <router-link
@@ -60,14 +60,12 @@
                 :to="`/users/${userPreview.handle}?tab=followed`"
                 class="text-decoration-none text-caption mr-2"
               >
-                {{ $t('关注了n个人', { count: follows.followed_count }) }}
+                关注了{{ follows.followed_count }}个人
               </router-link>
-              <span v-else class="text-caption mr-2">
-                {{ $t('关注了n个人', { count: follows.followed_count }) }}
-              </span>
+              <span v-else class="text-caption mr-2"> 关注了{{ follows.followed_count }}个人 </span>
 
               <template v-if="siteKarmas !== undefined">
-                <span class="text-caption"> {{ $t('Circle') }} Karma: {{ siteKarmas }} </span>
+                <span class="text-caption"> 圈子 Karma：{{ siteKarmas }} </span>
               </template>
             </v-col>
           </v-row>
@@ -78,11 +76,9 @@
                 :to="`/users/${userPreview.handle}?tab=followers`"
                 class="text-decoration-none"
               >
-                {{ $t('有n个关注者', { count: follows.followers_count }) }}
+                有{{ follows.followers_count }}个关注者
               </router-link>
-              <span v-else>
-                {{ $t('有n个关注者', { count: follows.followers_count }) }}
-              </span>
+              <span v-else> 有{{ follows.followers_count }}个关注者 </span>
             </v-col>
             <v-col class="text-center">
               <router-link
@@ -90,11 +86,9 @@
                 :to="`/users/${userPreview.handle}?tab=followed`"
                 class="text-decoration-none"
               >
-                {{ $t('关注了n个人', { count: follows.followed_count }) }}
+                关注了{{ follows.followed_count }}个人
               </router-link>
-              <span v-else>
-                {{ $t('关注了n个人', { count: follows.followed_count }) }}
-              </span>
+              <span v-else> 关注了{{ follows.followed_count }}个人 </span>
             </v-col>
             <v-col class="text-center">
               <span>Karma：{{ userPreview.karma }}</span>
@@ -103,7 +97,7 @@
 
           <v-row class="compact-row">
             <v-col
-              v-if="currentUserId != userPreview.uuid"
+              v-if="currentUserId !== userPreview.uuid"
               :class="{
                 'text-center': !compactMode,
                 'compact-col': compactMode,
@@ -117,7 +111,7 @@
                 small
                 @click="cancelFollow"
               >
-                {{ $t('取消关注') }}
+                取消关注
                 <v-progress-circular v-show="cancelFollowIntermediate" :size="20" indeterminate />
               </v-btn>
               <v-btn
@@ -129,7 +123,7 @@
                 small
                 @click="follow"
               >
-                {{ $t('关注') }}
+                关注
                 <v-progress-circular
                   v-show="followIntermediate"
                   :size="20"
@@ -145,7 +139,7 @@
                 small
                 @click="privateMessage"
               >
-                {{ $t('私信') }}
+                私信
               </v-btn>
             </v-col>
             <div v-else class="mb-2" />
@@ -156,7 +150,7 @@
     </v-row>
     <div v-if="userPublic && userPublic.profile_view_times" class="text-center mt-5">
       <span class="text-caption grey--text ma-2">
-        {{ $t('这个主页被浏览了n次', { times: userPublic.profile_view_times }) }}
+        这个主页被浏览了{{ userPublic.profile_view_times }}次
       </span>
     </div>
   </v-card>

@@ -16,7 +16,7 @@
         </div>
         <div v-if="site.permission_type">
           <b>类型：</b>
-          {{ $t('site.permission_type.' + site.permission_type) }}
+          {{ site.permission_type === 'public' ? '公开' : '私有' }}
         </div>
         <div>
           <b>管理员：</b>
@@ -198,7 +198,7 @@ export default class SiteCard extends Vue {
             err.response.data.detail === 'No verified email.')
         ) {
           commitAddNotification(this.$store, {
-            content: this.$t(err.response.data.detail).toString(),
+            content: err.response.data.detail,
             color: 'error',
           });
           this.showJoinConditionsDialog = true;

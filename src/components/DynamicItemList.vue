@@ -5,7 +5,7 @@
         <slot :item="item" class="my-4"></slot>
       </div>
       <div class="text-center">
-        <span v-if="noMore">{{ $t('没有更多了') }}</span>
+        <span v-if="noMore">没有更多了</span>
       </div>
     </div>
     <EmptyPlaceholder v-else-if="items !== null" />

@@ -3,7 +3,7 @@
     <v-snackbar v-model="show" :color="currentNotificationColor">
       <v-progress-circular v-show="showProgress" class="ma-2" indeterminate></v-progress-circular>
       {{ currentNotificationContent }}
-      <v-btn text @click.native="close">{{ $t('Close') }}</v-btn>
+      <v-btn text @click.native="close">关闭</v-btn>
     </v-snackbar>
   </div>
 </template>
