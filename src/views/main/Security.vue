@@ -5,9 +5,7 @@
         <ValidationObserver v-slot="{ handleSubmit, reset }">
           <v-card class="ma-3 pa-3">
             <v-card-title primary-title>
-              <div class="headline primary--text">
-                {{ $t('Change Password') }}
-              </div>
+              <div class="headline primary--text">更新密码</div>
             </v-card-title>
             <v-card-text>
               <template>
@@ -22,12 +20,8 @@
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
-                    <v-text-field
-                      v-model="confirmation"
-                      :label="$t('Password confirmation')"
-                      type="password"
-                    />
-                    <span class="error--text">{{ $t(errors[0]) }}</span>
+                    <v-text-field v-model="confirmation" label="确认密码" type="password" />
+                    <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
                 </v-form>
               </template>
@@ -46,7 +40,7 @@
                   }
                 "
               >
-                {{ $t('Save') }}
+                保存
                 <v-progress-circular v-if="intermediate" indeterminate size="20" />
               </v-btn>
             </v-card-actions>
@@ -56,23 +50,21 @@
         <ValidationObserver v-slot="{ handleSubmit }">
           <v-card :loading="!userProfile" class="ma-3 pa-3">
             <v-card-title primary-title>
-              <div class="headline primary--text">
-                {{ $t('Manage logins') }}
-              </div>
+              <div class="headline primary--text">管理登录方式</div>
             </v-card-title>
             <div v-if="userProfile" class="pa-4">
               <div>
                 <div v-if="phoneNumber" class="mb-2">
                   <CellphoneIcon />
-                  {{ $t('Cellphone number') }}:
+                  手机号：
                   {{ phoneNumber }}
                   <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'cellphone'" />
                 </div>
                 <div class="mb-2">
                   <div>
                     <EmailIcon />
-                    {{ $t('Email') }}: {{ userProfile.email }}
-                    <v-chip color="primary" small>{{ $t('primary') }}</v-chip>
+                    邮箱地址：{{ userProfile.email }}
+                    <v-chip color="primary" small>主要</v-chip>
                     <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'email'" />
                   </div>
                   <div
@@ -81,8 +73,8 @@
                     class="mt-1"
                   >
                     <EmailIcon />
-                    {{ $t('Email') }}: {{ secondaryEmail }}
-                    <v-chip small>{{ $t('secondary') }}</v-chip>
+                    邮箱地址：{{ secondaryEmail }}
+                    <v-chip small>次要</v-chip>
                     <DeleteIcon
                       v-if="!editLoginMode || !intermediate"
                       @click="removeSecondaryEmail(secondaryEmail)"
@@ -99,18 +91,18 @@
                   name="phone-number"
                   rules="phone_number_e164"
                 >
-                  <v-text-field v-model="phoneNumber" :label="$t('Phone number')" type="text">
+                  <v-text-field v-model="phoneNumber" label="手机号" type="text">
                     <template v-slot:prepend>
                       <CellphoneIcon />
                     </template>
                   </v-text-field>
-                  <span class="error--text">{{ $t(errors[0]) }}</span>
+                  <span class="error--text">{{ errors[0] }}</span>
                 </ValidationProvider>
 
                 <v-text-field
                   v-show="showCodeInput"
                   v-model="verificationCode"
-                  :label="$t('验证码')"
+                  label="验证码"
                   name="verification-code"
                   type="text"
                 >
@@ -125,9 +117,7 @@
                   <v-text-field
                     v-model="newEmail"
                     :label="
-                      editLoginMode === 'email'
-                        ? $t('更改后的主要邮箱地址')
-                        : $t('新添加的次要邮箱地址')
+                      editLoginMode === 'email' ? '更改后的主要邮箱地址' : '新添加的次要邮箱地址'
                     "
                     type="text"
                   >
@@ -135,13 +125,13 @@
                       <EmailIcon />
                     </template>
                   </v-text-field>
-                  <span class="error--text">{{ $t(errors[0]) }}</span>
+                  <span class="error--text">{{ errors[0] }}</span>
                 </ValidationProvider>
 
                 <v-text-field
                   v-show="showCodeInput"
                   v-model="verificationCode"
-                  :label="$t('验证码')"
+                  label="验证码"
                   name="verification-code"
                   type="text"
                 >
@@ -159,7 +149,7 @@
                 small
                 @click="editLoginMode = 'add_secondary_email'"
               >
-                {{ $t('Add secondary email') }}
+                添加次要邮箱
               </v-btn>
               <v-btn
                 v-show="!editLoginMode && !phoneNumber"
@@ -167,10 +157,10 @@
                 small
                 @click="editLoginMode = 'cellphone'"
               >
-                {{ $t('Add phone number') }}
+                添加手机号
               </v-btn>
               <v-btn v-show="editLoginMode" depressed small @click="editLoginMode = null">
-                {{ $t('Cancel') }}
+                取消
               </v-btn>
 
               <v-btn
@@ -181,7 +171,7 @@
                 small
                 @click="handleSubmit(sendVerificationCode)"
               >
-                {{ $t('Send me verification code') }}
+                发送验证码
                 <v-progress-circular v-if="intermediate" indeterminate size="20" />
               </v-btn>
 
@@ -193,7 +183,7 @@
                 small
                 @click="handleSubmit(verifyCode)"
               >
-                {{ $t('Verify and save') }}
+                验证并保存
                 <v-progress-circular v-if="intermediate" indeterminate size="20" />
               </v-btn>
             </v-card-actions>
@@ -201,14 +191,14 @@
         </ValidationObserver>
 
         <v-card :loading="!userProfile" class="ma-3 pa-3">
-          <v-card-title>{{ $t('Others') }}</v-card-title>
+          <v-card-title>其他</v-card-title>
           <v-card-actions>
-            <v-btn depressed small @click="showSecurityLogs">{{ $t('查看安全日志') }}</v-btn>
+            <v-btn depressed small @click="showSecurityLogs">查看安全日志</v-btn>
           </v-card-actions>
         </v-card>
         <v-dialog v-model="showSecurityLogsDialog" max-width="600">
           <v-card :loading="auditLogs === null">
-            <v-card-title>{{ $t('安全日志') }}</v-card-title>
+            <v-card-title>安全日志</v-card-title>
             <v-card-text v-if="auditLogs">
               <v-data-table :headers="auditLogHeaders" :items="auditLogs" :items-per-page="10">
                 <template v-slot:item.created_at="{ item }">
@@ -219,12 +209,13 @@
                 <template v-slot:item.api="{ item }">
                   <span
                     v-if="item.api === '/login/access-token' || item.api === 'create access token'"
-                    >{{ $t('获取登录token') }}</span
                   >
-                  <span v-if="item.api === 'post answer'">{{ $t('提交答案') }}</span>
-                  <span v-if="item.api === 'post question'">{{ $t('提交问题') }}</span>
-                  <span v-if="item.api === 'post article'">{{ $t('提交文章') }}</span>
-                  <span v-if="item.api === 'post submission'">{{ $t('提交分享') }}</span>
+                    获取登录token
+                  </span>
+                  <span v-if="item.api === 'post answer'">提交答案</span>
+                  <span v-if="item.api === 'post question'">提交问题</span>
+                  <span v-if="item.api === 'post article'">提交文章</span>
+                  <span v-if="item.api === 'post submission'">提交分享</span>
                 </template>
               </v-data-table>
             </v-card-text>
@@ -283,9 +274,9 @@ export default class Security extends Vue {
   private intermediate = false;
   private verificationCode: string = '';
   private readonly auditLogHeaders = [
-    { text: this.$t('Created at'), value: 'created_at' },
-    { text: this.$t('API'), value: 'api' },
-    { text: this.$t('IP'), value: 'ipaddr' },
+    { text: '创建于', value: 'created_at' },
+    { text: 'API', value: 'api' },
+    { text: 'IP', value: 'ipaddr' },
   ];
   private auditLogs: IAuditLog[] | null = null;
 
@@ -299,7 +290,7 @@ export default class Security extends Vue {
     }
     if (this.editLoginMode === 'cellphone' && !this.phoneNumber) {
       commitAddNotification(this.$store, {
-        content: this.$t('电话号码为空').toString(),
+        content: '电话号码为空',
         color: 'error',
       });
       return;
@@ -309,7 +300,7 @@ export default class Security extends Vue {
       !this.newEmail
     ) {
       commitAddNotification(this.$store, {
-        content: this.$t('电子邮件地址为空').toString(),
+        content: '电子邮件地址为空',
         color: 'error',
       });
       return;
@@ -328,7 +319,7 @@ export default class Security extends Vue {
       }
       await api.sendVerificationCode(payload);
       commitAddNotification(this.$store, {
-        content: this.$t('验证码已发送到邮箱，请查收').toString(),
+        content: '验证码已发送到邮箱，请查收',
         color: 'success',
       });
       this.showVerifyCodeBtn = true;
@@ -363,7 +354,7 @@ export default class Security extends Vue {
               err.response?.data?.detail === 'This primary email is already used in the website.'
             ) {
               commitAddNotification(this.$store, {
-                content: this.$t(`该主要邮箱地址已经存在: ${this.newEmail!}`).toString(),
+                content: `该主要邮箱地址已经存在: ${this.newEmail!}`,
                 color: 'error',
               });
             } else {
@@ -380,7 +371,7 @@ export default class Security extends Vue {
       }
       if (response) {
         commitAddNotification(this.$store, {
-          content: this.$t('更新成功').toString(),
+          content: '更新成功',
           color: 'success',
         });
         commitSetUserProfile(this.$store, response.data);
@@ -404,7 +395,7 @@ export default class Security extends Vue {
       const newProfile = (await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload))
         .data;
       commitAddNotification(this.$store, {
-        content: this.$t('更新成功').toString(),
+        content: '更新成功',
         color: 'success',
       });
       commitSetUserProfile(this.$store, newProfile);

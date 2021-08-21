@@ -3,19 +3,11 @@
     <v-row fluid justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
         <div class="mb-1">
-          <div class="headline primary--text mb-3">
-            {{ $t('探索') }}
-          </div>
+          <div class="headline primary--text mb-3">探索</div>
           <v-tabs v-model="currentTabItem">
-            <v-tab href="#questions">
-              {{ $t('发现问题') }}
-            </v-tab>
-            <v-tab href="#sites">
-              {{ $t('所有圈子') }}
-            </v-tab>
-            <v-tab href="#users">
-              {{ $t('关注更多用户') }}
-            </v-tab>
+            <v-tab href="#questions"> 发现问题 </v-tab>
+            <v-tab href="#sites"> 所有圈子 </v-tab>
+            <v-tab href="#users"> 关注更多用户 </v-tab>
 
             <v-tab-item class="mt-2" eager value="questions">
               <div v-if="interestingQuestions !== null" class="pb-2">
@@ -26,7 +18,7 @@
                 />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
-              <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
+              <p class="mt-2 text-center">不定期随机更新</p>
             </v-tab-item>
             <v-tab-item class="mt-2" eager value="sites">
               <ExploreSitesGrid />
@@ -36,7 +28,7 @@
                 <UserGrid :users="interestingUsers" />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
-              <p class="mt-2 text-center">{{ $t('不定期随机更新') }}</p>
+              <p class="mt-2 text-center">不定期随机更新</p>
             </v-tab-item>
           </v-tabs>
         </div>

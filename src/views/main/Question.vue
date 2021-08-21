@@ -35,7 +35,7 @@
             v-model="newQuestionTopicNames"
             :delimiters="[',', '，', '、']"
             :items="hintTopicNames"
-            :label="$t('Topics')"
+            label="话题"
             hide-selected
             multiple
             small-chips
@@ -885,13 +885,13 @@ export default class Question extends CVue {
     if (this.question) {
       if (!this.newQuestionSite) {
         commitAddNotification(this.$store, {
-          content: this.$t('未选择新的圈子').toString(),
+          content: '未选择新的圈子',
           color: 'info',
         });
       }
       if (this.question.site.uuid === this.newQuestionSite?.uuid) {
         commitAddNotification(this.$store, {
-          content: this.$t('没有变化').toString(),
+          content: '没有变化',
           color: 'info',
         });
       }
@@ -904,7 +904,7 @@ export default class Question extends CVue {
           )
         ).data;
         commitAddNotification(this.$store, {
-          content: this.$t('转移成功').toString(),
+          content: '转移成功',
           color: 'success',
         });
         this.showMoveQuestionDialog = false;
@@ -917,16 +917,16 @@ export default class Question extends CVue {
     await dispatchCaptureApiError(this.$store, async () => {
       await apiQuestion.hideQuestion(this.$store.state.main.token, this.question!.uuid);
       commitAddNotification(this.$store, {
-        content: this.$t('已隐藏').toString(),
+        content: '已隐藏',
         color: 'info',
       });
-      this.$router.push(`/sites/${this.question!.site.subdomain}`);
+      await this.$router.push(`/sites/${this.question!.site.subdomain}`);
     });
   }
 
   private async goToCurrentUserAnswer() {
     if (this.currentUserAnswerUUID) {
-      this.$router.replace(
+      await this.$router.replace(
         `/questions/${this.question?.uuid}/answers/${this.currentUserAnswerUUID}`
       );
     }
