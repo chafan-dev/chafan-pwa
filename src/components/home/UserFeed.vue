@@ -25,7 +25,7 @@
       </v-dialog>
 
       <div
-        :class="theme.feed.activityCard.classes + $vuetify.breakpoint.smAndUp ? ' mx-4' : ''"
+        :class="theme.feed.activityCard.classes"
         v-for="activity in combinedActivities.items"
         :key="activity.id"
       >

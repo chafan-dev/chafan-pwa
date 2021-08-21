@@ -13,7 +13,7 @@
         <router-link
           v-if="userPreview"
           :to="'/users/' + userPreview.handle"
-          class="text-decoration-none"
+          :class="theme.userLink.link.classes"
         >
           <Avatar v-if="showAvatar" size="25" :userPreview="userPreview" />
           <span class="ml-1">{{ name }}</span>
@@ -32,12 +32,13 @@ import { IUserPreview } from '@/interfaces';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Avatar from '@/components/Avatar.vue';
 import UserCard from '@/components/UserCard.vue';
+import { CVue } from '@/common';
 
 @Component({
   name: 'UserLink',
   components: { Avatar, UserCard },
 })
-export default class UserLink extends Vue {
+export default class UserLink extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
   @Prop({ default: false }) public readonly showAvatar!: boolean;
   @Prop({ default: true }) public readonly clickable!: boolean;
