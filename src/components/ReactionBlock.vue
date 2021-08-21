@@ -1,13 +1,13 @@
 <template>
   <div class="d-flex">
-    <v-btn-toggle v-if="reactions" dense multiple background-color="white" class="mr-1">
+    <v-btn-toggle v-if="reactions" background-color="white" class="mr-1" dense multiple>
       <v-btn
         v-for="(count, reaction) in reactions.counters"
         :key="reaction"
-        class="slim-btn"
-        small
-        depressed
         :color="reactions.my_reactions.includes(reaction) ? undefined : 'white'"
+        class="slim-btn"
+        depressed
+        small
         @click="
           updateReaction(reaction, reactions.my_reactions.includes(reaction) ? 'cancel' : 'add')
         "
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import UserLink from '@/components/UserLink.vue';
 import ReactionIcon from '@/components/icons/ReactionIcon.vue';
 import { IReactions } from '@/interfaces';

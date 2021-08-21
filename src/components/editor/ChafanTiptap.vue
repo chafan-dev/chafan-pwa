@@ -6,14 +6,14 @@
       ref="base"
       v-bind="$attrs"
       v-on="$listeners"
-      :editable="editable"
       :comment-mode="commentMode"
-      :search-users="searchUsers"
-      :user-href="userHref"
-      :user-label="userLabel"
-      :upload="upload"
+      :editable="editable"
       :on-editor-change="onChange"
       :on-editor-ready="onEditorReadyInternal"
+      :search-users="searchUsers"
+      :upload="upload"
+      :user-href="userHref"
+      :user-label="userLabel"
     />
   </div>
 </template>
@@ -40,46 +40,12 @@ declare const renderMathInElement: any;
   },
 })
 export default class ChafanTiptap extends Vue {
-  @Prop({ default: true }) private readonly editable!: boolean;
-  @Prop({ default: false }) private readonly commentMode!: boolean;
   @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
   @Prop() public readonly onEditorChange: ((text: string) => void) | undefined;
-  @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
   @Prop() public readonly initialContent: string | undefined;
-
-  private onEditorReadyInternal(contentElem: HTMLElement) {
-    if (this.onEditorReady) {
-      this.onEditorReady(contentElem);
-    }
-    if (!this.editable) {
-      renderMathInElement(contentElem, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
-          { left: '\\(', right: '\\)', display: false },
-          { left: '\\[', right: '\\]', display: true },
-        ],
-      });
-    }
-  }
-
-  private onChange() {
-    if (this.onMentionedHandles) {
-      const handles: string[] = [];
-      this.$el.querySelectorAll('a.mention').forEach((elem: Element) => {
-        const anchor = elem as HTMLAnchorElement;
-        const url = new URL(anchor.href);
-        const segments = url.pathname.split('/');
-        if (segments.length === 3 && segments[1] === 'users') {
-          handles.push(decodeURI(segments[2]));
-        }
-      });
-      this.onMentionedHandles(handles);
-    }
-    if (this.onEditorChange) {
-      this.onEditorChange(this.getText() || '');
-    }
-  }
+  @Prop({ default: true }) private readonly editable!: boolean;
+  @Prop({ default: false }) private readonly commentMode!: boolean;
+  @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
 
   get base() {
     return this.$refs.base as any;
@@ -121,18 +87,6 @@ export default class ChafanTiptap extends Vue {
     this.base.reset();
   }
 
-  private async searchUsers(query: string) {
-    return (await apiSearch.searchUsers(this.$store.state.main.token, query)).data;
-  }
-
-  private userHref(user: IUserPreview) {
-    return `/users/${user.handle}`;
-  }
-
-  private userLabel(user: IUserPreview) {
-    return user.full_name ? `${user.full_name} (${user.handle})` : user.handle;
-  }
-
   async upload(file: Blob) {
     const resized = await resizeImage({
       maxSize: 500, // px
@@ -155,6 +109,52 @@ export default class ChafanTiptap extends Vue {
     if (this.initialContent) {
       this.loadJSON(JSON.parse(this.initialContent));
     }
+  }
+
+  private onEditorReadyInternal(contentElem: HTMLElement) {
+    if (this.onEditorReady) {
+      this.onEditorReady(contentElem);
+    }
+    if (!this.editable) {
+      renderMathInElement(contentElem, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true },
+        ],
+      });
+    }
+  }
+
+  private onChange() {
+    if (this.onMentionedHandles) {
+      const handles: string[] = [];
+      this.$el.querySelectorAll('a.mention').forEach((elem: Element) => {
+        const anchor = elem as HTMLAnchorElement;
+        const url = new URL(anchor.href);
+        const segments = url.pathname.split('/');
+        if (segments.length === 3 && segments[1] === 'users') {
+          handles.push(decodeURI(segments[2]));
+        }
+      });
+      this.onMentionedHandles(handles);
+    }
+    if (this.onEditorChange) {
+      this.onEditorChange(this.getText() || '');
+    }
+  }
+
+  private async searchUsers(query: string) {
+    return (await apiSearch.searchUsers(this.$store.state.main.token, query)).data;
+  }
+
+  private userHref(user: IUserPreview) {
+    return `/users/${user.handle}`;
+  }
+
+  private userLabel(user: IUserPreview) {
+    return user.full_name ? `${user.full_name} (${user.handle})` : user.handle;
   }
 }
 </script>

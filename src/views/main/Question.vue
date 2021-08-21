@@ -15,16 +15,16 @@
         <div>
           <!-- Question topics display/editor -->
           <v-slide-group
-            class="d-flex justify-space-between align-center"
             v-if="!showQuestionEditor"
+            class="d-flex justify-space-between align-center"
           >
             <SiteBtn :site="question.site" class="elevation-0" />
             <v-chip-group>
               <v-chip
-                small
                 v-for="topic in question.topics"
                 :key="topic.uuid"
                 :to="'/topics/' + topic.uuid"
+                small
               >
                 {{ topic.name }}
               </v-chip>
@@ -46,7 +46,7 @@
             <div v-if="!showQuestionEditor" class="text-h5">
               {{ question.title }}
             </div>
-            <v-textarea v-else v-model="newQuestionTitle" label="标题" auto-grow dense rows="1" />
+            <v-textarea v-else v-model="newQuestionTitle" auto-grow dense label="标题" rows="1" />
           </div>
 
           <!-- Question description display/editor -->
@@ -54,11 +54,11 @@
           <div v-else-if="showQuestionEditor">
             <SimpleEditor
               ref="descEditor"
-              :initialValue="question.desc ? question.desc.source : undefined"
               :editor-prop="question.desc ? question.desc.editor : undefined"
-              placeholder="描述（选填）"
+              :initialValue="question.desc ? question.desc.source : undefined"
               :show-menu="true"
               class="mb-2"
+              placeholder="描述（选填）"
             />
           </div>
         </div>
@@ -115,19 +115,19 @@
             <span>该圈子仅会员可以写回答</span>
           </v-tooltip>
 
-          <CommentBtn class="mr-1" @click="toggleShowComments" :count="question.comments.length" />
+          <CommentBtn :count="question.comments.length" class="mr-1" @click="toggleShowComments" />
 
           <QuestionUpvotes
-            class="mr-1"
-            :uuid="question.uuid"
             :disabled="!userProfile || userProfile.uuid === question.author.uuid"
+            :uuid="question.uuid"
+            class="mr-1"
           />
 
           <ShareCardButton
-            class="mr-1"
-            :link-text="question.title"
-            :link="`/questions/${question.uuid}`"
             v-slot="{ shareQrCodeUrl }"
+            :link="`/questions/${question.uuid}`"
+            :link-text="question.title"
+            class="mr-1"
           >
             <v-card-title>
               {{ question.title }}
@@ -149,7 +149,7 @@
                 </div>
                 <v-spacer />
                 <div class="pa-1 text-center" style="float: right">
-                  <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                  <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                   <span class="text-caption">查看原问题</span>
                 </div>
               </div>
@@ -160,28 +160,28 @@
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-bind="attrs" v-on="on" class="slim-btn" depressed small>
                 <DotsIcon small />
-                <span class="ml-1" v-if="$vuetify.breakpoint.mdAndUp">更多</span>
+                <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">更多</span>
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item v-if="editable" @click="showQuestionEditor = true" dense>
+              <v-list-item v-if="editable" dense @click="showQuestionEditor = true">
                 <EditIcon class="mr-1" />
                 编辑
               </v-list-item>
-              <v-list-item @click="showHistoryDialog" dense>
+              <v-list-item dense @click="showHistoryDialog">
                 <HistoryIcon v-if="editable && userProfile" class="mr-1" />
                 编辑历史
               </v-list-item>
               <v-list-item
                 v-if="questionSubscription && questionSubscription.subscribed_by_me"
                 :disabled="cancelSubscriptionIntermediate"
-                @click="cancelSubscription"
                 dense
+                @click="cancelSubscription"
               >
                 <ToBookmarkIcon class="mr-1" />
                 收藏
               </v-list-item>
-              <v-list-item v-else :disabled="subscribeIntermediate" @click="subscribe" dense>
+              <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
                 <BookmarkedIcon class="mr-1" />
                 取消收藏
               </v-list-item>
@@ -256,9 +256,9 @@
                 <v-select
                   v-model="newQuestionSite"
                   :items="siteProfiles"
-                  label="新的圈子"
                   item-text="site.name"
                   item-value="site"
+                  label="新的圈子"
                 />
               </v-card-text>
               <v-card-actions>
@@ -326,9 +326,9 @@
         <!-- Answer editor -->
         <v-expand-transition v-if="userProfile">
           <AnswerEditor
-            :questionIdProp="question.uuid"
             v-if="showEditor"
             :inPrivateSite="!question.site.public_readable"
+            :questionIdProp="question.uuid"
             class="ma-1"
             @updated-answer="updatedAnswerCallback"
             @cancel-edit="cancelHandler"
@@ -340,8 +340,8 @@
         <div
           v-for="answer in loadedFullAnswers"
           :key="answer.uuid"
-          class="mb-4"
           :class="theme.question.answer.classes"
+          class="mb-4"
         >
           <Answer
             :answerPreview="answer"
@@ -357,8 +357,8 @@
         <div
           v-for="answerPreview in answerPreviews"
           :key="answerPreview.uuid"
-          class="mb-4"
           :class="theme.question.answer.classes"
+          class="mb-4"
         >
           <Answer
             :answerPreview="answerPreview"
@@ -372,7 +372,7 @@
         </div>
 
         <div v-if="answerPreviews.length && loadingFullAnswer" class="text-center">
-          <v-progress-circular indeterminate size="20" color="grey" />
+          <v-progress-circular color="grey" indeterminate size="20" />
         </div>
       </v-col>
 
@@ -385,7 +385,8 @@
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" class="bottom-btn">
-            <InfoIcon /><span class="ml-1 grey--text">问题信息</span>
+            <InfoIcon />
+            <span class="ml-1 grey--text">问题信息</span>
           </div>
         </template>
         <v-sheet class="pa-2">
@@ -397,7 +398,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 
 import Answer from '@/components/Answer.vue';
 import QuestionInfo from '@/components/question/QuestionInfo.vue';

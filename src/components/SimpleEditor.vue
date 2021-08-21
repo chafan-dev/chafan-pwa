@@ -3,10 +3,10 @@
     <ChafanTiptap
       v-if="editor === 'tiptap'"
       ref="tiptap"
-      :comment-mode="true"
       :body="initialValue"
-      :placeholder="placeholder"
+      :comment-mode="true"
       :onMentionedHandles="onMentionedHandles"
+      :placeholder="placeholder"
     />
     <LiteVditorCF
       v-else
@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { LiteVditorCF } from 'chafan-vue-editors';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { editor_T } from '@/interfaces';
@@ -76,6 +76,10 @@ export default class SimpleEditor extends Vue {
     }
   }
 
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
+  }
+
   public getTextContent() {
     if (this.editor === 'tiptap') {
       return this.tiptap.getText();
@@ -90,10 +94,6 @@ export default class SimpleEditor extends Vue {
     } else {
       this.simpleVditor.initVditor();
     }
-  }
-
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

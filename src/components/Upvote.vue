@@ -8,12 +8,12 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn small depressed @click="showCancelUpvoteDialog = false">取消</v-btn>
+          <v-btn depressed small @click="showCancelUpvoteDialog = false">取消</v-btn>
           <v-btn
             :disabled="cancelUpvoteIntermediate"
             color="warning"
-            small
             depressed
+            small
             @click="onConfirmCancel"
           >
             确认
@@ -24,22 +24,22 @@
 
     <UpvotedBtn
       v-if="upvoted"
+      :class="theme.upvotedBtn.classes"
+      :count="upvotesCount"
       :disabled="disabled || cancelUpvoteIntermediate"
       @click="showCancelUpvoteDialog = true"
-      :count="upvotesCount"
-      :class="theme.upvotedBtn.classes"
     />
     <UpvoteBtn
       v-else
-      :disabled="disabled || upvoteIntermediate"
-      @click="_onUpvoteClick"
       :count="upvotesCount"
+      :disabled="disabled || upvoteIntermediate"
       :outlined="theme.upvoteBtn.outlined"
+      @click="_onUpvoteClick"
     />
   </span>
 </template>
 <script lang="ts">
-import { Prop, Component, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import { CVue } from '@/common';

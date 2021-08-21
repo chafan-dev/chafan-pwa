@@ -1,9 +1,9 @@
 <template>
   <v-menu
     v-if="clickable"
+    :disabled="!enablePopup"
     :open-on-hover="!$vuetify.breakpoint.mobile"
     bottom
-    :disabled="!enablePopup"
     offset-y
     open-delay="400"
     right
@@ -12,10 +12,10 @@
       <span v-bind="attrs" v-on="on">
         <router-link
           v-if="userPreview"
-          :to="'/users/' + userPreview.handle"
           :class="theme.userLink.link.classes"
+          :to="'/users/' + userPreview.handle"
         >
-          <Avatar v-if="showAvatar" size="25" :userPreview="userPreview" />
+          <Avatar v-if="showAvatar" :userPreview="userPreview" size="25" />
           <span class="ml-1">{{ name }}</span>
         </router-link>
       </span>
@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { IUserPreview } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import Avatar from '@/components/Avatar.vue';
 import UserCard from '@/components/UserCard.vue';
 import { CVue } from '@/common';

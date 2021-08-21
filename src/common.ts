@@ -1,5 +1,9 @@
 import { apiQuestion } from '@/api/question';
 import { apiUrl, appName } from '@/env';
+import { api } from '@/api';
+import { ThemeType } from '@/interfaces';
+import { Vue } from 'vue-property-decorator';
+import { readTheme, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 
@@ -11,10 +15,6 @@ export const FAB_FLAG = 'webfront-fab-clicked';
 export const EXPLORE_SITES = 'closed-explore-sites-in-home';
 
 export { isEqual } from 'lodash';
-import { api } from '@/api';
-import { ThemeType } from '@/interfaces';
-import { Vue } from 'vue-property-decorator';
-import { readTheme, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 
 export const getDefaultNarrowFeedUI = () => {
   try {

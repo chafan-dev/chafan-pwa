@@ -7,7 +7,7 @@
     </template>
 
     <template v-for="config in d">
-      <v-tab-item :key="config.type" v-if="config.items.length">
+      <v-tab-item v-if="config.items.length" :key="config.type">
         <v-list>
           <template v-for="(item, index) in config.items">
             <v-divider v-if="index" :key="index" class="mx-1" />

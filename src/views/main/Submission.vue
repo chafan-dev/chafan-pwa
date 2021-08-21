@@ -12,7 +12,7 @@
       >
         <ValidationObserver v-slot="{ handleSubmit }">
           <div class="d-flex justify-space-between">
-            <UserLink :userPreview="submission.author" :show-avatar="true" />
+            <UserLink :show-avatar="true" :userPreview="submission.author" />
             <SiteBtn :site="submission.site" class="elevation-0" />
           </div>
 
@@ -21,10 +21,10 @@
             <!-- Submission topics display/editor -->
             <v-chip-group v-if="!showSubmissionEditor">
               <v-chip
-                small
                 v-for="topic in submission.topics"
                 :key="topic.uuid"
                 :to="'/topics/' + topic.uuid"
+                small
               >
                 {{ topic.name }}
               </v-chip>
@@ -34,8 +34,8 @@
               v-model="newSubmissionTopicNames"
               :delimiters="[',', '，', '、']"
               :items="hintTopicNames"
-              label="话题"
               hide-selected
+              label="话题"
               multiple
               small-chips
             />
@@ -71,26 +71,26 @@
                 ref="descEditor"
                 :editorProp="submission.desc.editor"
                 :initialValue="submission.desc.source"
-                placeholder="描述（选填）"
                 class="my-2"
+                placeholder="描述（选填）"
               />
             </div>
             <div
-              class="d-flex justify-end"
               v-if="submission.contributors.length && !showSubmissionEditor"
+              class="d-flex justify-end"
             >
               <span class="text-caption grey--text">
                 编辑贡献者:
                 <template v-for="(contributor, idx) in submission.contributors">
-                  <span :key="idx" v-if="idx">, </span>
-                  <UserLink :key="idx" :user-preview="contributor" :show-avatar="false" />
+                  <span v-if="idx" :key="idx">, </span>
+                  <UserLink :key="idx" :show-avatar="false" :user-preview="contributor" />
                 </template>
               </span>
             </div>
 
             <!-- Suggestion comment -->
             <div v-if="suggestionEditable && showSubmissionEditor">
-              <v-text-field label="附言（可选）" v-model="newSuggestionCommment" clearable />
+              <v-text-field v-model="newSuggestionCommment" clearable label="附言（可选）" />
             </div>
           </div>
 
@@ -121,11 +121,11 @@
           <div v-if="!showSubmissionEditor" class="d-flex py-2">
             <Upvote
               v-if="upvotes"
-              :upvotes-count="upvotes.count"
-              :upvoted="upvotes.upvoted"
               :disabled="!userProfile || userProfile.uuid === submission.author.uuid"
               :on-cancel-vote="cancelUpvote"
               :on-vote="upvote"
+              :upvoted="upvotes.upvoted"
+              :upvotes-count="upvotes.count"
             />
 
             <ShareCardButton
@@ -161,7 +161,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn v-bind="attrs" v-on="on" class="slim-btn" depressed small>
                   <DotsIcon small />
-                  <span class="ml-1" v-if="$vuetify.breakpoint.mdAndUp">更多</span>
+                  <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">更多</span>
                 </v-btn>
               </template>
               <v-list dense>
@@ -174,7 +174,7 @@
                   提交编辑建议
                 </v-list-item>
 
-                <v-list-item @click="showHistoryDialog" dense>
+                <v-list-item dense @click="showHistoryDialog">
                   <HistoryIcon class="mr-1" />
                   查看编辑历史
                 </v-list-item>
@@ -182,13 +182,13 @@
                 <v-list-item
                   v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
                   :disabled="cancelSubscriptionIntermediate"
-                  @click="cancelSubscription"
                   dense
+                  @click="cancelSubscription"
                 >
                   <ToBookmarkIcon class="mr-1" />
                   收藏
                 </v-list-item>
-                <v-list-item v-else :disabled="subscribeIntermediate" @click="subscribe" dense>
+                <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
                   <BookmarkedIcon class="mr-1" />
                   取消收藏
                 </v-list-item>
@@ -197,7 +197,8 @@
                   v-if="editable && canHide"
                   @click="showConfirmHideSubmissionDialog = true"
                 >
-                  <DeleteIcon class="mr-1" /> 隐藏分享
+                  <DeleteIcon class="mr-1" />
+                  隐藏分享
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -210,7 +211,7 @@
                 <v-card-text>隐藏后分享将对所有用户不可见。</v-card-text>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn color="warning" mr-1 small depressed @click="confirmHideSubmission">
+                  <v-btn color="warning" depressed mr-1 small @click="confirmHideSubmission">
                     确认隐藏
                   </v-btn>
                 </v-card-actions>
@@ -229,7 +230,7 @@
               <template v-if="editable">保存</template>
               <template v-else>提交建议</template>
             </v-btn>
-            <v-btn class="mr-1" depressed small @click="cancelSubmissionUpdate">取消 </v-btn>
+            <v-btn class="mr-1" depressed small @click="cancelSubmissionUpdate">取消</v-btn>
             <v-spacer />
           </div>
           <div class="d-flex justify-end">
@@ -240,10 +241,10 @@
           <CommentBlock
             :commentSubmitIntermediate="commentSubmitIntermediate"
             :comments="comments"
+            :show-title="true"
             :siteId="submission.site ? submission.site.uuid : undefined"
             :writable="commentWritable"
             commentLabel="评论"
-            :show-title="true"
             @submit-new-comment="submitNewSubmissionCommentBody"
           />
 
@@ -283,8 +284,8 @@
                       suggestion.title !== undefined
                     "
                   >
-                    <span class="font-weight-bold">标题改动：</span
-                    ><Diff :s1="suggestion.accepted_diff_base.title" :s2="suggestion.title" />
+                    <span class="font-weight-bold">标题改动：</span>
+                    <Diff :s1="suggestion.accepted_diff_base.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
@@ -292,8 +293,8 @@
                         suggestion.description_text && suggestion.description_text !== undefined
                     "
                   >
-                    <span class="font-weight-bold">描述改动：</span
-                    ><Diff
+                    <span class="font-weight-bold">描述改动：</span>
+                    <Diff
                       :s1="suggestion.accepted_diff_base.description_text || ''"
                       :s2="suggestion.description_text"
                     />
@@ -303,8 +304,8 @@
                   <div
                     v-if="submission.title !== suggestion.title && suggestion.title !== undefined"
                   >
-                    <span class="font-weight-bold">标题改动：</span
-                    ><Diff :s1="submission.title" :s2="suggestion.title" />
+                    <span class="font-weight-bold">标题改动：</span>
+                    <Diff :s1="submission.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
@@ -312,16 +313,16 @@
                       suggestion.description_text !== undefined
                     "
                   >
-                    <span class="font-weight-bold">描述改动：</span
-                    ><Diff
+                    <span class="font-weight-bold">描述改动：</span>
+                    <Diff
                       :s1="submission.description_text || ''"
                       :s2="suggestion.description_text"
                     />
                   </div>
                   <div v-if="suggestion.topics">
                     <!-- FIXME: the topics of stored accepted diff base is not processed properly -->
-                    <span class="font-weight-bold">话题改动：</span
-                    ><Diff
+                    <span class="font-weight-bold">话题改动：</span>
+                    <Diff
                       v-if="suggestion.topics"
                       :s1="topicNames(submission.topics)"
                       :s2="topicNames(suggestion.topics)"
@@ -330,28 +331,28 @@
                 </template>
                 <div class="d-flex justify-end mt-1">
                   <template v-if="suggestion.status === 'pending'">
-                    <v-btn small outlined class="mr-2" @click="previewSuggestion(suggestion)">
+                    <v-btn class="mr-2" outlined small @click="previewSuggestion(suggestion)">
                       预览
                     </v-btn>
                     <v-btn
                       v-if="userProfile.uuid === suggestion.author.uuid"
-                      small
                       outlined
+                      small
                       @click="retractSuggestion(suggestion)"
                     >
                       撤回
                     </v-btn>
                     <template v-if="userProfile.uuid === submission.author.uuid">
                       <v-btn
+                        class="mr-2"
+                        color="green"
                         outlined
                         small
-                        color="green"
-                        class="mr-2"
                         @click="acceptSuggestion(suggestion)"
                       >
                         接受
                       </v-btn>
-                      <v-btn outlined small color="warning" @click="rejectSuggestion(suggestion)">
+                      <v-btn color="warning" outlined small @click="rejectSuggestion(suggestion)">
                         拒绝
                       </v-btn>
                     </template>
@@ -359,18 +360,18 @@
                   <template v-if="suggestion.status === 'rejected'">
                     <v-btn
                       v-if="userProfile.uuid === suggestion.author.uuid"
-                      small
                       outlined
+                      small
                       @click="retractSuggestion(suggestion)"
                     >
                       撤回
                     </v-btn>
                     <template v-if="userProfile.uuid === submission.author.uuid">
                       <v-btn
+                        class="mr-2"
+                        color="green"
                         outlined
                         small
-                        color="green"
-                        class="mr-2"
                         @click="acceptSuggestion(suggestion)"
                       >
                         接受
@@ -380,8 +381,8 @@
                   <template v-if="suggestion.status === 'retracted'">
                     <v-btn
                       v-if="userProfile.uuid === suggestion.author.uuid"
-                      small
                       outlined
+                      small
                       @click="revertRetractSuggestion(suggestion)"
                     >
                       取消撤回
@@ -396,10 +397,10 @@
             <v-card v-if="previewedSuggestion" :key="previewedSuggestion.uuid">
               <v-chip-group v-if="previewedSuggestion.topics" class="px-5">
                 <v-chip
-                  small
                   v-for="topic in previewedSuggestion.topics"
                   :key="topic.uuid"
                   :to="'/topics/' + topic.uuid"
+                  small
                 >
                   {{ topic.name }}
                 </v-chip>
@@ -483,14 +484,14 @@ import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mu
 import { api } from '@/api';
 import { readNarrowUI, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 import {
-  ISubmission,
-  ISubmissionUpvotes,
-  ISubmissionArchive,
   IComment,
-  IUserSubmissionSubscription,
-  ISubmissionSuggestion,
-  ITopic,
   IRichText,
+  ISubmission,
+  ISubmissionArchive,
+  ISubmissionSuggestion,
+  ISubmissionUpvotes,
+  ITopic,
+  IUserSubmissionSubscription,
 } from '@/interfaces';
 import Viewer from '@/components/Viewer.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
@@ -570,6 +571,8 @@ export default class Submission extends Vue {
   private relatedSubmissions: ISubmission[] | null = null;
   private submissionSuggestions: ISubmissionSuggestion[] = [];
   private newSuggestionCommment: string | null = null;
+  private previewedSuggestion: ISubmissionSuggestion | null = null;
+  private showSuggestionPreviewDialog = false;
 
   get suggestionEditable() {
     return !this.editable && this.userProfile;
@@ -924,8 +927,6 @@ export default class Submission extends Vue {
     return this.submission;
   }
 
-  private previewedSuggestion: ISubmissionSuggestion | null = null;
-  private showSuggestionPreviewDialog = false;
   private previewSuggestion(suggestion: ISubmissionSuggestion) {
     this.previewedSuggestion = suggestion;
     this.showSuggestionPreviewDialog = true;

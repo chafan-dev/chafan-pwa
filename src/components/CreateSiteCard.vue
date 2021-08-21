@@ -18,9 +18,9 @@
             <v-select
               v-model="siteCreate.category_topic_uuid"
               :items="categoryTopics"
-              label="类别*"
               item-text="name"
               item-value="uuid"
+              label="类别*"
             />
             <v-select
               v-model="siteCreate.permission_type"
@@ -35,7 +35,7 @@
             <div v-else-if="siteCreate.permission_type === 'private'">
               提示：「私密」类型一般适合有确定的人群范围的圈子，内容仅对成员可见。申请加入可以附加条件。
             </div>
-            <v-textarea v-model="siteCreate.description" label="描述" hide-details />
+            <v-textarea v-model="siteCreate.description" hide-details label="描述" />
           </v-form>
         </template>
       </v-card-text>
@@ -50,8 +50,8 @@
           small
           @click="handleSubmit(submit)"
         >
-          <template v-if="canCreateSite"> 创建 </template>
-          <template v-else> 提交申请 </template>
+          <template v-if="canCreateSite"> 创建</template>
+          <template v-else> 提交申请</template>
           <v-progress-circular v-if="intermediate" color="primary" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
@@ -97,10 +97,6 @@ export default class CreateSite extends Vue {
   private intermediate = false;
   private categoryTopics: ITopic[] | null = null;
 
-  private async mounted() {
-    this.categoryTopics = (await api.getCategoryTopics()).data;
-  }
-
   get canCreateSite() {
     if (env !== 'production') {
       return true;
@@ -113,6 +109,10 @@ export default class CreateSite extends Vue {
       return true;
     }
     return false;
+  }
+
+  private async mounted() {
+    this.categoryTopics = (await api.getCategoryTopics()).data;
   }
 
   private resetAll(reset) {

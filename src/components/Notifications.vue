@@ -36,7 +36,7 @@
           <v-subheader class="font-weight-bold">通知</v-subheader>
 
           <div class="mr-1">
-            <v-btn depressed small @click="readAllNotifs" class="slim-btn">
+            <v-btn class="slim-btn" depressed small @click="readAllNotifs">
               <MuteNotificationIcon />
               全部已读
             </v-btn>
@@ -49,41 +49,41 @@
               <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />
 
               <template v-if="notif.is_read">
-                <v-list-item :key="notif.id" color="grey" class="grey lighten-4">
+                <v-list-item :key="notif.id" class="grey lighten-4" color="grey">
                   <Event
-                    class="my-2"
                     v-if="notif.event"
+                    :enable-user-link-popup="false"
                     :event="notif.event"
                     :on-click-handler="
                       () => {
                         showNotifications = false;
                       }
                     "
-                    :enable-user-link-popup="false"
+                    class="my-2"
                   />
                 </v-list-item>
               </template>
               <template v-else>
                 <v-list-item :key="notif.id">
                   <Event
-                    class="my-2"
                     v-if="notif.event"
-                    :event="notif.event"
                     :enable-user-link-popup="false"
+                    :event="notif.event"
                     :on-click-handler="
                       () => {
                         showNotifications = false;
                         readNotif(notif);
                       }
                     "
+                    class="my-2"
                   />
                   <v-spacer />
                   <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
                 </v-list-item>
               </template>
             </template>
-            <div class="text-center" v-if="loadNotifsIntermediate">
-              <v-progress-circular size="20" color="primary" indeterminate />
+            <div v-if="loadNotifsIntermediate" class="text-center">
+              <v-progress-circular color="primary" indeterminate size="20" />
             </div>
           </v-list>
         </div>
@@ -104,7 +104,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import MuteNotificationIcon from '@/components/icons/MuteNotificationIcon.vue';
 import NotificationIcon from '@/components/icons/NotificationIcon.vue';

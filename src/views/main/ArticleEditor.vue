@@ -11,10 +11,10 @@
           <div>
             <v-textarea
               v-model="articleTitle"
-              label="标题"
               auto-grow
               class="headline mt-2"
               dense
+              label="标题"
               rows="1"
             />
           </div>
@@ -30,33 +30,33 @@
             v-if="editor !== null && body !== null"
             v-show="topLevelEditor === 'vditor'"
             ref="vditor"
-            :onEditorChange="onEditorChange"
-            class="mb-2 mt-2"
-            :isMobile="isMobile"
-            :vditorUploadConfig="vditorUploadConfig"
             :editor-mode="editor"
             :initial-content="body"
+            :isMobile="isMobile"
+            :onEditorChange="onEditorChange"
+            :vditorUploadConfig="vditorUploadConfig"
+            class="mb-2 mt-2"
           />
 
           <!-- Controls -->
           <div class="d-flex align-center">
             <v-btn
+              :disabled="savingIntermediate"
               color="primary"
               depressed
               small
               @click="submitEdit(true)"
-              :disabled="savingIntermediate"
             >
               发表
             </v-btn>
             <span class="ml-2">
               <!-- NOTE: wrap in span to avoid ml-2 problem when disabled during progress -->
               <v-btn
+                :disabled="savingIntermediate"
                 color="info"
                 depressed
                 small
                 @click="submitEdit(false)"
-                :disabled="savingIntermediate"
               >
                 保存草稿
               </v-btn>
@@ -64,11 +64,11 @@
             <v-btn class="ml-2" depressed small @click="cancelHandler">取消</v-btn>
             <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
             <v-progress-circular
-              class="ml-2"
               v-if="savingIntermediate"
-              size="20"
+              class="ml-2"
               color="primary"
               indeterminate
+              size="20"
             />
             <v-spacer />
             <span
@@ -119,8 +119,8 @@
 
             <v-dialog v-model="showDeleteDraftDialog" max-width="400">
               <v-card>
-                <v-card-title primary-title> 删除当前草稿？ </v-card-title>
-                <v-card-text> 不影响已发表版本 </v-card-text>
+                <v-card-title primary-title> 删除当前草稿？</v-card-title>
+                <v-card-text> 不影响已发表版本</v-card-text>
                 <v-card-actions>
                   <v-spacer />
                   <v-btn color="warning" @click="deleteDraft">确认</v-btn>
@@ -176,17 +176,22 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { clearLocalEdit, getArticleDraft, logDebug, newArticleHandler } from '@/utils';
+import {
+  clearLocalEdit,
+  getArticleDraft,
+  logDebug,
+  newArticleHandler,
+  saveLocalEdit,
+  uuidv4,
+} from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { IRichEditorState, IArticle } from '@/interfaces';
+import { editor_T, IArticle, IArticleArchive, IRichEditorState } from '@/interfaces';
 import { apiArticle } from '@/api/article';
 import { commitAddNotification } from '@/store/main/mutations';
 
 import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import { saveLocalEdit, uuidv4 } from '@/utils';
-import { editor_T, IArticleArchive } from '@/interfaces';
 
 import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
@@ -232,13 +237,12 @@ export default class ArticleEditor extends Vue {
   private archivesCount: number | undefined = undefined;
   private editor: editor_T | null = null;
   private body: string | null = null;
+  private topLevelEditor: 'vditor' | 'tiptap' = 'vditor';
+  private topLevelEditorItems: { text: string; value: string }[] | null = null;
 
   get token() {
     return readToken(this.$store);
   }
-
-  private topLevelEditor: 'vditor' | 'tiptap' = 'vditor';
-  private topLevelEditorItems: { text: string; value: string }[] | null = null;
 
   get articleColumnId() {
     const id = this.$route.query.articleColumnId;
@@ -257,6 +261,22 @@ export default class ArticleEditor extends Vue {
       return this.newArticleId;
     }
     return null;
+  }
+
+  get chafanTiptap() {
+    return this.$refs.tiptap as ChafanTiptap;
+  }
+
+  get vditorComponent() {
+    return this.$refs.vditor as any;
+  }
+
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
   }
 
   public async mounted() {
@@ -311,6 +331,97 @@ export default class ArticleEditor extends Vue {
       });
     }
     this.topLevelEditorItems = topLevelEditorItems;
+  }
+
+  public async newEditHandler(payload: {
+    edit: IRichEditorState;
+    isAutosaved: boolean;
+    articleId?: string;
+    writingSessionUUID: string;
+    saveArticleCallback: (article: IArticle) => void;
+  }) {
+    if (this.handlingNewEdit) {
+      return;
+    }
+    this.handlingNewEdit = true;
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (!payload.edit.title || payload.edit.title.length < 5) {
+        if (!payload.isAutosaved) {
+          commitAddNotification(this.$store, {
+            content: '文章标题太短了，不得少于5个字。',
+            color: 'error',
+          });
+        }
+        this.handlingNewEdit = false;
+        return;
+      }
+      if (
+        !payload.edit.rendered_body_text ||
+        payload.edit.rendered_body_text.length < 5 ||
+        !payload.edit.body
+      ) {
+        if (!payload.isAutosaved) {
+          commitAddNotification(this.$store, {
+            content: '文章内容太短了，不得少于5个字。',
+            color: 'error',
+          });
+        }
+        this.handlingNewEdit = false;
+        return;
+      }
+      if (this.articleColumnId !== null && !this.articleId && !payload.articleId) {
+        // FIXME: RichEditor has a local articleId state -- is there a way to prevent this?
+
+        // new article to question
+        const article = await newArticleHandler(
+          this,
+          payload.edit,
+          payload.writingSessionUUID,
+          payload.isAutosaved,
+          this.articleColumnId
+        );
+        if (article) {
+          payload.saveArticleCallback(article);
+          clearLocalEdit('article', article.uuid);
+          this.newArticleId = article.uuid;
+          if (!payload.isAutosaved) {
+            commitAddNotification(this.$store, {
+              content: payload.edit.is_draft ? '草稿已保存' : '已发表',
+              color: 'success',
+            });
+          }
+        }
+      } else if (
+        this.articleColumnId !== null &&
+        (this.articleId || payload.articleId) &&
+        payload.edit.title
+      ) {
+        const articleId = this.articleId ? this.articleId : payload.articleId;
+        if (articleId) {
+          this.newArticleId = articleId;
+          const response = await apiArticle.updateArticle(this.$store.state.main.token, articleId, {
+            updated_title: payload.edit.title,
+            visibility: payload.edit.visibility,
+            is_draft: payload.edit.is_draft,
+            updated_content: {
+              source: payload.edit.body,
+              rendered_text: payload.edit.rendered_body_text || undefined,
+              editor: payload.edit.editor,
+            },
+          });
+          payload.saveArticleCallback(response.data);
+          clearLocalEdit('article', response.data.uuid);
+          if (!payload.isAutosaved) {
+            commitAddNotification(this.$store, {
+              content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
+              color: 'success',
+            });
+            await this.$router.push(`/articles/${articleId}`);
+          }
+        }
+      }
+      this.handlingNewEdit = false;
+    });
   }
 
   private getEditorMode(): editor_T {
@@ -467,97 +578,6 @@ export default class ArticleEditor extends Vue {
     });
   }
 
-  public async newEditHandler(payload: {
-    edit: IRichEditorState;
-    isAutosaved: boolean;
-    articleId?: string;
-    writingSessionUUID: string;
-    saveArticleCallback: (article: IArticle) => void;
-  }) {
-    if (this.handlingNewEdit) {
-      return;
-    }
-    this.handlingNewEdit = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (!payload.edit.title || payload.edit.title.length < 5) {
-        if (!payload.isAutosaved) {
-          commitAddNotification(this.$store, {
-            content: '文章标题太短了，不得少于5个字。',
-            color: 'error',
-          });
-        }
-        this.handlingNewEdit = false;
-        return;
-      }
-      if (
-        !payload.edit.rendered_body_text ||
-        payload.edit.rendered_body_text.length < 5 ||
-        !payload.edit.body
-      ) {
-        if (!payload.isAutosaved) {
-          commitAddNotification(this.$store, {
-            content: '文章内容太短了，不得少于5个字。',
-            color: 'error',
-          });
-        }
-        this.handlingNewEdit = false;
-        return;
-      }
-      if (this.articleColumnId !== null && !this.articleId && !payload.articleId) {
-        // FIXME: RichEditor has a local articleId state -- is there a way to prevent this?
-
-        // new article to question
-        const article = await newArticleHandler(
-          this,
-          payload.edit,
-          payload.writingSessionUUID,
-          payload.isAutosaved,
-          this.articleColumnId
-        );
-        if (article) {
-          payload.saveArticleCallback(article);
-          clearLocalEdit('article', article.uuid);
-          this.newArticleId = article.uuid;
-          if (!payload.isAutosaved) {
-            commitAddNotification(this.$store, {
-              content: payload.edit.is_draft ? '草稿已保存' : '已发表',
-              color: 'success',
-            });
-          }
-        }
-      } else if (
-        this.articleColumnId !== null &&
-        (this.articleId || payload.articleId) &&
-        payload.edit.title
-      ) {
-        const articleId = this.articleId ? this.articleId : payload.articleId;
-        if (articleId) {
-          this.newArticleId = articleId;
-          const response = await apiArticle.updateArticle(this.$store.state.main.token, articleId, {
-            updated_title: payload.edit.title,
-            visibility: payload.edit.visibility,
-            is_draft: payload.edit.is_draft,
-            updated_content: {
-              source: payload.edit.body,
-              rendered_text: payload.edit.rendered_body_text || undefined,
-              editor: payload.edit.editor,
-            },
-          });
-          payload.saveArticleCallback(response.data);
-          clearLocalEdit('article', response.data.uuid);
-          if (!payload.isAutosaved) {
-            commitAddNotification(this.$store, {
-              content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
-              color: 'success',
-            });
-            await this.$router.push(`/articles/${articleId}`);
-          }
-        }
-      }
-      this.handlingNewEdit = false;
-    });
-  }
-
   private cancelHandler() {
     if (this.articleId) {
       this.$router.push(`/articles/${this.articleId}`);
@@ -584,14 +604,6 @@ export default class ArticleEditor extends Vue {
     }
   }
 
-  get chafanTiptap() {
-    return this.$refs.tiptap as ChafanTiptap;
-  }
-
-  get vditorComponent() {
-    return this.$refs.vditor as any;
-  }
-
   private onChangeTopLevelEditor() {
     if (this.vditorComponent && this.chafanTiptap) {
       if (this.topLevelEditor === 'tiptap') {
@@ -602,14 +614,6 @@ export default class ArticleEditor extends Vue {
         this.vditorComponent.init('wysiwyg', undefined, oldContent);
       }
     }
-  }
-
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
-  }
-
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

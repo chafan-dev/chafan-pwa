@@ -37,9 +37,9 @@
                 <v-spacer />
                 <v-btn depressed @click="cancel">取消</v-btn>
                 <v-btn
-                  depressed
                   :disabled="!valid"
                   color="primary"
+                  depressed
                   @click.prevent="handleSubmit(submit)"
                 >
                   发送

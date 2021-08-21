@@ -6,7 +6,7 @@
       <NotificationsManager />
       <v-snackbar :timeout="-1" :value="updateExists" bottom color="primary" right>
         PWA 有新的更新
-        <v-btn v-if="pwaWaiting" text @click="refreshApp"> 升级 </v-btn>
+        <v-btn v-if="pwaWaiting" text @click="refreshApp"> 升级</v-btn>
       </v-snackbar>
       <v-dialog v-model="showLoginPrompt" max-width="600">
         <LoginCard :showTopBar="false" class="py-10" />
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
 import { readIsLoggedIn, readShowLoginPrompt } from '@/store/main/getters';
@@ -59,6 +59,10 @@ export default class App extends CVue {
     commitSetShowLoginPrompt(this.$store, value);
   }
 
+  get pwaWaiting() {
+    return this.registration && this.registration.waiting;
+  }
+
   public async mounted() {
     document.addEventListener(
       'swUpdated',
@@ -86,10 +90,6 @@ export default class App extends CVue {
     if (theme) {
       commitSetTheme(this.$store, theme);
     }
-  }
-
-  get pwaWaiting() {
-    return this.registration && this.registration.waiting;
   }
 
   private refreshApp() {

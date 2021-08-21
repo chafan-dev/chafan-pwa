@@ -5,7 +5,7 @@
       v-model="loadingProgress"
       :indeterminate="loadingProgress === 0"
     />
-    <v-row v-else justify="center" class="mb-12">
+    <v-row v-else class="mb-12" justify="center">
       <v-col
         :class="{
           'col-8': $vuetify.breakpoint.mdAndUp,
@@ -38,7 +38,8 @@
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" class="bottom-btn">
-            <InfoIcon /><span class="ml-1 grey--text">话题信息</span>
+            <InfoIcon />
+            <span class="ml-1 grey--text">话题信息</span>
           </div>
         </template>
         <v-sheet class="pa-2">
@@ -74,6 +75,14 @@ export default class Topic extends Vue {
 
   get id() {
     return this.$route.params.id;
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
+  get isNarrowFeedUI() {
+    return readNarrowUI(this.$store);
   }
 
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
@@ -115,14 +124,6 @@ export default class Topic extends Vue {
       }
     });
     return items;
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
   }
 }
 </script>

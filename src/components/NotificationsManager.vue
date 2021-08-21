@@ -8,7 +8,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { AppNotification } from '@/store/main/state';
 import { commitRemoveNotification } from '@/store/main/mutations';
 import { readFirstNotification } from '@/store/main/getters';

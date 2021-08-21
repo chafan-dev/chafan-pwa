@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { api2 } from '@/api2';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserSearch from '@/components/UserSearch.vue';
 import AccountIcon from '@/components/icons/AccountIcon.vue';

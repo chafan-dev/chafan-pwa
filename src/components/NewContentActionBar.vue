@@ -10,7 +10,7 @@
       </v-dialog>
     </div>
 
-    <v-btn class="mr-1" depressed small @click="showArticleActionDialog = true">写文章 </v-btn>
+    <v-btn class="mr-1" depressed small @click="showArticleActionDialog = true">写文章</v-btn>
     <v-dialog v-model="showArticleActionDialog" max-width="500">
       <v-card>
         <v-card-title primary-title>
@@ -25,15 +25,15 @@
             item-value="uuid"
           />
         </div>
-        <v-card-text> 在「用户中心」中可以创建专栏 </v-card-text>
+        <v-card-text> 在「用户中心」中可以创建专栏</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" small depressed @click="postNewArticle">创建文章</v-btn>
+          <v-btn color="primary" depressed small @click="postNewArticle">创建文章</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small @click="showAnswerActionDialog = true"> 回答 </v-btn>
+    <v-btn class="mr-1" depressed small @click="showAnswerActionDialog = true"> 回答</v-btn>
     <v-dialog v-model="showAnswerActionDialog" max-width="500">
       <v-sheet class="pa-4">
         <RotationList v-slot="{ item }" :items="questionsToAnswer" title="等待回答的问题">
@@ -42,12 +42,12 @@
       </v-sheet>
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true">新分享 </v-btn>
+    <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true">新分享</v-btn>
     <v-dialog v-model="showSubmissionActionDialog" max-width="500">
       <CreateSubmissionForm :showTitle="true" />
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small to="/explore"> 探索 </v-btn>
+    <v-btn class="mr-1" depressed small to="/explore"> 探索</v-btn>
   </div>
 </template>
 

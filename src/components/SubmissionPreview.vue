@@ -2,8 +2,8 @@
   <div :class="theme.feed.submissionPreview.classes">
     <div class="title" style="word-break: normal">
       <router-link
-        :to="'/submissions/' + submission.uuid"
         :class="theme.feed.submissionPreview.link.classes"
+        :to="'/submissions/' + submission.uuid"
       >
         {{ submission.title }}
       </router-link>
@@ -42,7 +42,7 @@ import SiteBtn from '@/components/SiteBtn.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 import { CVue } from '@/common';

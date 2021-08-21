@@ -41,9 +41,9 @@
                 v-model="selectedEditorMode"
                 :disabled="changingMySettings"
                 :items="editorModeItems"
-                label="编辑器偏好"
                 item-text="text"
                 item-value="value"
+                label="编辑器偏好"
                 @change="onChangeEditorMode"
               />
               <v-select
@@ -51,9 +51,9 @@
                 v-model="selectedTheme"
                 :disabled="changingMySettings"
                 :items="themeItems"
-                label="主题偏好"
                 item-text="text"
                 item-value="value"
+                label="主题偏好"
                 @change="onChangeTheme"
               />
               <div v-if="userProfile.feed_settings">
@@ -61,13 +61,13 @@
                   <span
                     >动态中过滤的内容：
                     <v-chip
-                      small
                       v-for="(origin, idx) in userProfile.feed_settings.blocked_origins"
                       :key="idx"
+                      small
                     >
                       <template v-if="origin.origin_type === 'site'">
                         <SiteName :subdomain="origin.subdomain" />
-                        <CloseIcon @click="unblockOrigin(origin)" class="ml-1" />
+                        <CloseIcon class="ml-1" @click="unblockOrigin(origin)" />
                       </template>
                     </v-chip>
                   </span>
@@ -75,13 +75,13 @@
               </div>
               <div>
                 <div class="d-flex">
-                  <v-btn class="mr-2" depressed small @click="showExportDialog = true">导出 </v-btn>
-                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true">实验室 </v-btn>
+                  <v-btn class="mr-2" depressed small @click="showExportDialog = true">导出</v-btn>
+                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true">实验室</v-btn>
                 </div>
 
                 <v-dialog v-model="showExportDialog" max-width="500px">
                   <v-card>
-                    <v-card-title> 导出 </v-card-title>
+                    <v-card-title> 导出</v-card-title>
                     <v-card-text>
                       「茶饭」支持用户的数据所有权和导出自由，所以你随时可以导出你拥有的数据和创作内容。目前自动导出尚未实现，请直接联系
                       takeout@cha.fan，我们将在一周内将你的数据快照发送到注册用的邮箱。
@@ -91,7 +91,7 @@
 
                 <v-dialog v-model="showLabsDialog" max-width="500px">
                   <v-card>
-                    <v-card-title> 实验室 </v-card-title>
+                    <v-card-title> 实验室</v-card-title>
                     <v-card-text>
                       <div>
                         <v-switch
@@ -713,6 +713,7 @@ export default class Dashboard extends CVue {
       });
     });
   }
+
   private async onChangeTheme() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.changingMySettings = true;

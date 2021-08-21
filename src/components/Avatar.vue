@@ -1,5 +1,5 @@
 <template>
-  <v-avatar v-if="userPreview" color="primary" :size="size" tile>
+  <v-avatar v-if="userPreview" :size="size" color="primary" tile>
     <v-img
       :src="userPreview.avatar_url ? userPreview.avatar_url : '/img/default-avatar.png'"
       alt="Avatar"
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { IUserPreview } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Avatar extends Vue {

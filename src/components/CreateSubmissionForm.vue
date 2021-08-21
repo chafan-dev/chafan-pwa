@@ -1,21 +1,19 @@
 <template>
   <v-card>
     <ValidationObserver v-slot="{ handleSubmit }">
-      <v-card-title v-if="showTitle" class="primary--text headline">
-        {{ $t('分享') }}
-      </v-card-title>
+      <v-card-title v-if="showTitle" class="primary--text headline"> 分享 </v-card-title>
       <v-card-text>
         <v-autocomplete
           v-if="site === undefined"
           v-model="selectedSite"
           :items="siteProfiles"
-          :label="$t('Circle') + $t(' (加入后在此处可见, 「大广场」不限话题)')"
           item-text="site.name"
           item-value="site"
+          label="圈子 (加入后在此处可见, 「大广场」不限话题)"
         />
-        <v-textarea v-model="newSubmissionTitle" :label="$t('Title')" auto-grow dense rows="1" />
+        <v-textarea v-model="newSubmissionTitle" auto-grow dense label="标题" rows="1" />
         <ValidationProvider v-slot="{ errors }" name="URL" rules="url">
-          <v-text-field v-model="newSubmissionURL" :label="$t('URL (optional)')" />
+          <v-text-field v-model="newSubmissionURL" label="URL（可选）" />
           <span class="error--text">{{ errors[0] }}</span>
         </ValidationProvider>
       </v-card-text>
@@ -24,11 +22,11 @@
         <v-btn
           :disabled="postNewSubmissionIntermediate"
           color="primary"
-          small
           depressed
+          small
           @click="handleSubmit(postNewSubmission)"
         >
-          {{ $t('提交') }}
+          提交
           <v-progress-circular v-if="postNewSubmissionIntermediate" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
@@ -38,7 +36,7 @@
 
 <script lang="ts">
 import { apiSubmission } from '@/api/submission';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { ISite, IUserSiteProfile } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
@@ -85,14 +83,14 @@ export default class CreateSubmissionForm extends Vue {
       siteUUID = this.selectedSite.uuid;
     } else {
       commitAddNotification(this.$store, {
-        content: this.$t('所选圈子不能为空').toString(),
+        content: '所选圈子不能为空',
         color: 'error',
       });
       return;
     }
     if (this.newSubmissionTitle.length < 5) {
       commitAddNotification(this.$store, {
-        content: this.$t('Title is too short: minimum length 5 characters.').toString(),
+        content: '标题太短了',
         color: 'error',
       });
       return;
@@ -109,7 +107,7 @@ export default class CreateSubmissionForm extends Vue {
         try {
           localStorage.setItem('new-submission', 'true');
         } catch (e) {}
-        this.$router.push(`/submissions/${response.data.uuid}`);
+        await this.$router.push(`/submissions/${response.data.uuid}`);
       }
     });
   }

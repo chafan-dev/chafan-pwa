@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import { api } from '@/api';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import UserSearch from '@/components/UserSearch.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import AccountIcon from '@/components/icons/AccountIcon.vue';

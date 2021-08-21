@@ -98,7 +98,8 @@
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" class="bottom-btn">
-            <InfoIcon /><span class="ml-1 grey--text">圈子信息</span>
+            <InfoIcon />
+            <span class="ml-1 grey--text">圈子信息</span>
           </div>
         </template>
         <v-sheet class="pa-2">

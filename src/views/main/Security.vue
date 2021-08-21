@@ -124,12 +124,12 @@
                 <ValidationProvider v-slot="{ errors }" name="email" rules="email">
                   <v-text-field
                     v-model="newEmail"
-                    type="text"
                     :label="
                       editLoginMode === 'email'
                         ? $t('更改后的主要邮箱地址')
                         : $t('新添加的次要邮箱地址')
                     "
+                    type="text"
                   >
                     <template v-slot:prepend>
                       <EmailIcon />
@@ -238,16 +238,19 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import {
+  IAuditLog,
   IUserProfileUpdate,
   IUserUpdateLoginPhoneNumber,
-  IUserUpdateSecondaryEmails,
   IUserUpdatePrimaryEmail,
+  IUserUpdateSecondaryEmails,
   IVerificationCodeRequest,
-  IAuditLog,
 } from '@/interfaces';
 import { readUserProfile } from '@/store/main/getters';
-import { dispatchCheckApiError, dispatchUpdateUserProfile } from '@/store/main/actions';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import {
+  dispatchCaptureApiError,
+  dispatchCheckApiError,
+  dispatchUpdateUserProfile,
+} from '@/store/main/actions';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { apiMe } from '@/api/me';
 import { api } from '@/api';

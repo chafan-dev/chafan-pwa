@@ -5,32 +5,32 @@
         v-show="topLevelEditor === 'tiptap'"
         ref="tiptap"
         :class="{ 'mt-2': focusMode }"
+        :initial-content="topLevelEditor === 'tiptap' ? initialContent : undefined"
         :onEditorChange="onEditorChange"
         class="mb-2"
-        :initial-content="topLevelEditor === 'tiptap' ? initialContent : undefined"
       />
 
       <VditorCF
         v-show="topLevelEditor === 'vditor'"
         ref="vditor"
         :class="{ 'mt-2': focusMode }"
-        :onEditorChange="onEditorChange"
+        :editorMode="contentEditor"
+        :initial-content="topLevelEditor === 'vditor' ? initialContent : undefined"
         :isMobile="isMobile"
+        :onEditorChange="onEditorChange"
         :vditorUploadConfig="vditorUploadConfig"
         class="mb-2"
-        :initial-content="topLevelEditor === 'vditor' ? initialContent : undefined"
-        :editorMode="contentEditor"
       />
     </template>
 
     <!-- Editor controls -->
     <div class="d-flex align-center">
       <v-btn
+        :disabled="savingIntermediate"
         color="primary"
         depressed
         small
         @click="submitEdit(true)"
-        :disabled="savingIntermediate"
       >
         发表答案
       </v-btn>
@@ -38,11 +38,11 @@
       <span class="ml-2">
         <!-- NOTE: wrap in span to avoid ml-2 problem when disabled during progress -->
         <v-btn
+          :disabled="savingIntermediate"
           color="info"
           depressed
           small
           @click="submitEdit(false)"
-          :disabled="savingIntermediate"
         >
           保存草稿
         </v-btn>
@@ -51,11 +51,11 @@
       <v-btn class="ml-2" depressed small @click="$emit('cancel-edit')">取消</v-btn>
       <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
       <v-progress-circular
-        class="ml-2"
         v-if="savingIntermediate"
-        size="20"
+        class="ml-2"
         color="primary"
         indeterminate
+        size="20"
       />
       <v-spacer />
       <span
@@ -121,8 +121,8 @@
 
       <v-dialog v-model="showDeleteDraftDialog" max-width="400">
         <v-card>
-          <v-card-title primary-title> 删除当前草稿？ </v-card-title>
-          <v-card-text> 不影响已发表版本 </v-card-text>
+          <v-card-title primary-title> 删除当前草稿？</v-card-title>
+          <v-card-text> 不影响已发表版本</v-card-text>
           <v-card-actions>
             <v-spacer />
             <v-btn color="warning" @click="deleteDraft">确认</v-btn>
@@ -166,7 +166,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
@@ -245,9 +245,52 @@ export default class AnswerEditor extends Vue {
   private showDeleteDraftDialog = false;
   private topLevelEditor: 'tiptap' | 'vditor' = 'vditor';
   private savingIntermediate: boolean = false;
+  private contentLoaded: boolean = false;
+  private initialContent: string = '';
+  private contentEditor: editor_T = 'wysiwyg';
+  private answerEditHandler: AnswerEditHandler = new AnswerEditHandler(
+    this,
+    this.answerId,
+    this.questionIdProp,
+    this.updatedAnswerCallback
+  );
 
   get token() {
     return this.$store.state.main.token;
+  }
+
+  // For local edit saving identification
+  get contentId() {
+    if (this.answerId) {
+      return this.answerId;
+    }
+    if (this.questionIdProp) {
+      return 'answer-of-' + this.questionIdProp;
+    }
+    return null;
+  }
+
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
+  }
+
+  @Emit('delete-draft')
+  async deleteDraft() {
+    this.showDeleteDraftDialog = false;
+    clearLocalEdit('answer', this.contentId);
+    await dispatchCaptureApiError(this.$store, async () => {
+      if (this.answerId) {
+        await apiAnswer.deleteAnswerDraft(this.token, this.answerId);
+        commitAddNotification(this.$store, {
+          content: '草稿已删除',
+          color: 'success',
+        });
+      }
+    });
   }
 
   private mounted() {
@@ -267,7 +310,7 @@ export default class AnswerEditor extends Vue {
 
     const topLevelEditorItems = [
       {
-        text: this.$t('Vditor').toString(),
+        text: 'Vditor 编辑器',
         value: 'vditor',
       },
     ];
@@ -332,10 +375,6 @@ export default class AnswerEditor extends Vue {
     };
   }
 
-  private contentLoaded: boolean = false;
-  private initialContent: string = '';
-  private contentEditor: editor_T = 'wysiwyg';
-
   private initEditor(body: string | null, editor: editor_T) {
     if (editor === 'tiptap') {
       this.topLevelEditor = 'tiptap';
@@ -370,13 +409,6 @@ export default class AnswerEditor extends Vue {
     };
   }
 
-  private answerEditHandler: AnswerEditHandler = new AnswerEditHandler(
-    this,
-    this.answerId,
-    this.questionIdProp,
-    this.updatedAnswerCallback
-  );
-
   @Emit('updated-answer')
   private updatedAnswerCallback(answer: IAnswer, isAutoSaved: boolean) {
     return {
@@ -404,17 +436,6 @@ export default class AnswerEditor extends Vue {
         this.lastAutoSavedAt = answer.updated_at;
       },
     });
-  }
-
-  // For local edit saving identification
-  get contentId() {
-    if (this.answerId) {
-      return this.answerId;
-    }
-    if (this.questionIdProp) {
-      return 'answer-of-' + this.questionIdProp;
-    }
-    return null;
   }
 
   private onEditorChange(textContent: string) {
@@ -448,7 +469,7 @@ export default class AnswerEditor extends Vue {
           this.historyDialog = true;
         } else {
           commitAddNotification(this.$store, {
-            content: this.$t('尚无历史发表存档').toString(),
+            content: '尚无历史发表存档',
             color: 'info',
           });
         }
@@ -459,21 +480,6 @@ export default class AnswerEditor extends Vue {
   private loadArchive(archive: IAnswerArchive) {
     this.initEditor(archive.content.source, this.getEditorMode());
     this.historyDialog = false;
-  }
-
-  @Emit('delete-draft')
-  async deleteDraft() {
-    this.showDeleteDraftDialog = false;
-    clearLocalEdit('answer', this.contentId);
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answerId) {
-        await apiAnswer.deleteAnswerDraft(this.token, this.answerId);
-        commitAddNotification(this.$store, {
-          content: this.$t('草稿已删除').toString(),
-          color: 'success',
-        });
-      }
-    });
   }
 
   private async changeArchivePage() {
@@ -501,14 +507,6 @@ export default class AnswerEditor extends Vue {
       this.contentEditor = 'wysiwyg';
       (this.$refs.vditor as any).init('wysiwyg', undefined, oldContent);
     }
-  }
-
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
-  }
-
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

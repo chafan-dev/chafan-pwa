@@ -4,8 +4,8 @@
     <SubmissionPreview
       v-for="submission in submissions"
       :key="submission.uuid"
-      class="ma-4"
       :submission="submission"
+      class="ma-4"
     />
   </div>
 </template>

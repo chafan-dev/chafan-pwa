@@ -34,17 +34,17 @@
       <v-textarea
         v-model="messageCreate.body"
         :disabled="sendMsgIntermediate"
+        hide-details
         label="新消息"
         outlined
-        hide-details
       />
       <div class="d-flex py-2">
         <v-spacer />
         <v-btn
-          small
-          depressed
           :disabled="sendMsgIntermediate"
           color="primary"
+          depressed
+          small
           @click="commitNewMessage"
         >
           发送
@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { api } from '@/api';
 import { IChannel, IMessage, IMessageCreate } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';

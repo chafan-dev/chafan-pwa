@@ -2,11 +2,11 @@ import axios from 'axios';
 import { apiUrl } from '@/env';
 import {
   IAnswer,
+  IAnswerArchive,
   IAnswerCreate,
   IAnswerDraft,
   IAnswerUpdate,
   IAnswerUpvotes,
-  IAnswerArchive,
   IMsg,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';

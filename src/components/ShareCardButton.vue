@@ -11,15 +11,15 @@
       </v-card>
     </v-dialog>
 
-    <v-btn small depressed @click="showSharingCardDialog" class="slim-btn">
+    <v-btn class="slim-btn" depressed small @click="showSharingCardDialog">
       <ShareIcon small />
-      <span class="ml-1" v-if="$vuetify.breakpoint.mdAndUp">转发</span>
+      <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">转发</span>
     </v-btn>
   </span>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 
 import QRious from 'qrious';

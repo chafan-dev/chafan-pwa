@@ -9,7 +9,7 @@
       </div>
       <v-card-actions class="ma-2">
         <v-spacer />
-        <v-btn color="primary" small depressed @click="continueUserAgreement">同意</v-btn>
+        <v-btn color="primary" depressed small @click="continueUserAgreement">同意</v-btn>
       </v-card-actions>
     </base-card>
     <v-card v-show="showFabHint" color="white" elevation="2" rounded>

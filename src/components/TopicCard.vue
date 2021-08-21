@@ -10,20 +10,20 @@
       </div>
       <div class="mt-2">
         <v-btn
-          small
-          depressed
           v-if="topicSubscription.subscribed_by_me"
           :disabled="cancelSubscriptionIntermediate"
+          depressed
+          small
           @click="cancelSubscription"
         >
           已关注 ({{ topicSubscription.subscription_count }})
         </v-btn>
         <v-btn
-          small
-          depressed
           v-else
           :disabled="subscribeIntermediate"
           color="primary"
+          depressed
+          small
           @click="subscribe"
         >
           关注 ({{ topicSubscription.subscription_count }})
@@ -38,7 +38,7 @@ import { apiMe } from '@/api/me';
 import { ITopic, IUserTopicSubscription } from '@/interfaces';
 import TopicSearch from '@/components/TopicSearch.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { apiTopic } from '@/api/topic';
 
 @Component({

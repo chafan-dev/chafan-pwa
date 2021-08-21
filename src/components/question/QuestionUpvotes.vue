@@ -2,13 +2,13 @@
   <span>
     <Upvote
       v-if="upvotes !== null"
-      :upvotes-count="upvotes.count"
-      :upvoted="upvotes.upvoted"
       :disabled="disabled"
       :on-cancel-vote="cancelUpvote"
       :on-vote="upvote"
+      :upvoted="upvotes.upvoted"
+      :upvotes-count="upvotes.count"
     />
-    <v-skeleton-loader type="button" height="28" width="48" v-else />
+    <v-skeleton-loader v-else height="28" type="button" width="48" />
   </span>
 </template>
 
@@ -29,12 +29,12 @@ export default class QuestionUpvotes extends Vue {
 
   private upvotes: IQuestionUpvotes | null = null;
 
-  async mounted() {
-    this.upvotes = (await apiQuestion.getUpvotes(readToken(this.$store), this.uuid)).data;
-  }
-
   get token() {
     return readToken(this.$store);
+  }
+
+  async mounted() {
+    this.upvotes = (await apiQuestion.getUpvotes(readToken(this.$store), this.uuid)).data;
   }
 
   private async upvote() {

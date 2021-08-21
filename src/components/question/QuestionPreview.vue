@@ -2,8 +2,8 @@
   <div :class="theme.feed.questionPreview.classes">
     <div class="title" style="word-break: normal">
       <router-link
-        :to="'/questions/' + questionPreview.uuid"
         :class="theme.feed.questionPreview.link.classes"
+        :to="'/questions/' + questionPreview.uuid"
       >
         {{ questionPreview.title }}
       </router-link>
@@ -19,8 +19,8 @@
             'mr-2': $vuetify.breakpoint.mobile,
             'mr-6': !$vuetify.breakpoint.mobile,
           }"
-          :uuid="questionPreview.uuid"
           :disabled="!userProfile || userProfile.uuid === questionPreview.author.uuid"
+          :uuid="questionPreview.uuid"
         />
       </v-lazy>
       <div
@@ -49,7 +49,7 @@
 <script lang="ts">
 import { IQuestionPreview } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';

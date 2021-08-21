@@ -6,7 +6,7 @@
     <div>
       <v-expand-transition>
         <div v-show="loadingActivities" class="text-center">
-          <v-progress-circular size="20" color="primary" indeterminate />
+          <v-progress-circular color="primary" indeterminate size="20" />
         </div>
       </v-expand-transition>
 
@@ -19,15 +19,15 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn primary small depressed @click="usersDialog = false">隐藏</v-btn>
+            <v-btn depressed primary small @click="usersDialog = false">隐藏</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
       <div
-        :class="theme.feed.activityCard.classes"
         v-for="activity in combinedActivities.items"
         :key="activity.id"
+        :class="theme.feed.activityCard.classes"
       >
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
@@ -50,17 +50,17 @@
             <span class="text-caption grey--text mr-1">{{
               $dayjs.utc(activity.created_at).local().fromNow()
             }}</span>
-            <v-menu offset-y v-if="activity.origins && activity.origins.length">
+            <v-menu v-if="activity.origins && activity.origins.length" offset-y>
               <template v-slot:activator="{ on, attrs }">
-                <DotsIcon small v-bind="attrs" v-on="on" />
+                <DotsIcon v-bind="attrs" v-on="on" small />
               </template>
               <v-list>
                 <!-- block origin actions -->
                 <template v-if="activity.origins">
                   <v-list-item
                     v-for="(origin, idx) in activity.origins"
-                    dense
                     :key="idx"
+                    dense
                     @click="blockOrigin(origin)"
                   >
                     <v-list-item-icon>
@@ -195,7 +195,6 @@ import { apiActivity } from '@/api/activity';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import SiteName from '@/components/SiteName.vue';
 import { commitAddNotification } from '@/store/main/mutations';
-import { filter } from 'lodash';
 
 @Component({
   components: {
@@ -304,6 +303,40 @@ export default class UserFeed extends CVue {
   private usersDialog = false;
   private usersInDialog: IUserPreview[] = [];
 
+  public async loadNewActivities() {
+    await dispatchCaptureApiError(this.$store, async () => {
+      this.loadingActivities = true;
+      let before_activity_id: number | undefined = undefined;
+      const newActivities: IActivity[] = [];
+      let fetching = true;
+      while (fetching) {
+        const response = await apiActivity.getActivities(this.token, {
+          limit: this.loadingLimit,
+          before_activity_id: before_activity_id,
+        });
+        const activities: IActivity[] = response.data;
+        if (activities.length === 0) {
+          break;
+        }
+        for (const activity of activities) {
+          if (
+            this.combinedActivities.maxActivityId &&
+            activity.id <= this.combinedActivities.maxActivityId
+          ) {
+            fetching = false;
+            break;
+          }
+          newActivities.push(activity);
+        }
+        before_activity_id = activities[activities.length - 1]!.id;
+      }
+      for (const activity of newActivities) {
+        this.combinedActivities.add(activity, 'head');
+      }
+      this.loadingActivities = false;
+    });
+  }
+
   private async loadActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
       const response = await apiActivity.getActivities(this.token, {
@@ -372,40 +405,6 @@ export default class UserFeed extends CVue {
       });
     }
     this.preloadMoreActivitiesIntermediate = false;
-  }
-
-  public async loadNewActivities() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.loadingActivities = true;
-      let before_activity_id: number | undefined = undefined;
-      const newActivities: IActivity[] = [];
-      let fetching = true;
-      while (fetching) {
-        const response = await apiActivity.getActivities(this.token, {
-          limit: this.loadingLimit,
-          before_activity_id: before_activity_id,
-        });
-        const activities: IActivity[] = response.data;
-        if (activities.length === 0) {
-          break;
-        }
-        for (const activity of activities) {
-          if (
-            this.combinedActivities.maxActivityId &&
-            activity.id <= this.combinedActivities.maxActivityId
-          ) {
-            fetching = false;
-            break;
-          }
-          newActivities.push(activity);
-        }
-        before_activity_id = activities[activities.length - 1]!.id;
-      }
-      for (const activity of newActivities) {
-        this.combinedActivities.add(activity, 'head');
-      }
-      this.loadingActivities = false;
-    });
   }
 
   private showUsersDialog(users: IUserPreview[]) {

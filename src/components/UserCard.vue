@@ -165,7 +165,7 @@
 <script lang="ts">
 import { IUserFollows, IUserPreview, IUserPublic } from '@/interfaces';
 import { api } from '@/api';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';

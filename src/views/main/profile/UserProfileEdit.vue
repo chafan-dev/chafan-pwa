@@ -7,7 +7,7 @@
             <v-card-title primary-title>
               <div class="headline primary--text">更新个人资料</div>
               <v-spacer></v-spacer>
-              <v-btn :to="`/users/${userProfile.handle}`" depressed small>个人资料 </v-btn>
+              <v-btn :to="`/users/${userProfile.handle}`" depressed small>个人资料</v-btn>
             </v-card-title>
             <div class="pa-4">
               <template>
@@ -74,8 +74,8 @@
                       </ValidationProvider>
                       <v-text-field
                         v-model="userUpdateMe.personal_introduction"
-                        label="个人签名"
                         clearable
+                        label="个人签名"
                       />
                     </v-col>
                   </v-row>
@@ -84,11 +84,11 @@
                     <v-col>
                       <div class="d-flex">
                         <v-btn
+                          class="slim-btn"
+                          color="primary"
                           depressed
                           small
-                          color="primary"
                           @click="showAboutEditor = !showAboutEditor"
-                          class="slim-btn"
                           >打开「关于我」编辑
                         </v-btn>
                         <v-spacer />
@@ -97,7 +97,7 @@
                             <v-card-title>确认清除「关于我」的内容？</v-card-title>
                             <v-card-actions>
                               <v-spacer />
-                              <v-btn color="warning" small depressed @click="clearAboutMe"
+                              <v-btn color="warning" depressed small @click="clearAboutMe"
                                 >确认
                               </v-btn>
                             </v-card-actions>
@@ -110,18 +110,18 @@
                           <ChafanTiptap
                             v-show="aboutEditor === 'tiptap'"
                             ref="tiptap"
-                            :onEditorChange="onEditorChange"
                             :initial-content="userProfile.about"
+                            :onEditorChange="onEditorChange"
                           />
 
                           <VditorCF
                             v-show="aboutEditor !== 'tiptap'"
                             ref="vditor"
-                            :onEditorChange="onEditorChange"
-                            :isMobile="isMobile"
-                            :vditorUploadConfig="vditorUploadConfig"
-                            :initial-content="userProfile.about"
                             :editor-mode="aboutEditor"
+                            :initial-content="userProfile.about"
+                            :isMobile="isMobile"
+                            :onEditorChange="onEditorChange"
+                            :vditorUploadConfig="vditorUploadConfig"
                           />
                         </div>
                       </v-expand-transition>
@@ -129,34 +129,34 @@
                       <!-- TODO: validate -->
                       <v-text-field
                         v-model="userUpdateMe.homepage_url"
-                        label="个人主页"
                         clearable
+                        label="个人主页"
                       />
                       <v-text-field
                         v-model="userUpdateMe.github_username"
-                        label="Github 用户名"
                         clearable
+                        label="Github 用户名"
                       />
                       <v-text-field
                         v-model="userUpdateMe.twitter_username"
-                        label="Twitter 用户名"
                         clearable
+                        label="Twitter 用户名"
                       />
                       <v-text-field
                         v-model="userUpdateMe.linkedin_url"
-                        label="Linkedin 主页地址"
                         clearable
+                        label="Linkedin 主页地址"
                       />
 
                       <v-combobox
                         v-model="newResidencyTopicNames"
                         :delimiters="[',', '，', '、']"
-                        label="居住过的地方"
                         hide-selected
+                        label="居住过的地方"
                         multiple
                         small-chips
                       />
-                      <v-text-field v-model="newProfessionTopicName" label="所在行业" clearable />
+                      <v-text-field v-model="newProfessionTopicName" clearable label="所在行业" />
 
                       <div>
                         <span class="title">教育经历</span>
@@ -165,15 +165,15 @@
                           <v-col>{{ $t(exp.level_name) }}</v-col>
                           <v-col class="ml-2">
                             <v-btn
+                              class="mr-2"
                               color="warning"
                               depressed
                               small
                               @click="removeFrom(index, eduExps)"
-                              class="mr-2"
                             >
                               删除
                             </v-btn>
-                            <v-btn depressed small class="mr-2" @click="moveUpFrom(index, eduExps)">
+                            <v-btn class="mr-2" depressed small @click="moveUpFrom(index, eduExps)">
                               <UpIcon />
                             </v-btn>
                             <v-btn depressed small @click="moveDownFrom(index, eduExps)">
@@ -213,8 +213,8 @@
                           <v-col>{{ exp.position_topic_name }}</v-col>
                           <v-col class="ml-2">
                             <v-btn
-                              color="warning"
                               class="mr-2"
+                              color="warning"
                               depressed
                               small
                               @click="removeFrom(index, workExps)"
@@ -222,9 +222,9 @@
                               删除
                             </v-btn>
                             <v-btn
+                              class="mr-2"
                               depressed
                               small
-                              class="mr-2"
                               @click="moveUpFrom(index, workExps)"
                             >
                               <UpIcon />
@@ -340,6 +340,7 @@ export default class UserProfileEdit extends Vue {
   private aboutEditor: editor_T = 'wysiwyg';
   private showAboutEditor: boolean = false;
   private showClearAboutMe: boolean = false;
+  private categoryTopics: ITopic[] | null = null;
 
   get userProfile() {
     return readUserProfile(this.$store);
@@ -349,7 +350,13 @@ export default class UserProfileEdit extends Vue {
     return readToken(this.$store);
   }
 
-  private categoryTopics: ITopic[] | null = null;
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get vditorUploadConfig() {
+    return getVditorUploadConfig(readToken(this.$store));
+  }
 
   public async mounted() {
     const userProfile = readUserProfile(this.$store);
@@ -629,14 +636,6 @@ export default class UserProfileEdit extends Vue {
     this.showAboutEditor = false;
     this.showClearAboutMe = false;
     this.userUpdateMe.about = null;
-  }
-
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
-  }
-
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
   }
 }
 </script>

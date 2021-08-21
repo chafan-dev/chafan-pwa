@@ -1,14 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
-import {
-  IComment,
-  ICommentCreate,
-  ICommentUpdate,
-  ICommentUpvotes,
-  IMsg,
-  IQuestionUpvotes,
-} from '@/interfaces';
+import { IComment, ICommentCreate, ICommentUpdate, ICommentUpvotes, IMsg } from '@/interfaces';
 
 export const apiComment = {
   async postComment(token: string, payload: ICommentCreate) {
