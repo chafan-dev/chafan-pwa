@@ -13263,8 +13263,8 @@ vuetify-loader@^1.7.2:
 
 vuetify@^2.5.x:
   version "2.5.8"
-  resolved "https://registry.nlark.com/vuetify/download/vuetify-2.5.8.tgz#a23e6a7e77b77de0744b53cf1e7c9d40efac0635"
-  integrity sha1-oj5qfne3feB0S1PPHnydQO+sBjU=
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.5.8.tgz#a23e6a7e77b77de0744b53cf1e7c9d40efac0635"
+  integrity sha512-paLmNhKTYFD41+14rIHnCo+P1jHbUzwBiMowxs5qXVq8RdRMqRmcy05Sfse1WUu90amPGK2fIFQq5rL2N8zqZg==
 
 vuex@^3.6.2:
   version "3.6.2"
