@@ -236,7 +236,7 @@ export const themeDefs: { [key in ThemeType]: IThemeDef } = {
         },
       },
       activityCard: {
-        classes: 'mt-3 shadow-card',
+        classes: 'ma-4 shadow-card',
         verb: {
           classes: '',
         },
@@ -282,7 +282,7 @@ export const themeDefs: { [key in ThemeType]: IThemeDef } = {
     },
     feed: {
       activityCard: {
-        classes: 'mt-3 shadow-card-blue rounded-lg',
+        classes: 'ma-4 shadow-card-blue rounded-lg',
         verb: {
           classes: 'grey--text',
         },
