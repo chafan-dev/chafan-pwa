@@ -20,7 +20,7 @@
           <v-select
             v-model="newArticleColumnUUID"
             :items="myArticleColumns"
-            :label="$t('专栏')"
+            label="专栏"
             item-text="name"
             item-value="uuid"
           />
@@ -96,10 +96,7 @@ export default class NewContentActionBar extends Vue {
       this.$router.push(`/article-editor?articleColumnId=${this.newArticleColumnUUID}`);
     } else {
       commitAddNotification(this.$store, {
-        content:
-          this.$t('请选择一个专栏发布文章').toString() +
-          ', ' +
-          this.$t('在「用户中心」中可以创建专栏').toString(),
+        content: '请选择一个专栏发布文章，在「用户中心」中可以创建专栏',
         color: 'info',
       });
     }

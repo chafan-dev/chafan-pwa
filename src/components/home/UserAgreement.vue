@@ -1,7 +1,7 @@
 <template>
   <v-overlay v-model="overlay" opacity="0.5" z-index="10">
     <base-card v-show="showUserAgreement" color="white" elevation="2" rounded>
-      <v-card-title class="primary--text">{{ $t('使用前必读') }}</v-card-title>
+      <v-card-title class="primary--text">使用前必读</v-card-title>
       <div class="black--text ma-4">
         请仔细阅读<a class="text-decoration-none" href="https://about.cha.fan/docs"
           >本网站相关文档</a
@@ -13,7 +13,7 @@
       </v-card-actions>
     </base-card>
     <v-card v-show="showFabHint" color="white" elevation="2" rounded>
-      <v-card-title class="primary--text">{{ $t('Try the explore button') }} ↘</v-card-title>
+      <v-card-title class="primary--text">尝试「探索」按钮 ↘</v-card-title>
     </v-card>
   </v-overlay>
 </template>

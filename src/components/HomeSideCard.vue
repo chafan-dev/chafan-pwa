@@ -3,11 +3,11 @@
     <div class="mb-2">
       <div class="d-flex align-center justify-space-between mb-4">
         <div class="headline">
-          <div class="headline primary--text">{{ $t('My Circles') }}</div>
+          <div class="headline primary--text">我的圈子</div>
         </div>
 
         <div class="d-flex mt-1">
-          <v-btn depressed small @click="showCreateSiteDialog = true">{{ $t('创建圈子') }}</v-btn>
+          <v-btn depressed small @click="showCreateSiteDialog = true">创建圈子</v-btn>
 
           <v-dialog v-model="showCreateSiteDialog" max-width="500">
             <CreateSiteCard />
@@ -33,15 +33,15 @@
             @click="showAllSiteProfilesDialog = true"
           >
             <MoreIcon />
-            {{ $t('More') }}
+            更多
           </v-btn>
           <v-btn class="mt-1" color="info" depressed outlined small to="/explore?tab=sites">
-            {{ $t('所有圈子') }}
+            所有圈子
           </v-btn>
         </div>
         <v-dialog v-model="showAllSiteProfilesDialog">
           <v-card>
-            <v-card-title>{{ $t('My Circles') }}</v-card-title>
+            <v-card-title>我的圈子</v-card-title>
             <v-card-text>
               <SiteBtn
                 v-for="profile in siteProfiles"
@@ -56,7 +56,7 @@
 
     <v-divider />
     <div class="my-3">
-      <div class="headline">{{ $t('Pinned questions') }}</div>
+      <div class="headline">置顶问题</div>
       <v-skeleton-loader v-if="loadingPinnedQuestions" type="paragraph" />
       <ul v-else class="my-3">
         <li v-for="question in questions" :key="question.uuid">

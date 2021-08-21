@@ -1,7 +1,7 @@
 <template>
   <v-expand-transition>
     <v-card v-show="showHelp" class="ma-3 pa-3">
-      <div class="headline primary--text">{{ $t('Help') }}</div>
+      <div class="headline primary--text">帮助</div>
       <div>
         <ul>
           <li>

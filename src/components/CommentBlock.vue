@@ -72,7 +72,7 @@ export default class CommentBlock extends Vue {
     const editor = this.$refs.simpleEditor as SimpleEditor;
     if (!editor.content || editor.content.length === 0) {
       commitAddNotification(this.$store, {
-        content: this.$t("Comment can't be empty.").toString(),
+        content: '评论不能为空',
         color: 'error',
       });
       return;

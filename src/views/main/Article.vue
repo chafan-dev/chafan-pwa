@@ -119,14 +119,12 @@
               <v-dialog v-model="confirmDeleteDialog" max-width="300">
                 <v-card>
                   <v-card-title primary-title>
-                    <div class="headline primary--text">
-                      {{ $t('确定永久删除文章及其所有历史版本？') }}
-                    </div>
+                    <div class="headline primary--text">确定永久删除文章及其所有历史版本？</div>
                   </v-card-title>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn class="mr-1" depressed small @click="confirmDeleteDialog = false"
-                      >{{ $t('No') }}
+                    <v-btn class="mr-1" depressed small @click="confirmDeleteDialog = false">
+                      取消
                     </v-btn>
                     <v-btn
                       :disabled="deleteArticleIntermediate"
@@ -135,7 +133,8 @@
                       depressed
                       small
                       @click="deleteArticle"
-                      >{{ $t('Yes') }}
+                    >
+                      确定
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -163,9 +162,7 @@
 
             <!-- Column of variable width -->
             <v-col v-if="$vuetify.breakpoint.mdAndUp && article.view_times" md="auto">
-              <span class="text-caption grey--text ma-2">{{
-                $t('已被阅读n次', { times: article.view_times })
-              }}</span>
+              <span class="text-caption grey--text ma-2"> 已被阅读{{ article.view_times }}次 </span>
             </v-col>
           </v-row>
 

@@ -4,7 +4,7 @@
       <span class="title">{{ title }}</span>
       <v-spacer />
       <v-btn color="secondary" outlined small @click="rotate">
-        <span class="mr-1">{{ $t('换一批') }}</span>
+        <span class="mr-1">换一批</span>
         <RefreshIcon />
       </v-btn>
     </div>

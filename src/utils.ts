@@ -128,7 +128,7 @@ export const newAnswerHandler = async (
 ) => {
   if (edit.body && (!edit.rendered_body_text || edit.rendered_body_text.length < 5)) {
     commitAddNotification(vueInstance.$store, {
-      content: vueInstance.$t('Answer is too short: minimum length 5 characters.').toString(),
+      content: '答案太短了',
       color: 'error',
     });
     return;
@@ -179,7 +179,7 @@ export const newArticleHandler = async (
 ) => {
   if (!edit.title || !edit.body) {
     commitAddNotification(vueInstance.$store, {
-      content: vueInstance.$t('Article must have title.').toString(),
+      content: '文章必须有标题',
       color: 'error',
     });
     return;

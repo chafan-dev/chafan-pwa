@@ -40,7 +40,7 @@
                   <h3>注册信息</h3>
 
                   <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
-                    <v-text-field v-model="email" :label="$t('Email')" name="login" type="text">
+                    <v-text-field v-model="email" label="邮箱地址" name="login" type="text">
                       <template v-slot:prepend>
                         <AccountIcon />
                       </template>
@@ -73,7 +73,7 @@
                   <ValidationProvider v-slot="{ errors }" name="password" rules="required|password">
                     <v-text-field
                       v-model="password"
-                      :label="$t('Password')"
+                      label="密码"
                       autocomplete="new-password"
                       name="new-password"
                       required
@@ -89,7 +89,7 @@
                   <ValidationProvider v-slot="{ errors }" name="handle" rules="required">
                     <v-text-field
                       v-model="handle"
-                      :label="$t('Unique username (you can change this later)')"
+                      label="唯一用户名"
                       name="handle"
                       required
                       type="text"

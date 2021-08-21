@@ -26,15 +26,13 @@
             </v-card-title>
             <v-divider />
             <v-card-text v-if="invitationLink">
-              <div class="title text-center black--text mb-1">{{ $t('邀请码') }}: {{ uuid }}</div>
+              <div class="title text-center black--text mb-1">邀请码：{{ uuid }}</div>
               <div class="text-center">
-                <span class="mr-4"
-                  >{{ $t('剩余可使用次数') }}: {{ invitationLink.remaining_quota }}</span
-                >
-                <span
-                  >{{ $t('失效日期') }}:
-                  {{ $dayjs.utc(invitationLink.expired_at).local().fromNow() }}</span
-                >
+                <span class="mr-4"> 剩余可使用次数：{{ invitationLink.remaining_quota }} </span>
+                <span>
+                  失效日期：
+                  {{ $dayjs.utc(invitationLink.expired_at).local().fromNow() }}
+                </span>
               </div>
             </v-card-text>
             <v-card-actions v-if="invitationLink">
@@ -44,11 +42,11 @@
               <v-spacer />
               <template v-if="loggedIn">
                 <v-btn v-if="invitationLink.invited_to_site" color="primary" @click="joinSite">
-                  {{ $t('加入') }}
+                  加入
                 </v-btn>
               </template>
               <v-btn v-else :to="`/signup?invitation_link_uuid=${uuid}`" color="primary">
-                {{ $t('前往注册') }}
+                前往注册
               </v-btn>
             </v-card-actions>
           </v-card>
