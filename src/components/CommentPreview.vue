@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { IComment } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import Avatar from '@/components/Avatar.vue';
 
 @Component({

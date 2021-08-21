@@ -6,6 +6,7 @@
 </template>
 <script>
 import UpvotedIcon from '@/components/icons/UpvotedIcon';
+
 export default {
   components: { UpvotedIcon },
   props: ['count'],

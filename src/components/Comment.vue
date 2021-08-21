@@ -106,14 +106,14 @@
       <div v-if="showUpdateEditor">
         <SimpleEditor
           ref="commentUpdateEditor"
-          :initialValue="comment.content.source"
-          class="mt-2 mb-2"
           :editor-prop="comment.content.editor"
+          :initialValue="comment.content.source"
           :onMentionedHandles="onMentionedHandles"
+          class="mt-2 mb-2"
         />
         <div class="d-flex">
           <span v-if="mentioned.length">
-            将通知用户：<v-chip small v-for="handle in mentioned" :key="handle">{{
+            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
               handle
             }}</v-chip>
           </span>
@@ -129,7 +129,7 @@
             提交
             <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
           </v-btn>
-          <v-btn depressed small @click="showUpdateEditor = false"> 取消 </v-btn>
+          <v-btn depressed small @click="showUpdateEditor = false"> 取消</v-btn>
         </div>
       </div>
 
@@ -138,12 +138,12 @@
           <SimpleEditor
             ref="commentReplyEditor"
             :onMentionedHandles="onMentionedHandles"
-            placeholder="回复"
             class="mt-2 mb-2"
+            placeholder="回复"
           />
           <div class="d-flex">
             <span v-if="mentioned.length" class="grey--text caption">
-              将通知用户：<v-chip small v-for="handle in mentioned" :key="handle">{{
+              将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
                 handle
               }}</v-chip>
             </span>
@@ -159,7 +159,7 @@
               发送回复
               <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
             </v-btn>
-            <v-btn depressed small @click="showEditor = false"> 取消 </v-btn>
+            <v-btn depressed small @click="showEditor = false"> 取消</v-btn>
           </div>
         </div>
       </v-expand-transition>
@@ -195,7 +195,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';

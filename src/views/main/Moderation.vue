@@ -10,12 +10,12 @@
       <v-autocomplete
         v-model="selectedSiteUUID"
         :items="moderatedSites"
-        label="圈子"
         class="mt-2"
         clearable
         dense
         item-text="name"
         item-value="uuid"
+        label="圈子"
         outlined
         @change="onSiteSelected"
       />
@@ -79,8 +79,8 @@
                 <v-text-field
                   v-else
                   v-model="siteConfigUpdate.description"
-                  label="描述"
                   clearable
+                  label="描述"
                 />
               </div>
 
@@ -89,9 +89,9 @@
                   v-if="showSiteConfigEditor"
                   v-model="siteConfigUpdate.category_topic_uuid"
                   :items="categoryTopics"
-                  label="类别"
                   item-text="name"
                   item-value="uuid"
+                  label="类别"
                 />
                 <template v-else-if="selectedSite.category_topic">
                   <span v-if="!showSiteConfigEditor" class="black--text mr-1">类别：</span>
@@ -116,8 +116,8 @@
                   v-if="showSiteConfigEditor"
                   v-model="newSiteTopicNames"
                   :delimiters="[',', '，', '、']"
-                  label="话题"
                   hide-selected
+                  label="话题"
                   multiple
                   small-chips
                 />
@@ -233,17 +233,17 @@
                 <v-card-title>添加新 Webhook</v-card-title>
                 <v-card-text>
                   <v-text-field
-                    label="Callback URL 地址"
                     v-model="webhookCreate.callback_url"
+                    label="Callback URL 地址"
                     placeholder="https://..."
                   />
-                  <v-text-field label="Secret" v-model="webhookCreate.secret" />
-                  <v-textarea label="Event Spec JSON" v-model="webhookCreateEventSpecJson" />
+                  <v-text-field v-model="webhookCreate.secret" label="Secret" />
+                  <v-textarea v-model="webhookCreateEventSpecJson" label="Event Spec JSON" />
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn small depressed @click="resetNewWebhook">取消</v-btn>
-                  <v-btn small depressed color="primary" @click="addNewWebhook">添加</v-btn>
+                  <v-btn depressed small @click="resetNewWebhook">取消</v-btn>
+                  <v-btn color="primary" depressed small @click="addNewWebhook">添加</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -251,8 +251,8 @@
               Webhook 配置 (beta)
               <v-spacer />
               <v-btn color="primary" depressed small @click="showNewWebhookDialog = true"
-                >添加新 Webhook</v-btn
-              >
+                >添加新 Webhook
+              </v-btn>
             </v-card-title>
             <v-card-text>
               <v-data-table :headers="webhookHeaders" :items="webhooks" item-key="id">
@@ -283,7 +283,7 @@
       <!-- Operation -->
       <v-tab-item>
         <v-card class="ma-2">
-          <v-card-title> 广播通知 </v-card-title>
+          <v-card-title> 广播通知</v-card-title>
           <v-card-text v-if="selectedSite !== null">
             请先将广播的内容提交到「分享」板块，然后将其链接粘贴至下方发送给圈子「{{
               selectedSite.name
@@ -372,12 +372,29 @@ export default class Moderation extends Vue {
   private transferToNewAdminUUID: string | null = null;
   private loading = true;
   private moderatedSites: ISite[] | null = null;
+  private categoryTopics: ITopic[] | null = null;
+  private webhookEventTypeItems = [
+    {
+      value: 'site_event',
+      text: '圈子事件',
+    },
+  ];
+  private webhookCreate: IWebhookCreate = deepCopy(defaultWebhookCreate);
+  /*
+{
+  "content": {
+    "event_type": "site_event",
+    "new_question": true,
+    "new_answer": true,
+    "new_submission": true
+  }
+}
+   */
+  private webhookCreateEventSpecJson: string = '';
 
   get token() {
     return readToken(this.$store);
   }
-
-  private categoryTopics: ITopic[] | null = null;
 
   private async mounted() {
     this.moderatedSites = (await apiMe.getModeratedSites(this.token)).data;
@@ -538,27 +555,6 @@ export default class Moderation extends Vue {
       await this.$router.push('/');
     }
   }
-
-  private webhookEventTypeItems = [
-    {
-      value: 'site_event',
-      text: '圈子事件',
-    },
-  ];
-
-  private webhookCreate: IWebhookCreate = deepCopy(defaultWebhookCreate);
-
-  /*
-{
-  "content": {
-    "event_type": "site_event",
-    "new_question": true,
-    "new_answer": true,
-    "new_submission": true
-  }
-}
-   */
-  private webhookCreateEventSpecJson: string = '';
 
   private async disableWebhook(webhook: IWebhook) {
     webhook.enabled = ((

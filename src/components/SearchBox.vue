@@ -3,21 +3,21 @@
   <div>
     <v-menu
       v-model="showSearchResults"
+      :close-on-content-click="false"
       :position-x="menuX"
       :position-y="menuY"
       absolute
       allow-overflow
       max-height="600"
       offset-y
-      :close-on-content-click="false"
     >
       <div style="min-width: 220px">
-        <SearchResults ref="searchResults" :query="currentQuery" :onReady="onReady" />
+        <SearchResults ref="searchResults" :onReady="onReady" :query="currentQuery" />
         <div style="background: white">
           <v-divider class="mx-1 mb-1" />
           <div class="d-flex pb-1 pr-1">
             <v-spacer />
-            <v-btn depressed outlined @click="openInNew" small color="secondary">
+            <v-btn color="secondary" depressed outlined small @click="openInNew">
               新页面打开
             </v-btn>
           </div>
@@ -26,11 +26,11 @@
     </v-menu>
     <v-text-field
       v-model="searchInput"
-      placeholder="搜索"
       dense
       filled
       hide-details
       outlined
+      placeholder="搜索"
       @input="searchDebounced"
       @keydown.enter="search"
     >
@@ -51,12 +51,12 @@ import SearchResults from '@/components/SearchResults.vue';
   components: { SearchResults, SearchIcon },
 })
 export default class SearchBox extends Vue {
+  public loading: boolean = false;
   private timerId: any = null;
   private searchInput: string | null = null;
   private showSearchResults = false;
   private menuX = 0;
   private menuY = 0;
-  public loading: boolean = false;
   private currentQuery: string | null = null;
 
   private mounted() {

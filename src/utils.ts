@@ -108,17 +108,16 @@ export const getBrowserLocale = () => {
 import { localize } from 'vee-validate';
 import { apiAnswer } from '@/api/answer';
 import { apiArticle } from '@/api/article';
-
-export const setAppLocale = (vueInstance: any) => {
-  localize('zh_CN');
-  vueInstance.$dayjs.locale('zh-cn');
-};
-
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchCheckApiError } from './store/main/actions';
 import { captureException } from '@sentry/vue';
 import { editor_T, IComment, IRichEditorState } from './interfaces';
 import { env } from './env';
+
+export const setAppLocale = (vueInstance: any) => {
+  localize('zh_CN');
+  vueInstance.$dayjs.locale('zh-cn');
+};
 
 export const newAnswerHandler = async (
   vueInstance: any,

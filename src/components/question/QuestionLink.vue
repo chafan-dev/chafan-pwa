@@ -1,12 +1,12 @@
 <template>
-  <router-link :to="'/questions/' + id" :class="theme.questionLink.link.classes">
+  <router-link :class="theme.questionLink.link.classes" :to="'/questions/' + id">
     {{ title }}
   </router-link>
 </template>
 
 <script lang="ts">
 import { IQuestionPreview } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { CVue } from '@/common';
 
 @Component

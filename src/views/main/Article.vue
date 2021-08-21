@@ -49,13 +49,13 @@
           <v-row>
             <v-col class="d-flex">
               <Upvote
-                class="mr-1"
                 v-if="upvotes !== null"
-                :upvotes-count="upvotes.count"
-                :upvoted="upvotes.upvoted"
                 :disabled="currentUserIsAuthor"
                 :on-cancel-vote="cancelUpvote"
                 :on-vote="upvote"
+                :upvoted="upvotes.upvoted"
+                :upvotes-count="upvotes.count"
+                class="mr-1"
               />
               <v-btn
                 v-show="currentUserIsAuthor"
@@ -83,9 +83,9 @@
               </v-menu>
 
               <ShareCardButton
+                v-slot="{ shareQrCodeUrl }"
                 :link="`/articles/${article.uuid}`"
                 :link-text="article.title"
-                v-slot="{ shareQrCodeUrl }"
                 :onClickShare="onClickShare"
               >
                 <v-card-title>
@@ -96,7 +96,7 @@
                     <div>
                       <div class="text--primary text-body-1">
                         <div class="pa-1 text-center" style="float: right">
-                          <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                          <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                           <span class="text-caption">查看原文</span>
                         </div>
                         <p style="overflow-wrap: anywhere">{{ articlePreviewBody }}</p>
@@ -176,9 +176,9 @@
           <!-- Comments -->
           <div>
             <CommentBlock
-              :show-title="true"
               :commentSubmitIntermediate="commentSubmitIntermediate"
               :comments="article.comments"
+              :show-title="true"
               :writable="token"
               class="mt-6"
               commentLabel="评论文章"
@@ -258,6 +258,7 @@ export default class Article extends Vue {
   private editButtonText = '编辑';
   private showHasDraftBadge = false;
   private commentSubmitIntermediate = false;
+  private articlePreviewBody: string = '';
 
   get token() {
     return readToken(this.$store);
@@ -307,8 +308,6 @@ export default class Article extends Vue {
       },
     });
   }
-
-  private articlePreviewBody: string = '';
 
   private onClickShare() {
     this.articlePreviewBody = (this.$refs.viewer as Viewer).textContent || '';

@@ -16,9 +16,9 @@
 
           <v-tabs
             v-model="currentTabItem"
+            :background-color="theme.home.tabs.backgroundColor"
             height="35"
             hide-slider
-            :background-color="theme.home.tabs.backgroundColor"
           >
             <v-tab :href="'#feed'">
               <FeedIcon class="mr-1" />
@@ -30,13 +30,13 @@
             </v-tab>
             <v-spacer />
             <div class="mr-3">
-              <RefreshIcon @click="refreshFeed" v-if="currentTabItem === 'feed'" />
+              <RefreshIcon v-if="currentTabItem === 'feed'" @click="refreshFeed" />
             </div>
 
-            <v-tab-item value="feed" eager>
+            <v-tab-item eager value="feed">
               <UserFeed ref="userFeed" :user-profile="userProfile" />
             </v-tab-item>
-            <v-tab-item value="submissions" eager>
+            <v-tab-item eager value="submissions">
               <UserSubmissionsRankedFeed />
             </v-tab-item>
           </v-tabs>
@@ -54,7 +54,8 @@
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" class="bottom-btn" @click="onFabClicked">
-            <HomeFabIcon /><span class="ml-1 grey--text">导航</span>
+            <HomeFabIcon />
+            <span class="ml-1 grey--text">导航</span>
           </div>
         </template>
         <v-sheet class="pa-2">
@@ -66,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import HomeSideCard from '@/components/HomeSideCard.vue';
 import ExploreIcon from '@/components/icons/ExploreIcon.vue';

@@ -1,5 +1,9 @@
 import Vue from 'vue';
-import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
+import { extend, localize, ValidationObserver, ValidationProvider } from 'vee-validate';
+import { email, min, required } from 'vee-validate/dist/rules';
+import en from 'vee-validate/dist/locale/en.json';
+import zh_CN from 'vee-validate/dist/locale/zh_CN.json';
+import { URLRegex } from '@/common';
 
 extend('password1', {
   params: ['target'],
@@ -37,8 +41,6 @@ extend('subdomain', {
   message: 'Only alphanumeric, underscore or hyphen is allowed in subdomain.',
 });
 
-import { email, required, min } from 'vee-validate/dist/rules';
-
 // No message specified.
 extend('email', email);
 extend('required', required);
@@ -46,11 +48,6 @@ extend('min', min);
 
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
-
-import { localize } from 'vee-validate';
-import en from 'vee-validate/dist/locale/en.json';
-import zh_CN from 'vee-validate/dist/locale/zh_CN.json';
-import { URLRegex } from '@/common';
 
 localize({
   en,

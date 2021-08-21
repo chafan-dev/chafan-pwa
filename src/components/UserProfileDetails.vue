@@ -156,10 +156,10 @@
       </div>
     </template>
     <div
+      v-else
+      :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }"
       style="cursor: pointer"
       @click="full = !full"
-      :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }"
-      v-else
     >
       <v-chip v-if="userPublic.profession_topic" color="amber lighten-4 mb-1">
         {{ userPublic.profession_topic.name }}
@@ -167,9 +167,9 @@
 
       <span>
         <v-chip
-          class="ml-1"
           v-for="(eduExp, i) in eduExps"
           :key="i"
+          class="ml-1"
           color="light-blue lighten-4 mb-1"
         >
           {{ eduExp.school_topic.name }}
@@ -178,9 +178,9 @@
 
       <span>
         <v-chip
-          class="ml-1"
           v-for="(workExp, i) in workExps"
           :key="i"
+          class="ml-1"
           color="light-green lighten-4 mb-1"
         >
           {{ workExp.company_topic.name }}
@@ -189,11 +189,11 @@
     </div>
 
     <div
-      class="mt-1"
       :class="{
         'd-flex': $vuetify.breakpoint.mdAndUp,
         'text-center': !$vuetify.breakpoint.mdAndUp,
       }"
+      class="mt-1"
     >
       <div class="mr-1">
         <a @click="full = !full">
@@ -204,8 +204,8 @@
       <v-spacer :class="{ 'mb-3': !$vuetify.breakpoint.mdAndUp }" />
       <v-btn
         v-if="currentUserId === userPublic.uuid"
-        depressed
         color="primary"
+        depressed
         small
         to="/profile/edit"
       >
@@ -217,7 +217,7 @@
 
 <script lang="ts">
 import { ISite, IUserEducationExperience, IUserPublic, IUserWorkExperience } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import SiteBtn from '@/components/SiteBtn.vue';
 import TwitterIcon from '@/components/icons/TwitterIcon.vue';
@@ -247,6 +247,14 @@ export default class UserProfileDetails extends Vue {
     return readUserProfile(this.$store)?.uuid;
   }
 
+  get loggedIn() {
+    return readIsLoggedIn(this.$store);
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
   async mounted() {
     if (this.loggedIn) {
       this.eduExps = (
@@ -260,14 +268,6 @@ export default class UserProfileDetails extends Vue {
       );
       this.sites = responses.map((r) => r.data);
     }
-  }
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   canonicalURLfromUsername(username: string, domain: string) {

@@ -81,7 +81,7 @@
 
     <v-dialog v-model="showJoinConditionsDialog" max-width="400">
       <v-card>
-        <v-card-title> 申请加入圈子的条件 </v-card-title>
+        <v-card-title> 申请加入圈子的条件</v-card-title>
         <v-card-text>
           <SiteJoinConditions :showHint="true" :site="site" />
         </v-card-text>
@@ -92,7 +92,7 @@
 
 <script lang="ts">
 import { api } from '@/api';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';

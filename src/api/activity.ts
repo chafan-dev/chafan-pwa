@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IActivity, IUserFeedSettings, IMsg, IUpdateOrigins } from '@/interfaces';
+import { IActivity, IMsg, IUpdateOrigins, IUserFeedSettings } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiActivity = {

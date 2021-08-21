@@ -14,14 +14,14 @@
         </h2>
         <div v-if="!showColumnEditor" class="d-flex align-center">
           <template v-if="currentUserId === articleColumn.owner.uuid && !compactMode">
-            <v-btn small depressed class="slim-btn mr-2" @click="showColumnEditor = true">
+            <v-btn class="slim-btn mr-2" depressed small @click="showColumnEditor = true">
               编辑专栏
             </v-btn>
             <v-btn
               :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
               class="slim-btn"
-              outlined
               depressed
+              outlined
               small
             >
               写文章
@@ -31,8 +31,8 @@
             <v-btn
               v-if="subscription.subscribed_by_me"
               :disabled="cancelSubscribeIntermediate"
-              small
               depressed
+              small
               @click="cancelSubscribe"
             >
               取消关注 ({{ subscription.subscription_count }})
@@ -46,8 +46,8 @@
               v-else
               :disabled="subscribeIntermediate"
               color="primary"
-              small
               depressed
+              small
               @click="subscribe"
             >
               关注 ({{ subscription.subscription_count }})
@@ -70,13 +70,13 @@
     </div>
     <div v-if="showColumnEditor">
       <v-text-field v-model="name" label="专栏名称" />
-      <v-textarea v-model="desc" rows="3" label="专栏描述" />
+      <v-textarea v-model="desc" label="专栏描述" rows="3" />
       <div class="d-flex">
         <v-spacer />
-        <v-btn class="mr-2" color="primary" small @click="updateArticleColumn" depressed
+        <v-btn class="mr-2" color="primary" depressed small @click="updateArticleColumn"
           >提交
         </v-btn>
-        <v-btn small depressed @click="cancelUpdateArticleColumn">取消</v-btn>
+        <v-btn depressed small @click="cancelUpdateArticleColumn">取消</v-btn>
       </div>
     </div>
   </div>
@@ -84,7 +84,7 @@
 
 <script lang="ts">
 import { IArticleColumn, IUserArticleColumnSubscription } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
 import EditIcon from '@/components/icons/EditIcon.vue';

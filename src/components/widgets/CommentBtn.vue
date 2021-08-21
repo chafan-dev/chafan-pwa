@@ -11,6 +11,7 @@
 </template>
 <script>
 import CommentsIcon from '@/components/icons/CommentsIcon';
+
 export default {
   components: { CommentsIcon },
   props: ['count'],

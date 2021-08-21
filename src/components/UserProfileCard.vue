@@ -1,8 +1,8 @@
 <template>
-  <div class="pa-3" :class="theme.baseCard.classKey">
+  <div :class="theme.baseCard.classKey" class="pa-3">
     <div class="row">
-      <div class="pb-4" :class="{ 'col-12': !$vuetify.breakpoint.mdAndUp }">
-        <div v-if="avatarURL" class="px-2" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }">
+      <div :class="{ 'col-12': !$vuetify.breakpoint.mdAndUp }" class="pb-4">
+        <div v-if="avatarURL" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }" class="px-2">
           <router-link :to="`/users/${userPreview.handle}`">
             <v-avatar class="avatarDiv" size="150" tile>
               <v-img :src="avatarURL" alt="Avatar" />
@@ -27,9 +27,9 @@
                   <v-card-title
                     >关注TA的人
                     <v-spacer />
-                    <v-btn primary small depressed @click="showFollowersDialog = false"
-                      ><CloseIcon
-                    /></v-btn>
+                    <v-btn depressed primary small @click="showFollowersDialog = false">
+                      <CloseIcon />
+                    </v-btn>
                   </v-card-title>
                   <v-card-text>
                     <v-lazy v-if="followers">
@@ -54,9 +54,9 @@
                   <v-card-title
                     >TA关注的人
                     <v-spacer />
-                    <v-btn primary small depressed @click="showFollowedDialog = false"
-                      ><CloseIcon
-                    /></v-btn>
+                    <v-btn depressed primary small @click="showFollowedDialog = false">
+                      <CloseIcon />
+                    </v-btn>
                   </v-card-title>
                   <v-card-text>
                     <v-lazy v-if="followed">
@@ -115,7 +115,7 @@
       </div>
       <div class="col align-self-center">
         <UserNameHeadline v-if="$vuetify.breakpoint.mdAndUp" :user-preview="userPreview" />
-        <v-divider class="my-2" v-if="$vuetify.breakpoint.mdAndUp" />
+        <v-divider v-if="$vuetify.breakpoint.mdAndUp" class="my-2" />
         <UserProfileDetails v-if="userPublic" :user-public="userPublic" />
 
         <div class="d-flex">
@@ -132,17 +132,18 @@
 <script lang="ts">
 import { IUserFollows, IUserPreview, IUserPublic } from '@/interfaces';
 import { api } from '@/api';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';
-import { readIsLoggedIn, readUserProfile, readToken } from '@/store/main/getters';
+import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import UserProfileDetails from '@/components/UserProfileDetails.vue';
 import UserNameHeadline from '@/components/UserNameHeadline.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import { apiPeople } from '@/api/people';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { CVue } from '@/common';
+
 @Component({
   components: { CloseIcon, UserGrid, UserNameHeadline, UserProfileDetails },
 })

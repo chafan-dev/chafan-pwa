@@ -11,12 +11,12 @@
       <SimpleEditor
         ref="simpleEditor"
         :onMentionedHandles="onMentionedHandles"
-        placeholder="评论"
         class="mb-1"
+        placeholder="评论"
       />
       <div class="d-flex pt-1">
         <span v-if="mentioned.length" class="grey--text caption">
-          将通知用户：<v-chip small v-for="handle in mentioned" :key="handle">{{ handle }}</v-chip>
+          将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{ handle }}</v-chip>
         </span>
         <v-spacer />
         <v-btn
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import Comment from '@/components/Comment.vue';

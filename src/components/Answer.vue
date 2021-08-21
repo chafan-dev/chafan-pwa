@@ -13,7 +13,7 @@
         </span>
         {{ answerPreviewBody }}
         <span :class="theme.answer.expand.text.classes">展开全文</span>
-        <v-progress-circular class="ml-2" size="20" indeterminate v-if="loading && expandClicked" />
+        <v-progress-circular v-if="loading && expandClicked" class="ml-2" indeterminate size="20" />
       </div>
       <div v-if="answer" v-show="!preview">
         <div v-if="showAuthor" class="d-flex align-center">
@@ -34,7 +34,7 @@
 
         <div class="mt-1">
           <template v-if="draftMode">
-            <v-chip v-if="answer" color="info" small> 草稿 </v-chip>
+            <v-chip v-if="answer" color="info" small> 草稿</v-chip>
             <Viewer v-if="draftContent !== null" :content="draftContent" />
           </template>
           <template v-else>
@@ -51,21 +51,21 @@
 
         <div :class="theme.answer.controls.classes">
           <v-row>
-            <v-col align-self="end" :class="theme.answer.controls.buttonsCol.classes">
+            <v-col :class="theme.answer.controls.buttonsCol.classes" align-self="end">
               <div class="d-flex mt-1">
                 <Upvote
                   v-if="upvotes"
-                  class="mr-1"
-                  :upvotes-count="upvotes.count"
-                  :upvoted="upvotes.upvoted"
                   :disabled="currentUserIsAuthor"
                   :on-cancel-vote="cancelUpvote"
                   :on-vote="upvote"
+                  :upvoted="upvotes.upvoted"
+                  :upvotes-count="upvotes.count"
+                  class="mr-1"
                 />
                 <CommentBtn
+                  :count="answer.comments.length"
                   class="mr-1"
                   @click="toggleShowComments"
-                  :count="answer.comments.length"
                 />
 
                 <template v-if="userProfile">
@@ -99,13 +99,13 @@
                     <v-card>
                       <v-card-title primary-title>
                         <div class="headline primary--text">
-                          <template v-if="draftMode"> 确定永久删除答案草稿？ </template>
-                          <template v-else> 确定永久删除答案及其所有历史版本？ </template>
+                          <template v-if="draftMode"> 确定永久删除答案草稿？</template>
+                          <template v-else> 确定永久删除答案及其所有历史版本？</template>
                         </div>
                       </v-card-title>
                       <v-card-actions>
                         <v-spacer />
-                        <v-btn depressed small @click="confirmDeleteDialog = false"> 取消 </v-btn>
+                        <v-btn depressed small @click="confirmDeleteDialog = false"> 取消</v-btn>
                         <v-btn
                           :disabled="deleteAnswerIntermediate"
                           color="warning"
@@ -120,9 +120,9 @@
                   </v-dialog>
 
                   <ShareCardButton
+                    v-slot="{ shareQrCodeUrl }"
                     :link="`/questions/${answer.question.uuid}/answers/${answerPreview.uuid}`"
                     :link-text="answer.question.title + ` - ${answer.author.handle} 的回答`"
-                    v-slot="{ shareQrCodeUrl }"
                   >
                     <v-card-title class="font-weight-bold">
                       {{ answer.question.title }}
@@ -132,7 +132,7 @@
                         <div>
                           <div class="text--primary text-body-1">
                             <div class="pa-1 text-center" style="float: right">
-                              <v-img :src="shareQrCodeUrl" v-if="shareQrCodeUrl" max-width="100" />
+                              <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                               <span class="text-caption">查看原文</span>
                             </div>
                             <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
@@ -239,14 +239,14 @@
   </div>
   <AnswerEditor
     v-else-if="answer && showEditor"
+    ref="editor"
     :answerIdProp="answer.uuid"
-    :questionIdProp="answer.question.uuid"
     :archivesCount="answer.archives_count"
     :inPrivateSite="!answer.site.public_readable"
+    :questionIdProp="answer.question.uuid"
     @delete-draft="deleteDraft"
     @cancel-edit="cancelHandler"
     @updated-answer="updatedAnswerCallback"
-    ref="editor"
   />
 </template>
 

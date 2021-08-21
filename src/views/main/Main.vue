@@ -103,13 +103,13 @@
 
           <template v-if="!userProfile">
             <FeedbackIcon class="ml-1" @click="prepareFeedbackForm" />
-            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt"> 登录 </v-btn>
+            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt"> 登录</v-btn>
           </template>
 
           <v-dialog v-model="showFeedbackForm" max-width="500">
             <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
               <v-card>
-                <v-card-title> 你的反馈会让「茶饭」变得更好！ </v-card-title>
+                <v-card-title> 你的反馈会让「茶饭」变得更好！</v-card-title>
                 <v-card-text>
                   <div>
                     <div v-if="feedbackScreenshotUrl">
@@ -156,7 +156,7 @@
                     常见问题及解决方法
                   </a>
                   <v-spacer />
-                  <v-btn depressed small @click="cancelFeedbackForm(reset)"> 取消 </v-btn>
+                  <v-btn depressed small @click="cancelFeedbackForm(reset)"> 取消</v-btn>
                   <v-btn
                     :disabled="!valid || sendingFeedback"
                     color="primary"
@@ -244,22 +244,22 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 import { appName } from '@/env';
 import {
   readDashboardMiniDrawer,
-  readHasModeratedSites,
   readDashboardShowDrawer,
-  readUserProfile,
+  readHasModeratedSites,
   readModeratedSites,
   readUserMode,
+  readUserProfile,
 } from '@/store/main/getters';
 import {
-  commitSetDashboardShowDrawer,
   commitSetDashboardMiniDrawer,
-  commitSetUserMode,
+  commitSetDashboardShowDrawer,
   commitSetShowLoginPrompt,
+  commitSetUserMode,
 } from '@/store/main/mutations';
 import { dispatchUserLogOut } from '@/store/main/actions';
 
@@ -371,16 +371,16 @@ export default class Main extends Vue {
     return readHasModeratedSites(this.$store);
   }
 
-  private showLoginPrompt() {
-    commitSetShowLoginPrompt(this.$store, true);
-  }
-
   public beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
   }
 
   public beforeRouteUpdate(to, from, next) {
     routeGuardMain(to, from, next);
+  }
+
+  private showLoginPrompt() {
+    commitSetShowLoginPrompt(this.$store, true);
   }
 
   private switchShowDrawer() {

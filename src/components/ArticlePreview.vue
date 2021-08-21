@@ -12,7 +12,7 @@
     >
       {{ shortBodyText }}
     </div>
-    <div class="d-flex" v-if="showColumnName">
+    <div v-if="showColumnName" class="d-flex">
       <span class="grey--text text-caption">
         发表于专栏：
         <router-link
@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { IArticlePreview } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({

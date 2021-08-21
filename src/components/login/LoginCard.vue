@@ -62,7 +62,7 @@
                       <span class="error--text">{{ errors[0] }}</span>
                     </ValidationProvider>
 
-                    <div class="text-center" v-if="enableCaptcha">
+                    <div v-if="enableCaptcha" class="text-center">
                       <vue-hcaptcha :sitekey="hCaptchaSiteKey" @verify="verifiedCaptchaToken" />
                     </div>
 
@@ -129,18 +129,18 @@
                         !valid
                       "
                       block
+                      class="white--text"
                       color="primary"
                       depressed
                       large
                       @click.prevent="handleSubmit(submit)"
-                      class="white--text"
                     >
                       登录
                       <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
                     </v-btn>
                   </v-sheet>
 
-                  <v-sheet class="mt-4" :class="{ 'd-flex': $vuetify.breakpoint.mdAndUp }">
+                  <v-sheet :class="{ 'd-flex': $vuetify.breakpoint.mdAndUp }" class="mt-4">
                     <v-btn
                       class="text-capitalize"
                       depressed
@@ -192,8 +192,8 @@
                 <div class="text-center">
                   <v-btn class="text-capitalize" depressed large @click="switchLoginMethod">
                     使用
-                    <template v-if="loginMethod === 'email'"> 手机号 </template>
-                    <template v-else> 邮箱 </template>
+                    <template v-if="loginMethod === 'email'"> 手机号</template>
+                    <template v-else> 邮箱</template>
                     登录
                   </v-btn>
                 </div>
@@ -215,7 +215,7 @@ import EmailIcon from '@/components/icons/EmailIcon.vue';
 import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
 import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
-import { appName, enableCaptcha } from '@/env';
+import { appName, enableCaptcha, hCaptchaSiteKey } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchCaptureApiError, dispatchLogIn } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
@@ -226,7 +226,6 @@ import LockOutline from '@/components/icons/LockOutlineIcon.vue';
 import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
 import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
-import { hCaptchaSiteKey } from '@/env';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
 

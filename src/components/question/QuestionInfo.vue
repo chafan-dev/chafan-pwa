@@ -22,9 +22,9 @@
             <UserSearch v-model="invitedUserId" :return-self="false" />
             <v-slider
               v-model="inviteToAnswerRewardCoinAmount"
-              label="硬币奖励数量"
               :tick-labels="[0, 1, 2, 3, 4]"
               class="mt-2"
+              label="硬币奖励数量"
               max="4"
               min="0"
               step="1"
@@ -35,8 +35,9 @@
               当你邀请的用户回答问题后，该用户会收到指定数额的硬币作为奖励，
               这部分硬币会先从你的账户扣除。如果被邀请的用户没有在奖励失效前（一周）回答问题的话，你可以将预扣取的硬币拿回。
               <router-link class="text-decoration-none" to="/dashboard?tab=coins"
-                >查看你的收到/发出的所有奖励</router-link
-              >。
+                >查看你的收到/发出的所有奖励
+              </router-link>
+              。
             </div>
           </v-card-text>
           <v-card-actions>

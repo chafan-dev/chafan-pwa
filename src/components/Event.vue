@@ -3,8 +3,8 @@
     <i18n :path="'verb.' + event.content.verb">
       <UserLink
         v-if="event.content.subject && event.content.subject.uuid !== currentUserId"
-        :userPreview="event.content.subject"
         :enable-popup="false"
+        :userPreview="event.content.subject"
         place="who"
       />
       <span v-if="event.content.subject && event.content.subject.uuid === currentUserId" place="who"
@@ -13,8 +13,8 @@
 
       <UserLink
         v-if="event.content.user && event.content.user.uuid !== currentUserId"
-        :userPreview="event.content.user"
         :enable-popup="false"
+        :userPreview="event.content.user"
         place="user"
       />
       <span v-else-if="event.content.user && event.content.user.uuid === currentUserId" place="user"
@@ -126,7 +126,7 @@
 
 <script lang="ts">
 import { IEvent } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import UserLink from '@/components/UserLink.vue';
 import CommentPreview from '@/components/CommentPreview.vue';
 import Viewer from '@/components/Viewer.vue';

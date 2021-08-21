@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { ISite } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import PrivateSiteIcon from '@/components/icons/PrivateSiteIcon.vue';
 import SiteCard from '@/components/SiteCard.vue';
 

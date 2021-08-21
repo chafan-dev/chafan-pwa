@@ -1,6 +1,6 @@
 <template>
   <span>
-    <v-progress-circular size="20" indeterminate v-if="site === null" />
+    <v-progress-circular v-if="site === null" indeterminate size="20" />
     <span v-else>
       {{ site.name }}
     </span>
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { ISite } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { apiSite } from '@/api/site';
 
 @Component

@@ -40,13 +40,13 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn small depressed @click="cancel">取消</v-btn>
-                <v-btn small depressed @click="resetAll(reset)">重置</v-btn>
+                <v-btn depressed small @click="cancel">取消</v-btn>
+                <v-btn depressed small @click="resetAll(reset)">重置</v-btn>
                 <v-btn
-                  small
-                  depressed
                   :disabled="!valid"
                   color="primary"
+                  depressed
+                  small
                   @click="handleSubmit(submit)"
                 >
                   保存

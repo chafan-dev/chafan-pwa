@@ -38,7 +38,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn v-if="claimWelcomeTestScoreMsg.success" depressed small to="/"> 回到首页 </v-btn>
+            <v-btn v-if="claimWelcomeTestScoreMsg.success" depressed small to="/"> 回到首页</v-btn>
             <v-btn v-else depressed small @click="retryWelcomeTest">重试</v-btn>
           </v-card-actions>
         </v-card>
@@ -77,7 +77,7 @@
 import { api } from '@/api';
 import { env } from '@/env';
 import { IClaimWelcomeTestScoreMsg, IFormResponse } from '@/interfaces';
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class FormResponseCard extends Vue {
