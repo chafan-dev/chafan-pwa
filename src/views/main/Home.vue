@@ -14,7 +14,12 @@
             </div>
           </div>
 
-          <v-tabs v-model="currentTabItem" height="35" hide-slider background-color="transparent">
+          <v-tabs
+            v-model="currentTabItem"
+            height="35"
+            hide-slider
+            :background-color="theme.home.tabs.backgroundColor"
+          >
             <v-tab :href="'#feed'">
               <FeedIcon class="mr-1" />
               信息流
@@ -73,7 +78,7 @@ import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
-import { FAB_FLAG } from '@/common';
+import { CVue, FAB_FLAG } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import SharingIcon from '@/components/icons/SharingIcon.vue';
 import UserSubmissionsRankedFeed from '@/components/home/UserSubmissionsRankedFeed.vue';
@@ -96,7 +101,7 @@ import RefreshIcon from '@/components/icons/RefreshIcon.vue';
     FeedIcon,
   },
 })
-export default class Home extends Vue {
+export default class Home extends CVue {
   get currentTabItem() {
     return this.$route.query.tab ? this.$route.query.tab : 'feed';
   }

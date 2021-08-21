@@ -1,9 +1,9 @@
 <template>
-  <div class="pa-1">
+  <div :class="theme.feed.questionPreview.classes">
     <div class="title" style="word-break: normal">
       <router-link
         :to="'/questions/' + questionPreview.uuid"
-        class="text-decoration-none black--text font-weight-bold"
+        :class="theme.feed.questionPreview.link.classes"
       >
         {{ questionPreview.title }}
       </router-link>
@@ -12,7 +12,7 @@
       {{ shortDesc }}
     </div>
 
-    <div class="d-flex mt-2">
+    <div :class="theme.feed.questionPreview.stats.classes">
       <v-lazy>
         <QuestionUpvotes
           :class="{
@@ -56,11 +56,12 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { readUserProfile } from '@/store/main/getters';
 import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: { QuestionUpvotes, BaseCard, SiteBtn, AnswerIcon, CommentsIcon },
 })
-export default class QuestionPreview extends Vue {
+export default class QuestionPreview extends CVue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
 
   get shortDesc() {

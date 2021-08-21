@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-1">
+  <div :class="theme.feed.submissionPreview.classes">
     <div class="title" style="word-break: normal">
       <router-link
         :to="'/submissions/' + submission.uuid"
@@ -8,7 +8,7 @@
         {{ submission.title }}
       </router-link>
     </div>
-    <div class="d-flex align-center mt-2">
+    <div :class="theme.feed.submissionPreview.stats.classes">
       <router-link
         :to="'/submissions/' + submission.uuid"
         class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
@@ -45,11 +45,12 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: { UpvoteStat, BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
 })
-export default class SubmissionPreview extends Vue {
+export default class SubmissionPreview extends CVue {
   @Prop() private readonly submission!: ISubmission;
 
   get shortDesc() {
@@ -64,11 +65,7 @@ export default class SubmissionPreview extends Vue {
     }
   }
 
-  async mounted() {
-    // this.upvotes = (
-    //   await apiSubmission.getUpvotes(readToken(this.$store), this.submission.uuid)
-    // ).data;
-  }
+  async mounted() {}
 
   private shortUrl(d: string) {
     if (this.$vuetify.breakpoint.mdAndUp) {

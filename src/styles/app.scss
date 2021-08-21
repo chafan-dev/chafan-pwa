@@ -1,11 +1,7 @@
-// General
-.theme--light.v-application {
-  background: rgb(248, 250, 252) !important;
-}
-.theme--light.v-tabs-items {
-  background: transparent !important;
-}
+@import '~vuetify/src/styles/styles.sass';
+@import 'variables';
 
+// General
 .bottom-btn {
   box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
   position: fixed;
@@ -30,8 +26,8 @@
 }
 
 %c-card-base {
-  box-shadow: 0 1px 1px -1px rgba(85, 85, 85, 0.08), 0 1px 5px 0 rgba(85, 85, 85, 0.06),
-    0 1px 5px 0 rgba(85, 85, 85, 0.03) !important;
+  box-shadow: 0 5px 10px -10px rgba(85, 85, 85, 0.08), 0 10px 20px 0 rgba(85, 85, 85, 0.06),
+    0 15px 30px 0 rgba(85, 85, 85, 0.03) !important;
 }
 
 .c-card {
@@ -39,6 +35,20 @@
 }
 
 .shadow-card {
+  @extend %c-card-base;
+  padding: 8px;
+}
+
+%c-card-blue-base {
+  box-shadow: 0 1px 1px -1px rgba(85, 85, 85, 0.08), 0 1px 5px 0 rgba(85, 85, 85, 0.06),
+    0 1px 5px 0 rgba(85, 85, 85, 0.03) !important;
+}
+
+.c-card-blue {
+  @extend %c-card-base;
+}
+
+.shadow-card-blue {
   @extend %c-card-base;
   padding: 8px;
   background: #fff;
@@ -214,7 +224,8 @@
 
 // Main
 .search-box {
-  width: 60%;
+  min-width: 20%;
+  max-width: 40%;
 }
 
 .app-bar-inner {

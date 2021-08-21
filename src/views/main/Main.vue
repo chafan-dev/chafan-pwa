@@ -1,5 +1,80 @@
 <template>
   <div>
+    <v-navigation-drawer
+      v-if="userProfile"
+      v-model="showDrawer"
+      :mini-variant="miniDrawer"
+      app
+      fixed
+      temporary
+    >
+      <v-layout column fill-height>
+        <v-list>
+          <v-subheader>
+            {{ $t('Main menu') }}
+          </v-subheader>
+          <v-list-item to="/">
+            <v-list-item-action>
+              <HomeIcon />
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('Home') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/dashboard">
+            <v-list-item-action>
+              <DashboardIcon />
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('Dashboard') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/profile/edit">
+            <v-list-item-action>
+              <EditIcon />
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('Edit Profile') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/security">
+            <v-list-item-action>
+              <PasswordIcon />
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('Security') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+        <v-divider />
+
+        <v-list v-show="hasModeratedSites" subheader>
+          <v-subheader>Moderation</v-subheader>
+          <v-list-item to="/moderation">
+            <v-list-item-content>
+              <v-list-item-title>圈子管理</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+
+        <div v-if="isModerator" class="ma-2">
+          <v-switch v-model="userMode" :label="$t('普通用户模式')" @change="switchUseMode" />
+        </div>
+
+        <v-spacer />
+        <v-list>
+          <v-list-item @click="logout">
+            <v-list-item-action>
+              <LogoutIcon />
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t('Logout') }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-layout>
+    </v-navigation-drawer>
     <v-app-bar color="primary" dark>
       <v-container style="max-width: 1300px">
         <div

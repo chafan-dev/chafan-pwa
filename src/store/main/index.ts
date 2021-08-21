@@ -17,6 +17,7 @@ const defaultState: MainState = {
   topBanner: null,
   showLoginPrompt: false,
   narrowUI: true,
+  theme: 'default',
 };
 
 export const mainModule = {
