@@ -174,7 +174,7 @@ import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
 import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readToken, readUserProfile, readWorkingDraft } from '@/store/main/getters';
-import { clearLocalEdit, logDebug, saveLocalEdit, uuidv4 } from '@/utils';
+import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
 import { editor_T, IAnswer, IAnswerArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { env } from '@/env';

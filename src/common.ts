@@ -5,12 +5,16 @@ export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-z
 
 export const NARROW_FEED_UI_KEY = 'narrowFeedUI';
 export const LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
+export const LABS_DEV_THEME_OPTION = 'labs.dev-theme-option';
 export const YES_FLAG = 'user-agreement-yes';
 export const FAB_FLAG = 'webfront-fab-clicked';
 export const EXPLORE_SITES = 'closed-explore-sites-in-home';
 
 export { isEqual } from 'lodash';
 import { api } from '@/api';
+import { ThemeType } from '@/interfaces';
+import { Vue } from 'vue-property-decorator';
+import { readTheme, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
 
 export const getDefaultNarrowFeedUI = () => {
   try {
@@ -130,6 +134,213 @@ export const constants = {
   search_results: '搜索结果',
 };
 
+export type ThemeClassKey = 'answerExpandText' | 'anaswerControlPanel';
+
+export interface IThemeDef {
+  answer: {
+    expand: {
+      text: {
+        classes: string;
+      };
+    };
+    controls: {
+      buttonsCol: {
+        classes: string;
+      };
+      classes: string;
+    };
+  };
+  feed: {
+    submissionPreview: {
+      classes: string;
+      link: {
+        classes: string;
+      };
+      stats: {
+        classes: string;
+      };
+    };
+    questionPreview: {
+      classes: string;
+      link: {
+        classes: string;
+      };
+      stats: {
+        classes: string;
+      };
+    };
+    activityCard: {
+      classes: string;
+      verb: {
+        classes: string;
+      };
+    };
+  };
+  upvoteBtn: {
+    outlined: boolean;
+  };
+  upvotedBtn: {
+    classes: string;
+  };
+  userLink: {
+    link: {
+      classes: string;
+    };
+  };
+  questionLink: {
+    link: {
+      classes: string;
+    };
+  };
+  app: {
+    background: string;
+  };
+  baseCard: {
+    classKey: string;
+  };
+  home: {
+    tabs: {
+      backgroundColor: string;
+    };
+  };
+  question: {
+    answer: {
+      classes: string;
+    };
+  };
+}
+
+export const themeDefs: { [key in ThemeType]: IThemeDef } = {
+  default: {
+    answer: {
+      expand: { text: { classes: 'primary-text' } },
+      controls: { classes: '', buttonsCol: { classes: 'd-flex pl-3 pb-0' } },
+    },
+    feed: {
+      submissionPreview: {
+        classes: 'pa-2',
+        link: {
+          classes: 'text-decoration-none',
+        },
+        stats: {
+          classes: 'd-flex align-center',
+        },
+      },
+      questionPreview: {
+        classes: 'pa-2',
+        link: {
+          classes: 'text-decoration-none',
+        },
+        stats: {
+          classes: 'd-flex',
+        },
+      },
+      activityCard: {
+        classes: 'mt-3 shadow-card',
+        verb: {
+          classes: '',
+        },
+      },
+    },
+    upvoteBtn: {
+      outlined: false,
+    },
+    upvotedBtn: {
+      classes: '',
+    },
+    userLink: {
+      link: {
+        classes: 'text-decoration-none grey--text text--darken-2',
+      },
+    },
+    questionLink: {
+      link: {
+        classes: 'text-decoration-none',
+      },
+    },
+    app: {
+      background: '',
+    },
+    baseCard: {
+      classKey: 'c-card',
+    },
+    home: {
+      tabs: {
+        backgroundColor: '',
+      },
+    },
+    question: {
+      answer: {
+        classes: 'shadow-card',
+      },
+    },
+  },
+  blue: {
+    answer: {
+      expand: { text: { classes: 'grey--text' } },
+      controls: { classes: 'my-2', buttonsCol: { classes: 'd-flex pb-0' } },
+    },
+    feed: {
+      activityCard: {
+        classes: 'mt-3 shadow-card-blue rounded-lg',
+        verb: {
+          classes: 'grey--text',
+        },
+      },
+      submissionPreview: {
+        classes: 'pa-1',
+        link: {
+          classes: 'text-decoration-none black--text font-weight-bold',
+        },
+        stats: {
+          classes: 'd-flex align-center mt-2',
+        },
+      },
+      questionPreview: {
+        classes: 'pa-1',
+        link: {
+          classes: 'text-decoration-none black--text font-weight-bold',
+        },
+        stats: {
+          classes: 'd-flex mt-2',
+        },
+      },
+    },
+    upvoteBtn: {
+      outlined: true,
+    },
+    upvotedBtn: {
+      classes: 'primary',
+    },
+    userLink: {
+      link: {
+        classes: 'text-decoration-none',
+      },
+    },
+    questionLink: {
+      link: {
+        classes: 'text-decoration-none black--text font-weight-bold',
+      },
+    },
+    app: {
+      background: 'rgb(248, 250, 252) !important',
+    },
+    baseCard: {
+      classKey: 'c-card-blue',
+    },
+    home: {
+      tabs: {
+        backgroundColor: 'transparent',
+      },
+    },
+    question: {
+      answer: {
+        classes: 'shadow-card-blue',
+      },
+    },
+  },
+};
+
 export const updateHead = (routePath: string, title: string, descriptionText?: string) => {
   document.title = title;
   document.querySelector('meta[property="og.title"]')?.setAttribute('content', title);
@@ -148,3 +359,23 @@ export const updateHead = (routePath: string, title: string, descriptionText?: s
     .querySelector('meta[property="og.url"]')
     ?.setAttribute('content', 'https://cha.fan' + routePath);
 };
+
+export class CVue extends Vue {
+  get isUserMode() {
+    return readUserMode(this.$store);
+  }
+
+  get theme() {
+    return themeDefs[readTheme(this.$store)];
+  }
+
+  get token() {
+    return readToken(this.$store);
+  }
+
+  get userProfile() {
+    return readUserProfile(this.$store);
+  }
+}
+
+export const themeLocalStorageKey = 'chafan.theme';

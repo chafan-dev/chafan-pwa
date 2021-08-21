@@ -1,6 +1,10 @@
 <template>
   <v-sheet>
-    <v-card v-bind="$attrs" :class="{ 'c-card': !flat, 'pa-2': !noGutter }" :flat="flat">
+    <v-card
+      v-bind="$attrs"
+      :class="flat ? '' : theme.baseCard.classKey + noGutter ? '' : ' pa-2'"
+      :flat="flat"
+    >
       <slot />
     </v-card>
 
@@ -10,11 +14,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { CVue } from '@/common';
 
 @Component({
   name: 'BaseCard',
 })
-export default class BaseCard extends Vue {
+export default class BaseCard extends CVue {
   @Prop({ default: false }) private readonly flat!: boolean;
   @Prop({ default: false }) private readonly divider!: boolean;
   @Prop({ default: false }) private readonly noGutter!: boolean;

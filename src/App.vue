@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-app>
+    <v-app :style="{ background: theme.app.background }">
       <v-progress-linear v-if="loading" indeterminate />
       <router-view v-else />
       <NotificationsManager />
@@ -21,9 +21,14 @@ import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
 import { readIsLoggedIn, readShowLoginPrompt } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
-import { setAppLocale } from '@/utils';
-import { commitSetNarrowUI, commitSetShowLoginPrompt } from './store/main/mutations';
-import { getDefaultNarrowFeedUI } from '@/common';
+import { getLocalValue, setAppLocale } from '@/utils';
+import {
+  commitSetNarrowUI,
+  commitSetShowLoginPrompt,
+  commitSetTheme,
+} from './store/main/mutations';
+import { CVue, getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
+import { ThemeType } from '@/interfaces';
 
 @Component({
   data: function () {
@@ -36,7 +41,7 @@ import { getDefaultNarrowFeedUI } from '@/common';
     LoginCard,
   },
 })
-export default class App extends Vue {
+export default class App extends CVue {
   private registration: ServiceWorkerRegistration | null = null;
   private updateExists = false;
   private refreshing = false;
@@ -77,6 +82,10 @@ export default class App extends Vue {
     this.$data.loading = false;
     setAppLocale(this);
     commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
+    const theme = getLocalValue(themeLocalStorageKey) as ThemeType;
+    if (theme) {
+      commitSetTheme(this.$store, theme);
+    }
   }
 
   get pwaWaiting() {

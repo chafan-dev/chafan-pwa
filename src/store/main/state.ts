@@ -1,4 +1,4 @@
-import { IRichEditorState, ISite, ITopBanner, IUserProfile } from '@/interfaces';
+import { IRichEditorState, ISite, ITopBanner, IUserProfile, ThemeType } from '@/interfaces';
 
 export interface AppNotification {
   content: string;
@@ -20,4 +20,5 @@ export interface MainState {
   topBanner: ITopBanner | null;
   showLoginPrompt: boolean;
   narrowUI: boolean;
+  theme: ThemeType;
 }

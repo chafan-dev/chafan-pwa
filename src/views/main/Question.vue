@@ -337,7 +337,12 @@
         </v-expand-transition>
 
         <!-- Answers -->
-        <div v-for="answer in loadedFullAnswers" :key="answer.uuid" class="shadow-card mb-4">
+        <div
+          v-for="answer in loadedFullAnswers"
+          :key="answer.uuid"
+          class="mb-4"
+          :class="theme.question.answer.classes"
+        >
           <Answer
             :answerPreview="answer"
             :answerProp="answer"
@@ -352,7 +357,8 @@
         <div
           v-for="answerPreview in answerPreviews"
           :key="answerPreview.uuid"
-          class="shadow-card mb-4"
+          class="mb-4"
+          :class="theme.question.answer.classes"
         >
           <Answer
             :answerPreview="answerPreview"
@@ -445,7 +451,7 @@ import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual, updateHead } from '@/common';
+import { CVue, isEqual, updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
@@ -476,7 +482,7 @@ import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
     SimpleEditor,
   },
 })
-export default class Question extends Vue {
+export default class Question extends CVue {
   private question: IQuestion | null = null;
   private showEditor: boolean = false;
   private newQuestionTitle: string = '';

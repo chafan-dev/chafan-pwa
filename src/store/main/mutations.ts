@@ -1,4 +1,4 @@
-import { IRichEditorState, ISite, ITopBanner, IUserProfile } from '@/interfaces';
+import { IRichEditorState, ISite, ITopBanner, IUserProfile, ThemeType } from '@/interfaces';
 import { AppNotification, MainState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { State } from '../state';
@@ -46,6 +46,9 @@ export const mutations = {
   removeNotification(state: MainState, payload: AppNotification) {
     state.notifications = state.notifications.filter((notification) => notification !== payload);
   },
+  setTheme(state: MainState, theme: ThemeType) {
+    state.theme = theme;
+  },
 };
 
 const { commit } = getStoreAccessors<MainState | any, State>('');
@@ -64,3 +67,4 @@ export const commitAddNotification = commit(mutations.addNotification);
 export const commitRemoveNotification = commit(mutations.removeNotification);
 export const commitSetWorkingDraft = commit(mutations.setWorkingDraft);
 export const commitSetNarrowUI = commit(mutations.setNarrowUI);
+export const commitSetTheme = commit(mutations.setTheme);
