@@ -562,6 +562,7 @@ export interface IUserPublic {
   questions_count: number;
   articles_count: number;
   created_at: string;
+  profession_topic?: ITopic;
 }
 
 export interface IUserPublicForVisitor {

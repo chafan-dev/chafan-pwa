@@ -105,7 +105,10 @@
       </template>
       <v-skeleton-loader v-else-if="workExps === null && loggedIn" type="text" />
 
-      <div v-if="userPublic.residency_topics.length > 0" class="my-3">
+      <div
+        v-if="userPublic.residency_topics && userPublic.residency_topics.length > 0"
+        class="my-3"
+      >
         <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
         <div>
           <v-chip-group :column="!$vuetify.breakpoint.mobile">
@@ -138,7 +141,10 @@
       </template>
       <v-skeleton-loader v-else-if="loggedIn" type="text" />
 
-      <div v-if="userPublic.subscribed_topics.length > 0" class="my-3">
+      <div
+        v-if="userPublic.subscribed_topics && userPublic.subscribed_topics.length > 0"
+        class="my-3"
+      >
         <div class="subheading secondary--text text--lighten-3">关注的话题：</div>
         <v-chip
           v-for="topic in userPublic.subscribed_topics"
