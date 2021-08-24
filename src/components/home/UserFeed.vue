@@ -1,6 +1,13 @@
 <template>
   <div>
-    <user-welcome v-if="showExploreSites" v-on:on-close-explore-sites="onCloseExploreSites()" />
+    <user-welcome
+      class="mx-4"
+      v-if="showExploreSites"
+      v-on:on-close-explore-sites="onCloseExploreSites()"
+    />
+    <div class="mx-4 my-2 text-center" v-if="isRandomActivities">
+      信息流预览（关注更多的人或加入更多圈子来定制自己的信息流）
+    </div>
     <EmptyPlaceholder v-if="showEmptyPlaceholder" />
 
     <div>
@@ -302,6 +309,7 @@ export default class UserFeed extends CVue {
   private showEmptyPlaceholder = false;
   private usersDialog = false;
   private usersInDialog: IUserPreview[] = [];
+  private isRandomActivities = false;
 
   public async loadNewActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -310,11 +318,12 @@ export default class UserFeed extends CVue {
       const newActivities: IActivity[] = [];
       let fetching = true;
       while (fetching) {
-        const response = await apiActivity.getActivities(this.token, {
+        const response = await apiActivity.getFeedSequence(this.token, {
           limit: this.loadingLimit,
           before_activity_id: before_activity_id,
         });
-        const activities: IActivity[] = response.data;
+        this.isRandomActivities = response.data.random;
+        const activities: IActivity[] = response.data.activities;
         if (activities.length === 0) {
           break;
         }
@@ -339,17 +348,18 @@ export default class UserFeed extends CVue {
 
   private async loadActivities() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const response = await apiActivity.getActivities(this.token, {
+      const response = await apiActivity.getFeedSequence(this.token, {
         limit: this.loadingLimit,
         subjectUserUUID: this.subjectUserUuid,
       });
-      for (const activity of response.data) {
+      this.isRandomActivities = response.data.random;
+      for (const activity of response.data.activities) {
         this.combinedActivities.add(activity, 'tail');
       }
       if (this.enableShowExploreSites) {
         if (this.userProfile!.flag_list.includes(EXPLORE_SITES)) {
           this.showExploreSites = false;
-        } else if (this.combinedActivities.items.length === 0) {
+        } else if (this.combinedActivities.items.length === 0 || this.isRandomActivities) {
           this.showExploreSites = true;
         }
       }
@@ -390,15 +400,16 @@ export default class UserFeed extends CVue {
     const minActivityId = this.combinedActivities.minActivityId;
     if (minActivityId !== null) {
       await dispatchCaptureApiError(this.$store, async () => {
-        const response = await apiActivity.getActivities(this.token, {
+        const response = await apiActivity.getFeedSequence(this.token, {
           limit: this.loadingLimit,
           before_activity_id: minActivityId,
           subjectUserUUID: this.subjectUserUuid,
         });
-        if (response.data.length === 0) {
+        const activities = response.data.activities;
+        if (activities.length === 0) {
           this.noMoreNewActivities = true;
         } else {
-          for (const activity of response.data) {
+          for (const activity of activities) {
             this.combinedActivities.add(activity, 'tail');
           }
         }
