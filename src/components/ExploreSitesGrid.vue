@@ -1,7 +1,7 @@
 <template>
   <v-row v-if="!loading">
     <v-col v-for="(blocks, idx) in allBlocks" :key="idx" class="pb-2">
-      <base-card v-for="(block, idx) in blocks" :key="idx" class="pa-3">
+      <base-card v-for="(block, idx) in blocks" :key="idx" class="px-2 py-4">
         <h3 class="body-1">{{ block.topicName }}</h3>
         <div class="mt-2">
           <SiteBtn v-for="site in block.sites" :key="site.uuid" :showHotness="true" :site="site" />

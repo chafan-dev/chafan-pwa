@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IActivity, IMsg, IUpdateOrigins, IUserFeedSettings } from '@/interfaces';
+import { IActivity, IFeedSequence, IMsg, IUpdateOrigins, IUserFeedSettings } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiActivity = {
-  async getActivities(
+  async getFeedSequence(
     token: string,
     payload: { limit: number; before_activity_id?: number; subjectUserUUID?: number }
   ) {
@@ -16,19 +16,8 @@ export const apiActivity = {
     if (payload.subjectUserUUID !== undefined) {
       params.set('subject_user_uuid', payload.subjectUserUUID.toString());
     }
-    return axios.get<IActivity[]>(
+    return axios.get<IFeedSequence>(
       `${apiUrl}/api/v1/activities/`,
-      authHeadersWithParams(token, params)
-    );
-  },
-  async getNewActivities(token: string, payload: { limit: number; after_activity_id?: number }) {
-    const params = new URLSearchParams();
-    params.set('limit', payload.limit.toString());
-    if (payload.after_activity_id !== undefined) {
-      params.set('after_activity_id', payload.after_activity_id.toString());
-    }
-    return axios.get<IActivity[]>(
-      `${apiUrl}/api/v1/activities/new/`,
       authHeadersWithParams(token, params)
     );
   },

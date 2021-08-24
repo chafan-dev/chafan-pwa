@@ -6,7 +6,6 @@ test('TestHomeVue', () => {
   const inputActivities: IActivity[] = [
     {
       id: 1,
-      site_uuid: '',
       created_at: '2021-01-30T23:31:21.630841-08:00',
       verb: 'upvote_question',
       event: {
@@ -44,7 +43,6 @@ test('TestHomeVue', () => {
   expect(c1.items).toStrictEqual(inputActivities);
   inputActivities.push({
     id: 2,
-    site_uuid: '',
     created_at: '2021-01-30T23:31:21.630841-08:00',
     verb: 'upvote_question',
     event: {
@@ -77,7 +75,6 @@ test('TestHomeVue', () => {
 
   inputActivities.push({
     id: 3,
-    site_uuid: '',
     created_at: '2021-01-30T23:31:21.630841-08:00',
     verb: 'upvote_question',
     event: {

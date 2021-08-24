@@ -1,10 +1,6 @@
 <template>
   <v-sheet>
-    <v-card
-      v-bind="$attrs"
-      :class="flat ? '' : theme.baseCard.classKey + noGutter ? '' : ' pa-2'"
-      :flat="flat"
-    >
+    <v-card v-bind="$attrs" :class="classes" :flat="flat">
       <slot />
     </v-card>
 
@@ -23,5 +19,9 @@ export default class BaseCard extends CVue {
   @Prop({ default: false }) private readonly flat!: boolean;
   @Prop({ default: false }) private readonly divider!: boolean;
   @Prop({ default: false }) private readonly noGutter!: boolean;
+
+  get classes() {
+    return { [this.theme.baseCard.classKey]: !this.flat, 'pa-2': !this.noGutter };
+  }
 }
 </script>

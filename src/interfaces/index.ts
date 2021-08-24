@@ -487,10 +487,15 @@ export interface IEvent {
 export interface IActivity {
   id: number;
   created_at: string;
-  site_uuid: string;
+  site?: ISite;
   verb: string;
   event: IEvent;
   origins?: IOrigin[];
+}
+
+export interface IFeedSequence {
+  activities: IActivity[];
+  random: boolean;
 }
 
 export interface ICommentCreate {
