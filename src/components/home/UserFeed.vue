@@ -321,6 +321,7 @@ export default class UserFeed extends CVue {
         const response = await apiActivity.getFeedSequence(this.token, {
           limit: this.loadingLimit,
           before_activity_id: before_activity_id,
+          random: this.isRandomActivities,
         });
         this.isRandomActivities = response.data.random;
         const activities: IActivity[] = response.data.activities;
@@ -401,6 +402,7 @@ export default class UserFeed extends CVue {
     if (minActivityId !== null) {
       await dispatchCaptureApiError(this.$store, async () => {
         const response = await apiActivity.getFeedSequence(this.token, {
+          random: this.isRandomActivities,
           limit: this.loadingLimit,
           before_activity_id: minActivityId,
           subjectUserUUID: this.subjectUserUuid,

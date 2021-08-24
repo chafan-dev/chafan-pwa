@@ -6,7 +6,12 @@ import { authHeaders, authHeadersWithParams } from '@/utils';
 export const apiActivity = {
   async getFeedSequence(
     token: string,
-    payload: { limit: number; before_activity_id?: number; subjectUserUUID?: number }
+    payload: {
+      limit: number;
+      before_activity_id?: number;
+      subjectUserUUID?: number;
+      random?: boolean;
+    }
   ) {
     const params = new URLSearchParams();
     params.set('limit', payload.limit.toString());
@@ -15,6 +20,9 @@ export const apiActivity = {
     }
     if (payload.subjectUserUUID !== undefined) {
       params.set('subject_user_uuid', payload.subjectUserUUID.toString());
+    }
+    if (payload.random !== undefined) {
+      params.set('random', payload.random.toString());
     }
     return axios.get<IFeedSequence>(
       `${apiUrl}/api/v1/activities/`,
