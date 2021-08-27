@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
@@ -68,12 +68,12 @@ import {
   dispatchCaptureApiErrorWithErrorHandler,
 } from '@/store/main/actions';
 import { AxiosError } from 'axios';
-import { readIsLoggedIn } from '@/store/main/getters';
+import { CVue } from '@/common';
 
 @Component({
   components: { UserLink },
 })
-export default class InvitationLink extends Vue {
+export default class InvitationLink extends CVue {
   private appName = appName;
   private invitationLink: IInvitationLink | null = null;
   private errorMsg: string | null = null;
@@ -82,26 +82,13 @@ export default class InvitationLink extends Vue {
     return this.$route.params.uuid;
   }
 
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get token() {
-    return this.$store.state.main.token;
-  }
-
   private async mounted() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
         this.invitationLink = (await api.getInvitationLink(this.uuid)).data;
       },
       errorFilter: (err: AxiosError) => {
-        if (err.response && err.response.data.detail === 'Invalid invitation link') {
-          this.errorMsg =
-            '邀请码已过期/用完，请联系站内用户重新生成或者前往 https://about.cha.fan/signup/ 申请，谢谢！';
-          return true;
-        }
-        return false;
+        return this.commitErrMsg(err);
       },
     });
   }

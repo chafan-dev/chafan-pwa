@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { ISiteCreate, ITopic } from '@/interfaces';
 import { api } from '@/api';
 import {
@@ -73,11 +73,12 @@ import { commitAddNotification } from '@/store/main/mutations';
 import { readUserProfile } from '@/store/main/getters';
 import { adminUUID, env } from '@/env';
 import { apiSite } from '@/api/site';
+import { CVue } from '@/common';
 
 @Component({
   components: { UserSearch },
 })
-export default class CreateSite extends Vue {
+export default class CreateSite extends CVue {
   private siteCreate: ISiteCreate = {
     name: '',
     subdomain: '',
@@ -135,23 +136,11 @@ export default class CreateSite extends Vue {
     if (this.canCreateSite) {
       await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
         action: async () => {
-          const site = (await apiSite.createSite(this.$store.state.main.token, this.siteCreate))
-            .data;
+          const site = (await apiSite.createSite(this.token, this.siteCreate)).data;
           await this.$router.push(`/sites/${site.subdomain}`);
         },
         errorFilter: (err: AxiosError) => {
-          if (
-            err.response &&
-            err.response.data.detail ===
-              'The site with this subdomain already exists in the system.'
-          ) {
-            commitAddNotification(this.$store, {
-              content: '圈子域名已存在',
-              color: 'error',
-            });
-            return true;
-          }
-          return false;
+          return this.commitErrMsg(err);
         },
       });
       this.intermediate = false;
@@ -159,11 +148,11 @@ export default class CreateSite extends Vue {
       const siteCreateInfo = JSON.stringify(this.siteCreate);
       await dispatchCaptureApiError(this.$store, async () => {
         if (adminUUID) {
-          const r0 = await api.createChannel(this.$store.state.main.token, {
+          const r0 = await api.createChannel(this.token, {
             private_with_user_uuid: adminUUID,
           });
           const channelId = r0.data.id;
-          await api.createMessage(this.$store.state.main.token, {
+          await api.createMessage(this.token, {
             channel_id: channelId,
             body: '申请创建圈子：\n' + siteCreateInfo,
           });

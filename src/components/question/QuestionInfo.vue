@@ -63,20 +63,19 @@
 import { IQuestion, IQuestionPreview, IUserQuestionSubscription } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { commitAddNotification } from '@/store/main/mutations';
+import { Component, Prop } from 'vue-property-decorator';
 import { api } from '@/api';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSearch } from '@/api/search';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import RotationList from '@/components/base/RotationList.vue';
-import { readUserProfile } from '@/store/main/getters';
+import { CVue } from '@/common';
 
 @Component({
   components: { RotationList, RefreshIcon, QuestionLink, UserLink, UserSearch },
 })
-export default class QuestionInfo extends Vue {
+export default class QuestionInfo extends CVue {
   @Prop() public readonly question!: IQuestion;
   @Prop() public readonly questionSubscription!: IUserQuestionSubscription;
 
@@ -85,10 +84,6 @@ export default class QuestionInfo extends Vue {
 
   private invitedUserId: string | null = null;
   private relatedQuestions: IQuestionPreview[] | null = null;
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
 
   public async mounted() {
     if (this.question.keywords && this.userProfile) {
@@ -129,10 +124,7 @@ export default class QuestionInfo extends Vue {
             },
           });
         }
-        commitAddNotification(this.$store, {
-          content: response.data.msg,
-          color: 'success',
-        });
+        this.expectOkAndCommitMsg(response.data, '已邀请');
         this.showInviteToAnswerDialog = false;
       }
     });

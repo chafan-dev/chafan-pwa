@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
 import {
-  IMsg,
+  IGenericResponse,
   IQuestion,
   IQuestionArchive,
   IQuestionCreate,
@@ -37,7 +37,7 @@ export const apiQuestion = {
     );
   },
   async bumpViewsCounter(token: string, questionUUID: string) {
-    return axios.post<IMsg>(
+    return axios.post<IGenericResponse>(
       `${apiUrl}/api/v1/questions/${questionUUID}/views/`,
       null,
       authHeaders(token)

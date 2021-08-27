@@ -92,7 +92,7 @@
 
 <script lang="ts">
 import { api } from '@/api';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
@@ -106,12 +106,13 @@ import {
   dispatchCaptureApiErrorWithErrorHandler,
 } from '@/store/main/actions';
 import { readUserProfile } from '@/store/main/getters';
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
+import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { AxiosError } from 'axios';
 
 import DoorIcon from '@/components/icons/DoorIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { apiSite } from '@/api/site';
+import { CVue } from '@/common';
 
 @Component({
   components: {
@@ -126,7 +127,7 @@ import { apiSite } from '@/api/site';
     Viewer,
   },
 })
-export default class SiteCard extends Vue {
+export default class SiteCard extends CVue {
   @Prop() private readonly site!: ISite;
   @Prop() private readonly isMember: boolean | undefined;
   @Prop() private readonly showQuestionEditor!: boolean;
@@ -138,10 +139,6 @@ export default class SiteCard extends Vue {
   private loading = true;
   private showJoinConditionsDialog = false;
   private intermediate = false;
-
-  get token() {
-    return this.$store.state.main.token;
-  }
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -163,7 +160,7 @@ export default class SiteCard extends Vue {
         if (this.notMember && this.token) {
           const r = await apiSite.getSiteApply(this.token, this.site.uuid);
           if (r) {
-            this.siteApplied = r.data.msg === 'applied';
+            this.siteApplied = r.data.applied_before;
           }
         }
       }
@@ -182,9 +179,9 @@ export default class SiteCard extends Vue {
           this.applyToJoinIntermediate = true;
           const response = await apiSite.applySite(this.token, this.site.uuid);
           if (response) {
-            if (response.data.msg === 'applied') {
+            if (response.data.applied_before) {
               this.siteApplied = true;
-            } else if (response.data.msg == 'joined') {
+            } else if (response.data.auto_approved) {
               this.notMember = false;
             }
           }
@@ -192,20 +189,12 @@ export default class SiteCard extends Vue {
         this.applyToJoinIntermediate = false;
       },
       errorFilter: (err: AxiosError) => {
-        if (
-          err.response &&
-          (err.response.data.detail === 'Insuffient karma for joining site.' ||
-            err.response.data.detail === 'No verified email.')
-        ) {
-          commitAddNotification(this.$store, {
-            content: err.response.data.detail,
-            color: 'error',
-          });
+        const matched = this.commitErrMsg(err);
+        if (matched) {
           this.showJoinConditionsDialog = true;
           this.applyToJoinIntermediate = false;
-          return true;
         }
-        return false;
+        return matched;
       },
     });
   }

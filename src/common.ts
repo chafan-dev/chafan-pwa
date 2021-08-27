@@ -1,9 +1,17 @@
 import { apiQuestion } from '@/api/question';
 import { apiUrl, appName } from '@/env';
 import { api } from '@/api';
-import { ThemeType } from '@/interfaces';
+import { IGenericResponse, ThemeType } from '@/interfaces';
 import { Vue } from 'vue-property-decorator';
-import { readTheme, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
+import {
+  readIsLoggedIn,
+  readTheme,
+  readToken,
+  readUserMode,
+  readUserProfile,
+} from '@/store/main/getters';
+import { commitAddNotification } from '@/store/main/mutations';
+import { AxiosError } from 'axios';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 
@@ -360,9 +368,140 @@ export const updateHead = (routePath: string, title: string, descriptionText?: s
     ?.setAttribute('content', 'https://cha.fan' + routePath);
 };
 
+export const errorMsgCN = {
+  'The site with this id does not exist in the system': '圈子域名已存在',
+  'The secondary email already exists.': '',
+  'Inactive user': '',
+  "Author can't upvote authored question.": '',
+  'Must provide verification code for non-secondary email.': '',
+  'Insufficient coins.': '',
+  "The topic doesn't exists in the system.": '',
+  "The deposit doesn't exist in the system.": '',
+  'No verified email.': '',
+  'Invalid owner UUID': '',
+  'The article column is not owned by current user.': '',
+  "The application doesn't exists in the system.": '',
+  'Unauthorized.': '',
+  "The submission doesn't exists in the system.": '',
+  "You can't invite yourself.": '',
+  'Incorrect email or password': '',
+  "The reward doesn't exists in the system.": '',
+  'Invalid site UUID': '',
+  "The article_column doesn't exists in the system.": '',
+  "User can't follow self.": '',
+  "The user doesn't exist.": '',
+  'Unsupported status.': '',
+  'The reward is already claimed': '',
+  "The form doesn't exists in the system.": '',
+  'Invalid task type.': '',
+  "Can't hide question with answers.": '',
+  "The site doesn't exist.": '',
+  'Must provide verification code for adding new secondary email.': '',
+  'Invalid input.': '',
+  'Invalid submission UUID.': '',
+  'Request failed.': '',
+  'Upload requires login.': '',
+  Unauthorized: '',
+  "The site doesn't exists in the system.": '',
+  'Invalid form response id.': '',
+  'The site with this subdomain already exists in the system.': '',
+  "The topic doesn't exist.": '',
+  'Invalid token': '',
+  'The reward is not for current user': '',
+  "The answer doesn't exists in the system.": '',
+  'You have saved an answer before.': '',
+  'Invalid invitation link':
+    '邀请码已过期/用完，请联系站内用户重新生成或者前往 https://about.cha.fan/signup/ 申请，谢谢！',
+  'Claimed.': '',
+  'Invalid link': '',
+  "User can't unfollow self.": '',
+  'Incorrect hCaptcha': '',
+  'Wrong receiver.': '',
+  'Frondend bug: repeated posting in one writing session.': '',
+  'Insufficient karma.': '',
+  'Only author of submission can do this.': '',
+  'Invalid email.': '',
+  'Current user is not allowed in this site.': '',
+  "The question doesn't exists in the system.": '问题不存在',
+  'Wrong form.': '',
+  'error_msg,': '',
+  'User not found': '',
+  "The channel doesn't exists in the system.": '',
+  'Invalid new moderator UUID': '',
+  'The reward condition is not met yet': '',
+  'Invalid request.': '',
+  "Could not validate current user's JWT credentials": '',
+  "Author can't upvote authored answer.": '',
+  'Applied.': '',
+  'Cyclic parent topic relationship.': '',
+  "The comment doesn't exists in the system.": '',
+  'Missing hCaptcha token': '',
+  'The user with this username already exists in the system': '',
+  'Insuffient karma for joining site.': '',
+  'Invalid category topic id.': '',
+  "Author can't upvote authored comment.": '',
+  'The verification code is not present in the system.': '',
+  "The receiver can't post answer for that question.": '',
+  'Duplicated ref_id.': '',
+  'The site with this name already exists in the system.': '',
+  'No such account.': '',
+  'Unauthenticated.': '',
+  'Invalid hostname for link preview.': '',
+  'Could not validate credentials': '',
+  'Invalid amount.': '',
+  "The site doesn't have moderator.": '',
+  "The submission_suggestion doesn't exists in the system.": '',
+  "The article doesn't exists in the system.": '文章不存在',
+  'The answer is not authored by current user.': '',
+  "The article column doesn't exist.": '',
+  'Invalid site UUID.': '',
+  'The reward is already refunded': '',
+  'The user with this email already exists in the system': '',
+  'The reward is already expired': '',
+  'Only author of suggestion can do this.': '',
+  'Insuffient coins.': '',
+  'Unknown status.': '',
+  "The message doesn't exists in the system.": '',
+  "User doesn't exist.": '',
+  "You haven't voted yet.": '',
+  "You can't upvote twice.": '',
+  'The site is not moderated by current user.': '',
+  'The user with this email already exists in the system.': '',
+  'Not pending.': '',
+  'Invalid verification code.': '',
+  "The secondary email doesn't exist.": '',
+  'The user with this username does not exist in the system': '',
+  "The followed_user doesn't exists in the system.": '',
+  'The comment has too many or too few parent ids.': '',
+  "Author can't upvote authored submission.": '',
+  "The receiver doesn't exists in the system.": '',
+  "Can't change accepted suggestion.": '',
+  "Author can't upvote authored article.": '',
+  'The user with this email does not exist in the system.': '',
+  "The circle doesn't exists in the system.": '',
+  'The profile exists.': '',
+  "The user doesn't have enough privileges": '',
+  'Invalid user UUID.': '',
+  "The username can't be empty": '',
+  "The payee doesn't exist in the system.": '',
+  "The user doesn't exists in the system.": '',
+  'The comment is not authored by the current user.': '',
+  'This primary email is already used in the website.': '该主要邮箱地址已经存在',
+  "The form doesn't belong to current user.": '',
+  'Open user registration is forbidden on this server': '',
+  'Not for a specific site': '',
+  'Question has at least one answers.': '',
+  'Invalid password.': '',
+  'Delete answer failed.': '',
+};
+
 export class CVue extends Vue {
   get isUserMode() {
     return readUserMode(this.$store);
+  }
+
+  get loggedIn() {
+    return readIsLoggedIn(this.$store);
   }
 
   get theme() {
@@ -375,6 +514,35 @@ export class CVue extends Vue {
 
   get userProfile() {
     return readUserProfile(this.$store);
+  }
+
+  protected expectOkAndCommitMsg(response: IGenericResponse, msg: string) {
+    if (response.success) {
+      commitAddNotification(this.$store, {
+        content: msg,
+        color: 'success',
+      });
+    } else {
+      commitAddNotification(this.$store, {
+        content: '服务器错误',
+        color: 'error',
+      });
+    }
+  }
+
+  protected commitErrMsg(err: AxiosError): boolean {
+    if (err.response && err.response.data.detail in errorMsgCN) {
+      let content = errorMsgCN[err.response.data.detail];
+      if (content === '') {
+        content = err.response.data.detail;
+      }
+      commitAddNotification(this.$store, {
+        content: content,
+        color: 'error',
+      });
+      return true;
+    }
+    return false;
   }
 }
 

@@ -166,10 +166,7 @@ export default class Signup extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       const response = await api.sendVerificationCode({ email: this.email });
       if (response) {
-        const msg =
-          response.data.msg === 'Verification code email sent'
-            ? '验证码已发送到邮箱'
-            : response.data.msg;
+        const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
         commitAddNotification(this.$store, {
           content: msg,
           color: 'success',

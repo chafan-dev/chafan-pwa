@@ -227,7 +227,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import {
   IAuditLog,
   IUserProfileUpdate,
@@ -236,12 +236,7 @@ import {
   IUserUpdateSecondaryEmails,
   IVerificationCodeRequest,
 } from '@/interfaces';
-import { readUserProfile } from '@/store/main/getters';
-import {
-  dispatchCaptureApiError,
-  dispatchCheckApiError,
-  dispatchUpdateUserProfile,
-} from '@/store/main/actions';
+import { dispatchCaptureApiError, dispatchUpdateUserProfile } from '@/store/main/actions';
 import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { apiMe } from '@/api/me';
 import { api } from '@/api';
@@ -251,6 +246,7 @@ import EmailIcon from '@/components/icons/EmailIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { AxiosError } from 'axios';
+import { CVue } from '@/common';
 
 @Component({
   components: {
@@ -261,7 +257,7 @@ import { AxiosError } from 'axios';
     DeleteIcon,
   },
 })
-export default class Security extends Vue {
+export default class Security extends CVue {
   private password: string | null = null;
   private confirmation: string | null = null;
   private phoneNumber: string | null = null;
@@ -279,10 +275,6 @@ export default class Security extends Vue {
     { text: 'IP', value: 'ipaddr' },
   ];
   private auditLogs: IAuditLog[] | null = null;
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
 
   private async sendVerificationCode() {
     if (!this.editLoginMode) {
@@ -350,16 +342,7 @@ export default class Security extends Vue {
             response = r;
           })
           .catch((err: AxiosError) => {
-            if (
-              err.response?.data?.detail === 'This primary email is already used in the website.'
-            ) {
-              commitAddNotification(this.$store, {
-                content: `该主要邮箱地址已经存在: ${this.newEmail!}`,
-                color: 'error',
-              });
-            } else {
-              dispatchCheckApiError(this.$store, err);
-            }
+            this.commitErrMsg(err);
           });
       } else if (this.editLoginMode === 'add_secondary_email') {
         const payload: IUserUpdateSecondaryEmails = {
@@ -414,7 +397,7 @@ export default class Security extends Vue {
 
   private async mounted() {
     if (!this.userProfile) {
-      this.$router.push('/');
+      await this.$router.push('/');
       return;
     }
     if (this.userProfile && this.userProfile.phone_number) {

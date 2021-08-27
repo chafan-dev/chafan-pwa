@@ -628,8 +628,21 @@ export interface IMessageCreate {
   body: string;
 }
 
-export interface IMsg {
-  msg: string;
+export interface IGenericResponse {
+  success: boolean;
+}
+
+export interface IUploadedImage {
+  url: string;
+}
+
+export interface IWsAuthResponse {
+  token: string;
+}
+
+export interface ISiteApplicationResponse {
+  applied_before: boolean;
+  auto_approved: boolean;
 }
 
 export interface SiteModeratorBroadcastTaskDefinition {
@@ -681,10 +694,8 @@ export interface INotificationUpdate {
 }
 
 export interface IUserInvite {
-  site_uuid?: string;
-  email?: string;
-  user_uuid?: string;
-  personal_relation?: string;
+  site_uuid: string;
+  user_uuid: string;
 }
 
 export interface ICoinPayment {
