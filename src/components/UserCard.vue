@@ -163,7 +163,6 @@ import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';
-import { readIsLoggedIn } from '@/store/main/getters';
 import { CVue } from '@/common';
 
 @Component({
@@ -184,14 +183,7 @@ export default class UserCard extends CVue {
   private avatarURL: string | null = null;
 
   get currentUserId() {
-    if (!this.$store.state.main.userProfile) {
-      return null;
-    }
-    return this.$store.state.main.userProfile.uuid;
-  }
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
+    return this.userProfile?.uuid;
   }
 
   private shortIntro(intro: string) {
