@@ -142,6 +142,9 @@
               </v-form>
             </div>
             <v-card-actions>
+              <div class="text-caption grey--text">
+                次要邮件地址验证后可以用于满足加入圈子的要求。
+              </div>
               <v-spacer />
               <v-btn
                 v-show="!editLoginMode"
