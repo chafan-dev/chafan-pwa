@@ -243,33 +243,6 @@
             >取消
           </v-btn>
           <v-spacer />
-          <v-btn v-if="showQuestionEditor" depressed small @click="prepareShowMoveQuestionDialog">
-            转移问题
-          </v-btn>
-          <v-dialog v-model="showMoveQuestionDialog" max-width="600">
-            <v-card>
-              <v-card-title primary-title>
-                <div class="headline primary--text">转移问题</div>
-              </v-card-title>
-              <v-card-text>
-                <span>现问题所属圈子: {{ question.site.name }}</span>
-                <v-select
-                  v-model="newQuestionSite"
-                  :items="siteProfiles"
-                  item-text="site.name"
-                  item-value="site"
-                  label="新的圈子"
-                />
-              </v-card-text>
-              <v-card-actions>
-                <span>没有权限？联系「Chafan猫管家」帮助转移</span>
-                <v-spacer />
-                <v-btn color="warning" depressed small @click="confirmMoveQuestion">
-                  确认转移
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
 
           <v-btn
             v-if="showQuestionEditor & canHide"
@@ -430,7 +403,6 @@ import {
   IQuestionUpvotes,
   IRichEditorState,
   IRichText,
-  ISite,
   IUserQuestionSubscription,
   IUserSiteProfile,
 } from '@/interfaces';
@@ -501,14 +473,12 @@ export default class Question extends CVue {
   private commitQuestionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
-  private showMoveQuestionDialog = false;
   private savedNewAnswer: IAnswer | null = null;
   private handlingNewEdit = false;
   private upvotes: IQuestionUpvotes | null = null;
   private archives: IQuestionArchive[] = [];
   private historyDialog = false;
   private siteProfiles: IUserSiteProfile[] = [];
-  private newQuestionSite: ISite | null = null;
   private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
   private savedLocalEdit: LocalEdit | null = null;
@@ -852,43 +822,6 @@ export default class Question extends CVue {
     this.removeAnswer(answerUUID);
     if (this.answerUUID === answerUUID) {
       this.$router.push(`/questions/${this.question?.uuid}`);
-    }
-  }
-
-  private async prepareShowMoveQuestionDialog() {
-    this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
-    this.showMoveQuestionDialog = true;
-  }
-
-  private async confirmMoveQuestion() {
-    if (this.question) {
-      if (!this.newQuestionSite) {
-        commitAddNotification(this.$store, {
-          content: '未选择新的圈子',
-          color: 'info',
-        });
-      }
-      if (this.question.site.uuid === this.newQuestionSite?.uuid) {
-        commitAddNotification(this.$store, {
-          content: '没有变化',
-          color: 'info',
-        });
-      }
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.question = (
-          await apiQuestion.moveQuestion(
-            this.$store.state.main.token,
-            this.question!.uuid,
-            this.newQuestionSite!.uuid
-          )
-        ).data;
-        commitAddNotification(this.$store, {
-          content: '转移成功',
-          color: 'success',
-        });
-        this.showMoveQuestionDialog = false;
-        this.showQuestionEditor = false;
-      });
     }
   }
 

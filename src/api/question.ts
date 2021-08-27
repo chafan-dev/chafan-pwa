@@ -43,13 +43,6 @@ export const apiQuestion = {
       authHeaders(token)
     );
   },
-  async moveQuestion(token: string, questionUUID: string, newSiteUUID: string) {
-    return axios.put<IQuestion>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/parent-site/${newSiteUUID}`,
-      null,
-      authHeaders(token)
-    );
-  },
   async hideQuestion(token: string, questionUUID: string) {
     return axios.put<IQuestion>(
       `${apiUrl}/api/v1/questions/${questionUUID}/hide`,
