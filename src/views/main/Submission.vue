@@ -69,8 +69,8 @@
             <div v-else-if="showSubmissionEditor">
               <SimpleEditor
                 ref="descEditor"
-                :editorProp="submission.desc.editor"
-                :initialValue="submission.desc.source"
+                :editorProp="submission.desc ? submission.desc.editor : 'tiptap'"
+                :initialValue="submission.desc ? submission.desc.source : ''"
                 class="my-2"
                 placeholder="描述（选填）"
               />
