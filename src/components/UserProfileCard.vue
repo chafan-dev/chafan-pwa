@@ -71,7 +71,7 @@
           <div>
             <span>Karma：{{ userPreview.karma }}</span>
           </div>
-          <div class="pt-2">
+          <div class="pt-2" v-if="userPreview.uuid !== currentUserId">
             <v-btn
               v-if="follows.followed_by_me"
               :disabled="cancelFollowIntermediate"
@@ -136,7 +136,6 @@ import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';
-import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import UserProfileDetails from '@/components/UserProfileDetails.vue';
 import UserNameHeadline from '@/components/UserNameHeadline.vue';
 import UserGrid from '@/components/UserGrid.vue';
@@ -161,18 +160,6 @@ export default class UserProfileCard extends CVue {
   private followed: IUserPreview[] | null = null;
   private showFollowersDialog = false;
   private showFollowedDialog = false;
-
-  get currentUserId() {
-    return readUserProfile(this.$store)?.uuid;
-  }
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
 
   private shortIntro(intro: string) {
     if (!intro) {

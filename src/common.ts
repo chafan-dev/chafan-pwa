@@ -500,6 +500,10 @@ export class CVue extends Vue {
     return readUserMode(this.$store);
   }
 
+  get currentUserId() {
+    return readUserProfile(this.$store)?.uuid;
+  }
+
   get loggedIn() {
     return readIsLoggedIn(this.$store);
   }
