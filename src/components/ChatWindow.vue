@@ -22,7 +22,7 @@
               :userPreview="message.author"
             />
             <span v-else>我</span>:
-            {{ message.body }}
+            <Viewer :content="plainTextContent(message.body)" />
             <span class="ml-2 float-right text-caption grey--text">
               {{ $dayjs.utc(message.created_at).local().fromNow() }}
             </span>
@@ -56,20 +56,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { api } from '@/api';
-import { IChannel, IMessage, IMessageCreate } from '@/interfaces';
+import { IChannel, IMessage, IMessageCreate, IRichText } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readToken, readUserProfile } from '@/store/main/getters';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: { EmptyPlaceholder, UserLink, ChannelIcon, Viewer },
 })
-export default class ChatWindow extends Vue {
+export default class ChatWindow extends CVue {
   @Prop() public readonly channel!: IChannel;
   private messages: IMessage[] = [];
   private messageCreate: IMessageCreate = {
@@ -79,12 +79,12 @@ export default class ChatWindow extends Vue {
   private loading = true;
   private sendMsgIntermediate = false;
 
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
+  private plainTextContent(text: string): IRichText {
+    return {
+      source: text,
+      editor: 'markdown',
+      rendered_text: text,
+    };
   }
 
   private async mounted() {
