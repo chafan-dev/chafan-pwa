@@ -13,7 +13,7 @@
       </router-link>
     </div>
     <v-row justify="center">
-      <v-col v-if="compactMode && avatarURL" align-self="center" style="max-width: 110px">
+      <v-col v-if="compactMode && avatarURL" align-self="center" style="max-width: 120px">
         <router-link :to="`/users/${userPreview.handle}`">
           <v-avatar class="avatarDiv" size="100" tile>
             <v-img :src="avatarURL" alt="Avatar" />
