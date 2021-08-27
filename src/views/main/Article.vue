@@ -190,7 +190,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { IArticle, IArticleUpvotes, IUserArticleBookmark } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
@@ -210,10 +210,10 @@ import {
 
 import { commitAddNotification } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
-import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual, updateHead } from '@/common';
+import { CVue, isEqual, updateHead } from '@/common';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import Viewer from '@/components/Viewer.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
@@ -242,7 +242,7 @@ import { AxiosError } from 'axios';
     LinkIcon,
   },
 })
-export default class Article extends Vue {
+export default class Article extends CVue {
   private article: IArticle | null = null;
   private upvotes: IArticleUpvotes | null = null;
   private userBookmark: IUserArticleBookmark | null = null;
@@ -256,14 +256,6 @@ export default class Article extends Vue {
   private showHasDraftBadge = false;
   private commentSubmitIntermediate = false;
   private articlePreviewBody: string = '';
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
 
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);
@@ -290,18 +282,11 @@ export default class Article extends Vue {
         this.loading = false;
       },
       errorFilter: (err: AxiosError) => {
-        if (
-          err.response &&
-          err.response.data.detail === "The article doesn't exists in the system."
-        ) {
-          commitAddNotification(this.$store, {
-            content: '文章不存在',
-            color: 'error',
-          });
+        const matched = this.commitErrMsg(err);
+        if (matched) {
           this.$router.push('/');
-          return true;
         }
-        return false;
+        return matched;
       },
     });
   }

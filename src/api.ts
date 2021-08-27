@@ -12,11 +12,11 @@ import {
   IChannelCreate,
   IClaimWelcomeTestScoreMsg,
   ICoinPayment,
+  IGenericResponse,
   IInvitationLink,
   IInvitationLinkCreate,
   IMessage,
   IMessageCreate,
-  IMsg,
   INotification,
   INotificationUpdate,
   IReward,
@@ -126,7 +126,7 @@ export const api = {
     );
   },
   async sendVerificationCode(payload: IVerificationCodeRequest) {
-    return axios.post<IMsg>(`${apiUrl}/api/v1/send-verification-code`, payload);
+    return axios.post<IGenericResponse>(`${apiUrl}/api/v1/send-verification-code`, payload);
   },
   async openAccount(
     email: string,
@@ -153,7 +153,7 @@ export const api = {
     return axios.get<INotification[]>(`${apiUrl}/api/v1/notifications/unread/`, authHeaders(token));
   },
   async updateNotification(token: string, notifId: number, payload: INotificationUpdate) {
-    return axios.put<IMsg>(
+    return axios.put<IGenericResponse>(
       `${apiUrl}/api/v1/notifications/${notifId}`,
       payload,
       authHeaders(token)
@@ -163,7 +163,7 @@ export const api = {
     return axios.get<ICoinPayment[]>(`${apiUrl}/api/v1/coin-payments/`, authHeaders(token));
   },
   async inviteAnswer(token: string, questionUUID: string, userUUID: string) {
-    return axios.post<IMsg>(
+    return axios.post<IGenericResponse>(
       `${apiUrl}/api/v1/questions/${questionUUID}/invite-answer/${userUUID}`,
       null,
       authHeaders(token)
@@ -223,7 +223,7 @@ export const api = {
     );
   },
   async joinSiteWithInvitationLink(token: string, uuid: string) {
-    return axios.post<IMsg>(
+    return axios.post<IGenericResponse>(
       `${apiUrl}/api/v1/invitation-links/${uuid}/join`,
       null,
       authHeaders(token)

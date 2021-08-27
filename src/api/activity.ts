@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IActivity, IFeedSequence, IMsg, IUpdateOrigins, IUserFeedSettings } from '@/interfaces';
+import { IFeedSequence, IGenericResponse, IUpdateOrigins, IUserFeedSettings } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiActivity = {
@@ -36,7 +36,7 @@ export const apiActivity = {
     );
   },
   async updateOrigins(token: string, payload: IUpdateOrigins) {
-    return axios.put<IMsg>(
+    return axios.put<IGenericResponse>(
       `${apiUrl}/api/v1/activities/settings/blocked-origins/`,
       payload,
       authHeaders(token)

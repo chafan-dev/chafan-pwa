@@ -11,7 +11,7 @@ import {
   IArticlePreview,
   IArticleUpdate,
   IArticleUpvotes,
-  IMsg,
+  IGenericResponse,
   IUserArticleColumnSubscription,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
@@ -41,7 +41,10 @@ export const apiArticle = {
     );
   },
   async deleteArticle(token: string, articleUUID: string) {
-    return axios.delete<IMsg>(`${apiUrl}/api/v1/articles/${articleUUID}`, authHeaders(token));
+    return axios.delete<IGenericResponse>(
+      `${apiUrl}/api/v1/articles/${articleUUID}`,
+      authHeaders(token)
+    );
   },
   async getArticle(token: string, articleUUID: string) {
     return axios.get<IArticle>(`${apiUrl}/api/v1/articles/${articleUUID}`, authHeaders(token));
@@ -53,7 +56,7 @@ export const apiArticle = {
     );
   },
   async bumpViewsCounter(token: string, articleUUID: string) {
-    return axios.post<IMsg>(
+    return axios.post<IGenericResponse>(
       `${apiUrl}/api/v1/articles/${articleUUID}/views/`,
       null,
       authHeaders(token)

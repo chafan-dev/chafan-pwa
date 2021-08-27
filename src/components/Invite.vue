@@ -29,20 +29,21 @@
 
 <script lang="ts">
 import { api2 } from '@/api2';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserSearch from '@/components/UserSearch.vue';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import SiteIcon from '@/components/icons/SiteIcon.vue';
 import ShieldCheckIcon from '@/components/icons/ShieldCheckIcon.vue';
-import { ISite, IUserInvite } from '@/interfaces';
+import { ISite } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { readToken } from '@/store/main/getters';
+import { CVue } from '@/common';
 
 @Component({
   components: { UserSearch, AccountIcon, ShieldCheckIcon, SiteIcon },
 })
-export default class Invite extends Vue {
+export default class Invite extends CVue {
   @Prop() public readonly site!: ISite;
 
   private friendId: string | null = null;
@@ -52,7 +53,6 @@ export default class Invite extends Vue {
   private async submitInviteFriends() {
     this.intermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      const payload: IUserInvite = { site_uuid: this.site.uuid };
       if (!this.friendId) {
         commitAddNotification(this.$store, {
           content: '用户不能为空',
@@ -60,13 +60,12 @@ export default class Invite extends Vue {
         });
         return;
       }
-      payload.user_uuid = this.friendId;
-      const response = await api2.inviteUser(readToken(this.$store), payload);
+      const response = await api2.inviteUser(readToken(this.$store), {
+        site_uuid: this.site.uuid,
+        user_uuid: this.friendId,
+      });
       if (response) {
-        commitAddNotification(this.$store, {
-          content: response.data.msg,
-          color: 'success',
-        });
+        this.expectOkAndCommitMsg(response.data, '已邀请');
         this.intermediate = false;
         this.showDialog = false;
         setTimeout(() => {

@@ -1,7 +1,13 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
-import { IComment, ICommentCreate, ICommentUpdate, ICommentUpvotes, IMsg } from '@/interfaces';
+import {
+  IComment,
+  ICommentCreate,
+  ICommentUpdate,
+  ICommentUpvotes,
+  IGenericResponse,
+} from '@/interfaces';
 
 export const apiComment = {
   async postComment(token: string, payload: ICommentCreate) {
@@ -21,7 +27,10 @@ export const apiComment = {
     );
   },
   async deleteComment(token: string, commentUUID: string) {
-    return axios.delete<IMsg>(`${apiUrl}/api/v1/comments/${commentUUID}`, authHeaders(token));
+    return axios.delete<IGenericResponse>(
+      `${apiUrl}/api/v1/comments/${commentUUID}`,
+      authHeaders(token)
+    );
   },
   async upvote(token: string, uuid: string) {
     return axios.post<ICommentUpvotes>(

@@ -566,7 +566,7 @@ export default class UserProfileEdit extends Vue {
           }
           this.avatarURL = resized.dataUrl;
           const response = await api2.uploadFile(this.token, formData);
-          this.userUpdateMe.avatar_url = response.data.msg;
+          this.userUpdateMe.avatar_url = response.data.url;
         }
       }
       this.uploadAvatarIntermediate = false;
@@ -598,7 +598,7 @@ export default class UserProfileEdit extends Vue {
             this.gifAvatarURL = fileReader.result as string;
           };
           const response = await api2.uploadFile(this.token, formData);
-          this.userUpdateMe.gif_avatar_url = response.data.msg;
+          this.userUpdateMe.gif_avatar_url = response.data.url;
         }
       }
       this.uploadGifAvatarIntermediate = false;

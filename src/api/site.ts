@@ -1,8 +1,9 @@
 import axios from 'axios';
 import {
-  IMsg,
+  IGenericResponse,
   IQuestionPreview,
   ISite,
+  ISiteApplicationResponse,
   ISiteCreate,
   ISiteUpdate,
   ISubmission,
@@ -47,12 +48,22 @@ export const apiSite = {
     return axios.post<ISite>(`${apiUrl}/api/v1/sites/`, payload, authHeaders(token));
   },
   async getSiteApply(token: string, siteUUID: string) {
-    return axios.get<IMsg>(`${apiUrl}/api/v1/sites/${siteUUID}/apply`, authHeaders(token));
+    return axios.get<ISiteApplicationResponse>(
+      `${apiUrl}/api/v1/sites/${siteUUID}/apply`,
+      authHeaders(token)
+    );
   },
   async applySite(token: string, siteUUID: string) {
-    return axios.post<IMsg>(`${apiUrl}/api/v1/sites/${siteUUID}/apply`, null, authHeaders(token));
+    return axios.post<ISiteApplicationResponse>(
+      `${apiUrl}/api/v1/sites/${siteUUID}/apply`,
+      null,
+      authHeaders(token)
+    );
   },
   async leaveSite(token: string, siteUUID: string) {
-    return axios.delete<IMsg>(`${apiUrl}/api/v1/sites/${siteUUID}/membership`, authHeaders(token));
+    return axios.delete<IGenericResponse>(
+      `${apiUrl}/api/v1/sites/${siteUUID}/membership`,
+      authHeaders(token)
+    );
   },
 };

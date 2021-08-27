@@ -102,7 +102,7 @@ export default class ChafanTiptap extends Vue {
       formData.append('file', resized.blob);
     }
     const response = await api2.uploadFile(readToken(this.$store), formData);
-    return response.data.msg;
+    return response.data.url;
   }
 
   mounted() {

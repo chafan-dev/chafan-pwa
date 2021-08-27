@@ -207,7 +207,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import PasswordIcon from '@/components/icons/PasswordIcon.vue';
 import JoinChafanIcon from '@/components/icons/JoinChafanIcon.vue';
@@ -228,6 +228,7 @@ import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
 import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: {
@@ -246,7 +247,7 @@ import HelpIcon from '@/components/icons/HelpIcon.vue';
     VueHcaptcha,
   },
 })
-export default class LoginCard extends Vue {
+export default class LoginCard extends CVue {
   @Prop({ default: true }) public readonly showTopBar!: boolean;
   private email: string = '';
   private phoneNumber: string = '';
@@ -287,10 +288,7 @@ export default class LoginCard extends Vue {
         phone_number: this.phoneNumber!,
       });
       if (response) {
-        commitAddNotification(this.$store, {
-          content: response.data.msg,
-          color: 'success',
-        });
+        this.expectOkAndCommitMsg(response.data, '验证码发送成功');
         this.verificationCodeDisabled = true;
       }
       this.sendVerificationCodeIntermediate = false;

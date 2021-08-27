@@ -2,7 +2,7 @@ import axios from 'axios';
 import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
 import {
-  IMsg,
+  IGenericResponse,
   ISubmission,
   ISubmissionArchive,
   ISubmissionCreate,
@@ -24,7 +24,7 @@ export const apiSubmission = {
     return axios.get<ISubmission>(`${apiUrl}/api/v1/submissions/${uuid}`, authHeaders(token));
   },
   async bumpViewsCounter(token: string, uuid: string) {
-    return axios.post<IMsg>(
+    return axios.post<IGenericResponse>(
       `${apiUrl}/api/v1/submissions/${uuid}/views/`,
       null,
       authHeaders(token)

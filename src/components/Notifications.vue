@@ -104,16 +104,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 
 import MuteNotificationIcon from '@/components/icons/MuteNotificationIcon.vue';
 import NotificationIcon from '@/components/icons/NotificationIcon.vue';
-import { INotification, IUserProfile, IWsUserMsg } from '@/interfaces';
+import { INotification, IWsUserMsg } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { api } from '@/api';
 import { api2 } from '@/api2';
 import { wsUrl } from '@/env';
 import Event from '@/components/Event.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: {
@@ -122,9 +123,7 @@ import Event from '@/components/Event.vue';
     Event,
   },
 })
-export default class Notifications extends Vue {
-  @Prop() public readonly userProfile!: IUserProfile;
-
+export default class Notifications extends CVue {
   private notifications: INotification[] = [];
   private loadNotifsIntermediate = true;
   private showReadNotifications = false;
@@ -145,12 +144,10 @@ export default class Notifications extends Vue {
           }
         });
       }
-      this.notifications.push(
-        ...(await api2.getReadNotifications(this.$store.state.main.token)).data
-      );
+      this.notifications.push(...(await api2.getReadNotifications(this.token)).data);
       this.loadNotifsIntermediate = false;
 
-      const wsToken = (await api2.getWsToken(this.$store.state.main.token)).data.msg;
+      const wsToken = (await api2.getWsToken(this.token)).data.token;
       this.wsConnection = new WebSocket(wsUrl + '/api/v1/ws?token=' + wsToken);
       this.wsConnection.onmessage = (message) => {
         const wsMsg = JSON.parse(message.data) as IWsUserMsg;

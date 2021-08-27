@@ -7,7 +7,7 @@ import {
   IAnswerDraft,
   IAnswerUpdate,
   IAnswerUpvotes,
-  IMsg,
+  IGenericResponse,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
@@ -42,13 +42,16 @@ export const apiAnswer = {
     );
   },
   async deleteAnswer(token: string, answerUUID: string) {
-    return axios.delete<IMsg>(`${apiUrl}/api/v1/answers/${answerUUID}`, authHeaders(token));
+    return axios.delete<IGenericResponse>(
+      `${apiUrl}/api/v1/answers/${answerUUID}`,
+      authHeaders(token)
+    );
   },
   async getAnswer(token: string, answerUUID: string) {
     return axios.get<IAnswer>(`${apiUrl}/api/v1/answers/${answerUUID}`, authHeaders(token));
   },
   async bumpViewsCounter(token: string, answerUUID: string) {
-    return axios.post<IMsg>(
+    return axios.post<IGenericResponse>(
       `${apiUrl}/api/v1/answers/${answerUUID}/views/`,
       null,
       authHeaders(token)

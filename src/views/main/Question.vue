@@ -421,13 +421,7 @@ import {
 } from '@/store/main/mutations';
 import { api } from '@/api';
 
-import {
-  readIsLoggedIn,
-  readNarrowUI,
-  readToken,
-  readUserMode,
-  readUserProfile,
-} from '@/store/main/getters';
+import { readIsLoggedIn, readNarrowUI, readUserMode } from '@/store/main/getters';
 import {
   IAnswer,
   IAnswerPreview,
@@ -519,10 +513,6 @@ export default class Question extends CVue {
   private commentSubmitIntermediate = false;
   private savedLocalEdit: LocalEdit | null = null;
 
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
   get isUserMode() {
     return readUserMode(this.$store);
   }
@@ -562,10 +552,6 @@ export default class Question extends CVue {
     }
   }
 
-  get token() {
-    return readToken(this.$store);
-  }
-
   private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
@@ -600,18 +586,11 @@ export default class Question extends CVue {
         this.question = response.data;
       },
       errorFilter: (err: AxiosError) => {
-        if (
-          err.response &&
-          err.response.data.detail === "The question doesn't exists in the system."
-        ) {
-          commitAddNotification(this.$store, {
-            content: '问题不存在，返回主页',
-            color: 'error',
-          });
+        const matched = this.commitErrMsg(err);
+        if (matched) {
           this.$router.push('/');
-          return true;
         }
-        return false;
+        return matched;
       },
     });
 
@@ -720,7 +699,7 @@ export default class Question extends CVue {
       }
     } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
 
-    this.loadQuestion();
+    await this.loadQuestion();
   }
 
   private updateOrAddFullyLoadedAnswer(answer: IAnswer) {
