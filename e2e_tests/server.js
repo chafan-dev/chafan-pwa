@@ -34,53 +34,17 @@ if (process.argv.includes('--secure')) {
 
 app.ws('/ws', (req, res) => {});
 
-const EXAMPLE_USER1_UUID = 'example-user-1-uuid';
-const EXAMPLE_USER1_HANDLE = 'example-user-1';
-const EXAMPLE_USER1_FULL_NAME = 'Example User 1';
-
 const EXAMPLE_USER_ME_UUID = 'example-user-me-uuid';
 const EXAMPLE_USER_ME_HANDLE = 'example-me';
 
-const example_user1_preview = {
-  uuid: EXAMPLE_USER1_UUID,
-  handle: EXAMPLE_USER1_HANDLE,
-  full_name: EXAMPLE_USER1_FULL_NAME,
-  karma: 0,
-};
-
-const EXAMPLE_USER2_UUID = 'example-user-2-uuid';
-const EXAMPLE_USER2_HANDLE = 'example-user-2';
-
-const meUserPreview = {
+const meUserPreview: IUserPreview = {
   uuid: EXAMPLE_USER_ME_UUID,
   handle: EXAMPLE_USER_ME_HANDLE,
   karma: 0,
 };
 
-const example_user2_preview = {
-  uuid: EXAMPLE_USER2_UUID,
-  handle: EXAMPLE_USER2_HANDLE,
-  full_name: null,
-  karma: 2791,
-};
-
-const EXAMPLE_SITE1_SUBDOMAIN = 'internet-things';
-
-const example_site1 = {
-  description: '讨论互联网产品的设计和体验',
-  uuid: '3noQmrdUbubY9ojPerYA',
-  name: '互联网产品',
-  subdomain: EXAMPLE_SITE1_SUBDOMAIN,
-  public_readable: true,
-  public_writable_question: true,
-  public_writable_answer: true,
-  public_writable_comment: true,
-  create_question_coin_deduction: 2,
-  addable_member: true,
-  topics: [],
-  moderator: example_user2_preview,
-  permission_type: 'public',
-};
+const mockData = require('../src/mock/data');
+const { IUserPreview } = require('@/interfaces');
 
 const randomSites = [];
 for (var i = 0; i < 20; i++) {
@@ -173,11 +137,9 @@ for (var i = 0; i < 40; i++) {
     created_at: '2021-03-05T19:30:54.694708+00:00',
     updated_at: '2021-03-05T19:30:57.482069+00:00',
     topics: [],
-    upvotes_count: 0,
     author: example_user1_preview,
     comments: [],
     site: example_site1,
-    upvoted: false,
     view_times: 2,
   });
 }
@@ -187,7 +149,6 @@ const example_answer1_preview = {
   author: example_user1_preview,
   question: example_question_preview,
   body: '我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收...',
-  upvotes_count: 2,
   is_hidden_by_moderator: false,
 };
 
@@ -199,7 +160,6 @@ for (var i = 0; i < 40; i++) {
     author: example_user1_preview,
     question: example_question_preview,
     body: '我认为未来一段时间政府不会依靠税收运营社交网络。\n\n政府税收...',
-    upvotes_count: 2,
     is_hidden_by_moderator: false,
   });
 }
@@ -214,10 +174,8 @@ const example_user2_comment1 = {
   body: '这是一条测试评论\n',
   shared_to_timeline: true,
   is_deleted: false,
-  upvotes_count: 1,
   author: example_user2_preview,
   root_route: `/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`,
-  upvoted: false,
 };
 
 const example_user_me_comment1 = {
@@ -226,10 +184,8 @@ const example_user_me_comment1 = {
   body: '这是我的一条测试评论',
   shared_to_timeline: false,
   is_deleted: false,
-  upvotes_count: 2,
   author: meUserPreview,
   root_route: `/submissions/${EXAMPLE_USER1_SUBMISSION1_UUID}`,
-  upvoted: false,
 };
 
 const example_user1_submission1 = {
@@ -240,11 +196,9 @@ const example_user1_submission1 = {
   created_at: '2021-03-05T19:30:54.694708+00:00',
   updated_at: '2021-03-05T19:30:57.482069+00:00',
   topics: [],
-  upvotes_count: 0,
   author: example_user1_preview,
   comments: [example_user2_comment1, example_user_me_comment1],
   site: example_site1,
-  upvoted: false,
   view_times: 2,
 };
 
@@ -448,18 +402,12 @@ app.get(`/api/v1/questions/${example_question_preview.uuid}`, (req, res) => {
     keywords: ['test'],
     view_times: 10,
     is_placed_at_home: false,
-    upvoted: false,
-    upvotes_count: 2,
     answers_count: 11,
   });
 });
 
 app.get(`/api/v1/questions/${example_question_preview.uuid}/upvotes/`, (req, res) => {
-  res.json({
-    question_uuid: example_question_preview.uuid,
-    upvoted: false,
-    count: 2,
-  });
+  res.json(example_question_upvotes);
 });
 
 const example_activity_upvote_random_questions = [];
@@ -479,8 +427,6 @@ for (const randomQuestion of randomQuestionPreviews) {
       keywords: ['test'],
       view_times: 10,
       is_placed_at_home: false,
-      upvoted: false,
-      upvotes_count: 0,
       answers_count: 0,
     });
   });

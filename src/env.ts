@@ -16,6 +16,8 @@ if (env === 'production') {
   envWsUrl = `ws://${process.env.VUE_APP_API}`;
 }
 
+export const isDev = env !== 'production';
+
 export const apiUrl = envApiUrl;
 export const wsUrl = envWsUrl;
 export const appName = process.env.VUE_APP_NAME;

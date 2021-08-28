@@ -266,7 +266,6 @@ export interface IQuestionPreview {
   is_placed_at_home: boolean;
   created_at: string;
   answers_count: number;
-  upvotes_count: number;
   comments_count: number;
 }
 
