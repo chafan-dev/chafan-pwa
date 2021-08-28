@@ -1,10 +1,19 @@
 <template>
   <v-main>
     <v-container fill-height fluid>
-      <QuestionPreview
-        :question-preview="exampleQuestionPreview"
-        :upvotes-placeholder="upvotesPlaceholder"
-      />
+      <div>
+        <v-sheet outlined>
+          <QuestionPreview
+            :question-preview="mockData.exampleQuestionPreview"
+            :upvotes-placeholder="mockData.exampleQuestionUpvotes"
+            :disabled-placeholder="questionPreviewDisabled"
+          />
+        </v-sheet>
+        <div class="d-flex">
+          <v-switch label="upvoted" v-model="mockData.exampleQuestionUpvotes.upvoted" />
+          <v-switch class="ml-4" label="disabled" v-model="questionPreviewDisabled" />
+        </div>
+      </div>
     </v-container>
   </v-main>
 </template>
@@ -12,14 +21,13 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
-import { IQuestionPreview, IQuestionUpvotes } from '@/interfaces';
-import { exampleQuestionPreview, exampleQuestionUpvotes } from '@/mock/data';
+import * as mockData from '@/mock/data';
 
 @Component({
   components: { QuestionPreview },
 })
 export default class Showcase extends Vue {
-  private exampleQuestionPreview: IQuestionPreview = exampleQuestionPreview;
-  private upvotesPlaceholder: IQuestionUpvotes = exampleQuestionUpvotes;
+  private mockData = mockData;
+  private questionPreviewDisabled = false;
 }
 </script>

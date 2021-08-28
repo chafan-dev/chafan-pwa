@@ -37,7 +37,7 @@ app.ws('/ws', (req, res) => {});
 const EXAMPLE_USER_ME_UUID = 'example-user-me-uuid';
 const EXAMPLE_USER_ME_HANDLE = 'example-me';
 
-const meUserPreview: IUserPreview = {
+const meUserPreview = {
   uuid: EXAMPLE_USER_ME_UUID,
   handle: EXAMPLE_USER_ME_HANDLE,
   karma: 0,
