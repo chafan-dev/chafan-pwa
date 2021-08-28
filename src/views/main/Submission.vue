@@ -176,7 +176,7 @@
 
                 <v-list-item dense @click="showHistoryDialog">
                   <HistoryIcon class="mr-1" />
-                  查看编辑历史
+                  分享历史
                 </v-list-item>
 
                 <v-list-item

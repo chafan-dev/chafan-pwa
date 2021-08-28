@@ -163,6 +163,12 @@
                     @click="handleSubmit(submitFeedbackForm)"
                   >
                     提交
+                    <v-progress-circular
+                      size="20"
+                      color="primary"
+                      v-if="sendingFeedback"
+                      indeterminate
+                    />
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -209,7 +215,13 @@
 
               <v-list-item @click="prepareFeedbackForm">
                 <v-list-item-icon>
-                  <FeedbackIcon />
+                  <v-progress-circular
+                    size="20"
+                    v-if="prepareFeedbackFormIntermediate"
+                    color="primary"
+                    indeterminate
+                  />
+                  <FeedbackIcon v-else />
                 </v-list-item-icon>
 
                 <v-list-item-content>
@@ -397,12 +409,15 @@ export default class Main extends Vue {
     commitSetUserMode(this.$store, this.userMode);
   }
 
+  private prepareFeedbackFormIntermediate = false;
   private prepareFeedbackForm() {
+    this.prepareFeedbackFormIntermediate = true;
     this.showTopMenu = false;
     setTimeout(() => {
       html2canvas(document.body).then((canvas) => {
-        this.showFeedbackForm = !this.showFeedbackForm;
+        this.showFeedbackForm = true;
         this.feedbackScreenshotUrl = canvas.toDataURL('image/jpeg', 0.5);
+        this.prepareFeedbackFormIntermediate = false;
       });
     }, 100);
   }
