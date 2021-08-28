@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title> 反馈状态 </v-card-title>
       <v-card-text>
-        <v-list>
+        <v-list v-if="feedbacks.length > 0">
           <template v-for="(feedback, idx) in feedbacks">
             <v-divider v-if="idx > 0" :key="feedback.id" class="ma-2" />
             <v-list-item :key="feedback.id">
@@ -22,6 +22,7 @@
             </v-list-item>
           </template>
         </v-list>
+        <EmptyPlaceholder v-else />
       </v-card-text>
     </v-card>
   </div>
@@ -33,8 +34,10 @@ import { CVue } from '@/common';
 import { IFeedback } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { api2 } from '@/api2';
-
-@Component
+import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+@Component({
+  components: { EmptyPlaceholder },
+})
 export default class AdminCenter extends CVue {
   private feedbacks: IFeedback[] = [];
   private readonly statusCN = {
