@@ -3,6 +3,7 @@ import { apiUrl } from '@/env';
 import {
   ICoinPayment,
   IComment,
+  IFeedback,
   IGenericResponse,
   INotification,
   IReaction,
@@ -63,5 +64,8 @@ export const api2 = {
       payload,
       authHeadersFormData(token)
     );
+  },
+  async getFeedbacks(token: string) {
+    return axios.get<IFeedback[]>(`${apiUrl}/api/v1/feedbacks/`, authHeadersFormData(token));
   },
 };

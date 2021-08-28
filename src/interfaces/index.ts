@@ -1162,3 +1162,11 @@ export interface IUserFeedSettings {
 }
 
 export type ThemeType = 'default' | 'blue';
+
+export interface IFeedback {
+  id: number;
+  created_at: string;
+  description: string;
+  has_screenshot: boolean;
+  status: 'sent' | 'processing' | 'closed' | 'wontfix';
+}
