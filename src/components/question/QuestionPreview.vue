@@ -21,6 +21,7 @@
           }"
           :disabled="!userProfile || userProfile.uuid === questionPreview.author.uuid"
           :uuid="questionPreview.uuid"
+          :upvotes-placeholder="upvotesPlaceholder"
         />
       </v-lazy>
       <div
@@ -47,14 +48,13 @@
 </template>
 
 <script lang="ts">
-import { IQuestionPreview } from '@/interfaces';
+import { IQuestionPreview, IQuestionUpvotes } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import { Component, Prop } from 'vue-property-decorator';
 
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
-import { readUserProfile } from '@/store/main/getters';
 import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
 import { CVue } from '@/common';
 
@@ -63,6 +63,7 @@ import { CVue } from '@/common';
 })
 export default class QuestionPreview extends CVue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
+  @Prop() public readonly upvotesPlaceholder: IQuestionUpvotes | undefined;
 
   get shortDesc() {
     let d = this.questionPreview.desc?.rendered_text;
@@ -75,10 +76,6 @@ export default class QuestionPreview extends CVue {
     } else {
       return d;
     }
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
   }
 }
 </script>

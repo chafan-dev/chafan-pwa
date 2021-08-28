@@ -26,6 +26,7 @@ import { IQuestionUpvotes } from '@/interfaces';
 export default class QuestionUpvotes extends Vue {
   @Prop() public readonly uuid!: string;
   @Prop() public readonly disabled!: boolean;
+  @Prop() public readonly upvotesPlaceholder: IQuestionUpvotes | undefined;
 
   private upvotes: IQuestionUpvotes | null = null;
 
@@ -34,7 +35,11 @@ export default class QuestionUpvotes extends Vue {
   }
 
   async mounted() {
-    this.upvotes = (await apiQuestion.getUpvotes(readToken(this.$store), this.uuid)).data;
+    if (this.upvotesPlaceholder) {
+      this.upvotes = this.upvotesPlaceholder;
+    } else {
+      this.upvotes = (await apiQuestion.getUpvotes(readToken(this.$store), this.uuid)).data;
+    }
   }
 
   private async upvote() {
