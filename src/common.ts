@@ -1,5 +1,5 @@
 import { apiQuestion } from '@/api/question';
-import { apiUrl, appName } from '@/env';
+import { adminUUID, apiUrl, appName } from '@/env';
 import { api } from '@/api';
 import { IGenericResponse, ThemeType } from '@/interfaces';
 import { Vue } from 'vue-property-decorator';
@@ -547,6 +547,22 @@ export class CVue extends Vue {
       return true;
     }
     return false;
+  }
+
+  async sendToAdmin(msg: string) {
+    const r0 = await api.createChannel(this.token, {
+      private_with_user_uuid: adminUUID,
+    });
+    const channelId = r0.data.id;
+    await api.createMessage(this.token, {
+      channel_id: channelId,
+      body: msg,
+    });
+    commitAddNotification(this.$store, {
+      content: '已通知管理员',
+      color: 'info',
+    });
+    await this.$router.push(`/channels/${channelId}`);
   }
 }
 

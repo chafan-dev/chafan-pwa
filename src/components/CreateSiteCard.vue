@@ -148,19 +148,7 @@ export default class CreateSite extends CVue {
       const siteCreateInfo = JSON.stringify(this.siteCreate);
       await dispatchCaptureApiError(this.$store, async () => {
         if (adminUUID) {
-          const r0 = await api.createChannel(this.token, {
-            private_with_user_uuid: adminUUID,
-          });
-          const channelId = r0.data.id;
-          await api.createMessage(this.token, {
-            channel_id: channelId,
-            body: '申请创建圈子：\n' + siteCreateInfo,
-          });
-          commitAddNotification(this.$store, {
-            content: '因 Karma 不足，已发送申请消息',
-            color: 'info',
-          });
-          this.$router.push(`/channels/${channelId}`);
+          await this.sendToAdmin('申请创建圈子：\n' + siteCreateInfo);
         } else {
           commitAddNotification(this.$store, {
             content: '网站内部错误，请联系管理员',
