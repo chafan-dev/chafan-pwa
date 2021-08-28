@@ -19,7 +19,7 @@
             'mr-2': $vuetify.breakpoint.mobile,
             'mr-6': !$vuetify.breakpoint.mobile,
           }"
-          :disabled="!userProfile || userProfile.uuid === questionPreview.author.uuid"
+          :disabled="disabled"
           :uuid="questionPreview.uuid"
           :upvotes-placeholder="upvotesPlaceholder"
         />
@@ -64,6 +64,7 @@ import { CVue } from '@/common';
 export default class QuestionPreview extends CVue {
   @Prop() public readonly questionPreview!: IQuestionPreview;
   @Prop() public readonly upvotesPlaceholder: IQuestionUpvotes | undefined;
+  @Prop() public readonly disabledPlaceholder: boolean | undefined;
 
   get shortDesc() {
     let d = this.questionPreview.desc?.rendered_text;
@@ -76,6 +77,13 @@ export default class QuestionPreview extends CVue {
     } else {
       return d;
     }
+  }
+
+  get disabled() {
+    if (this.disabledPlaceholder !== undefined) {
+      return this.disabledPlaceholder;
+    }
+    return !this.userProfile || this.userProfile.uuid === this.questionPreview.author.uuid;
   }
 }
 </script>
