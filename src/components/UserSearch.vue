@@ -9,6 +9,7 @@
     cache-items
     hide-details
     hide-no-data
+    placeholder="搜索..."
     item-value="uuid"
     @input="$emit('input', selectedUserUUID)"
   ></v-autocomplete>
@@ -31,7 +32,6 @@ export default {
       userPreviews: [],
       search: null,
       selectedUserUUID: null,
-      states: [],
     };
   },
   watch: {

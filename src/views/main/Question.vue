@@ -168,10 +168,6 @@
                 <EditIcon class="mr-1" />
                 编辑
               </v-list-item>
-              <v-list-item dense @click="showHistoryDialog">
-                <HistoryIcon v-if="editable && userProfile" class="mr-1" />
-                编辑历史
-              </v-list-item>
               <v-list-item
                 v-if="questionSubscription && questionSubscription.subscribed_by_me"
                 :disabled="cancelSubscriptionIntermediate"
@@ -185,8 +181,29 @@
                 <BookmarkedIcon class="mr-1" />
                 取消收藏
               </v-list-item>
+              <v-list-item dense @click="showHistoryDialog">
+                <HistoryIcon v-if="editable && userProfile" class="mr-1" />
+                问题历史
+              </v-list-item>
+              <v-list-item dense @click="transferQuestionDialog = true">
+                <TransferIcon class="mr-1" />
+                转移问题
+              </v-list-item>
             </v-list>
           </v-menu>
+
+          <v-dialog v-model="transferQuestionDialog" max-width="600">
+            <v-card>
+              <v-card-title> 转移问题 </v-card-title>
+              <v-card-text>
+                <SiteSearch v-model="transferToSiteSubdomain" />
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn small depressed color="primary" @click="transferQuestion">申请转移</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
 
           <v-dialog v-model="historyDialog" max-width="900">
             <v-card>
@@ -425,9 +442,13 @@ import ShareCardButton from '@/components/ShareCardButton.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
+import TransferIcon from '@/components/icons/TransferIcon.vue';
+import SiteSearch from '@/components/SiteSearch.vue';
 
 @Component({
   components: {
+    SiteSearch,
+    TransferIcon,
     QuestionUpvotes,
     DotsIcon,
     CommentBtn,
@@ -859,6 +880,16 @@ export default class Question extends CVue {
 
   private async cancelQuestionUpdate() {
     this.showQuestionEditor = false;
+  }
+
+  private transferToSiteSubdomain: string = '';
+  private transferQuestionDialog: boolean = false;
+  private async transferQuestion() {
+    if (this.transferToSiteSubdomain) {
+      await this.sendToAdmin(
+        `申请转移问题「${this.question?.title}」（UUID：${this.question?.uuid}）到圈子 /${this.transferToSiteSubdomain}`
+      );
+    }
   }
 }
 </script>
