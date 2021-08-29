@@ -6,6 +6,14 @@
 yarn install
 ```
 
+# 样板间
+
+本地开发是，可以在 `/showcase` 看到不依赖 API server 的模块样板，并且会有一些开关便于设计上的探索和调整。例子：
+
+![](./example-showcase.png)
+
+## 本地开发
+
 Example local development environment file (`.env.local`):
 
 ```
