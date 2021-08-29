@@ -9,19 +9,22 @@
       </router-link>
     </div>
     <div :class="theme.feed.submissionPreview.stats.classes">
-      <router-link
-        :to="'/submissions/' + submission.uuid"
-        class="mr-4 d-flex align-center black--text text-caption text-decoration-none"
-      >
-        <UpvoteStat :count="submission.upvotes_count" />
-      </router-link>
-      <router-link
-        :to="'/submissions/' + submission.uuid"
-        class="d-flex align-center black--text text-caption text-decoration-none"
-      >
-        <CommentsIcon class="mr-1 mt-1" small />
-        {{ submission.comments.length }}
-      </router-link>
+      <v-lazy>
+        <SubmissionUpvotes
+          :disabled="disabled"
+          :uuid="submission.uuid"
+          :upvotes-placeholder="upvotesPlaceholder"
+        />
+      </v-lazy>
+      <div class="align-self-center pl-2">
+        <router-link
+          :to="'/submissions/' + submission.uuid"
+          class="d-flex align-center black--text text-caption text-decoration-none"
+        >
+          <CommentsIcon class="mr-1 mt-1" small />
+          {{ submission.comments.length }}
+        </router-link>
+      </div>
       <v-spacer />
       <div v-if="submission.url">
         <LinkIcon small />
@@ -37,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { ISubmission } from '@/interfaces';
+import { ISubmission, ISubmissionUpvotes } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
@@ -46,12 +49,23 @@ import { Component, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 import { CVue } from '@/common';
+import SubmissionUpvotes from '@/components/submission/SubmissionUpvotes.vue';
 
 @Component({
-  components: { UpvoteStat, BaseCard, SiteBtn, LinkIcon, UpvoteIcon, CommentsIcon },
+  components: {
+    SubmissionUpvotes,
+    UpvoteStat,
+    BaseCard,
+    SiteBtn,
+    LinkIcon,
+    UpvoteIcon,
+    CommentsIcon,
+  },
 })
 export default class SubmissionPreview extends CVue {
   @Prop() private readonly submission!: ISubmission;
+  @Prop() public readonly upvotesPlaceholder: ISubmissionUpvotes | undefined;
+  @Prop() public readonly disabledPlaceholder: boolean | undefined;
 
   get shortDesc() {
     if (!this.submission.desc || !this.submission.desc.rendered_text) {
@@ -63,6 +77,13 @@ export default class SubmissionPreview extends CVue {
     } else {
       return d;
     }
+  }
+
+  get disabled() {
+    if (this.disabledPlaceholder !== undefined) {
+      return this.disabledPlaceholder;
+    }
+    return !this.userProfile || this.userProfile.uuid === this.submission.author.uuid;
   }
 
   private shortUrl(d: string) {

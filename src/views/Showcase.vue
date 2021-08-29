@@ -25,6 +25,8 @@
             </v-sheet>
           </v-card-text>
         </v-card>
+        <v-divider class="my-4" />
+        <ExampleSubmissionPreview />
       </div>
     </v-container>
   </v-main>
@@ -35,9 +37,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import * as mockData from '@/mock/data';
 import UserGrid from '@/components/UserGrid.vue';
+import SubmissionPreview from '@/components/SubmissionPreview.vue';
+import ExampleSubmissionPreview from '@/views/showcase/ExampleSubmissionPreview.vue';
 
 @Component({
-  components: { UserGrid, QuestionPreview },
+  components: { ExampleSubmissionPreview, SubmissionPreview, UserGrid, QuestionPreview },
 })
 export default class Showcase extends Vue {
   private mockData = mockData;
