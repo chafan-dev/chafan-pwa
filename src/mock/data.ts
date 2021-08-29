@@ -58,3 +58,36 @@ export const exampleQuestionUpvotes: IQuestionUpvotes = {
   upvoted: false,
   count: 2,
 };
+
+function randomString() {
+  return Math.random()
+    .toString(36)
+    .substring(2, 5 + Math.ceil(Math.random() * 10));
+}
+
+function randomSentence() {
+  let s = '';
+  const words = Math.ceil(Math.random() * 10);
+  for (let i = 0; i < words; i++) {
+    s += randomString() + ' ';
+  }
+  return s;
+}
+
+export const randomUserPreviews: IUserPreview[] = [];
+for (let i = 0; i < 10; i++) {
+  const uuid = randomString();
+  randomUserPreviews.push({
+    uuid: uuid,
+    handle: uuid + '_handle',
+    full_name: i % 2 === 0 ? uuid + ' (FN)' : undefined,
+    karma: 0,
+    personal_introduction: randomSentence(),
+    follows: {
+      user_uuid: uuid,
+      followers_count: i,
+      followed_count: 10 - i,
+      followed_by_me: i % 2 === 0,
+    },
+  });
+}
