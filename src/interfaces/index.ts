@@ -1060,12 +1060,10 @@ export interface ISubmission {
   created_at: string;
   updated_at: string;
   topics: ITopic[];
-  upvotes_count: number;
   author: IUserPreview;
   contributors: IUserPreview[];
   comments: IComment[];
   site: ISite;
-  upvoted: boolean;
   view_times: number;
   keywords?: string[];
 }

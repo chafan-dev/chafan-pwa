@@ -16,38 +16,38 @@
 import { Component, Prop } from 'vue-property-decorator';
 import Upvote from '@/components/Upvote.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { apiQuestion } from '@/api/question';
 import { readToken } from '@/store/main/getters';
-import { IQuestionUpvotes } from '@/interfaces';
+import { ISubmissionUpvotes } from '@/interfaces';
 import { CVue } from '@/common';
+import { apiSubmission } from '@/api/submission';
 
 @Component({
   components: { Upvote },
 })
-export default class QuestionUpvotes extends CVue {
+export default class SubmissionUpvotes extends CVue {
   @Prop() public readonly uuid!: string;
   @Prop() public readonly disabled!: boolean;
-  @Prop() public readonly upvotesPlaceholder: IQuestionUpvotes | undefined;
+  @Prop() public readonly upvotesPlaceholder: ISubmissionUpvotes | undefined;
 
-  private upvotes: IQuestionUpvotes | null = null;
+  private upvotes: ISubmissionUpvotes | null = null;
 
   async mounted() {
     if (this.upvotesPlaceholder) {
       this.upvotes = this.upvotesPlaceholder;
     } else {
-      this.upvotes = (await apiQuestion.getUpvotes(readToken(this.$store), this.uuid)).data;
+      this.upvotes = (await apiSubmission.getUpvotes(readToken(this.$store), this.uuid)).data;
     }
   }
 
   private async upvote() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.upvotes = (await apiQuestion.upvoteQuestion(this.token, this.uuid)).data;
+      this.upvotes = (await apiSubmission.upvote(this.token, this.uuid)).data;
     });
   }
 
   private async cancelUpvote() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.upvotes = (await apiQuestion.cancelUpvoteQuestion(this.token, this.uuid)).data;
+      this.upvotes = (await apiSubmission.cancelUpvote(this.token, this.uuid)).data;
     });
   }
 }

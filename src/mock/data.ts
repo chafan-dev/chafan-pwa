@@ -1,4 +1,11 @@
-import { IQuestionPreview, IQuestionUpvotes, ISite, IUserPreview } from '@/interfaces';
+import {
+  IQuestionPreview,
+  IQuestionUpvotes,
+  ISite,
+  ISubmission,
+  ISubmissionUpvotes,
+  IUserPreview,
+} from '@/interfaces';
 
 const EXAMPLE_USER1_UUID = 'example-user-1-uuid';
 const EXAMPLE_USER1_HANDLE = 'example-user-1';
@@ -91,3 +98,27 @@ for (let i = 0; i < 10; i++) {
     },
   });
 }
+
+export const exampleSubmission: ISubmission = {
+  contributors: [],
+  uuid: 'submission-0001',
+  title: '知乎提交赴美 IPO 申请',
+  desc: {
+    source: 'Test',
+    editor: 'markdown',
+  },
+  url: 'https://readhub.cn/topic/84nlE5nwJaO',
+  created_at: '2021-03-05T19:30:54.694708+00:00',
+  updated_at: '2021-03-05T19:30:57.482069+00:00',
+  topics: [],
+  author: example_user1_preview,
+  comments: [],
+  site: example_site1,
+  view_times: 2,
+};
+
+export const exampleSubmissionUpvotes: ISubmissionUpvotes = {
+  submission_uuid: exampleSubmission.uuid,
+  upvoted: false,
+  count: 2,
+};

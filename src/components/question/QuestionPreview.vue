@@ -15,28 +15,19 @@
     <div :class="theme.feed.questionPreview.stats.classes">
       <v-lazy>
         <QuestionUpvotes
-          :class="{
-            'mr-2': $vuetify.breakpoint.mobile,
-            'mr-6': !$vuetify.breakpoint.mobile,
-          }"
           :disabled="disabled"
           :uuid="questionPreview.uuid"
           :upvotes-placeholder="upvotesPlaceholder"
         />
       </v-lazy>
-      <div
-        :class="{
-          'mr-2': $vuetify.breakpoint.mobile,
-          'mr-6': !$vuetify.breakpoint.mobile,
-        }"
-      >
+      <div class="align-self-center pl-2">
         <CommentsIcon class="mr-1" small />
         <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
           {{ questionPreview.comments_count }}条评论
         </span>
         <span v-else class="text-caption">{{ questionPreview.comments_count }}</span>
       </div>
-      <div>
+      <div class="align-self-center pl-2">
         <AnswerIcon class="mr-1" small />
         <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
           {{ questionPreview.answers_count }}个回答

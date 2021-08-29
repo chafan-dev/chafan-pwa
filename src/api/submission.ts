@@ -3,6 +3,7 @@ import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
 import {
   IGenericResponse,
+  IQuestionUpvotes,
   ISubmission,
   ISubmissionArchive,
   ISubmissionCreate,
@@ -62,6 +63,12 @@ export const apiSubmission = {
       authHeaders(token)
     );
   },
+  async getSubmissionUpvotes(token: string, uuid: string) {
+    return axios.get<ISubmissionUpvotes>(
+      `${apiUrl}/api/v1/submissions/${uuid}/upvotes/`,
+      authHeaders(token)
+    );
+  },
   async getSuggestions(token: string, uuid: string) {
     return axios.get<ISubmissionSuggestion[]>(
       `${apiUrl}/api/v1/submissions/${uuid}/suggestions/`,
@@ -90,6 +97,19 @@ export const apiSubmission = {
     return axios.put<ISubmissionSuggestion>(
       `${apiUrl}/api/v1/submission-suggestions/${uuid}`,
       payload,
+      authHeaders(token)
+    );
+  },
+  async upvote(token: string, uuid: string) {
+    return axios.post<ISubmissionUpvotes>(
+      `${apiUrl}/api/v1/submissions/${uuid}/upvotes/`,
+      null,
+      authHeaders(token)
+    );
+  },
+  async cancelUpvote(token: string, uuid: string) {
+    return axios.delete<ISubmissionUpvotes>(
+      `${apiUrl}/api/v1/submissions/${uuid}/upvotes/`,
       authHeaders(token)
     );
   },

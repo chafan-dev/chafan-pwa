@@ -664,12 +664,9 @@ export default class Submission extends Vue {
         if (this.token) {
           apiSubmission.bumpViewsCounter(this.token, this.submission.uuid);
         }
-        this.upvotes = {
-          submission_uuid: this.submission.uuid,
-          count: this.submission.upvotes_count,
-          upvoted: this.submission.upvoted,
-        };
-
+        this.upvotes = (
+          await apiSubmission.getSubmissionUpvotes(this.token, this.submission.uuid)
+        ).data;
         this.loadingProgress = 33;
 
         this.newSubmissionTitle = this.submission.title;
