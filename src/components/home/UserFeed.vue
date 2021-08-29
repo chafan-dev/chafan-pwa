@@ -39,18 +39,19 @@
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
           <!-- Column for subject and verb -->
-          <div v-if="activityData.subjects.includes(activity.verb)">
+          <div v-if="multiSubjectActivityVerbs.includes(activity.verb)">
+            <!-- If this verb supports multi subjects -->
             <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-
             <span :class="theme.feed.activityCard.verb.classes">
-              {{ activity.verb | activityVerbActivity }}
+              {{ activity.verb | activityVerbCN }}
             </span>
           </div>
 
           <div v-else>
+            <!-- Else, this verb only supports single subject -->
             <UserLink :userPreview="activity.event.content.subject" />
             <span :class="theme.feed.activityCard.verb.classes">
-              {{ activity.verb | activityVerbPreview }}
+              {{ activity.verb | activityVerbCN }}
             </span>
           </div>
           <div>
@@ -120,37 +121,59 @@
             />
           </div>
 
-          <div v-if="activityData.card.answer.includes(activity.verb)">
-            <Answer
-              :answerPreview="activity.event.content.answer"
-              :showAuthor="activity.verb === 'upvote_answer'"
-            />
+          <div v-if="activity.verb === 'upvote_answer'">
+            <Answer :answerPreview="activity.event.content.answer" :showAuthor="true" />
           </div>
-
-          <div v-if="activityData.card.question.includes(activity.verb)">
+          <div v-if="activity.verb === 'upvote_question'">
             <QuestionPreview :questionPreview="activity.event.content.question" />
           </div>
-
-          <div v-if="activityData.card.submission.includes(activity.verb)">
+          <div v-else-if="activity.verb === 'upvote_submission'">
             <SubmissionPreview :submission="activity.event.content.submission" />
           </div>
-
-          <div v-if="activityData.card.comment.includes(activity.verb)">
+          <div v-else-if="activity.verb === 'comment_question'">
             <CommentCard
               :comment="activity.event.content.comment"
               :questionPreview="activity.event.content.question"
             />
           </div>
-
-          <div v-if="activity.verb === 'reply_comment'">
+          <div v-else-if="activity.verb === 'comment_submission'">
+            <CommentCard
+              :comment="activity.event.content.comment"
+              :submission="activity.event.content.submission"
+            />
+          </div>
+          <div v-else-if="activity.verb === 'comment_article'">
+            <CommentCard
+              :articlePreview="activity.event.content.article"
+              :comment="activity.event.content.comment"
+            />
+          </div>
+          <div v-else-if="activity.verb === 'comment_answer'">
+            <CommentCard
+              :answerPreview="activity.event.content.answer"
+              :comment="activity.event.content.comment"
+            />
+          </div>
+          <div v-else-if="activity.verb === 'reply_comment'">
             <CommentCard
               :comment="activity.event.content.reply"
               :parentComment="activity.event.content.parent_comment"
             />
           </div>
-
-          <div v-if="activityData.card.article.includes(activity.verb)">
+          <div v-else-if="activity.verb === 'upvote_article'">
             <ArticlePreview :articlePreview="activity.event.content.article" />
+          </div>
+          <div v-else-if="activity.verb === 'create_article'">
+            <ArticlePreview :articlePreview="activity.event.content.article" />
+          </div>
+          <div v-else-if="activity.verb === 'answer_question'">
+            <Answer :answerPreview="activity.event.content.answer" :showAuthor="false" />
+          </div>
+          <div v-else-if="activity.verb === 'create_question'">
+            <QuestionPreview :questionPreview="activity.event.content.question" />
+          </div>
+          <div v-else-if="activity.verb === 'create_submission'">
+            <SubmissionPreview :submission="activity.event.content.submission" />
           </div>
         </div>
       </div>
@@ -235,7 +258,7 @@ import { commitAddNotification } from '@/store/main/mutations';
     CloseIcon,
   },
   filters: {
-    activityVerbActivity(value) {
+    activityVerbCN(value) {
       switch (value) {
         case 'follow_user':
           return '关注了用户';
@@ -247,12 +270,6 @@ import { commitAddNotification } from '@/store/main/mutations';
           return '赞了分享';
         case 'upvote_article':
           return '赞了文章';
-        default:
-          return value;
-      }
-    },
-    activityVerbPreview(value) {
-      switch (value) {
         case 'follow_article_column':
           return '关注了专栏';
         case 'comment_question':
@@ -283,22 +300,13 @@ export default class UserFeed extends CVue {
   @Prop({ default: true }) public readonly enableShowExploreSites!: boolean;
   @Prop() public readonly subjectUserUuid: number | undefined;
 
-  private readonly activityData = {
-    subjects: [
-      'follow_user',
-      'upvote_answer',
-      'upvote_question',
-      'upvote_submission',
-      'upvote_article',
-    ],
-    card: {
-      comment: ['comment_question', 'comment_submission', 'comment_article', 'comment_answer'],
-      submission: ['upvote_submission', 'create_submission'],
-      answer: ['upvote_answer', 'answer_question'],
-      question: ['upvote_question', 'create_question'],
-      article: ['upvote_article', 'create_article'],
-    },
-  };
+  private readonly multiSubjectActivityVerbs = [
+    'follow_user',
+    'upvote_answer',
+    'upvote_question',
+    'upvote_submission',
+    'upvote_article',
+  ];
 
   private combinedActivities: CombinedActivities = new CombinedActivities();
   private loadingActivities = true;
