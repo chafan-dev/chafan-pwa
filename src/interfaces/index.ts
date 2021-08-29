@@ -255,6 +255,7 @@ export interface IUserPreview {
   avatar_url?: string;
   personal_introduction?: string;
   karma: number;
+  follows?: IUserFollows; // For front-end mocking only
 }
 
 export interface IQuestionPreview {

@@ -7,29 +7,31 @@
   >
     <div v-if="!compactMode && avatarURL" class="mb-1 text-center mt-2">
       <router-link :to="`/users/${userPreview.handle}`">
-        <v-avatar class="avatarDiv" size="100" tile>
+        <v-avatar class="avatarDiv" size="90" tile>
           <v-img :src="avatarURL" alt="Avatar" />
         </v-avatar>
       </router-link>
     </div>
     <v-row justify="center">
-      <v-col v-if="compactMode && avatarURL" align-self="center" style="max-width: 120px">
+      <v-col v-if="compactMode && avatarURL" align-self="center" style="max-width: 110px">
         <router-link :to="`/users/${userPreview.handle}`">
-          <v-avatar class="avatarDiv" size="100" tile>
+          <v-avatar class="avatarDiv" size="90" tile>
             <v-img :src="avatarURL" alt="Avatar" />
           </v-avatar>
         </router-link>
       </v-col>
       <v-col align-self="center">
-        <div :class="{ headline: !compactMode, 'text-center': !compactMode }" class="mb-1 mt-1">
+        <div
+          :class="{ headline: !compactMode, 'text-center': !compactMode }"
+          class="mb-1 mt-1"
+          style="min-width: 100px"
+        >
           <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none">
             <span v-if="userPreview.full_name">
               {{ userPreview.full_name }}
             </span>
             <span v-else> @{{ userPreview.handle }} </span>
           </router-link>
-
-          <span v-if="userPreview.full_name" class="grey--text"> (@{{ userPreview.handle }}) </span>
         </div>
 
         <div
@@ -37,8 +39,7 @@
           :class="{ 'text-center': !compactMode, 'text-caption': compactMode }"
           class="secondary--text"
         >
-          <span v-if="hoverMode">{{ shortIntro(userPreview.personal_introduction) }}</span>
-          <span v-else>{{ userPreview.personal_introduction }}</span>
+          <span>{{ shortIntro(userPreview.personal_introduction) }}</span>
         </div>
 
         <template v-if="follows">
@@ -182,10 +183,6 @@ export default class UserCard extends CVue {
   private privateMessageIntermediate = false;
   private avatarURL: string | null = null;
 
-  get currentUserId() {
-    return this.userProfile?.uuid;
-  }
-
   private shortIntro(intro: string) {
     if (!intro) {
       return intro;
@@ -204,11 +201,13 @@ export default class UserCard extends CVue {
     } else {
       this.avatarURL = '/img/default-avatar.png';
     }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.follows = (
-        await apiMe.getUserFollows(this.$store.state.main.token, this.userPreview.uuid)
-      ).data;
-    });
+    if (this.userPreview.follows) {
+      this.follows = this.userPreview.follows;
+    } else {
+      await dispatchCaptureApiError(this.$store, async () => {
+        this.follows = (await apiMe.getUserFollows(this.token, this.userPreview.uuid)).data;
+      });
+    }
     this.loading = false;
   }
 
@@ -219,23 +218,17 @@ export default class UserCard extends CVue {
     }
     this.followIntermediate = true;
     if (this.userPreview !== null) {
-      this.follows = (
-        await apiMe.followUser(this.$store.state.main.token, this.userPreview.uuid)
-      ).data;
+      this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
       this.followIntermediate = false;
     }
   }
 
   private async cancelFollow() {
-    if (this.userPreview !== null) {
-      this.cancelFollowIntermediate = true;
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.follows = (
-          await apiMe.cancelFollowUser(this.$store.state.main.token, this.userPreview.uuid)
-        ).data;
-        this.cancelFollowIntermediate = false;
-      });
-    }
+    this.cancelFollowIntermediate = true;
+    await dispatchCaptureApiError(this.$store, async () => {
+      this.follows = (await apiMe.cancelFollowUser(this.token, this.userPreview.uuid)).data;
+      this.cancelFollowIntermediate = false;
+    });
   }
 
   private async privateMessage() {
@@ -249,7 +242,7 @@ export default class UserCard extends CVue {
         private_with_user_uuid: this.userPreview.uuid,
       });
       const channelId = r0.data.id;
-      this.$router.push(`/channels/${channelId}`);
+      await this.$router.push(`/channels/${channelId}`);
     });
   }
 }

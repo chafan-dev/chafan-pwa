@@ -4,12 +4,6 @@ const enableWs = require('express-ws');
 const process = require('process');
 const bodyParser = require('body-parser');
 
-function randomString() {
-  return Math.random()
-    .toString(36)
-    .substring(2, 5 + Math.ceil(Math.random() * 10));
-}
-
 const port = 4582;
 
 const app = express();
