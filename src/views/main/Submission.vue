@@ -495,7 +495,7 @@ import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual, updateHead } from '@/common';
+import { doNothing, isEqual, updateHead } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
@@ -656,7 +656,7 @@ export default class Submission extends Vue {
         this.comments = this.submission.comments;
 
         if (this.token) {
-          await apiSubmission.bumpViewsCounter(this.token, this.submission.uuid);
+          apiSubmission.bumpViewsCounter(this.token, this.submission.uuid).then(doNothing);
         }
         this.upvotes = (
           await apiSubmission.getSubmissionUpvotes(this.token, this.submission.uuid)

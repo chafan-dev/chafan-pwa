@@ -3,7 +3,6 @@ import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
 import {
   IGenericResponse,
-  IQuestionUpvotes,
   ISubmission,
   ISubmissionArchive,
   ISubmissionCreate,
