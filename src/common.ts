@@ -570,3 +570,6 @@ export class CVue extends Vue {
 }
 
 export const themeLocalStorageKey = 'chafan.theme';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const doNothing = () => {};
