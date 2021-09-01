@@ -288,12 +288,17 @@
                   <div
                     v-if="
                       suggestion.desc !== undefined &&
-                      suggestion.accepted_diff_base.desc.source !== suggestion.desc.source
+                      (!suggestion.accepted_diff_base.desc ||
+                        suggestion.accepted_diff_base.desc.source !== suggestion.desc.source)
                     "
                   >
                     <span class="font-weight-bold">描述改动：</span>
                     <Diff
-                      :s1="suggestion.accepted_diff_base.desc.rendered_text || ''"
+                      :s1="
+                        suggestion.accepted_diff_base.desc
+                          ? suggestion.accepted_diff_base.desc.rendered_text
+                          : ''
+                      "
                       :s2="suggestion.desc.rendered_text"
                     />
                   </div>
