@@ -21,7 +21,7 @@ import { AppNotification, MainState } from './state';
 import { env } from '@/env';
 import { apiMe } from '@/api/me';
 import { captureException } from '@sentry/vue';
-import { errorMsgCN } from '@/common';
+import { translateErrorMsgCN } from '@/common';
 
 type MainContext = ActionContext<MainState, State>;
 
@@ -186,14 +186,7 @@ export const actions = {
     } else {
       let message = payload.message;
       if (payload.response && payload.response.data && payload.response.data.detail) {
-        if (
-          payload.response.data.detail in errorMsgCN &&
-          errorMsgCN[payload.response.data.detail]
-        ) {
-          message = errorMsgCN[payload.response.data.detail];
-        } else {
-          message += `, detail: ${JSON.stringify(payload.response.data.detail)}`;
-        }
+        message = translateErrorMsgCN(payload.response.data.detail);
       }
       commitAddNotification(context, { content: message, color: 'error' });
       if (payload.response && payload.response.status === 401) {
