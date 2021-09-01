@@ -140,9 +140,7 @@
               <v-card-text>
                 <div class="pt-2 d-flex">
                   <div class="text--primary text-body-1">
-                    <p v-if="submission.description" style="overflow-wrap: anywhere">
-                      {{ submission.description_text }}
-                    </p>
+                    <Viewer v-if="submission.desc" :content="submission.desc" />
                     <p>
                       <CommentsIcon class="mr-1" small />
                       <span class="text-caption"> {{ submission.comments.length }}条评论 </span>
@@ -289,14 +287,14 @@
                   </div>
                   <div
                     v-if="
-                      suggestion.accepted_diff_base.description_text !==
-                        suggestion.description_text && suggestion.description_text !== undefined
+                      suggestion.desc !== undefined &&
+                      suggestion.accepted_diff_base.desc.source !== suggestion.desc.source
                     "
                   >
                     <span class="font-weight-bold">描述改动：</span>
                     <Diff
-                      :s1="suggestion.accepted_diff_base.description_text || ''"
-                      :s2="suggestion.description_text"
+                      :s1="suggestion.accepted_diff_base.desc.rendered_text || ''"
+                      :s2="suggestion.desc.rendered_text"
                     />
                   </div>
                 </template>
@@ -309,14 +307,14 @@
                   </div>
                   <div
                     v-if="
-                      submission.description_text !== suggestion.description_text &&
-                      suggestion.description_text !== undefined
+                      suggestion.desc !== undefined &&
+                      submission.desc.source !== suggestion.desc.source
                     "
                   >
                     <span class="font-weight-bold">描述改动：</span>
                     <Diff
-                      :s1="submission.description_text || ''"
-                      :s2="suggestion.description_text"
+                      :s1="submission.desc.rendered_text || ''"
+                      :s2="suggestion.desc.rendered_text"
                     />
                   </div>
                   <div v-if="suggestion.topics">
@@ -407,11 +405,7 @@
               </v-chip-group>
               <v-card-title>{{ previewedSuggestion.title }}</v-card-title>
               <v-card-text>
-                <Viewer
-                  v-if="previewedSuggestion.description"
-                  :body="previewedSuggestion.description"
-                  :editor="previewedSuggestion.description_editor"
-                />
+                <Viewer v-if="previewedSuggestion.desc" :content="previewedSuggestion.desc" />
               </v-card-text>
             </v-card>
           </v-dialog>
@@ -623,7 +617,7 @@ export default class Submission extends Vue {
     }
   }
 
-  private async mounted() {
+  async mounted() {
     try {
       if (localStorage.getItem('new-submission')) {
         commitAddNotification(this.$store, {
@@ -662,7 +656,7 @@ export default class Submission extends Vue {
         this.comments = this.submission.comments;
 
         if (this.token) {
-          apiSubmission.bumpViewsCounter(this.token, this.submission.uuid);
+          await apiSubmission.bumpViewsCounter(this.token, this.submission.uuid);
         }
         this.upvotes = (
           await apiSubmission.getSubmissionUpvotes(this.token, this.submission.uuid)
@@ -831,7 +825,7 @@ export default class Submission extends Vue {
         content: '已隐藏',
         color: 'info',
       });
-      this.$router.push(`/sites/${this.submission!.site.subdomain}`);
+      await this.$router.push(`/sites/${this.submission!.site.subdomain}`);
     });
   }
 
@@ -871,9 +865,7 @@ export default class Submission extends Vue {
         status: 'accepted',
         accepted_diff_base: {
           title: this.submission!.title,
-          description: this.submission!.desc?.source,
-          description_text: this.submission!.desc?.rendered_text,
-          description_editor: this.submission!.desc?.editor,
+          desc: this.submission?.desc,
           topic_uuids: this.submission!.topics.map((topic) => topic.uuid),
         },
       });
@@ -910,14 +902,14 @@ export default class Submission extends Vue {
     });
   }
 
-  private topicNames(topics: ITopic[]) {
+  topicNames(topics: ITopic[]) {
     return topics
       .map((topic) => topic.name)
       .sort()
       .join(', ');
   }
 
-  private getDiffBase(suggestion: ISubmissionSuggestion) {
+  getDiffBase(suggestion: ISubmissionSuggestion) {
     if (suggestion.status === 'accepted' && suggestion.accepted_diff_base) {
       return suggestion.accepted_diff_base;
     }
