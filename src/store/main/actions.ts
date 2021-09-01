@@ -244,7 +244,7 @@ export const actions = {
   },
   async resetPassword(context: MainContext, payload: { password: string; token: string }) {
     const loadingNotification = {
-      content: 'Resetting password',
+      content: '重置密码中',
       showProgress: true,
     };
     try {
@@ -255,7 +255,7 @@ export const actions = {
       ]);
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, {
-        content: 'Password successfully reset',
+        content: '密码重置成功',
         color: 'success',
       });
       await dispatchLogOut(context);
@@ -263,7 +263,7 @@ export const actions = {
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, {
         color: 'error',
-        content: 'Error resetting password',
+        content: '密码重置失败',
       });
     }
   },

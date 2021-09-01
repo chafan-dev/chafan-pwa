@@ -4,7 +4,11 @@
   </div>
   <div v-else>
     <span v-if="channel && channel.private_with_user" class="title">
-      和<UserLink :user-preview="channel.private_with_user" />的聊天记录
+      和<UserLink
+        :user-preview="
+          channel.admin.uuid === currentUserId ? channel.private_with_user : channel.admin
+        "
+      />的聊天记录
     </span>
     <div v-if="messages.length === 0">
       <EmptyPlaceholder />

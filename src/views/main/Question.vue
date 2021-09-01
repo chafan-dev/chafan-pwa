@@ -182,7 +182,7 @@
                 取消收藏
               </v-list-item>
               <v-list-item dense @click="showHistoryDialog">
-                <HistoryIcon v-if="editable && userProfile" class="mr-1" />
+                <HistoryIcon class="mr-1" />
                 问题历史
               </v-list-item>
               <v-list-item dense @click="transferQuestionDialog = true">
