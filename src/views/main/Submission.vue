@@ -308,12 +308,12 @@
                   <div
                     v-if="
                       suggestion.desc !== undefined &&
-                      submission.desc.source !== suggestion.desc.source
+                      (!submission.desc || submission.desc.source !== suggestion.desc.source)
                     "
                   >
                     <span class="font-weight-bold">描述改动：</span>
                     <Diff
-                      :s1="submission.desc.rendered_text || ''"
+                      :s1="submission.desc ? submission.desc.rendered_text : ''"
                       :s2="suggestion.desc.rendered_text"
                     />
                   </div>
