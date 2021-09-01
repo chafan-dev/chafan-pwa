@@ -1028,18 +1028,14 @@ export interface ISubmissionSuggestionUpdate {
 
 export interface ISubmissionEditableSnapshot {
   title: string;
-  description?: string;
-  description_text?: string;
-  description_editor?: string;
+  desc?: IRichText;
   topic_uuids?: string[];
 }
 
 export interface ISubmissionSuggestion {
   uuid: string;
   title: string;
-  description?: string;
-  description_text?: string;
-  description_editor?: string;
+  desc?: IRichText;
   created_at: string;
   status: 'pending' | 'accepted' | 'rejected' | 'retracted';
   accepted_at?: string;
