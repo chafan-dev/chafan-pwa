@@ -1,7 +1,12 @@
 const webpack = require('webpack');
 const { spawnSync } = require('child_process');
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 setGitInfo();
+
+function getGitCommitHash() {
+  return spawnSync('git', ['rev-parse', 'HEAD'], { timeout: 2000 }).stdout.toString('utf-8').trim();
+}
 
 module.exports = {
   // Fix Vuex-typescript in prod: https://github.com/istrib/vuex-typescript/issues/13#issuecomment-409869231
@@ -27,6 +32,22 @@ module.exports = {
           new RegExp(`^./(${['javascript', 'python', 'bash'].join('|')})$`)
         )
       );
+      if (process.env.SENTRY_AUTH_TOKEN) {
+        config.plugins.push(
+          new SentryWebpackPlugin({
+            // sentry-cli configuration - can also be done directly through sentry-cli
+            // see https://docs.sentry.io/product/cli/configuration/ for details
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            org: 'nomad-research',
+            project: 'chafan-prod',
+            release: getGitCommitHash(),
+
+            // other SentryWebpackPlugin configuration
+            include: './dist',
+            ignore: ['node_modules', 'webpack.config.js'],
+          })
+        );
+      }
       config.performance = {
         maxEntrypointSize: 512000,
         maxAssetSize: 512000,
@@ -65,9 +86,7 @@ module.exports = {
 /** Set git information to process arguments */
 function setGitInfo() {
   try {
-    let commit = spawnSync('git', ['rev-parse', 'HEAD'], { timeout: 2000 })
-      .stdout.toString('utf-8')
-      .trim();
+    let commit = getGitCommitHash();
     let commitTime = spawnSync('git', ['show', '-s', '--format=%cI', 'HEAD'], {
       timeout: 2000,
     })

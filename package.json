@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@mdi/js": "^5.9.55",
+    "@sentry/webpack-plugin": "^1.17.1",
     "@types/diff": "^5.0.0",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
