@@ -12,9 +12,6 @@
         <v-btn color="primary" depressed small @click="continueUserAgreement">同意</v-btn>
       </v-card-actions>
     </base-card>
-    <v-card v-show="showFabHint" color="white" elevation="2" rounded>
-      <v-card-title class="primary--text">尝试「探索」按钮 ↘</v-card-title>
-    </v-card>
   </v-overlay>
 </template>
 
@@ -22,7 +19,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { dispatchAddFlag } from '@/store/main/actions';
-import { FAB_FLAG, YES_FLAG } from '@/common';
+import { YES_FLAG } from '@/common';
 import { IUserProfile } from '@/interfaces';
 
 @Component({
@@ -31,7 +28,6 @@ import { IUserProfile } from '@/interfaces';
 export default class UserAgreement extends Vue {
   @Prop() public readonly userProfile!: IUserProfile;
   public overlay = false;
-  private showFabHint = false;
   private showUserAgreement = false;
 
   mounted() {
@@ -46,15 +42,7 @@ export default class UserAgreement extends Vue {
   private async continueUserAgreement() {
     this.showUserAgreement = false;
     await dispatchAddFlag(this.$store, YES_FLAG);
-    if (!this.$vuetify.breakpoint.mdAndUp) {
-      if (this.userProfile.flag_list.includes(FAB_FLAG)) {
-        this.overlay = false;
-      } else {
-        this.showFabHint = true;
-      }
-    } else {
-      this.overlay = false;
-    }
+    this.overlay = false;
   }
 }
 </script>

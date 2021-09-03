@@ -19,7 +19,6 @@ export const NARROW_FEED_UI_KEY = 'narrowFeedUI';
 export const LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
 export const LABS_DEV_THEME_OPTION = 'labs.dev-theme-option';
 export const YES_FLAG = 'user-agreement-yes';
-export const FAB_FLAG = 'webfront-fab-clicked';
 export const EXPLORE_SITES = 'closed-explore-sites-in-home';
 
 export { isEqual } from 'lodash';

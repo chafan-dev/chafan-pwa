@@ -53,7 +53,7 @@
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" class="bottom-btn" @click="onFabClicked">
+          <div v-bind="attrs" v-on="on" class="bottom-btn">
             <HomeFabIcon />
             <span class="ml-1 grey--text">导航</span>
           </div>
@@ -74,12 +74,11 @@ import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
 import { readNarrowUI, readUserProfile } from '@/store/main/getters';
-import { dispatchAddFlag } from '@/store/main/actions';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
-import { CVue, FAB_FLAG } from '@/common';
+import { CVue } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import SharingIcon from '@/components/icons/SharingIcon.vue';
 import UserSubmissionsRankedFeed from '@/components/home/UserSubmissionsRankedFeed.vue';
@@ -125,13 +124,6 @@ export default class Home extends CVue {
 
   private refreshFeed() {
     (this.$refs.userFeed as UserFeed).loadNewActivities();
-  }
-
-  private async onFabClicked() {
-    if (this.userProfile) {
-      (this.$refs.userAgreement as UserAgreement).overlay = false;
-      await dispatchAddFlag(this.$store, FAB_FLAG);
-    }
   }
 }
 </script>
