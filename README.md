@@ -1,60 +1,46 @@
-# Chafan frontend
+# Chafan PWA
 
-## Project setup
+## Local development setup
+
+**Step 1: Install dependencies**
+
+First, install NodeJS, npm and yarn on your OS. Then:
 
 ```
 yarn install
 ```
 
-# 样板间
-
-本地开发是，可以在 `/showcase` 看到不依赖 API server 的模块样板，并且会有一些开关便于设计上的探索和调整。例子：
-
-![](./example-showcase.png)
-
-## 本地开发
-
-Example local development environment file (`.env.local`):
+Create a local environment file within this repo's top-level directory: `.env.local`, e.g.
 
 ```
-VUE_APP_API=localhost:4582
-VUE_APP_NAME=Chafan Demo
+VUE_APP_API=https://chafan-test.herokuapp.com
+VUE_APP_NAME=Chafan Dev
 VUE_APP_ENV=development
-VUE_APP_PROD_STATE_JSON_URL=https://chafan-prod-state.s3.amazonaws.com/prod-state.json
 VUE_APP_ADMIN_UUID=
 VUE_APP_HCAPTCHA_SITEKEY=10000000-ffff-ffff-ffff-000000000001
-VUE_APP_DEFAULT_SRC='self' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com newassets.hcaptcha.com
+VUE_APP_DEFAULT_SRC='self' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com
 VUE_APP_STYLE_SRC='self' 'unsafe-inline' cdn.jsdelivr.net
-VUE_APP_FRAME_SRC=assets.hcaptcha.com newassets.hcaptcha.com
-VUE_APP_SCRIPT_SRC='self' 'unsafe-inline' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com
+VUE_APP_FRAME_SRC=assets.hcaptcha.com newassets.hcaptcha.com www.youtube.com player.bilibili.com
+VUE_APP_SCRIPT_SRC='self' 'unsafe-eval' 'unsafe-inline' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com remotejs.com newassets.hcaptcha.com
 VUE_APP_CONNECT_SRC=* data:
+VUE_APP_ENABLE_CAPTCHA=false
 ```
 
-### Compiles and hot-reloads for development
+Build for development and run hot-reload website:
 
 ```
 yarn run serve
 ```
 
-### Compiles and minifies for production
+## Showcase
 
-```
-yarn run build
-```
+When developing locally, you can see `/showcase` for individual static components, for exploration and design purpose. For example:
 
-### API server mock
+![](./example-showcase.png)
 
-The API server is mocked by a express server at `e2e_tests/server.js`.
-To test the frontend, please run it locally: `node e2e_tests/server.js`.
+## Build production and serve locally through https
 
-Some APIs are missing from mock server for now. You can add code
-for mock server along with the frontend code change if needed.
-
-NOTE: you can leave username/password blank to "log in" the mock server.
-
-### Run production build locally
-
-Prepare:
+Prepare the dependencies:
 
 ```bash
 brew install mkcert
@@ -63,7 +49,7 @@ mkcert localhost
 npm install -g serve
 ```
 
-Build and serve locally through https:
+Build and serve：
 
 ```bash
 VUE_APP_ENV=staging yarn run build
@@ -72,27 +58,24 @@ node e2e_tests/server.js --secure
 # Open https://localhost:8080
 ```
 
-### Preview builds
+## CI-built `master` previews
 
-`master` branch is continuously integrated to https://chafan-test.netlify.app which uses
-a test-only API server at http://chafan-test.herokuapp.com/ that runs the same code as production server.
+`master` will be deployed to https://chafan-test.netlify.app from time to time.
 
-You need to ask @izgzhen for an invitation link to sign up for a test account. When signing up, you need to follow
-normal registration flow, but you don't have to fill in a correct verification code for email verification
-(just fill in a few random numbers).
+Please contact @izgzhen to get a invitation link to the test site. Notice that you can fill in any random verification code during registration.
 
-Any PR against `master` will have a Netlify preview build that uses the same test API server as well.
+If you opened a PR against `master` branch, Netlify will build a preview website too.
 
-### Analyze production build
+## Analyze production build
 
 ```
 yarn run analyze
 ```
 
-### Run your tests
+## Unit tests
 
 ```
-yarn run test
+yarn run test:unit
 ```
 
 ### Lints and fixes files
@@ -111,16 +94,10 @@ yarn run eslint --fix .
 yarn run prettier -w .
 ```
 
-### Run your unit tests
-
-```
-yarn run test:unit
-```
-
 ## Debugging
 
 https://github.com/Microsoft/vscode-recipes/tree/master/vuejs-cli
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+[CONTRIBUTING.md](CONTRIBUTING.md)
