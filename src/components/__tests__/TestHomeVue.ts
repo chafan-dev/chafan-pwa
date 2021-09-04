@@ -109,7 +109,6 @@ test('TestHomeVue', () => {
   expect(c1.items).toStrictEqual([
     {
       id: 1,
-      site_uuid: '',
       created_at: '2021-01-30T23:31:21.630841-08:00',
       verb: 'upvote_question',
       event: {
@@ -140,12 +139,16 @@ test('TestHomeVue', () => {
           ],
           question: {
             uuid: 'q1',
+            author: {
+              uuid: 'u1',
+              handle: 'u1',
+              karma: 0,
+            },
             title: 'q1 title',
             site: null!,
             is_placed_at_home: false,
             created_at: '2021-01-29T23:31:21.630841-08:00',
             answers_count: 0,
-            upvotes_count: 0,
             comments_count: 0,
           },
         },

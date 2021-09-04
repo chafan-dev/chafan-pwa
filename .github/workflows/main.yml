@@ -37,10 +37,3 @@ jobs:
           yarn run check:prettier
       - name: Unit tests
         run: yarn run test:unit
-      - name: e2e tests
-        run: |
-          nohup yarn run serve &
-          sleep 30
-          nohup node e2e_tests/server.js &
-          sleep 5
-          node e2e_tests/selenium_driver.js
