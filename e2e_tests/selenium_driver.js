@@ -1,8 +1,32 @@
+// Test xpath in chrome: $x(path)
+
 const { Builder, By, Key, until, logging } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const assert = require('assert');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const rl = require('readline');
+const readline = rl.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+const commandLineArgs = require('command-line-args');
+const options = commandLineArgs([
+  {
+    name: 'interactive',
+    alias: 'i',
+    type: Boolean,
+  },
+]);
+
+console.log(options);
+
+// Prepare readline.question for promisification
+readline.question[util.promisify.custom] = (question) => {
+  return new Promise((resolve) => {
+    readline.question(question, resolve);
+  });
+};
 
 const screen = {
   width: 1280,
@@ -58,6 +82,7 @@ async function deadCode(driver) {
 
 async function testUserLogin() {
   try {
+    console.log('Reset and e2e-test backend ...');
     const { error, stdout, stderr } = await exec('poetry run bash reset_and_e2e_test.sh', {
       cwd: '../chafan/',
     });
@@ -69,22 +94,40 @@ async function testUserLogin() {
   } catch (e) {
     console.error(e); // should contain code (exit code) and signal (that caused the termination).
   }
-  console.log('✅ Reset and e2e-test backend successfully!');
 
-  // for REPL
-  // let driver = new Builder().forBrowser('chrome').build();
-  let driver = await new Builder()
-    .forBrowser('chrome')
-    .setChromeOptions(new chrome.Options().headless().windowSize(screen))
-    .build();
+  let chromeOptions = new chrome.Options();
+  if (!options.interactive) {
+    chromeOptions = chromeOptions.headless().windowSize(screen);
+  }
+  let driver = await new Builder().forBrowser('chrome').setChromeOptions(chromeOptions).build();
   try {
     await driver.get('http://100.120.141.73:8080/login');
     await driver.wait(until.titleIs('Chafan Dev'), 1000);
     await driver.findElement(By.name('login')).sendKeys('test@cha.fan');
     await driver.findElement(By.name('password')).sendKeys('test');
     await (await driver.findElement(By.xpath("//*[text()=' 登录 ']"))).click();
-    console.log(await driver.getCurrentUrl());
+    await driver.wait(until.urlIs('http://100.120.141.73:8080/'), 20000);
+
+    // Overlay for new user
+    const overlayContent = driver.findElement(
+      By.xpath('//div[@class="v-overlay__content"]//*[text()="使用前必读"]')
+    );
+    console.log('Checking visible overlay with 使用前必读...');
+    await driver.wait(until.elementIsVisible(overlayContent), 100000);
+    console.log('Clicking visible overlay with 同意...');
+    await (
+      await driver.findElement(By.xpath('//div[@class="v-overlay__content"]//*[text()="同意"]'))
+    ).click();
+    console.log('Waiting overlay turning invisible...');
+    await driver.wait(until.elementIsNotVisible(overlayContent), 1000);
+  } catch (e) {
+    console.log(e);
+    if (options.interactive) {
+      const answer = await util.promisify(readline.question)('Exit?');
+      readline.close();
+    }
   } finally {
+    console.log('Quitting...');
     await driver.quit();
   }
 }
