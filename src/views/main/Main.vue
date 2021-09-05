@@ -175,7 +175,6 @@
             </ValidationObserver>
           </v-dialog>
 
-          <!-- ... menu -->
           <v-menu
             v-if="userProfile"
             v-model="showTopMenu"
@@ -185,6 +184,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
+                id="main-menu-avatar-btn"
                 v-bind="attrs"
                 v-on="on"
                 :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
@@ -195,7 +195,7 @@
               </v-btn>
             </template>
 
-            <v-list dense min-width="48" nav>
+            <v-list dense min-width="48" nav id="main-menu">
               <v-list-item
                 v-for="item in accountItems"
                 :key="item.text"
