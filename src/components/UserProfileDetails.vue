@@ -171,27 +171,28 @@
         {{ userPublic.profession_topic.name }}
       </v-chip>
 
-      <span>
-        <v-chip
-          v-for="(eduExp, i) in eduExps"
-          :key="i"
-          class="ml-1"
-          color="light-blue lighten-4 mb-1"
-        >
-          {{ eduExp.school_topic.name }}
-        </v-chip>
-      </span>
+      <v-chip
+        v-for="(eduExp, i) in eduExps"
+        :key="i"
+        class="ml-1"
+        color="light-blue lighten-4 mb-1"
+      >
+        {{ eduExp.school_topic.name }}
+      </v-chip>
 
-      <span>
-        <v-chip
-          v-for="(workExp, i) in workExps"
-          :key="i"
-          class="ml-1"
-          color="light-green lighten-4 mb-1"
-        >
-          {{ workExp.company_topic.name }}
-        </v-chip>
-      </span>
+      <v-chip
+        v-for="(workExp, i) in workExps"
+        :key="i"
+        class="ml-1"
+        color="light-green lighten-4 mb-1"
+      >
+        {{ workExp.company_topic.name }}
+      </v-chip>
+
+      <WebIcon class="pb-1 px-1" v-if="userPublic.homepage_url" />
+      <GithubIcon class="pb-1 px-1" v-if="userPublic.github_username" />
+      <TwitterIcon class="pb-1 px-1" v-if="userPublic.twitter_username" />
+      <LinkedinIcon class="pb-1 px-1" v-if="userPublic.linkedin_url" />
     </div>
 
     <div
