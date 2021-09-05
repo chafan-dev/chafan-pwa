@@ -72,11 +72,6 @@
                         />
                         <span class="error--text">{{ errors[0] }}</span>
                       </ValidationProvider>
-                      <v-text-field
-                        v-model="userUpdateMe.personal_introduction"
-                        clearable
-                        label="个人签名"
-                      />
                     </v-col>
                   </v-row>
 
@@ -127,6 +122,11 @@
                       </v-expand-transition>
 
                       <!-- TODO: validate -->
+                      <v-text-field
+                        v-model="userUpdateMe.personal_introduction"
+                        clearable
+                        label="个人签名"
+                      />
                       <v-text-field
                         v-model="userUpdateMe.homepage_url"
                         clearable
