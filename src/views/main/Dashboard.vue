@@ -100,13 +100,6 @@
                           @change="updateLabs"
                         />
                       </div>
-                      <div>
-                        <v-switch
-                          v-model="devThemeOptionsOn"
-                          label="开发中主题选项"
-                          @change="updateThemes"
-                        />
-                      </div>
                       <v-progress-circular v-if="changingMySettings" indeterminate />
                     </v-card-text>
                   </v-card>
@@ -443,12 +436,7 @@ import Event from '@/components/Event.vue';
 import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
-import {
-  CVue,
-  LABS_DEV_THEME_OPTION,
-  LABS_TIPTAP_EDITOR_OPTION,
-  themeLocalStorageKey,
-} from '@/common';
+import { CVue, LABS_TIPTAP_EDITOR_OPTION, themeLocalStorageKey } from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
@@ -492,7 +480,6 @@ export default class Dashboard extends CVue {
   private showExportDialog = false;
   private showLabsDialog = false;
   private tiptapEditorOptionOn = false;
-  private devThemeOptionsOn = false;
   private tabItems = [
     {
       text: '我的设置',
@@ -767,17 +754,6 @@ export default class Dashboard extends CVue {
       await dispatchAddFlag(this.$store, LABS_TIPTAP_EDITOR_OPTION);
     } else {
       await dispatchRemoveFlag(this.$store, LABS_TIPTAP_EDITOR_OPTION);
-    }
-    this.changingMySettings = false;
-    this.$router.go(0);
-  }
-
-  private async updateThemes() {
-    this.changingMySettings = true;
-    if (this.devThemeOptionsOn) {
-      await dispatchAddFlag(this.$store, LABS_DEV_THEME_OPTION);
-    } else {
-      await dispatchRemoveFlag(this.$store, LABS_DEV_THEME_OPTION);
     }
     this.changingMySettings = false;
     this.$router.go(0);
