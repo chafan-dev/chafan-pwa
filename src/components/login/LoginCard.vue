@@ -106,17 +106,10 @@
                           <VerifyCodeIcon />
                         </template>
                       </v-text-field>
-
-                      <v-btn
-                        :disabled="verificationCodeDisabled"
+                      <VerificationCodeBtn
                         class="mt-4"
-                        color="primary"
-                        depressed
-                        small
-                        @click="sendVerificationCode"
-                      >
-                        发送验证码
-                      </v-btn>
+                        :send-verification-code-handler="sendVerificationCode"
+                      />
                     </div>
                   </v-sheet>
 
@@ -229,9 +222,11 @@ import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
 import { CVue } from '@/common';
+import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 
 @Component({
   components: {
+    VerificationCodeBtn,
     HelpIcon,
     EmailEditOutline,
     HelpCircleOutline,
@@ -255,8 +250,6 @@ export default class LoginCard extends CVue {
   private appName = appName;
   private loginMethod: 'email' | 'cellphone' = 'email';
   private submitIntermediate = false;
-  private sendVerificationCodeIntermediate = false;
-  private verificationCodeDisabled = false;
   private verificationCode: string | null = null;
   private captchaVerified = false;
   private captchaToken: string | null = null;
@@ -280,18 +273,17 @@ export default class LoginCard extends CVue {
         content: '电话号码为空',
         color: 'error',
       });
-      return;
+      return false;
     }
-    this.sendVerificationCodeIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
+    return dispatchCaptureApiError(this.$store, async () => {
       const response = await api.sendVerificationCode({
         phone_number: this.phoneNumber!,
       });
       if (response) {
         this.expectOkAndCommitMsg(response.data, '验证码发送成功');
-        this.verificationCodeDisabled = true;
+        return true;
       }
-      this.sendVerificationCodeIntermediate = false;
+      return false;
     });
   }
 
