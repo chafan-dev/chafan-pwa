@@ -57,7 +57,7 @@ export const actions = {
         await dispatchGetUserProfile(context);
         await dispatchRouteLoggedIn(context);
         commitAddNotification(context, {
-          content: 'Logged in',
+          content: '登录成功',
           color: 'success',
         });
       } else {
@@ -87,7 +87,7 @@ export const actions = {
   },
   async actionUpdateUserProfile(context: MainContext, payload: IUserUpdateMe) {
     try {
-      const loadingNotification = { content: 'saving', showProgress: true };
+      const loadingNotification = { content: '保存中', showProgress: true };
       commitAddNotification(context, loadingNotification);
       const response = (
         await Promise.all([
@@ -175,7 +175,7 @@ export const actions = {
   },
   async actionUserLogOut(context: MainContext) {
     await dispatchLogOut(context);
-    commitAddNotification(context, { content: 'Logged out', color: 'success' });
+    commitAddNotification(context, { content: '已登出', color: 'success' });
   },
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
     if (payload.toString() === 'Error: Network Error') {
