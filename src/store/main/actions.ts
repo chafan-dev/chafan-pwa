@@ -267,9 +267,12 @@ export const actions = {
       });
     }
   },
-  async apiErrorCaptured(context: MainContext, action: () => Promise<void>) {
+  async apiErrorCaptured<T>(
+    context: MainContext,
+    action: () => Promise<T>
+  ): Promise<T | undefined> {
     try {
-      await action();
+      return await action();
     } catch (err) {
       await dispatchCheckApiError(context, err);
     }

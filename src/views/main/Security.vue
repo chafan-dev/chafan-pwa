@@ -166,20 +166,13 @@
                 取消
               </v-btn>
 
-              <v-btn
+              <VerificationCodeBtn
                 v-show="editLoginMode"
-                :color="!showVerifyCodeBtn ? 'primary' : undefined"
-                :disabled="verificationCodeDisabled || intermediate"
-                depressed
-                small
-                @click="handleSubmit(sendVerificationCode)"
-              >
-                发送验证码
-                <v-progress-circular v-if="intermediate" indeterminate size="20" />
-              </v-btn>
+                :send-verification-code-handler="sendVerificationCode"
+              />
 
               <v-btn
-                v-show="showVerifyCodeBtn && editLoginMode"
+                v-show="editLoginMode"
                 :disabled="intermediate"
                 color="primary"
                 depressed
@@ -250,9 +243,11 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { AxiosError } from 'axios';
 import { CVue } from '@/common';
+import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 
 @Component({
   components: {
+    VerificationCodeBtn,
     VerifyCodeIcon,
     CellphoneIcon,
     EmailIcon,
@@ -268,7 +263,6 @@ export default class Security extends CVue {
   private showCodeInput = false;
   private verificationCodeDisabled = false;
   private showSecurityLogsDialog = false;
-  private showVerifyCodeBtn = false;
   private editLoginMode: 'cellphone' | 'email' | 'add_secondary_email' | null = null;
   private intermediate = false;
   private verificationCode: string = '';
@@ -302,9 +296,8 @@ export default class Security extends CVue {
     }
 
     this.showCodeInput = true;
-    this.intermediate = true;
 
-    await dispatchCaptureApiError(this.$store, async () => {
+    return await dispatchCaptureApiError(this.$store, async () => {
       const payload: IVerificationCodeRequest = {};
       if (this.editLoginMode === 'cellphone') {
         payload.phone_number = this.phoneNumber!;
@@ -317,10 +310,8 @@ export default class Security extends CVue {
         content: '验证码已发送到邮箱，请查收',
         color: 'success',
       });
-      this.showVerifyCodeBtn = true;
       this.showCodeInput = true;
-      this.verificationCodeDisabled = true;
-      this.intermediate = false;
+      return true;
     });
   }
 
@@ -361,7 +352,6 @@ export default class Security extends CVue {
           color: 'success',
         });
         commitSetUserProfile(this.$store, response.data);
-        this.showVerifyCodeBtn = false;
         this.editLoginMode = null;
         this.newEmail = null;
         this.verificationCode = '';

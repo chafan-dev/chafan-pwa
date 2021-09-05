@@ -58,15 +58,7 @@
                       <VerifyCodeIcon />
                     </template>
                     <template v-slot:append-outer>
-                      <v-btn
-                        :disabled="intermediate || verificationCodeSent"
-                        color="primary"
-                        depressed
-                        small
-                        @click="sendVerificationCode"
-                      >
-                        发送验证码
-                      </v-btn>
+                      <VerificationCodeBtn :send-verification-code-handler="sendVerificationCode" />
                     </template>
                   </v-text-field>
 
@@ -133,10 +125,12 @@ import HandleIcon from '@/components/icons/HandleIcon.vue';
 import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
+import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 
 // TODO: share a parent component with Login.vue
 @Component({
   components: {
+    VerificationCodeBtn,
     AccountIcon,
     PasswordIcon,
     HandleIcon,
@@ -152,7 +146,6 @@ export default class Signup extends Vue {
   private invitationToken: string = '';
 
   private intermediate = false;
-  private verificationCodeSent = false;
 
   private mounted() {
     commitSetShowLoginPrompt(this.$store, false);
@@ -162,8 +155,7 @@ export default class Signup extends Vue {
   }
 
   private async sendVerificationCode() {
-    this.intermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
+    return dispatchCaptureApiError(this.$store, async () => {
       const response = await api.sendVerificationCode({ email: this.email });
       if (response) {
         const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
@@ -171,9 +163,9 @@ export default class Signup extends Vue {
           content: msg,
           color: 'success',
         });
+        return true;
       }
-      this.verificationCodeSent = true;
-      this.intermediate = false;
+      return false;
     });
   }
 
