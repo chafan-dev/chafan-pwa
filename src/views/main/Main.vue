@@ -48,7 +48,7 @@
         <v-divider />
 
         <v-list v-show="hasModeratedSites" subheader>
-          <v-subheader>Moderation</v-subheader>
+          <v-subheader>管理</v-subheader>
           <v-list-item to="/moderation">
             <v-list-item-content>
               <v-list-item-title>圈子管理</v-list-item-title>
