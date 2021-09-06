@@ -1,6 +1,8 @@
 <template>
   <div v-if="site">
-    <div class="headline primary--text">{{ site.name }}</div>
+    <div class="primary--text" :class="{ headline: !compactMode, title: compactMode }">
+      {{ site.name }}
+    </div>
     <div v-if="site !== null">
       <div v-if="site.description">
         {{ site.description }}
