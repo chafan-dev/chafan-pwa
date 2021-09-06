@@ -79,12 +79,11 @@
       </v-tab-item>
     </v-tabs>
 
-    <div v-if="relatedSites.length > 0">
+    <div v-if="relatedSites.length > 0 && !compactMode">
       <v-divider class="my-2" />
-      <span class="subtitle-1">相关站点</span>
-      <div>
-        <SiteBtn v-for="s in relatedSites" :key="s.subdomain" :site="s" />
-      </div>
+      <RotationCard v-slot="{ item }" :items="relatedSites" title="相关站点">
+        <SiteCard :compact-mode="true" :site="item" />
+      </RotationCard>
     </div>
 
     <v-dialog v-model="showJoinConditionsDialog" max-width="400">
@@ -122,9 +121,14 @@ import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { apiSite } from '@/api/site';
 import { CVue } from '@/common';
 import SiteBtn from '@/components/SiteBtn.vue';
+import RefreshIcon from '@/components/icons/RefreshIcon.vue';
+import RotationCard from '@/components/base/RotationCard.vue';
 
 @Component({
+  name: 'SiteCard',
   components: {
+    RotationCard,
+    RefreshIcon,
     SiteBtn,
     UserLink,
     Invite,
@@ -176,7 +180,9 @@ export default class SiteCard extends CVue {
         }
       }
       this.loading = false;
-      this.relatedSites = (await apiSite.getRelatedSites(this.token, this.site.uuid)).data;
+      if (!this.compactMode) {
+        this.relatedSites = (await apiSite.getRelatedSites(this.token, this.site.uuid)).data;
+      }
     });
   }
 

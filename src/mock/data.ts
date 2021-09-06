@@ -49,6 +49,26 @@ const example_site1: ISite = {
   permission_type: 'public',
 };
 
+const example_site2: ISite = {
+  auto_approval: false,
+  members_count: 0,
+  public_writable_submission: false,
+  questions_count: 0,
+  submissions_count: 0,
+  description: '讨论互联网产品的设计和体验2',
+  uuid: '3noQmrdUbubY9ojPerYB',
+  name: '互联网产品2',
+  subdomain: EXAMPLE_SITE1_SUBDOMAIN,
+  public_readable: true,
+  public_writable_question: true,
+  public_writable_answer: true,
+  public_writable_comment: true,
+  create_question_coin_deduction: 2,
+  topics: [],
+  moderator: example_user2_preview,
+  permission_type: 'public',
+};
+
 export const exampleQuestionPreview: IQuestionPreview = {
   uuid: '6gpPVpfHJnEh4NfbZ4VY',
   author: example_user1_preview,
@@ -122,3 +142,5 @@ export const exampleSubmissionUpvotes: ISubmissionUpvotes = {
   upvoted: false,
   count: 2,
 };
+
+export const sites: ISite[] = [example_site1, example_site2];
