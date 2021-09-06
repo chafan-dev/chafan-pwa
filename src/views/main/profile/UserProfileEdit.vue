@@ -37,9 +37,9 @@
                         @change="uploadGifAvatar"
                       />
                       <div class="text-center">
-                        <span class="text-caption">{{ $t('点击更改默认头像') }}</span>
-                        <v-btn depressed x-small @click="showGifAvatar = !showGifAvatar"
-                          >{{ $t('添加额外的 GIF 头像') }}
+                        <span class="text-caption">点击更改默认头像</span>
+                        <v-btn depressed x-small @click="showGifAvatar = !showGifAvatar">
+                          添加额外的 GIF 头像
                         </v-btn>
                       </div>
                       <v-expand-transition>
@@ -66,9 +66,7 @@
                       >
                         <v-text-field
                           v-model="userUpdateMe.handle"
-                          :label="
-                            $t('Username') + ' (' + $t('这是你的唯一标识符，请谨慎更改') + ')'
-                          "
+                          :label="$t('Username') + ' (这是你的唯一标识符，请谨慎更改)'"
                         />
                         <span class="error--text">{{ errors[0] }}</span>
                       </ValidationProvider>
