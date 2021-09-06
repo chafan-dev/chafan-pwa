@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex">
-      <span class="subtitle-1">{{ title }}</span>
+      <span class="font-weight-bold subtitle-1">{{ title }}</span>
       <v-spacer />
       <v-btn color="secondary" outlined small @click="rotate">
         <span class="mr-1">换一批</span>

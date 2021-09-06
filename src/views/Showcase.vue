@@ -27,6 +27,10 @@
         </v-card>
         <v-divider class="my-4" />
         <ExampleSubmissionPreview />
+        <v-divider class="my-4" />
+        <RotationCard v-slot="{ item }" :items="mockData.sites" title="相关站点">
+          <SiteCard :is-member="true" :compact-mode="true" :site="item" />
+        </RotationCard>
       </div>
     </v-container>
   </v-main>
@@ -39,9 +43,18 @@ import * as mockData from '@/mock/data';
 import UserGrid from '@/components/UserGrid.vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import ExampleSubmissionPreview from '@/views/showcase/ExampleSubmissionPreview.vue';
+import RotationCard from '@/components/base/RotationCard.vue';
+import SiteCard from '@/components/SiteCard.vue';
 
 @Component({
-  components: { ExampleSubmissionPreview, SubmissionPreview, UserGrid, QuestionPreview },
+  components: {
+    SiteCard,
+    RotationCard,
+    ExampleSubmissionPreview,
+    SubmissionPreview,
+    UserGrid,
+    QuestionPreview,
+  },
 })
 export default class Showcase extends Vue {
   private mockData = mockData;
