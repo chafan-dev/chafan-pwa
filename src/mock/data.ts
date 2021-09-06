@@ -55,7 +55,8 @@ const example_site2: ISite = {
   public_writable_submission: false,
   questions_count: 0,
   submissions_count: 0,
-  description: '讨论互联网产品的设计和体验2',
+  description:
+    '讨论互联网产品的设计和体验2 https://cha.fan/example/example/example/example/example/example/example/example/example',
   uuid: '3noQmrdUbubY9ojPerYB',
   name: '互联网产品2',
   subdomain: EXAMPLE_SITE1_SUBDOMAIN,
