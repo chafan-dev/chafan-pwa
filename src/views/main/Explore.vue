@@ -18,7 +18,7 @@
                 />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
-              <p class="mt-2 text-center">不定期随机更新</p>
+              <p class="mt-2 text-center">不定期更新</p>
             </v-tab-item>
             <v-tab-item class="mt-2" eager value="sites">
               <ExploreSitesGrid />
@@ -28,7 +28,7 @@
                 <UserGrid :users="interestingUsers" />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
-              <p class="mt-2 text-center">不定期随机更新</p>
+              <p class="mt-2 text-center">不定期更新</p>
             </v-tab-item>
           </v-tabs>
         </div>
