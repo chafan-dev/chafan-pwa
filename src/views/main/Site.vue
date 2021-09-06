@@ -34,12 +34,8 @@
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
-            <div v-else-if="userProfile" class="my-4 text-center">
-              {{ $t('Only site members can view its content.') }}
-            </div>
-            <div v-else class="my-4 text-center">
-              {{ $t('登录后查看更多') }}
-            </div>
+            <div v-else-if="userProfile" class="my-4 text-center">仅圈子成员可以查看该内容</div>
+            <div v-else class="my-4 text-center">登录后查看更多</div>
           </v-tab-item>
 
           <v-tab-item value="submissions">
@@ -51,12 +47,8 @@
             >
               <SubmissionPreview :submission="item" />
             </DynamicItemList>
-            <div v-else-if="userProfile" class="my-4 text-center">
-              {{ $t('Only site members can view its content.') }}
-            </div>
-            <div v-else class="my-4 text-center">
-              {{ $t('登录后查看更多') }}
-            </div>
+            <div v-else-if="userProfile" class="my-4 text-center">仅圈子成员可以查看该内容</div>
+            <div v-else class="my-4 text-center">登录后查看更多</div>
           </v-tab-item>
 
           <v-tab-item value="members">
@@ -76,9 +68,7 @@
                 </v-row>
               </template>
             </div>
-            <div v-else class="my-4 text-center">
-              {{ $t('Only site members can view its content.') }}
-            </div>
+            <div v-else class="my-4 text-center">仅圈子成员可以查看该内容</div>
           </v-tab-item>
         </v-tabs>
       </v-col>

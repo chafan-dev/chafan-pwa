@@ -79,6 +79,14 @@
       </v-tab-item>
     </v-tabs>
 
+    <div v-if="relatedSites.length > 0">
+      <v-divider class="my-2" />
+      <span class="subtitle-1">相关站点</span>
+      <div>
+        <SiteBtn v-for="s in relatedSites" :key="s.subdomain" :site="s" />
+      </div>
+    </div>
+
     <v-dialog v-model="showJoinConditionsDialog" max-width="400">
       <v-card>
         <v-card-title> 申请加入圈子的条件</v-card-title>
@@ -113,9 +121,11 @@ import DoorIcon from '@/components/icons/DoorIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { apiSite } from '@/api/site';
 import { CVue } from '@/common';
+import SiteBtn from '@/components/SiteBtn.vue';
 
 @Component({
   components: {
+    SiteBtn,
     UserLink,
     Invite,
     CreateSubmissionForm,
@@ -139,6 +149,7 @@ export default class SiteCard extends CVue {
   private loading = true;
   private showJoinConditionsDialog = false;
   private intermediate = false;
+  private relatedSites: ISite[] = [];
 
   private async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
@@ -165,6 +176,7 @@ export default class SiteCard extends CVue {
         }
       }
       this.loading = false;
+      this.relatedSites = (await apiSite.getRelatedSites(this.token, this.site.uuid)).data;
     });
   }
 
