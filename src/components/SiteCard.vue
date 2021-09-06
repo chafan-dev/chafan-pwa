@@ -4,7 +4,7 @@
       {{ site.name }}
     </div>
     <div v-if="site !== null">
-      <div v-if="site.description">
+      <div v-if="site.description" class="site-desc">
         {{ site.description }}
       </div>
       <template v-if="!compactMode">

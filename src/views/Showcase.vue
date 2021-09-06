@@ -26,11 +26,16 @@
           </v-card-text>
         </v-card>
         <v-divider class="my-4" />
-        <ExampleSubmissionPreview />
-        <v-divider class="my-4" />
-        <RotationCard v-slot="{ item }" :items="mockData.sites" title="相关站点">
-          <SiteCard :is-member="true" :compact-mode="true" :site="item" />
-        </RotationCard>
+        <v-row>
+          <v-col>
+            <ExampleSubmissionPreview />
+          </v-col>
+          <v-col>
+            <RotationCard v-slot="{ item }" :items="mockData.sites" title="相关站点">
+              <SiteCard :is-member="true" :compact-mode="true" :site="item" />
+            </RotationCard>
+          </v-col>
+        </v-row>
       </div>
     </v-container>
   </v-main>
