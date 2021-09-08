@@ -146,17 +146,17 @@ export default class Site extends Vue {
   private tabItems = [
     {
       code: 'questions',
-      text: this.$t('Questions'),
+      text: '问题',
       tabExtraCount: (site: ISite) => site.questions_count,
     },
     {
       code: 'submissions',
-      text: this.$t('Sharings'),
+      text: '分享',
       tabExtraCount: (site: ISite) => site.submissions_count,
     },
     {
       code: 'members',
-      text: this.$t('Members'),
+      text: '成员列表',
       tabExtraCount: (site: ISite) => site.members_count,
     },
   ];

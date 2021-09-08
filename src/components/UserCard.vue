@@ -1,7 +1,7 @@
 <template>
   <v-card
-    :class="!embedded && !hoverMode ? theme.baseCard.classKey : ''"
-    :flat="embedded"
+    :class="!infeed && !hoverMode ? theme.baseCard.classKey : ''"
+    :flat="infeed"
     :max-width="hoverMode ? 400 : undefined"
     class="pa-3"
   >
@@ -90,17 +90,31 @@
         <v-skeleton-loader v-else type="text" />
       </v-col>
     </v-row>
+    <v-row v-if="recommendedUsers.length > 0">
+      <v-divider inset />
+      <v-col v-if="recommendedUsers[0]">
+        <UserCard :compactMode="true" :userPreview="recommendedUsers[0]" />
+      </v-col>
+      <v-col>
+        <UserCard
+          v-if="recommendedUsers[1]"
+          :compactMode="true"
+          :userPreview="recommendedUsers[1]"
+        />
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
 <script lang="ts">
-import { IUserFollows, IUserPreview, IUserPublic } from '@/interfaces';
+import { IUserFollows, IUserPreview } from '@/interfaces';
 import { api } from '@/api';
 import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { CVue } from '@/common';
+import { apiDiscovery } from '@/api/discovery';
 
 @Component({
   name: 'UserCard',
@@ -108,7 +122,7 @@ import { CVue } from '@/common';
 export default class UserCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
   @Prop({ default: false }) public readonly hoverMode!: boolean;
-  @Prop({ default: false }) private readonly embedded!: false;
+  @Prop({ default: false }) private readonly infeed!: false;
   @Prop() private readonly siteKarmas: number | undefined;
   private loading = true;
   private follows: IUserFollows | null = null;
@@ -116,6 +130,7 @@ export default class UserCard extends CVue {
   private cancelFollowIntermediate = false;
   private privateMessageIntermediate = false;
   private avatarURL: string | null = null;
+  private recommendedUsers: IUserPreview[] = [];
 
   shortIntro(intro: string) {
     if (!intro) {
@@ -151,6 +166,10 @@ export default class UserCard extends CVue {
     this.followIntermediate = true;
     this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
     this.followIntermediate = false;
+
+    // TODO: consider contextual followed user
+    // TODO: rotate grid
+    this.recommendedUsers = (await apiDiscovery.getInterestingUsers(this.token)).data;
   }
 
   private async cancelFollow() {

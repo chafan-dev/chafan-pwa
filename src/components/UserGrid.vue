@@ -22,6 +22,7 @@ import UserCard from '@/components/UserCard.vue';
 import { IUserPreview } from '@/interfaces';
 
 @Component({
+  name: 'UserGrid',
   components: { UserCard },
 })
 export default class UserGrid extends Vue {
