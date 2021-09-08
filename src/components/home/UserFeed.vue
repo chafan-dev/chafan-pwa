@@ -96,7 +96,7 @@
             <template v-if="activity.event.content.users">
               <UserCard
                 :compactMode="true"
-                :embedded="true"
+                :infeed="true"
                 :userPreview="activity.event.content.users[0]"
               />
               <a
@@ -109,7 +109,7 @@
             <UserCard
               v-else
               :compactMode="true"
-              :embedded="true"
+              :infeed="true"
               :userPreview="activity.event.content.user"
             />
           </div>

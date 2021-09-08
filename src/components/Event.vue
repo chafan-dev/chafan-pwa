@@ -59,11 +59,7 @@
         v-if="event.content.payment_amount && event.content.verb === 'invited_user_activated'"
         place="remark"
       >
-        {{
-          $t('verb.remark.invited_user_activated', {
-            payment_amount: event.content.payment_amount,
-          })
-        }}
+        ，你已经收到 {{ event.content.payment_amount }} 硬币奖励
       </span>
 
       <span v-if="event.content.parent_comment" place="parent_comment">

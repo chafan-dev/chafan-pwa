@@ -15,8 +15,8 @@
                     name="password"
                     rules="required|password|password1:@confirm"
                   >
-                    <v-text-field v-model="password" :label="$t('Password')" type="password" />
-                    <span class="error--text">{{ $t(errors[0]) }}</span>
+                    <v-text-field v-model="password" label="密码" type="password" />
+                    <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
                   <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">

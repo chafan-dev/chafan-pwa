@@ -48,7 +48,7 @@
               <v-textarea
                 v-else
                 v-model="newSubmissionTitle"
-                :label="$t('Title')"
+                label="标题"
                 auto-grow
                 dense
                 rows="1"

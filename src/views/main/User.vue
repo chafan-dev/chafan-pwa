@@ -14,7 +14,7 @@
         <div v-if="loggedIn">
           <v-tabs v-model="currentTabItem" :fixed-tabs="$vuetify.breakpoint.mdAndUp" show-arrows>
             <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
-              {{ $t(item.text) }}
+              {{ item.text }}
               <span v-if="item.tabExtraCount && userPublic" class="ml-1">
                 ({{ item.tabExtraCount(userPublic) }})
               </span>
@@ -140,26 +140,26 @@ export default class User extends Vue {
   private tabItems = [
     {
       code: 'recent',
-      text: 'Recent',
+      text: '动态',
     },
     {
       code: 'answers',
-      text: 'Answers',
+      text: '回答',
       tabExtraCount: (userPublic: IUserPublic) => userPublic.answers_count,
     },
     {
       code: 'questions',
-      text: 'Questions',
+      text: '问题',
       tabExtraCount: (userPublic: IUserPublic) => userPublic.questions_count,
     },
     {
       code: 'articles',
-      text: 'Articles',
+      text: '文章',
       tabExtraCount: (userPublic: IUserPublic) => userPublic.articles_count,
     },
     {
       code: 'submissions',
-      text: 'Sharings',
+      text: '分享',
       tabExtraCount: (userPublic: IUserPublic) => userPublic.submissions_count,
     },
   ];

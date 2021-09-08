@@ -54,19 +54,11 @@
                       </v-expand-transition>
                     </v-col>
                     <v-col>
-                      <v-text-field
-                        v-model="userUpdateMe.full_name"
-                        :label="$t('Full Name')"
-                        clearable
-                      />
-                      <ValidationProvider
-                        v-slot="{ errors }"
-                        :name="$t('Username')"
-                        rules="required"
-                      >
+                      <v-text-field v-model="userUpdateMe.full_name" label="全名或昵称" clearable />
+                      <ValidationProvider v-slot="{ errors }" name="用户名" rules="required">
                         <v-text-field
                           v-model="userUpdateMe.handle"
-                          :label="$t('Username') + ' (这是你的唯一标识符，请谨慎更改)'"
+                          label="用户名（这是你的独有名称，请谨慎更改）"
                         />
                         <span class="error--text">{{ errors[0] }}</span>
                       </ValidationProvider>
@@ -160,7 +152,7 @@
                         <span class="title">教育经历</span>
                         <v-row v-for="(exp, index) in eduExps" :key="index">
                           <v-col>{{ exp.school_topic_name }}</v-col>
-                          <v-col>{{ $t(exp.level_name) }}</v-col>
+                          <v-col>{{ exp.level_name }}</v-col>
                           <v-col class="ml-2">
                             <v-btn
                               class="mr-2"
@@ -471,7 +463,7 @@ export default class UserProfileEdit extends Vue {
       if (response) {
         commitSetUserProfile(this.$store, response.data);
         commitAddNotification(this.$store, {
-          content: this.$t('设置更新成功').toString(),
+          content: '设置更新成功',
           color: 'success',
         });
         this.$router.push(`/users/${response.data.handle}`);
@@ -483,7 +475,7 @@ export default class UserProfileEdit extends Vue {
   public addNewWorkExp() {
     if (!this.newWorkExpCompanyName || !this.newWorkExpPositionName) {
       commitAddNotification(this.$store, {
-        content: this.$t('公司名和职位均为必填').toString(),
+        content: '公司名和职位均为必填',
         color: 'error',
       });
       return;
@@ -499,7 +491,7 @@ export default class UserProfileEdit extends Vue {
   public addNewEduExp() {
     if (!this.newEduExpSchooolName || !this.newEduExpLevelName) {
       commitAddNotification(this.$store, {
-        content: this.$t('学校名和教育水平均为必填').toString(),
+        content: '学校名和教育水平均为必填',
         color: 'error',
       });
       return;
@@ -543,7 +535,7 @@ export default class UserProfileEdit extends Vue {
           const file = fileInput.files[0];
           if (file.size <= 10 * 1024) {
             commitAddNotification(this.$store, {
-              content: this.$t('头像文件过小').toString(),
+              content: '头像文件过小',
               color: 'error',
             });
             this.uploadAvatarIntermediate = false;
@@ -580,7 +572,7 @@ export default class UserProfileEdit extends Vue {
           const file = fileInput.files[0];
           if (file.size <= 10 * 1024) {
             commitAddNotification(this.$store, {
-              content: this.$t('头像文件过小').toString(),
+              content: '头像文件过小',
               color: 'error',
             });
             this.uploadGifAvatarIntermediate = false;
