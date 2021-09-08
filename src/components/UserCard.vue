@@ -35,7 +35,7 @@
             </v-col>
           </v-row>
 
-          <v-row class="compact-row" v-if="userPreview.social_annotations.follow_follows !== null">
+          <v-row class="compact-row" v-if="userPreview.social_annotations.follow_follows">
             <v-col class="compact-col text-caption">
               <v-chip color="green lighten-5" x-small label>
                 我关注的人中有{{ userPreview.social_annotations.follow_follows }}人也关注了TA
