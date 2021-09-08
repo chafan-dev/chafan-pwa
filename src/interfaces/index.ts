@@ -248,6 +248,10 @@ export interface IUserUpdatePrimaryEmail {
   verification_code?: string;
 }
 
+export interface ISocialAnnotations {
+  follow_follows?: number;
+}
+
 export interface IUserPreview {
   uuid: string;
   full_name?: string;
@@ -256,6 +260,7 @@ export interface IUserPreview {
   personal_introduction?: string;
   karma: number;
   follows?: IUserFollows; // For front-end mocking only
+  social_annotations: ISocialAnnotations;
 }
 
 export interface IQuestionPreview {

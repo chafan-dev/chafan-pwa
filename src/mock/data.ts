@@ -16,6 +16,7 @@ const example_user1_preview = {
   handle: EXAMPLE_USER1_HANDLE,
   full_name: EXAMPLE_USER1_FULL_NAME,
   karma: 0,
+  social_annotations: {},
 };
 
 const EXAMPLE_USER2_UUID = 'example-user-2-uuid';
@@ -25,6 +26,7 @@ const example_user2_preview: IUserPreview = {
   uuid: EXAMPLE_USER2_UUID,
   handle: EXAMPLE_USER2_HANDLE,
   karma: 2791,
+  social_annotations: {},
 };
 
 const EXAMPLE_SITE1_SUBDOMAIN = 'internet-things';
@@ -111,6 +113,7 @@ for (let i = 0; i < 10; i++) {
     full_name: i % 2 === 0 ? uuid + ' (FN)' : undefined,
     karma: 0,
     personal_introduction: randomSentence(),
+    social_annotations: {},
     follows: {
       user_uuid: uuid,
       followers_count: i,

@@ -5,15 +5,8 @@
     :max-width="hoverMode ? 400 : undefined"
     class="pa-3"
   >
-    <div v-if="!compactMode && avatarURL" class="mb-1 text-center mt-2">
-      <router-link :to="`/users/${userPreview.handle}`">
-        <v-avatar class="avatarDiv" size="90" tile>
-          <v-img :src="avatarURL" alt="Avatar" />
-        </v-avatar>
-      </router-link>
-    </div>
     <v-row justify="center">
-      <v-col v-if="compactMode && avatarURL" align-self="center" style="max-width: 110px">
+      <v-col v-if="avatarURL" align-self="center" style="max-width: 110px">
         <router-link :to="`/users/${userPreview.handle}`">
           <v-avatar class="avatarDiv" size="90" tile>
             <v-img :src="avatarURL" alt="Avatar" />
@@ -21,11 +14,7 @@
         </router-link>
       </v-col>
       <v-col align-self="center">
-        <div
-          :class="{ headline: !compactMode, 'text-center': !compactMode }"
-          class="mb-1 mt-1"
-          style="min-width: 100px"
-        >
+        <div class="mb-1 mt-1" style="min-width: 100px">
           <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none">
             <span v-if="userPreview.full_name">
               {{ userPreview.full_name }}
@@ -34,76 +23,28 @@
           </router-link>
         </div>
 
-        <div
-          v-if="userPreview.personal_introduction"
-          :class="{ 'text-center': !compactMode, 'text-caption': compactMode }"
-          class="secondary--text"
-        >
+        <div v-if="userPreview.personal_introduction" class="secondary--text text-caption">
           <span>{{ shortIntro(userPreview.personal_introduction) }}</span>
         </div>
 
         <template v-if="follows">
-          <v-row v-if="compactMode">
-            <v-col>
-              <router-link
-                v-if="loggedIn && !compactMode"
-                :to="`/users/${userPreview.handle}?tab=followers`"
-                class="text-decoration-none text-caption mr-2"
-              >
-                有{{ follows.followers_count }}个关注者
-              </router-link>
-              <span v-else class="text-caption mr-2">
-                有{{ follows.followers_count }}个关注者
-              </span>
-
-              <router-link
-                v-if="loggedIn && !compactMode"
-                :to="`/users/${userPreview.handle}?tab=followed`"
-                class="text-decoration-none text-caption mr-2"
-              >
-                关注了{{ follows.followed_count }}个人
-              </router-link>
-              <span v-else class="text-caption mr-2"> 关注了{{ follows.followed_count }}个人 </span>
-
-              <template v-if="siteKarmas !== undefined">
-                <span class="text-caption"> 圈子 Karma：{{ siteKarmas }} </span>
-              </template>
+          <v-row class="compact-row">
+            <v-col class="compact-col">
+              <span class="text-caption mr-2"> 有{{ follows.followers_count }}个关注者 </span>
+              <span class="text-caption"> 关注了{{ follows.followed_count }}个人 </span>
             </v-col>
           </v-row>
-          <v-row v-else class="mt-3">
-            <v-col class="text-center">
-              <router-link
-                v-if="loggedIn"
-                :to="`/users/${userPreview.handle}?tab=followers`"
-                class="text-decoration-none"
-              >
-                有{{ follows.followers_count }}个关注者
-              </router-link>
-              <span v-else> 有{{ follows.followers_count }}个关注者 </span>
-            </v-col>
-            <v-col class="text-center">
-              <router-link
-                v-if="loggedIn"
-                :to="`/users/${userPreview.handle}?tab=followed`"
-                class="text-decoration-none"
-              >
-                关注了{{ follows.followed_count }}个人
-              </router-link>
-              <span v-else> 关注了{{ follows.followed_count }}个人 </span>
-            </v-col>
-            <v-col class="text-center">
-              <span>Karma：{{ userPreview.karma }}</span>
+
+          <v-row class="compact-row" v-if="userPreview.social_annotations.follow_follows !== null">
+            <v-col class="compact-col text-caption">
+              <v-chip color="green lighten-5" x-small label>
+                我关注的人中有{{ userPreview.social_annotations.follow_follows }}人也关注了TA
+              </v-chip>
             </v-col>
           </v-row>
 
           <v-row class="compact-row">
-            <v-col
-              v-if="currentUserId !== userPreview.uuid"
-              :class="{
-                'text-center': !compactMode,
-                'compact-col': compactMode,
-              }"
-            >
+            <v-col v-if="currentUserId !== userPreview.uuid" class="compact-col">
               <v-btn
                 v-if="follows.followed_by_me"
                 :disabled="cancelFollowIntermediate"
@@ -149,11 +90,6 @@
         <v-skeleton-loader v-else type="text" />
       </v-col>
     </v-row>
-    <div v-if="userPublic && userPublic.profile_view_times" class="text-center mt-5">
-      <span class="text-caption grey--text ma-2">
-        这个主页被浏览了{{ userPublic.profile_view_times }}次
-      </span>
-    </div>
   </v-card>
 </template>
 
@@ -171,8 +107,6 @@ import { CVue } from '@/common';
 })
 export default class UserCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
-  @Prop() public readonly userPublic: IUserPublic | undefined;
-  @Prop({ default: false }) public readonly compactMode!: boolean;
   @Prop({ default: false }) public readonly hoverMode!: boolean;
   @Prop({ default: false }) private readonly embedded!: false;
   @Prop() private readonly siteKarmas: number | undefined;
@@ -183,7 +117,7 @@ export default class UserCard extends CVue {
   private privateMessageIntermediate = false;
   private avatarURL: string | null = null;
 
-  private shortIntro(intro: string) {
+  shortIntro(intro: string) {
     if (!intro) {
       return intro;
     }
@@ -193,10 +127,8 @@ export default class UserCard extends CVue {
     return intro;
   }
 
-  private async mounted() {
-    if (this.userPublic && this.userPublic.gif_avatar_url) {
-      this.avatarURL = this.userPublic.gif_avatar_url;
-    } else if (this.userPreview.avatar_url) {
+  async mounted() {
+    if (this.userPreview.avatar_url) {
       this.avatarURL = this.userPreview.avatar_url;
     } else {
       this.avatarURL = '/img/default-avatar.png';
@@ -217,10 +149,8 @@ export default class UserCard extends CVue {
       return;
     }
     this.followIntermediate = true;
-    if (this.userPreview !== null) {
-      this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
-      this.followIntermediate = false;
-    }
+    this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
+    this.followIntermediate = false;
   }
 
   private async cancelFollow() {
@@ -238,7 +168,7 @@ export default class UserCard extends CVue {
     }
     this.privateMessageIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      const r0 = await api.createChannel(this.$store.state.main.token, {
+      const r0 = await api.createChannel(this.token, {
         private_with_user_uuid: this.userPreview.uuid,
       });
       const channelId = r0.data.id;
@@ -247,13 +177,3 @@ export default class UserCard extends CVue {
   }
 }
 </script>
-
-<style scoped>
-.compact-row {
-  margin-top: 0 !important;
-}
-
-.compact-col {
-  padding-top: 0 !important;
-}
-</style>
