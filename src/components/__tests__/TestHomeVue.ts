@@ -16,6 +16,7 @@ test('TestHomeVue', () => {
             uuid: 'u1',
             handle: 'u1',
             karma: 0,
+            social_annotations: {},
           },
           question: {
             uuid: 'q1',
@@ -23,6 +24,7 @@ test('TestHomeVue', () => {
               uuid: 'u1',
               handle: 'u1',
               karma: 0,
+              social_annotations: {},
             },
             title: 'q1 title',
             site: null!,
@@ -52,6 +54,7 @@ test('TestHomeVue', () => {
           uuid: 'u2',
           handle: 'u2',
           karma: 0,
+          social_annotations: {},
         },
         question: {
           uuid: 'q1',
@@ -60,6 +63,7 @@ test('TestHomeVue', () => {
             uuid: 'u3',
             handle: 'u3',
             karma: 0,
+            social_annotations: {},
           },
           site: null!,
           is_placed_at_home: false,
@@ -83,6 +87,7 @@ test('TestHomeVue', () => {
           uuid: 'u3',
           handle: 'u3',
           karma: 0,
+          social_annotations: {},
         },
         question: {
           uuid: 'q1',
@@ -91,6 +96,7 @@ test('TestHomeVue', () => {
             uuid: 'u3',
             handle: 'u3',
             karma: 0,
+            social_annotations: {},
           },
           site: null!,
           is_placed_at_home: false,
