@@ -5,6 +5,7 @@ import {
   IQuestion,
   IQuestionArchive,
   IQuestionCreate,
+  IQuestionPage,
   IQuestionUpdate,
   IQuestionUpvotes,
 } from '@/interfaces';
@@ -58,6 +59,12 @@ export const apiQuestion = {
     return axios.get<IQuestion>(
       `${apiUrl}/api/v1/questions/${questionUUID}`,
       authHeadersWithParams(token, params)
+    );
+  },
+  async getQuestionPage(token: string, questionUUID: string) {
+    return axios.get<IQuestionPage>(
+      `${apiUrl}/api/v1/questions/${questionUUID}/page`,
+      authHeaders(token)
     );
   },
   async postQuestion(token: string, data: IQuestionCreate) {

@@ -112,8 +112,6 @@ export interface IQuestion {
   comments: IComment[];
   view_times: number;
   is_placed_at_home: boolean;
-  upvoted: boolean;
-  upvotes_count: number;
   answers_count: number;
   keywords?: string[];
   answers?: IAnswerPreview[];
@@ -1168,4 +1166,20 @@ export interface IFeedback {
   description: string;
   has_screenshot: boolean;
   status: 'sent' | 'processing' | 'closed' | 'wontfix';
+}
+
+export interface IQuestionPageFlags {
+  editable: boolean;
+  answer_writable: boolean;
+  comment_writable: boolean;
+  hideable: boolean;
+  is_mod: boolean;
+}
+
+export interface IQuestionPage {
+  question: IQuestion;
+  question_upvotes?: IQuestionUpvotes;
+  full_answers: IAnswer[];
+  question_subscription?: IUserQuestionSubscription;
+  flags: IQuestionPageFlags;
 }
