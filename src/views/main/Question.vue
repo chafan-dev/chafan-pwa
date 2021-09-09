@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-progress-linear v-if="question === null" indeterminate />
+    <v-progress-linear v-if="questionPage === null" indeterminate />
     <v-row v-else class="px-2" justify="center">
       <v-col
         :class="{
@@ -87,7 +87,7 @@
           </v-btn>
 
           <v-btn
-            v-else-if="answerWritable"
+            v-else-if="questionPage.flags.answer_writable"
             class="mr-1 slim-btn"
             color="primary"
             depressed
@@ -120,6 +120,7 @@
           <QuestionUpvotes
             :disabled="!userProfile || userProfile.uuid === question.author.uuid"
             :uuid="question.uuid"
+            :upvotes-placeholder="questionPage.question_upvotes"
             class="mr-1"
           />
 
@@ -135,9 +136,7 @@
             <v-card-text>
               <div class="pt-2 d-flex">
                 <div class="text--primary text-body-1">
-                  <p v-if="question.description" style="overflow-wrap: anywhere">
-                    {{ question.description_text }}
-                  </p>
+                  <Viewer v-if="question.desc" :content="question.desc" />
                   <p>
                     <CommentsIcon class="mr-1" small />
                     <span class="text-caption"> {{ question.comments.length }}条评论 </span>
@@ -164,12 +163,19 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item v-if="editable" dense @click="showQuestionEditor = true">
+              <v-list-item
+                v-if="questionPage.flags.editable"
+                dense
+                @click="showQuestionEditor = true"
+              >
                 <EditIcon class="mr-1" />
                 编辑
               </v-list-item>
               <v-list-item
-                v-if="questionSubscription && questionSubscription.subscribed_by_me"
+                v-if="
+                  questionPage.question_subscription &&
+                  questionPage.question_subscription.subscribed_by_me
+                "
                 :disabled="cancelSubscriptionIntermediate"
                 dense
                 @click="cancelSubscription"
@@ -242,7 +248,7 @@
         <!-- Question editor control -->
         <div v-if="showQuestionEditor && userProfile" class="d-flex">
           <v-btn
-            v-show="editable"
+            v-show="questionPage.flags.editable"
             :disabled="commitQuestionEditIntermediate"
             class="ma-1 slim-btn"
             color="primary"
@@ -252,7 +258,7 @@
             >保存
           </v-btn>
           <v-btn
-            v-show="editable"
+            v-show="questionPage.flags.editable"
             class="ma-1 slim-btn"
             depressed
             small
@@ -262,7 +268,7 @@
           <v-spacer />
 
           <v-btn
-            v-if="showQuestionEditor & canHide"
+            v-if="showQuestionEditor & questionPage.flags.hideable"
             class="ml-2"
             color="warning"
             depressed
@@ -298,7 +304,7 @@
             :commentSubmitIntermediate="commentSubmitIntermediate"
             :comments="question.comments"
             :siteId="question.site ? question.site.uuid : undefined"
-            :writable="commentWritable"
+            :writable="questionPage.flags.comment_writable"
             commentLabel="评论问题"
             @submit-new-comment="submitNewQuestionCommentBody"
           />
@@ -306,9 +312,7 @@
 
         <div class="ml-2 text-center">
           <span v-if="showEditor && userProfile" class="text-caption grey--text">编辑答案</span>
-          <span
-            v-else-if="loadedFullAnswers.length === 0 && answerPreviews.length === 0"
-            class="text-caption grey--text"
+          <span v-else-if="loadedFullAnswers.length === 0" class="text-caption grey--text"
             >暂无答案</span
           >
         </div>
@@ -334,35 +338,14 @@
           class="mb-4"
         >
           <Answer
-            :answerPreview="answer"
+            :answerPreview="answerPreviewOf(answer.uuid)"
             :answerProp="answer"
-            :loadFull="true"
+            :loadFull="loadedFullAnswers.indexOf(answer) <= 2"
             :showAuthor="true"
             :showCommentId="answerCommentId"
             :showQuestionInCard="false"
             @delete-answer="deleteHandler"
           />
-        </div>
-
-        <div
-          v-for="answerPreview in answerPreviews"
-          :key="answerPreview.uuid"
-          :class="theme.question.answer.classes"
-          class="mb-4"
-        >
-          <Answer
-            :answerPreview="answerPreview"
-            :loadFull="answerPreviews.indexOf(answerPreview) <= 2"
-            :showAuthor="true"
-            :showCommentId="answerPreview.uuid === answerUUID ? answerCommentId : undefined"
-            :showQuestionInCard="false"
-            @load="loadingFullAnswer = false"
-            @delete-answer="deleteHandler"
-          />
-        </div>
-
-        <div v-if="answerPreviews.length && loadingFullAnswer" class="text-center">
-          <v-progress-circular color="grey" indeterminate size="20" />
         </div>
       </v-col>
 
@@ -370,7 +353,10 @@
         v-if="$vuetify.breakpoint.mdAndUp"
         :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
-        <QuestionInfo :question="question" :questionSubscription="questionSubscription" />
+        <QuestionInfo
+          :question="question"
+          :questionSubscription="questionPage.question_subscription"
+        />
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
@@ -380,7 +366,10 @@
           </div>
         </template>
         <v-sheet class="pa-2">
-          <QuestionInfo :question="question" :questionSubscription="questionSubscription" />
+          <QuestionInfo
+            :question="question"
+            :questionSubscription="questionPage.question_subscription"
+          />
         </v-sheet>
       </v-bottom-sheet>
     </v-row>
@@ -409,19 +398,14 @@ import {
   commitSetShowLoginPrompt,
   commitSetWorkingDraft,
 } from '@/store/main/mutations';
-import { api } from '@/api';
 
-import { readIsLoggedIn, readNarrowUI, readUserMode } from '@/store/main/getters';
+import { readNarrowUI, readUserMode } from '@/store/main/getters';
 import {
   IAnswer,
-  IAnswerPreview,
-  IQuestion,
   IQuestionArchive,
-  IQuestionUpvotes,
+  IQuestionPage,
   IRichEditorState,
   IRichText,
-  IUserQuestionSubscription,
-  IUserSiteProfile,
 } from '@/interfaces';
 import Viewer from '@/components/Viewer.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
@@ -471,38 +455,26 @@ import SiteSearch from '@/components/SiteSearch.vue';
   },
 })
 export default class Question extends CVue {
-  private question: IQuestion | null = null;
+  private questionPage: IQuestionPage | null = null;
   private showEditor: boolean = false;
   private newQuestionTitle: string = '';
   private showQuestionEditor: boolean = false;
   private showComments: boolean = false;
-  private userSiteProfile: IUserSiteProfile | null = null;
-  private questionSubscription: IUserQuestionSubscription | null = null;
   private newQuestionTopicNames: string[] = [];
   private hintTopicNames: string[] = []; // TODO
-  private answerWritable = false;
-  private commentWritable = false;
-  private answerPreviews: IAnswerPreview[] = [];
-  private loadedFullAnswers: IAnswer[] = [];
-  private editable = false;
-  private canHide = false;
   private showConfirmHideQuestionDialog = false;
-  private loadingFullAnswer = true;
   private loading = true;
-  private isModerator = false;
-  private isShowInHome = false;
   private commitQuestionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
   private savedNewAnswer: IAnswer | null = null;
   private handlingNewEdit = false;
-  private upvotes: IQuestionUpvotes | null = null;
   private archives: IQuestionArchive[] = [];
   private historyDialog = false;
-  private siteProfiles: IUserSiteProfile[] = [];
   private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
   private savedLocalEdit: LocalEdit | null = null;
+  private loadedFullAnswers: IAnswer[] = [];
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -543,7 +515,7 @@ export default class Question extends CVue {
     }
   }
 
-  private beforeRouteUpdate(to: Route, from: Route, next: () => void) {
+  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
     if (matched && !isEqual(to.params, from.params)) {
@@ -551,20 +523,10 @@ export default class Question extends CVue {
       this.showEditor = false;
       this.showQuestionEditor = false;
       this.showComments = false;
-      this.answerWritable = false;
-      this.commentWritable = false;
-      this.answerPreviews = [];
       this.loadedFullAnswers = [];
-      this.editable = false;
-      this.canHide = false;
       this.showConfirmHideQuestionDialog = false;
-      this.loadingFullAnswer = true;
-      this.isModerator = false;
-      this.isShowInHome = false;
       this.savedNewAnswer = null;
-      this.upvotes = null;
       this.archives = [];
-      this.siteProfiles = [];
       this.currentUserAnswerUUID = null;
       this.loadQuestion();
     }
@@ -573,8 +535,8 @@ export default class Question extends CVue {
   private async loadQuestion() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const response = await apiQuestion.getQuestion(this.token, this.id, true);
-        this.question = response.data;
+        const response = await apiQuestion.getQuestionPage(this.token, this.id);
+        this.questionPage = response.data;
       },
       errorFilter: (err: AxiosError) => {
         const matched = this.commitErrMsg(err);
@@ -586,100 +548,50 @@ export default class Question extends CVue {
     });
 
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
-        if (readIsLoggedIn(this.$store)) {
-          apiQuestion.bumpViewsCounter(this.token, this.question.uuid);
-          this.upvotes = {
-            question_uuid: this.question.uuid,
-            count: this.question.upvotes_count,
-            upvoted: this.question.upvoted,
-          };
+      if (this.questionPage) {
+        const question = this.questionPage.question;
+        if (this.questionCommentId !== null) {
+          this.showComments = true;
+        }
+        updateHead(this.$route.path, question.title, question.desc?.rendered_text);
 
-          if (this.questionCommentId !== null) {
-            this.showComments = true;
-          }
-
-          this.isShowInHome = this.question.is_placed_at_home;
-
-          updateHead(this.$route.path, this.question.title, this.question.desc?.rendered_text);
-
-          this.newQuestionTitle = this.question.title;
-          this.newQuestionTopicNames = this.question.topics.map((topic) => topic.name);
-          if (this.userProfile) {
-            if (this.userProfile.uuid === this.question.author.uuid) {
-              this.editable = true;
-              this.canHide = this.question.answers_count === 0;
-            }
-            const mod = this.question.site.moderator;
-            if (mod) {
-              this.isModerator = this.userProfile.uuid === mod.uuid;
-            }
-            if (this.isModerator) {
-              this.canHide = this.question.answers_count === 0;
-            }
+        this.newQuestionTitle = question.title;
+        this.newQuestionTopicNames = question.topics.map((topic) => topic.name);
+        const loadedFullAnswers = this.questionPage.full_answers;
+        if (this.answerUUID !== null) {
+          // TODO: Fix when there is continuation
+          if (!loadedFullAnswers.find((preview) => preview.uuid === this.answerUUID)) {
+            commitAddNotification(this.$store, {
+              content: '答案不存在',
+              color: 'error',
+            });
           }
         }
-        await dispatchCaptureApiError(this.$store, async () => {
-          const answerPreviews = this.question?.answers
-            ? this.question?.answers
-            : (await api.getQuestionAnswers(this.token, this.question!.uuid)).data;
-          if (this.answerUUID !== null) {
-            if (!answerPreviews.find((preview) => preview.uuid === this.answerUUID)) {
-              commitAddNotification(this.$store, {
-                content: '答案不存在',
-                color: 'error',
-              });
-            }
+        if (loadedFullAnswers.length === 0 && !this.showQuestionEditor) {
+          this.showEditor = true;
+        }
+        this.loadedFullAnswers = loadedFullAnswers.sort((a, b) => {
+          if (a.uuid === this.answerUUID) {
+            return -1;
           }
-          if (answerPreviews.length === 0 && !this.showQuestionEditor) {
-            this.showEditor = true;
-          }
-          this.answerPreviews = answerPreviews.sort((a, b) => {
-            if (a.uuid === this.answerUUID) {
-              return -1;
-            }
-            if (b.uuid === this.answerUUID) {
-              return 1;
-            }
-            if (a.upvotes_count > b.upvotes_count) {
-              return -1;
-            }
+          if (b.uuid === this.answerUUID) {
             return 1;
-          });
-          answerPreviews.forEach((a) => {
-            if (a.author.uuid === this.userProfile?.uuid) {
-              this.currentUserAnswerUUID = a.uuid;
-            }
-          });
-          if (!this.currentUserAnswerUUID) {
-            this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + this.question!.uuid);
           }
-
-          if (this.userProfile) {
-            const questionSite = this.question!.site;
-
-            this.userSiteProfile = (
-              await api.getUserSiteProfile(this.token, questionSite.uuid, this.userProfile.uuid)
-            ).data;
-            if (this.userSiteProfile) {
-              this.editable = true;
-            }
-            if (this.userSiteProfile !== null || questionSite.public_writable_answer) {
-              this.answerWritable = true;
-            }
-            if (this.userSiteProfile !== null || questionSite.public_writable_comment) {
-              this.commentWritable = true;
-            }
-            this.questionSubscription = (
-              await apiMe.getQuestionSubscription(this.token, this.question!.uuid)
-            ).data;
+          return 1;
+        });
+        loadedFullAnswers.forEach((a) => {
+          if (a.author.uuid === this.userProfile?.uuid) {
+            this.currentUserAnswerUUID = a.uuid;
           }
         });
+        if (!this.currentUserAnswerUUID) {
+          this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + question.uuid);
+        }
       }
     });
   }
 
-  private async mounted() {
+  async mounted() {
     try {
       if (localStorage.getItem('new-question')) {
         commitAddNotification(this.$store, {
@@ -714,10 +626,10 @@ export default class Question extends CVue {
 
   private async submitNewQuestionCommentBody({ body, body_text, editor, mentioned }) {
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
+      if (this.questionPage) {
         this.commentSubmitIntermediate = true;
         const response = await apiComment.postComment(this.token, {
-          site_uuid: this.question?.site.uuid,
+          site_uuid: this.question!.site.uuid,
           question_uuid: this.id,
           content: {
             source: body,
@@ -727,7 +639,7 @@ export default class Question extends CVue {
           mentioned,
         });
         const comment = response.data;
-        this.question.comments.push(comment);
+        this.questionPage.question.comments.push(comment);
         this.commentSubmitIntermediate = false;
       }
     });
@@ -737,7 +649,7 @@ export default class Question extends CVue {
     this.commitQuestionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       const descEditor = this.$refs.descEditor as SimpleEditor;
-      if (this.question && (this.newQuestionTitle || descEditor.content)) {
+      if (this.questionPage && (this.newQuestionTitle || descEditor.content)) {
         const responses = await Promise.all(
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
@@ -750,13 +662,13 @@ export default class Question extends CVue {
             editor: descEditor.editor,
           };
         }
-        const response = await apiQuestion.updateQuestion(this.token, this.question.uuid, {
+        const response = await apiQuestion.updateQuestion(this.token, this.question!.uuid, {
           title: this.newQuestionTitle,
           desc: desc,
           topic_uuids: topicsUUIDs,
         });
         if (response) {
-          this.question = response.data;
+          this.questionPage.question = response.data;
         }
       }
       this.commitQuestionEditIntermediate = false;
@@ -766,10 +678,10 @@ export default class Question extends CVue {
 
   private async cancelSubscription() {
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
+      if (this.questionPage) {
         this.cancelSubscriptionIntermediate = true;
-        this.questionSubscription = (
-          await apiMe.unsubscribeQuestion(this.token, this.question.uuid)
+        this.questionPage.question_subscription = (
+          await apiMe.unsubscribeQuestion(this.token, this.question!.uuid)
         ).data;
         this.cancelSubscriptionIntermediate = false;
       }
@@ -782,10 +694,10 @@ export default class Question extends CVue {
       return;
     }
     await dispatchCaptureApiError(this.$store, async () => {
-      if (this.question) {
+      if (this.questionPage) {
         this.subscribeIntermediate = true;
-        this.questionSubscription = (
-          await apiMe.subscribeQuestion(this.token, this.question.uuid)
+        this.questionPage.question_subscription = (
+          await apiMe.subscribeQuestion(this.token, this.question!.uuid)
         ).data;
         this.subscribeIntermediate = false;
       }
@@ -821,39 +733,33 @@ export default class Question extends CVue {
 
   private cancelHandler() {
     this.showEditor = false;
-    if (this.question && this.savedNewAnswer) {
+    if (this.questionPage && this.savedNewAnswer) {
       this.loadedFullAnswers.unshift(this.savedNewAnswer);
     }
   }
 
   private removeAnswer(answerUUID: string) {
-    if (this.answerPreviews) {
-      let idx = this.loadedFullAnswers.findIndex((answer) => answer.uuid === answerUUID);
-      if (idx !== -1) {
-        this.loadedFullAnswers.splice(idx, 1);
-      }
-      idx = this.answerPreviews.findIndex((answer) => answer.uuid === answerUUID);
-      if (idx !== -1) {
-        this.answerPreviews.splice(idx, 1);
-      }
+    let idx = this.loadedFullAnswers.findIndex((answer) => answer.uuid === answerUUID);
+    if (idx !== -1) {
+      this.loadedFullAnswers.splice(idx, 1);
     }
   }
 
   private deleteHandler(answerUUID: string) {
     this.removeAnswer(answerUUID);
     if (this.answerUUID === answerUUID) {
-      this.$router.push(`/questions/${this.question?.uuid}`);
+      this.$router.push(`/questions/${this.question!.uuid}`);
     }
   }
 
   private async confirmHideQuestion() {
     await dispatchCaptureApiError(this.$store, async () => {
-      await apiQuestion.hideQuestion(this.$store.state.main.token, this.question!.uuid);
+      await apiQuestion.hideQuestion(this.token, this.question!.uuid);
       commitAddNotification(this.$store, {
         content: '已隐藏',
         color: 'info',
       });
-      await this.$router.push(`/sites/${this.question!.site.subdomain}`);
+      await this.$router.push(`/sites/${this.questionPage!.question.site.subdomain}`);
     });
   }
 
@@ -890,6 +796,14 @@ export default class Question extends CVue {
         `申请转移问题「${this.question?.title}」（UUID：${this.question?.uuid}）到圈子 /${this.transferToSiteSubdomain}`
       );
     }
+  }
+
+  get question() {
+    return this.questionPage?.question;
+  }
+
+  private answerPreviewOf(uuid: string) {
+    return this.question!.answers?.find((a) => a.uuid === uuid);
   }
 }
 </script>
