@@ -16,6 +16,11 @@ const options = commandLineArgs([
     alias: 'i',
     type: Boolean,
   },
+  {
+    name: 'host',
+    alias: 'h',
+    type: String,
+  },
 ]);
 
 console.log(options);
@@ -53,12 +58,12 @@ async function testUserLogin() {
   }
   let driver = await new Builder().forBrowser('chrome').setChromeOptions(chromeOptions).build();
   try {
-    await driver.get('http://100.120.141.73:8080/login');
+    await driver.get(`http://${options.host}:8080/login`);
     await driver.wait(until.titleIs('Chafan Dev'), 1000);
     await driver.findElement(By.name('login')).sendKeys('test@cha.fan');
     await driver.findElement(By.name('password')).sendKeys('test');
     await driver.findElement(By.xpath("//*[text()=' 登录 ']")).click();
-    await driver.wait(until.urlIs('http://100.120.141.73:8080/'), 20000);
+    await driver.wait(until.urlIs(`http://${options.host}:8080/`), 20000);
 
     const overlayContent = driver.findElement(
       By.xpath('//div[@class="v-overlay__content"]//*[text()="使用前必读"]')

@@ -288,12 +288,6 @@ export interface CreateQuestion {
   question: IQuestionPreview;
 }
 
-export interface CreateSite {
-  verb: 'create_site';
-  subject: IUserPreview;
-  site: ISite;
-}
-
 export interface CreateSubmission {
   verb: 'create_submission';
   subject: IUserPreview;
