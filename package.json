@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:dev": "vue-cli-service build --mode development",
     "test:unit": "vue-cli-service test:unit",
     "check:eslint": "eslint .",
     "check:prettier": "prettier -c .",
