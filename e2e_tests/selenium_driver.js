@@ -68,6 +68,7 @@ async function testUserLogin() {
   }
   let driver = await new Builder().forBrowser('chrome').setChromeOptions(chromeOptions).build();
   try {
+    console.log('Logging...');
     await driver.get(`http://${options.host}:8080/login`);
     await driver.wait(until.titleIs('Chafan Dev'), 1000);
     await driver.findElement(By.name('login')).sendKeys('test@cha.fan');
