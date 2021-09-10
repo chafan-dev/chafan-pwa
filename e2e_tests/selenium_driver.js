@@ -3,7 +3,7 @@
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const execSync = require('child_process').execSync;
 const rl = require('readline');
 const readline = rl.createInterface({
   input: process.stdin,
@@ -48,23 +48,15 @@ const screen = {
 };
 
 async function testUserLogin() {
-  try {
-    console.log('Reset and e2e-test backend ...');
-    let cmd = 'bash reset_and_e2e_test.sh';
-    if (options.use_poetry) {
-      cmd = 'poetry run ' + cmd;
-    }
-    const { error, stdout, stderr } = await exec(cmd, {
-      cwd: options.backend_dir,
-    });
-    if (error) {
-      console.log(stdout);
-      console.log(stderr);
-      return;
-    }
-  } catch (e) {
-    console.error(e); // should contain code (exit code) and signal (that caused the termination).
+  console.log('Reset and e2e-test backend ...');
+  let cmd = 'bash reset_and_e2e_test.sh';
+  if (options.use_poetry) {
+    cmd = 'poetry run ' + cmd;
   }
+  execSync(cmd, {
+    cwd: options.backend_dir,
+    stdio: 'inherit',
+  });
 
   let chromeOptions = new chrome.Options();
   if (!options.interactive) {
