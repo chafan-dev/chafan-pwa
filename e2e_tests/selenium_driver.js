@@ -26,6 +26,11 @@ const options = commandLineArgs([
     alias: 'b',
     type: String,
   },
+  {
+    name: 'use_poetry',
+    alias: 'u',
+    type: Boolean,
+  },
 ]);
 
 console.log(options);
@@ -45,7 +50,11 @@ const screen = {
 async function testUserLogin() {
   try {
     console.log('Reset and e2e-test backend ...');
-    const { error, stdout, stderr } = await exec('poetry run bash reset_and_e2e_test.sh', {
+    let cmd = 'bash reset_and_e2e_test.sh';
+    if (options.use_poetry) {
+      cmd = 'poetry run ' + cmd;
+    }
+    const { error, stdout, stderr } = await exec(cmd, {
       cwd: options.backend_dir,
     });
     if (error) {
