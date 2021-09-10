@@ -21,6 +21,11 @@ const options = commandLineArgs([
     alias: 'h',
     type: String,
   },
+  {
+    name: 'backend_dir',
+    alias: 'b',
+    type: String,
+  },
 ]);
 
 console.log(options);
@@ -41,7 +46,7 @@ async function testUserLogin() {
   try {
     console.log('Reset and e2e-test backend ...');
     const { error, stdout, stderr } = await exec('poetry run bash reset_and_e2e_test.sh', {
-      cwd: '../chafan/',
+      cwd: options.backend_dir,
     });
     if (error) {
       console.log(stdout);
