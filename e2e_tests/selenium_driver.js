@@ -102,6 +102,7 @@ async function testUserLogin() {
     );
   } catch (e) {
     console.log(e);
+    console.log('Current URL: ' + (await driver.getCurrentUrl()));
     if (options.interactive) {
       await util.promisify(readline.question)('Exit?');
       readline.close();
