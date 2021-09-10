@@ -53,10 +53,14 @@ async function testUserLogin() {
   if (options.use_poetry) {
     cmd = 'poetry run ' + cmd;
   }
-  execSync(cmd, {
-    cwd: options.backend_dir,
-    stdio: 'inherit',
-  });
+  try {
+    execSync(cmd, {
+      cwd: options.backend_dir,
+      stdio: 'inherit',
+    });
+  } catch {
+    process.exit(-1);
+  }
 
   let chromeOptions = new chrome.Options();
   if (!options.interactive) {
