@@ -101,7 +101,8 @@ async function testUserLogin() {
       await util.promisify(readline.question)('Exit?');
       readline.close();
     }
-    throw e;
+    await driver.quit();
+    process.exit(-1);
   } finally {
     console.log('Quitting...');
     await driver.quit();
