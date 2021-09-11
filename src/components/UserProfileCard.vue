@@ -35,6 +35,9 @@
                     <v-lazy v-if="followers">
                       <UserGrid :users="followers" />
                     </v-lazy>
+                    <div class="text-center" v-else>
+                      <v-progress-circular indeterminate size="25" color="primary" />
+                    </div>
                   </v-card-text>
                 </v-card>
               </v-dialog>
@@ -62,6 +65,9 @@
                     <v-lazy v-if="followed">
                       <UserGrid :users="followed" />
                     </v-lazy>
+                    <div class="text-center" v-else>
+                      <v-progress-circular indeterminate size="25" color="primary" />
+                    </div>
                   </v-card-text>
                 </v-card>
               </v-dialog>
