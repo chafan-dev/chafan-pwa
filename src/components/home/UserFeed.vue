@@ -39,17 +39,8 @@
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
           <!-- Column for subject and verb -->
-          <div v-if="multiSubjectActivityVerbs.includes(activity.verb)">
-            <!-- If this verb supports multi subjects -->
-            <ActivitySubject :activity="activity" @show-users-dialog="showUsersDialog" />
-            <span :class="theme.feed.activityCard.verb.classes">
-              {{ activity.verb | activityVerbCN }}
-            </span>
-          </div>
-
-          <div v-else>
-            <!-- Else, this verb only supports single subject -->
-            <UserLink :userPreview="activity.event.content.subject" />
+          <div>
+            <ActivitySubject :activity="activity" />
             <span :class="theme.feed.activityCard.verb.classes">
               {{ activity.verb | activityVerbCN }}
             </span>
@@ -299,14 +290,6 @@ import { commitAddNotification } from '@/store/main/mutations';
 export default class UserFeed extends CVue {
   @Prop({ default: true }) public readonly enableShowExploreSites!: boolean;
   @Prop() public readonly subjectUserUuid: number | undefined;
-
-  private readonly multiSubjectActivityVerbs = [
-    'follow_user',
-    'upvote_answer',
-    'upvote_question',
-    'upvote_submission',
-    'upvote_article',
-  ];
 
   private combinedActivities: CombinedActivities = new CombinedActivities();
   private loadingActivities = true;
