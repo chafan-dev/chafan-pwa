@@ -1,13 +1,13 @@
 <template>
   <div>
-    <template v-for="i in Math.floor((users.length - 1) / memberCols) + 1">
+    <template v-for="i in Math.floor((uniqueUsers.length - 1) / memberCols) + 1">
       <v-row :key="i">
         <template v-for="j in memberCols">
           <v-col :key="(i - 1) * memberCols + (j - 1)">
             <UserCard
-              v-if="(i - 1) * memberCols + (j - 1) < users.length"
+              v-if="(i - 1) * memberCols + (j - 1) < uniqueUsers.length"
               :compactMode="true"
-              :userPreview="users[(i - 1) * memberCols + (j - 1)]"
+              :userPreview="uniqueUsers[(i - 1) * memberCols + (j - 1)]"
             />
           </v-col>
         </template>
@@ -28,5 +28,16 @@ import { IUserPreview } from '@/interfaces';
 export default class UserGrid extends Vue {
   @Prop() private readonly users!: IUserPreview[];
   private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 3 : 2;
+  get uniqueUsers() {
+    const uuids = new Set();
+    const users: IUserPreview[] = [];
+    for (const u of this.users) {
+      if (!uuids.has(u.uuid)) {
+        users.push(u);
+        uuids.add(u.uuid);
+      }
+    }
+    return users;
+  }
 }
 </script>
