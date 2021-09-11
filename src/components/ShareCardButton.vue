@@ -1,10 +1,12 @@
 <template>
   <span class="pl-1 pr-1">
-    <v-dialog v-model="showSharingCard" max-width="400px">
+    <v-dialog v-model="showSharingCard" max-width="600">
       <v-card @click-outside="showSharingCard = false">
         <div class="pa-4">
-          复制链接：<a :href="link" class="text-decoration-none">{{ linkText }}</a
-          >，或者截屏分享卡片：
+          <v-btn small depressed @click="onClickCopy">点击复制链接</v-btn>
+          <a :href="link">https://cha.fan{{ link }}</a
+          ><br />
+          或者截屏分享卡片：
         </div>
         <v-divider class="mx-4" />
         <slot v-bind:shareQrCodeUrl="shareQrCodeUrl"></slot>
@@ -23,6 +25,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 
 import QRious from 'qrious';
+import { commitAddNotification } from '@/store/main/mutations';
 
 @Component({
   components: { ShareIcon },
@@ -44,6 +47,16 @@ export default class ShareCardButton extends Vue {
       value: window.location.origin + this.link,
     });
     this.shareQrCodeUrl = qr.toDataURL();
+  }
+
+  private async onClickCopy() {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(this.link);
+      await commitAddNotification(this.$store, {
+        color: 'success',
+        content: '已复制到剪贴板',
+      });
+    }
   }
 }
 </script>
