@@ -22,7 +22,7 @@
               @click="showFollowers"
             >
               有{{ follows.followers_count }}个关注者
-              <v-dialog v-model="showFollowersDialog" max-width="600">
+              <v-dialog v-model="showFollowersDialog" max-width="800">
                 <v-card class="pt-6">
                   <v-card-title
                     >关注TA的人
@@ -52,7 +52,7 @@
               @click="showFollowed"
             >
               关注了{{ follows.followed_count }}个人
-              <v-dialog v-model="showFollowedDialog" max-width="600">
+              <v-dialog v-model="showFollowedDialog" max-width="800">
                 <v-card class="pt-6">
                   <v-card-title
                     >TA关注的人
