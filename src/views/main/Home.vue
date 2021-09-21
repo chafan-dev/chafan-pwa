@@ -73,7 +73,7 @@ import HomeSideCard from '@/components/HomeSideCard.vue';
 import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
-import { readNarrowUI, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI } from '@/store/main/getters';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
@@ -116,10 +116,6 @@ export default class Home extends CVue {
 
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
   }
 
   private refreshFeed() {

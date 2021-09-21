@@ -815,6 +815,7 @@ export interface IArticleColumn {
   description: string;
   created_at: string;
   owner: IUserPreview;
+  subscription?: IUserArticleColumnSubscription;
 }
 
 export interface IArticlePreview {
