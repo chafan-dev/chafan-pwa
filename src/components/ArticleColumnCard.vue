@@ -84,18 +84,18 @@
 
 <script lang="ts">
 import { IArticleColumn, IUserArticleColumnSubscription } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
 import EditIcon from '@/components/icons/EditIcon.vue';
-import { readToken, readUserProfile } from '@/store/main/getters';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UserLink from '@/components/UserLink.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: { UserLink, BaseCard, EditIcon },
 })
-export default class ArticleColumnCard extends Vue {
+export default class ArticleColumnCard extends CVue {
   @Prop() public readonly articleColumn!: IArticleColumn;
   @Prop({ default: false }) public readonly compactMode!: boolean;
   @Prop({ default: false }) public readonly showOwner!: boolean;
@@ -108,30 +108,19 @@ export default class ArticleColumnCard extends Vue {
   private name = '';
   private desc = '';
 
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  get currentUserId() {
-    if (!this.userProfile) {
-      return undefined;
-    }
-    return this.userProfile.uuid;
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
   private async mounted() {
     this.name = this.articleColumn.name;
     this.desc = this.articleColumn.description;
     if (this.currentUserId) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.subscription = (
-          await apiArticle.getArticleColumnSubscription(this.token, this.articleColumn.uuid)
-        ).data;
-      });
+      if (this.articleColumn.subscription) {
+        this.subscription = this.articleColumn.subscription;
+      } else {
+        await dispatchCaptureApiError(this.$store, async () => {
+          this.subscription = (
+            await apiArticle.getArticleColumnSubscription(this.token, this.articleColumn.uuid)
+          ).data;
+        });
+      }
     }
     this.loading = false;
   }
