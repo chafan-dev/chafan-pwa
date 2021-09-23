@@ -803,7 +803,7 @@ export default class Question extends CVue {
   }
 
   private answerPreviewOf(uuid: string) {
-    return this.question!.answers?.find((a) => a.uuid === uuid);
+    return this.questionPage!.answer_previews?.find((a) => a.uuid === uuid);
   }
 }
 </script>

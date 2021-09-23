@@ -114,7 +114,6 @@ export interface IQuestion {
   is_placed_at_home: boolean;
   answers_count: number;
   keywords?: string[];
-  answers?: IAnswerPreview[];
   upvotes?: IQuestionUpvotes;
 }
 
@@ -1175,6 +1174,7 @@ export interface IQuestionPageFlags {
 
 export interface IQuestionPage {
   question: IQuestion;
+  answer_previews: IAnswerPreview[];
   full_answers: IAnswer[];
   question_subscription?: IUserQuestionSubscription;
   flags: IQuestionPageFlags;
