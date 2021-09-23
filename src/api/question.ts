@@ -9,7 +9,7 @@ import {
   IQuestionUpdate,
   IQuestionUpvotes,
 } from '@/interfaces';
-import { authHeaders, authHeadersWithParams } from '@/utils';
+import { authHeaders } from '@/utils';
 
 export const apiQuestion = {
   async upvoteQuestion(token: string, questionUUID: string) {
@@ -51,15 +51,8 @@ export const apiQuestion = {
       authHeaders(token)
     );
   },
-  async getQuestion(token: string, questionUUID: string, withAnswers: boolean = false) {
-    const params = new URLSearchParams();
-    if (withAnswers) {
-      params.append('with_answers', 'true');
-    }
-    return axios.get<IQuestion>(
-      `${apiUrl}/api/v1/questions/${questionUUID}`,
-      authHeadersWithParams(token, params)
-    );
+  async getQuestion(token: string, questionUUID: string) {
+    return axios.get<IQuestion>(`${apiUrl}/api/v1/questions/${questionUUID}`, authHeaders(token));
   },
   async getQuestionPage(token: string, questionUUID: string) {
     return axios.get<IQuestionPage>(

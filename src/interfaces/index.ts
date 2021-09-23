@@ -115,6 +115,7 @@ export interface IQuestion {
   answers_count: number;
   keywords?: string[];
   answers?: IAnswerPreview[];
+  upvotes?: IQuestionUpvotes;
 }
 
 export interface IUserUpdateMe {
@@ -271,6 +272,7 @@ export interface IQuestionPreview {
   created_at: string;
   answers_count: number;
   comments_count: number;
+  upvotes?: IQuestionUpvotes;
 }
 
 export interface IAnswerPreview {
@@ -1173,7 +1175,6 @@ export interface IQuestionPageFlags {
 
 export interface IQuestionPage {
   question: IQuestion;
-  question_upvotes?: IQuestionUpvotes;
   full_answers: IAnswer[];
   question_subscription?: IUserQuestionSubscription;
   flags: IQuestionPageFlags;

@@ -120,7 +120,7 @@
           <QuestionUpvotes
             :disabled="!userProfile || userProfile.uuid === question.author.uuid"
             :uuid="question.uuid"
-            :upvotes-placeholder="questionPage.question_upvotes"
+            :upvotes-placeholder="questionPage.question.upvotes"
             class="mr-1"
           />
 
