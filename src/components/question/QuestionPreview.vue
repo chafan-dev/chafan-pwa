@@ -17,7 +17,9 @@
         <QuestionUpvotes
           :disabled="disabled"
           :uuid="questionPreview.uuid"
-          :upvotes-placeholder="upvotesPlaceholder"
+          :upvotes-placeholder="
+            questionPreview.upvotes ? questionPreview.upvotes : upvotesPlaceholder
+          "
         />
       </v-lazy>
       <div class="align-self-center pl-2">
