@@ -3,227 +3,197 @@
     <v-row justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <ValidationObserver v-slot="{ handleSubmit, reset }">
-          <div v-if="userProfile" class="ma-3">
+          <div v-if="userProfile">
             <v-card-title primary-title>
               <div class="headline primary--text">更新个人资料</div>
               <v-spacer></v-spacer>
               <v-btn :to="`/users/${userProfile.handle}`" depressed small>个人资料</v-btn>
             </v-card-title>
-            <div class="pa-4">
-              <template>
-                <v-form ref="form" v-model="valid" lazy-validation>
-                  <v-row>
-                    <v-col class="avatar-col">
-                      <v-avatar class="avatarDiv" size="150" tile>
-                        <v-progress-circular
-                          v-if="uploadAvatarIntermediate"
-                          color="primary"
-                          indeterminate
-                        ></v-progress-circular>
-                        <v-img :src="avatarURL" alt="Avatar" @click="showFilePicker" />
-                      </v-avatar>
-                      <input
-                        id="fileInput"
-                        accept="image/png, image/jpeg, image/bmp"
-                        hidden
-                        type="file"
-                        @change="uploadAvatar"
-                      />
-                      <input
-                        id="gifFileInput"
-                        accept="image/gif"
-                        hidden
-                        type="file"
-                        @change="uploadGifAvatar"
-                      />
-                      <div class="text-center">
-                        <span class="text-caption">点击更改默认头像</span>
-                        <v-btn depressed x-small @click="showGifAvatar = !showGifAvatar">
-                          添加额外的 GIF 头像
-                        </v-btn>
-                      </div>
-                      <v-expand-transition>
-                        <v-avatar v-show="showGifAvatar" class="avatarDiv mt-2" size="150" tile>
-                          <v-progress-circular
-                            v-if="uploadGifAvatarIntermediate"
-                            color="primary"
-                            indeterminate
-                          ></v-progress-circular>
-                          <v-img :src="gifAvatarURL" alt="GIF Avatar" @click="showGifFilePicker" />
-                        </v-avatar>
-                      </v-expand-transition>
-                    </v-col>
-                    <v-col>
-                      <v-text-field v-model="userUpdateMe.full_name" label="全名或昵称" clearable />
-                      <ValidationProvider v-slot="{ errors }" name="用户名" rules="required">
-                        <v-text-field
-                          v-model="userUpdateMe.handle"
-                          label="用户名（这是你的独有名称，请谨慎更改）"
-                        />
-                        <span class="error--text">{{ errors[0] }}</span>
-                      </ValidationProvider>
-                    </v-col>
-                  </v-row>
-
-                  <v-card class="pa-4 my-3 c-card">
-                    <div class="d-flex my-1">
-                      <v-btn
-                        class="slim-btn"
-                        depressed
-                        small
-                        @click="showAboutEditor = !showAboutEditor"
-                        >编辑「关于我」
-                      </v-btn>
-                      <v-spacer />
-                      <v-dialog v-model="showClearAboutMe" max-width="400">
-                        <v-card>
-                          <v-card-title>确认清除「关于我」的内容？</v-card-title>
-                          <v-card-actions>
-                            <v-spacer />
-                            <v-btn color="warning" depressed small @click="clearAboutMe"
-                              >确认
-                            </v-btn>
-                          </v-card-actions>
-                        </v-card>
-                      </v-dialog>
-                      <CloseIcon v-if="userProfile.about" @click="showClearAboutMe = true" />
-                    </div>
-                    <v-expand-transition>
-                      <div v-show="showAboutEditor" class="mt-2">
-                        <ChafanTiptap
-                          v-show="aboutEditor === 'tiptap'"
-                          ref="tiptap"
-                          :initial-content="userProfile.about"
-                          :onEditorChange="onEditorChange"
-                        />
-
-                        <VditorCF
-                          v-show="aboutEditor !== 'tiptap'"
-                          ref="vditor"
-                          :editor-mode="aboutEditor"
-                          :initial-content="userProfile.about"
-                          :isMobile="isMobile"
-                          :onEditorChange="onEditorChange"
-                          :vditorUploadConfig="vditorUploadConfig"
-                        />
-                      </div>
-                    </v-expand-transition>
-
-                    <!-- TODO: validate -->
+            <v-form ref="form" v-model="valid" lazy-validation>
+              <v-row>
+                <v-col class="avatar-col">
+                  <v-avatar class="avatarDiv" size="150" tile>
+                    <v-progress-circular
+                      v-if="uploadAvatarIntermediate"
+                      color="primary"
+                      indeterminate
+                    ></v-progress-circular>
+                    <v-img :src="avatarURL" alt="Avatar" @click="showFilePicker" />
+                  </v-avatar>
+                  <input
+                    id="fileInput"
+                    accept="image/png, image/jpeg, image/bmp"
+                    hidden
+                    type="file"
+                    @change="uploadAvatar"
+                  />
+                  <input
+                    id="gifFileInput"
+                    accept="image/gif"
+                    hidden
+                    type="file"
+                    @change="uploadGifAvatar"
+                  />
+                  <div class="text-center">
+                    <span class="text-caption">点击更改默认头像</span>
+                    <v-btn depressed x-small @click="showGifAvatar = !showGifAvatar">
+                      添加额外的 GIF 头像
+                    </v-btn>
+                  </div>
+                  <v-expand-transition>
+                    <v-avatar v-show="showGifAvatar" class="avatarDiv mt-2" size="150" tile>
+                      <v-progress-circular
+                        v-if="uploadGifAvatarIntermediate"
+                        color="primary"
+                        indeterminate
+                      ></v-progress-circular>
+                      <v-img :src="gifAvatarURL" alt="GIF Avatar" @click="showGifFilePicker" />
+                    </v-avatar>
+                  </v-expand-transition>
+                </v-col>
+                <v-col>
+                  <v-text-field v-model="userUpdateMe.full_name" label="全名或昵称" clearable />
+                  <ValidationProvider v-slot="{ errors }" name="用户名" rules="required">
                     <v-text-field
-                      v-model="userUpdateMe.personal_introduction"
-                      clearable
-                      label="个人签名"
+                      v-model="userUpdateMe.handle"
+                      label="用户名（这是你的独有名称，请谨慎更改）"
                     />
-                    <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页" />
-                    <v-text-field
-                      v-model="userUpdateMe.github_username"
-                      clearable
-                      label="Github 用户名"
-                    />
-                    <v-text-field
-                      v-model="userUpdateMe.twitter_username"
-                      clearable
-                      label="Twitter 用户名"
-                    />
-                    <v-text-field
-                      v-model="userUpdateMe.linkedin_url"
-                      clearable
-                      label="Linkedin 主页地址"
+                    <span class="error--text">{{ errors[0] }}</span>
+                  </ValidationProvider>
+                </v-col>
+              </v-row>
+
+              <v-card class="pa-4 my-3 c-card">
+                <div class="d-flex my-1">
+                  <v-btn
+                    class="slim-btn"
+                    depressed
+                    small
+                    @click="showAboutEditor = !showAboutEditor"
+                    >编辑「关于我」
+                  </v-btn>
+                  <v-spacer />
+                  <v-dialog v-model="showClearAboutMe" max-width="400">
+                    <v-card>
+                      <v-card-title>确认清除「关于我」的内容？</v-card-title>
+                      <v-card-actions>
+                        <v-spacer />
+                        <v-btn color="warning" depressed small @click="clearAboutMe">确认 </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                  <CloseIcon v-if="userProfile.about" @click="showClearAboutMe = true" />
+                </div>
+                <v-expand-transition>
+                  <div v-show="showAboutEditor" class="mt-2">
+                    <ChafanTiptap
+                      v-show="aboutEditor === 'tiptap'"
+                      ref="tiptap"
+                      :initial-content="userProfile.about"
+                      :onEditorChange="onEditorChange"
                     />
 
+                    <VditorCF
+                      v-show="aboutEditor !== 'tiptap'"
+                      ref="vditor"
+                      :editor-mode="aboutEditor"
+                      :initial-content="userProfile.about"
+                      :isMobile="isMobile"
+                      :onEditorChange="onEditorChange"
+                      :vditorUploadConfig="vditorUploadConfig"
+                    />
+                  </div>
+                </v-expand-transition>
+
+                <!-- TODO: validate -->
+                <v-text-field
+                  v-model="userUpdateMe.personal_introduction"
+                  clearable
+                  label="个人签名"
+                />
+                <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页" />
+                <v-text-field
+                  v-model="userUpdateMe.github_username"
+                  clearable
+                  label="Github 用户名"
+                />
+                <v-text-field
+                  v-model="userUpdateMe.twitter_username"
+                  clearable
+                  label="Twitter 用户名"
+                />
+                <v-text-field
+                  v-model="userUpdateMe.linkedin_url"
+                  clearable
+                  label="Linkedin 主页地址"
+                />
+
+                <v-combobox
+                  v-model="newResidencyTopicNames"
+                  :delimiters="[',', '，', '、']"
+                  hide-selected
+                  label="居住过的地方"
+                  multiple
+                  small-chips
+                />
+                <v-text-field v-model="newProfessionTopicName" clearable label="所在行业" />
+              </v-card>
+              <v-card class="pa-4 my-3 c-card">
+                <div class="title mb-4">教育经历</div>
+                <v-row v-for="(exp, index) in eduExps" :key="index">
+                  <v-col class="compact-col2">{{ exp.school_topic_name }}</v-col>
+                  <v-col class="compact-col2">{{ exp.level_name }}</v-col>
+                  <v-col class="ml-2 compact-col2">
+                    <UpIcon @click="moveUpFrom(index, eduExps)" />
+                    <DownIcon @click="moveDownFrom(index, eduExps)" />
+                    <DeleteIcon @click="removeFrom(index, eduExps)" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="compact-col2">
+                    <v-text-field v-model="newEduExpSchooolName" label="学校名" />
+                  </v-col>
+                  <v-col class="compact-col2">
                     <v-combobox
-                      v-model="newResidencyTopicNames"
-                      :delimiters="[',', '，', '、']"
-                      hide-selected
-                      label="居住过的地方"
-                      multiple
-                      small-chips
+                      v-model="newEduExpLevelName"
+                      :items="eduExpLeveNames"
+                      label="教育水平"
                     />
-                    <v-text-field v-model="newProfessionTopicName" clearable label="所在行业" />
-                  </v-card>
-                  <v-card class="pa-4 my-3 c-card">
-                    <div class="title mb-4">教育经历</div>
-                    <v-row v-for="(exp, index) in eduExps" :key="index">
-                      <v-col class="compact-col2">{{ exp.school_topic_name }}</v-col>
-                      <v-col class="compact-col2">{{ exp.level_name }}</v-col>
-                      <v-col class="ml-2 compact-col2">
-                        <v-btn
-                          class="mr-2"
-                          color="warning"
-                          depressed
-                          small
-                          @click="removeFrom(index, eduExps)"
-                        >
-                          删除
-                        </v-btn>
-                        <v-btn class="mr-2" depressed small @click="moveUpFrom(index, eduExps)">
-                          <UpIcon />
-                        </v-btn>
-                        <v-btn depressed small @click="moveDownFrom(index, eduExps)">
-                          <DownIcon />
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col class="compact-col2">
-                        <v-text-field v-model="newEduExpSchooolName" label="学校名" />
-                      </v-col>
-                      <v-col class="compact-col2">
-                        <v-combobox
-                          v-model="newEduExpLevelName"
-                          :items="eduExpLeveNames"
-                          label="教育水平"
-                        />
-                      </v-col>
-                      <v-col align-self="center" class="compact-col2">
-                        <v-btn class="ma-2" color="primary" depressed small @click="addNewEduExp">
-                          确认添加
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-card>
+                  </v-col>
+                  <v-col align-self="center" class="compact-col2">
+                    <v-btn class="ma-2" color="primary" depressed small @click="addNewEduExp">
+                      添加
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card>
 
-                  <v-card class="pa-4 my-3 c-card">
-                    <div class="title mb-4">工作经历</div>
-                    <v-row v-for="(exp, index) in workExps" :key="index">
-                      <v-col class="compact-col2">{{ exp.company_topic_name }}</v-col>
-                      <v-col class="compact-col2">{{ exp.position_topic_name }}</v-col>
-                      <v-col class="compact-col2 ml-2">
-                        <v-btn
-                          class="mr-2"
-                          color="warning"
-                          depressed
-                          small
-                          @click="removeFrom(index, workExps)"
-                        >
-                          删除
-                        </v-btn>
-                        <v-btn class="mr-2" depressed small @click="moveUpFrom(index, workExps)">
-                          <UpIcon />
-                        </v-btn>
-                        <v-btn depressed small @click="moveDownFrom(index, workExps)">
-                          <DownIcon />
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col class="compact-col2">
-                        <v-text-field v-model="newWorkExpCompanyName" label="机构名" />
-                      </v-col>
-                      <v-col class="compact-col2">
-                        <v-text-field v-model="newWorkExpPositionName" label="职位名" />
-                      </v-col>
-                      <v-col class="compact-col2" align-self="center">
-                        <v-btn class="ma-2" color="primary" depressed small @click="addNewWorkExp">
-                          确认添加
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-form>
-              </template>
-            </div>
+              <v-card class="pa-4 my-3 c-card">
+                <div class="title mb-4">工作经历</div>
+                <v-row v-for="(exp, index) in workExps" :key="index">
+                  <v-col class="compact-col2">{{ exp.company_topic_name }}</v-col>
+                  <v-col class="compact-col2">{{ exp.position_topic_name }}</v-col>
+                  <v-col class="compact-col2 ml-2">
+                    <UpIcon @click="moveUpFrom(index, workExps)" />
+                    <DownIcon @click="moveDownFrom(index, workExps)" />
+                    <DeleteIcon @click="removeFrom(index, workExps)" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col class="compact-col2">
+                    <v-text-field v-model="newWorkExpCompanyName" label="机构名" />
+                  </v-col>
+                  <v-col class="compact-col2">
+                    <v-text-field v-model="newWorkExpPositionName" label="职位名" />
+                  </v-col>
+                  <v-col class="compact-col2" align-self="center">
+                    <v-btn class="ma-2" color="primary" depressed small @click="addNewWorkExp">
+                      添加
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-form>
             <v-card-actions class="px-4">
               <v-spacer></v-spacer>
               <v-btn depressed smal @click="cancel">取消</v-btn>
@@ -266,6 +236,7 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { getVditorUploadConfig } from '@/common';
 import UpIcon from '@/components/icons/UpIcon.vue';
 import DownIcon from '@/components/icons/DownIcon.vue';
+import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 
 interface IUserWorkExperienceInput {
   company_topic_name: string;
@@ -278,7 +249,7 @@ interface IUserEducationExperienceInput {
 }
 
 @Component({
-  components: { DownIcon, UpIcon, CloseIcon, VditorCF, ChafanTiptap, ProfileIcon },
+  components: { DeleteIcon, DownIcon, UpIcon, CloseIcon, VditorCF, ChafanTiptap, ProfileIcon },
 })
 export default class UserProfileEdit extends Vue {
   public valid = true;
