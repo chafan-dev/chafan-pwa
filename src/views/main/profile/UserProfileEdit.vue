@@ -111,22 +111,38 @@
                   clearable
                   label="个人签名"
                 />
-                <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页" />
+                <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页">
+                  <template v-slot:prepend>
+                    <WebIcon />
+                  </template>
+                </v-text-field>
                 <v-text-field
                   v-model="userUpdateMe.github_username"
                   clearable
                   label="Github 用户名"
-                />
+                >
+                  <template v-slot:prepend>
+                    <GithubIcon />
+                  </template>
+                </v-text-field>
                 <v-text-field
                   v-model="userUpdateMe.twitter_username"
                   clearable
                   label="Twitter 用户名"
-                />
+                >
+                  <template v-slot:prepend>
+                    <TwitterIcon />
+                  </template>
+                </v-text-field>
                 <v-text-field
                   v-model="userUpdateMe.linkedin_url"
                   clearable
                   label="Linkedin 主页地址"
-                />
+                >
+                  <template v-slot:prepend>
+                    <LinkedinIcon />
+                  </template>
+                </v-text-field>
 
                 <v-combobox
                   v-model="newResidencyTopicNames"
@@ -237,6 +253,10 @@ import { getVditorUploadConfig } from '@/common';
 import UpIcon from '@/components/icons/UpIcon.vue';
 import DownIcon from '@/components/icons/DownIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
+import WebIcon from '@/components/icons/WebIcon.vue';
+import GithubIcon from '@/components/icons/GithubIcon.vue';
+import TwitterIcon from '@/components/icons/TwitterIcon.vue';
+import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 
 interface IUserWorkExperienceInput {
   company_topic_name: string;
@@ -249,7 +269,19 @@ interface IUserEducationExperienceInput {
 }
 
 @Component({
-  components: { DeleteIcon, DownIcon, UpIcon, CloseIcon, VditorCF, ChafanTiptap, ProfileIcon },
+  components: {
+    LinkedinIcon,
+    TwitterIcon,
+    GithubIcon,
+    WebIcon,
+    DeleteIcon,
+    DownIcon,
+    UpIcon,
+    CloseIcon,
+    VditorCF,
+    ChafanTiptap,
+    ProfileIcon,
+  },
 })
 export default class UserProfileEdit extends Vue {
   public valid = true;
