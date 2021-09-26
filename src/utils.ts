@@ -1,10 +1,10 @@
 const CHAFAN_TOKEN = 'chafan:token';
 
-export const getLocalValue = (key: string) => {
+export const getLocalValue = (key: string, defaultVal: string | null = null) => {
   try {
     return localStorage.getItem(key);
   } catch (e) {
-    return null;
+    return defaultVal;
   }
 };
 
