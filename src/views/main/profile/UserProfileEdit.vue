@@ -140,7 +140,7 @@
               </v-card>
               <v-card class="pa-4 my-3 c-card">
                 <div class="title mb-4">教育经历</div>
-                <v-row v-for="(exp, index) in eduExps" :key="index">
+                <v-row v-for="(exp, index) in eduExps" :key="index" class="py-1">
                   <v-col class="compact-col2">{{ exp.school_topic_name }}</v-col>
                   <v-col class="compact-col2">{{ exp.level_name }}</v-col>
                   <v-col class="ml-2 compact-col2">
@@ -170,7 +170,7 @@
 
               <v-card class="pa-4 my-3 c-card">
                 <div class="title mb-4">工作经历</div>
-                <v-row v-for="(exp, index) in workExps" :key="index">
+                <v-row v-for="(exp, index) in workExps" :key="index" class="py-1">
                   <v-col class="compact-col2">{{ exp.company_topic_name }}</v-col>
                   <v-col class="compact-col2">{{ exp.position_topic_name }}</v-col>
                   <v-col class="compact-col2 ml-2">
