@@ -71,6 +71,7 @@
           <EduExp
             v-for="(eduExp, index) in eduExps"
             :key="'edu-' + index"
+            :compact="true"
             :major="eduExp.major"
             :graduate-year="eduExp.graduate_year"
             :enroll-year="eduExp.enroll_year"
@@ -87,6 +88,7 @@
           <WorkExp
             v-for="(workExp, index) in workExps"
             :key="'work-' + index"
+            :compact="true"
             :position-name="workExp.position_topic.name"
             :company-name="workExp.company_topic.name"
           />
