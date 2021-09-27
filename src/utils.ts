@@ -2,7 +2,11 @@ const CHAFAN_TOKEN = 'chafan:token';
 
 export const getLocalValue = (key: string, defaultVal: string | null = null) => {
   try {
-    return localStorage.getItem(key);
+    const v = localStorage.getItem(key);
+    if (v === null) {
+      return defaultVal;
+    }
+    return v;
   } catch (e) {
     return defaultVal;
   }
