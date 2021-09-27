@@ -68,16 +68,15 @@
       <template v-if="eduExps && eduExps.length > 0">
         <div class="my-3">
           <div class="subheading secondary--text text--lighten-3">教育经历</div>
-          <div
+          <EduExp
             v-for="(eduExp, index) in eduExps"
-            :key="index"
-            class="title primary--text text--darken-2"
-          >
-            <router-link :to="'/topics/' + eduExp.school_topic.uuid" class="text-decoration-none">
-              {{ eduExp.school_topic.name }}
-            </router-link>
-            ({{ eduExp.level }})
-          </div>
+            :key="'edu-' + index"
+            :major="eduExp.major"
+            :graduate-year="eduExp.graduate_year"
+            :enroll-year="eduExp.enroll_year"
+            :level-name="eduExp.level"
+            :school-name="eduExp.school_topic.name"
+          />
         </div>
       </template>
       <v-skeleton-loader v-else-if="eduExps === null && loggedIn" type="text" />
@@ -85,22 +84,12 @@
       <template v-if="workExps && workExps.length > 0">
         <div class="my-3">
           <div class="subheading secondary--text text--lighten-3">工作经历</div>
-          <div
+          <WorkExp
             v-for="(workExp, index) in workExps"
-            :key="index"
-            class="title primary--text text--darken-2"
-          >
-            <router-link
-              :to="'/topics/' + workExp.position_topic.uuid"
-              class="text-decoration-none"
-            >
-              {{ workExp.position_topic.name }}
-            </router-link>
-            @
-            <router-link :to="'/topics/' + workExp.company_topic.uuid" class="text-decoration-none">
-              {{ workExp.company_topic.name }}
-            </router-link>
-          </div>
+            :key="'work-' + index"
+            :position-name="workExp.position_topic.name"
+            :company-name="workExp.company_topic.name"
+          />
         </div>
       </template>
       <v-skeleton-loader v-else-if="workExps === null && loggedIn" type="text" />
@@ -173,7 +162,7 @@
 
       <v-chip
         v-for="(eduExp, i) in eduExps"
-        :key="i"
+        :key="'edu-chip' + i"
         class="ml-1"
         color="light-blue lighten-4 mb-1"
       >
@@ -182,7 +171,7 @@
 
       <v-chip
         v-for="(workExp, i) in workExps"
-        :key="i"
+        :key="'work-chip' + i"
         class="ml-1"
         color="light-green lighten-4 mb-1"
       >
@@ -233,9 +222,13 @@ import GithubIcon from '@/components/icons/GithubIcon.vue';
 import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 import { apiPeople } from '@/api/people';
 import { apiSite } from '@/api/site';
+import EduExp from '@/components/EduExp.vue';
+import WorkExp from '@/components/WorkExp.vue';
 
 @Component({
   components: {
+    WorkExp,
+    EduExp,
     SiteBtn,
     TwitterIcon,
     WebIcon,
