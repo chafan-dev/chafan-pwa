@@ -113,6 +113,7 @@ import { dispatchCheckApiError } from './store/main/actions';
 import { captureException } from '@sentry/vue';
 import { editor_T, IComment, IRichEditorState } from './interfaces';
 import { env } from './env';
+import { range } from 'lodash';
 
 export const setAppLocale = (vueInstance: any) => {
   localize('zh_CN');
@@ -258,6 +259,12 @@ export const rankComments = (dayjs, comments: IComment[]) => {
     }
     return 1;
   });
+};
+
+export const getRecentYears = (dayjs) => {
+  return range(1950, dayjs().year(), 1)
+    .map((y) => y.toString())
+    .reverse();
 };
 
 export const deepCopy = (o: any): any => {

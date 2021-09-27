@@ -155,59 +155,106 @@
                 <v-text-field v-model="newProfessionTopicName" clearable label="所在行业" />
               </v-card>
               <v-card class="pa-4 my-3 c-card">
-                <div class="title mb-4">教育经历</div>
-                <v-row v-for="(exp, index) in eduExps" :key="index" class="py-1">
-                  <v-col class="compact-col2">{{ exp.school_topic_name }}</v-col>
-                  <v-col class="compact-col2">{{ exp.level_name }}</v-col>
-                  <v-col class="ml-2 compact-col2">
-                    <UpIcon @click="moveUpFrom(index, eduExps)" />
-                    <DownIcon @click="moveDownFrom(index, eduExps)" />
-                    <DeleteIcon @click="removeFrom(index, eduExps)" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="compact-col2">
-                    <v-text-field v-model="newEduExpSchooolName" label="学校名" />
-                  </v-col>
-                  <v-col class="compact-col2">
-                    <v-combobox
-                      v-model="newEduExpLevelName"
-                      :items="eduExpLeveNames"
-                      label="教育水平"
+                <div class="title mb-4 d-flex">
+                  教育经历
+                  <v-spacer />
+                  <v-btn color="primary" depressed small @click="showAddNewEduExpDialog">
+                    添加
+                  </v-btn>
+                </div>
+                <template v-for="(exp, index) in eduExps">
+                  <v-divider :key="'edu-divider' + index" v-if="index > 0" class="py-1" />
+                  <div :key="'edu-' + index" class="py-1 d-flex justify-space-between">
+                    <EduExp
+                      :school-name="exp.school_topic_name"
+                      :level-name="exp.level_name"
+                      :enroll-year="exp.enroll_year"
+                      :graduate-year="exp.graduate_year"
+                      :major="exp.major"
                     />
-                  </v-col>
-                  <v-col align-self="center" class="compact-col2">
-                    <v-btn class="ma-2" color="primary" depressed small @click="addNewEduExp">
-                      添加
-                    </v-btn>
-                  </v-col>
-                </v-row>
+                    <div>
+                      <EditIcon @click="showEduExpEditor(index)" />
+                      <UpIcon @click="moveUpFrom(index, eduExps)" />
+                      <DownIcon @click="moveDownFrom(index, eduExps)" />
+                      <DeleteIcon @click="removeFrom(index, eduExps)" />
+                    </div>
+                  </div>
+                </template>
+                <v-dialog v-model="eduExpEditorShown" max-width="600">
+                  <v-card>
+                    <v-card-title>编辑教育经历</v-card-title>
+                    <v-card-text v-if="editedEduExp">
+                      <v-text-field v-model="editedEduExp.school_topic_name" label="学校名" />
+                      <v-combobox
+                        v-model="editedEduExp.level_name"
+                        :items="eduExpLeveNames"
+                        label="教育水平"
+                      />
+                      <v-text-field v-model="editedEduExp.major" label="专业/方向（选填）" />
+                      <div class="d-flex">
+                        <v-autocomplete
+                          class="mr-2"
+                          :items="years"
+                          v-model="editedEduExp.enroll_year"
+                          label="入学年份（选填）"
+                        />
+                        <v-autocomplete
+                          :items="['在读'].concat(years)"
+                          v-model="editedEduExp.graduate_year"
+                          label="毕业年份（选填）"
+                        />
+                      </div>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn small depressed @click="eduExpEditorShown = false">取消</v-btn>
+                      <v-btn small depressed color="primary" @click="saveEduExpEditDraft"
+                        >保存草稿</v-btn
+                      >
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-card>
 
               <v-card class="pa-4 my-3 c-card">
-                <div class="title mb-4">工作经历</div>
-                <v-row v-for="(exp, index) in workExps" :key="index" class="py-1">
-                  <v-col class="compact-col2">{{ exp.company_topic_name }}</v-col>
-                  <v-col class="compact-col2">{{ exp.position_topic_name }}</v-col>
-                  <v-col class="compact-col2 ml-2">
-                    <UpIcon @click="moveUpFrom(index, workExps)" />
-                    <DownIcon @click="moveDownFrom(index, workExps)" />
-                    <DeleteIcon @click="removeFrom(index, workExps)" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col class="compact-col2">
-                    <v-text-field v-model="newWorkExpCompanyName" label="机构名" />
-                  </v-col>
-                  <v-col class="compact-col2">
-                    <v-text-field v-model="newWorkExpPositionName" label="职位名" />
-                  </v-col>
-                  <v-col class="compact-col2" align-self="center">
-                    <v-btn class="ma-2" color="primary" depressed small @click="addNewWorkExp">
-                      添加
-                    </v-btn>
-                  </v-col>
-                </v-row>
+                <div class="title mb-4 d-flex">
+                  工作经历
+                  <v-spacer />
+                  <v-btn color="primary" depressed small @click="showAddNewWorkExpDialog">
+                    添加
+                  </v-btn>
+                </div>
+                <template v-for="(exp, index) in workExps">
+                  <v-divider :key="'work-divider' + index" v-if="index > 0" class="py-1" />
+                  <div :key="'work-' + index" class="py-1 d-flex justify-space-between">
+                    <WorkExp
+                      :company-name="exp.company_topic_name"
+                      :position-name="exp.position_topic_name"
+                    />
+                    <div>
+                      <EditIcon @click="showWorkExpEditor(index)" />
+                      <UpIcon @click="moveUpFrom(index, workExps)" />
+                      <DownIcon @click="moveDownFrom(index, workExps)" />
+                      <DeleteIcon @click="removeFrom(index, workExps)" />
+                    </div>
+                  </div>
+                </template>
+                <v-dialog v-model="workExpEditorShown" max-width="600">
+                  <v-card>
+                    <v-card-title>编辑工作经历</v-card-title>
+                    <v-card-text v-if="editedWorkExp">
+                      <v-text-field v-model="editedWorkExp.company_topic_name" label="公司名" />
+                      <v-text-field v-model="editedWorkExp.position_topic_name" label="职位名" />
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn small depressed @click="workExpEditorShown = false">取消</v-btn>
+                      <v-btn small depressed color="primary" @click="saveWorkExpEditDraft"
+                        >保存草稿</v-btn
+                      >
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-card>
             </v-form>
             <v-card-actions class="px-4">
@@ -241,7 +288,7 @@ import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutati
 import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-
+import { deepCopy, getRecentYears } from '@/utils';
 import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
@@ -257,19 +304,31 @@ import WebIcon from '@/components/icons/WebIcon.vue';
 import GithubIcon from '@/components/icons/GithubIcon.vue';
 import TwitterIcon from '@/components/icons/TwitterIcon.vue';
 import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
+import EditIcon from '@/components/icons/EditIcon.vue';
+import EduExp from '@/components/EduExp.vue';
+import WorkExp from '@/components/WorkExp.vue';
 
-interface IUserWorkExperienceInput {
-  company_topic_name: string;
-  position_topic_name: string;
+interface IUserWorkExperienceItem {
+  company_topic_name?: string;
+  position_topic_name?: string;
+  major?: string;
+  enroll_year?: string;
+  graduate_year?: string;
 }
 
-interface IUserEducationExperienceInput {
-  school_topic_name: string;
-  level_name: string;
+interface IUserEducationExperienceItem {
+  school_topic_name?: string;
+  level_name?: string;
+  major?: string;
+  enroll_year?: string;
+  graduate_year?: string;
 }
 
 @Component({
   components: {
+    WorkExp,
+    EduExp,
+    EditIcon,
     LinkedinIcon,
     TwitterIcon,
     GithubIcon,
@@ -294,11 +353,9 @@ export default class UserProfileEdit extends Vue {
   };
   private newWorkExpCompanyName = '';
   private newWorkExpPositionName = '';
-  private newEduExpSchooolName = '';
-  private newEduExpLevelName = '';
   private readonly eduExpLeveNames = ['高中及以下', '大专', '本科', '硕士', '博士及以上'];
-  private eduExps: IUserEducationExperienceInput[] = [];
-  private workExps: IUserWorkExperienceInput[] = [];
+  private eduExps: IUserEducationExperienceItem[] = [];
+  private workExps: IUserWorkExperienceItem[] = [];
   private submitIntermediate = false;
   private avatarURL = '#';
   private uploadAvatarIntermediate = false;
@@ -309,6 +366,7 @@ export default class UserProfileEdit extends Vue {
   private showAboutEditor: boolean = false;
   private showClearAboutMe: boolean = false;
   private categoryTopics: ITopic[] | null = null;
+  private years: string[] = [];
 
   get userProfile() {
     return readUserProfile(this.$store);
@@ -327,6 +385,7 @@ export default class UserProfileEdit extends Vue {
   }
 
   public async mounted() {
+    this.years = getRecentYears(this.$dayjs);
     const userProfile = readUserProfile(this.$store);
     this.categoryTopics = (await api.getCategoryTopics()).data;
     if (userProfile) {
@@ -400,8 +459,7 @@ export default class UserProfileEdit extends Vue {
       const responses = await Promise.all(
         this.newResidencyTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
       );
-      const topicsIds = responses.map((r) => r.data.uuid);
-      this.userUpdateMe.residency_topic_uuids = topicsIds;
+      this.userUpdateMe.residency_topic_uuids = responses.map((r) => r.data.uuid);
 
       if (this.newProfessionTopicName) {
         const r = await apiTopic.createTopic(this.token, {
@@ -410,32 +468,57 @@ export default class UserProfileEdit extends Vue {
         this.userUpdateMe.profession_topic_uuid = r.data.uuid;
       }
 
-      this.userUpdateMe.work_experiences = await Promise.all(
+      const workExps = await Promise.all(
         this.workExps.map(async (e) => {
-          const r1 = await apiTopic.createTopic(this.token, {
-            name: e.company_topic_name,
-          });
-          const r2 = await apiTopic.createTopic(this.token, {
-            name: e.position_topic_name,
-          });
-          return {
-            company_topic_uuid: r1.data.uuid,
-            position_topic_uuid: r2.data.uuid,
-          };
+          if (e.company_topic_name && e.position_topic_name) {
+            const r1 = await apiTopic.createTopic(this.token, {
+              name: e.company_topic_name,
+            });
+            const r2 = await apiTopic.createTopic(this.token, {
+              name: e.position_topic_name,
+            });
+            return {
+              company_topic_uuid: r1.data.uuid,
+              position_topic_uuid: r2.data.uuid,
+            };
+          } else {
+            return null;
+          }
         })
       );
 
-      this.userUpdateMe.education_experiences = await Promise.all(
+      this.userUpdateMe.work_experiences = [];
+      for (const e of workExps) {
+        if (e !== null) {
+          this.userUpdateMe.work_experiences.push(e);
+        }
+      }
+
+      const eduExps = await Promise.all(
         this.eduExps.map(async (e) => {
-          const r1 = await apiTopic.createTopic(this.token, {
-            name: e.school_topic_name,
-          });
-          return {
-            school_topic_uuid: r1.data.uuid,
-            level_name: e.level_name,
-          };
+          if (e.school_topic_name && e.level_name) {
+            const r1 = await apiTopic.createTopic(this.token, {
+              name: e.school_topic_name,
+            });
+            return {
+              school_topic_uuid: r1.data.uuid,
+              level_name: e.level_name,
+              major: e.major,
+              enroll_year: e.enroll_year,
+              graduate_year: e.graduate_year,
+            };
+          } else {
+            return null;
+          }
         })
       );
+
+      this.userUpdateMe.education_experiences = [];
+      for (const e of eduExps) {
+        if (e !== null) {
+          this.userUpdateMe.education_experiences.push(e);
+        }
+      }
 
       const response = await apiMe.updateMe(this.token, this.userUpdateMe);
       if (response) {
@@ -444,7 +527,7 @@ export default class UserProfileEdit extends Vue {
           content: '设置更新成功',
           color: 'success',
         });
-        this.$router.push(`/users/${response.data.handle}`);
+        await this.$router.push(`/users/${response.data.handle}`);
       }
       this.submitIntermediate = false;
     });
@@ -466,20 +549,16 @@ export default class UserProfileEdit extends Vue {
     this.newWorkExpPositionName = '';
   }
 
-  public addNewEduExp() {
-    if (!this.newEduExpSchooolName || !this.newEduExpLevelName) {
-      commitAddNotification(this.$store, {
-        content: '学校名和教育水平均为必填',
-        color: 'error',
-      });
-      return;
-    }
-    this.eduExps.push({
-      school_topic_name: this.newEduExpSchooolName,
-      level_name: this.newEduExpLevelName,
-    });
-    this.newEduExpSchooolName = '';
-    this.newEduExpLevelName = '';
+  public showAddNewEduExpDialog() {
+    this.editedEduExp = {};
+    this.eduExpEditedIndex = this.eduExps.length;
+    this.eduExpEditorShown = true;
+  }
+
+  public showAddNewWorkExpDialog() {
+    this.editedWorkExp = {};
+    this.workExpEditedIndex = this.workExps.length;
+    this.workExpEditorShown = true;
   }
 
   public removeFrom(index: number, arr) {
@@ -604,6 +683,38 @@ export default class UserProfileEdit extends Vue {
     this.showAboutEditor = false;
     this.showClearAboutMe = false;
     this.userUpdateMe.about = null;
+  }
+
+  private eduExpEditedIndex: number | null = null;
+  private eduExpEditorShown = false;
+  private editedEduExp: IUserEducationExperienceItem | null = null;
+  private showEduExpEditor(index: number) {
+    this.eduExpEditedIndex = index;
+    this.editedEduExp = deepCopy(this.eduExps[index]);
+    this.eduExpEditorShown = true;
+  }
+
+  private saveEduExpEditDraft() {
+    if (this.eduExpEditedIndex !== null && this.editedEduExp) {
+      this.eduExps.splice(this.eduExpEditedIndex, 1, this.editedEduExp);
+      this.eduExpEditorShown = false;
+    }
+  }
+
+  private workExpEditedIndex: number | null = null;
+  private workExpEditorShown = false;
+  private editedWorkExp: IUserWorkExperienceItem | null = null;
+  private showWorkExpEditor(index: number) {
+    this.workExpEditedIndex = index;
+    this.editedWorkExp = deepCopy(this.workExps[index]);
+    this.workExpEditorShown = true;
+  }
+
+  private saveWorkExpEditDraft() {
+    if (this.workExpEditedIndex !== null && this.editedWorkExp) {
+      this.workExps.splice(this.workExpEditedIndex, 1, this.editedWorkExp);
+      this.workExpEditorShown = false;
+    }
   }
 }
 </script>

@@ -672,11 +672,17 @@ export interface IUserWorkExperienceUpdate {
 export interface IUserEducationExperience {
   school_topic: ITopic;
   level: string;
+  major?: string;
+  enroll_year?: string;
+  graduate_year?: string;
 }
 
 export interface IUserEducationExperienceUpdate {
   school_topic_uuid: string;
   level_name: string;
+  major?: string;
+  enroll_year?: string;
+  graduate_year?: string;
 }
 
 export interface INotification {
