@@ -255,6 +255,9 @@ export default class UserProfileDetails extends CVue {
   private full: boolean = false;
 
   async mounted() {
+    if (this.$route.query.details) {
+      this.full = true;
+    }
     if (this.loggedIn) {
       this.eduExps = (
         await apiPeople.getUserEducationExperiences(this.token, this.userPublic.uuid)

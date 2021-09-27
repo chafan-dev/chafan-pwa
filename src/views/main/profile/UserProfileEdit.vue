@@ -524,10 +524,14 @@ export default class UserProfileEdit extends Vue {
       if (response) {
         commitSetUserProfile(this.$store, response.data);
         commitAddNotification(this.$store, {
-          content: '设置更新成功',
+          content: '更新成功',
           color: 'success',
         });
-        await this.$router.push(`/users/${response.data.handle}`);
+        await this.$router.push({
+          name: 'user',
+          params: { handle: response.data.handle },
+          query: { details: 'true' },
+        });
       }
       this.submitIntermediate = false;
     });
