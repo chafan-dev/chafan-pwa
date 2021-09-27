@@ -178,6 +178,15 @@
         {{ workExp.company_topic.name }}
       </v-chip>
 
+      <v-chip
+        v-for="topic in userPublic.residency_topics"
+        :key="topic.uuid"
+        :to="'/topics/' + topic.uuid"
+        class="ml-1"
+        color="yellow lighten-4 mb-1"
+        >{{ topic.name }}
+      </v-chip>
+
       <WebIcon class="pb-1 px-1" v-if="userPublic.homepage_url" />
       <GithubIcon class="pb-1 px-1" v-if="userPublic.github_username" />
       <TwitterIcon class="pb-1 px-1" v-if="userPublic.twitter_username" />
@@ -213,8 +222,7 @@
 
 <script lang="ts">
 import { ISite, IUserEducationExperience, IUserPublic, IUserWorkExperience } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
+import { Component, Prop } from 'vue-property-decorator';
 import SiteBtn from '@/components/SiteBtn.vue';
 import TwitterIcon from '@/components/icons/TwitterIcon.vue';
 import WebIcon from '@/components/icons/WebIcon.vue';
@@ -224,6 +232,7 @@ import { apiPeople } from '@/api/people';
 import { apiSite } from '@/api/site';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: {
@@ -236,24 +245,12 @@ import WorkExp from '@/components/WorkExp.vue';
     LinkedinIcon,
   },
 })
-export default class UserProfileDetails extends Vue {
+export default class UserProfileDetails extends CVue {
   @Prop() public readonly userPublic!: IUserPublic;
   private eduExps: IUserEducationExperience[] | null = null;
   private workExps: IUserWorkExperience[] | null = null;
   private sites: ISite[] | null = null;
   private full: boolean = false;
-
-  get currentUserId() {
-    return readUserProfile(this.$store)?.uuid;
-  }
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
 
   async mounted() {
     if (this.loggedIn) {
