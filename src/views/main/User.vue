@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { apiPeople } from '@/api/people';
 
 import {
@@ -113,10 +113,9 @@ import UserGrid from '@/components/UserGrid.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual, updateHead } from '@/common';
+import { CVue, isEqual, updateHead } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 
@@ -136,7 +135,7 @@ import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
     DynamicItemList,
   },
 })
-export default class User extends Vue {
+export default class User extends CVue {
   private tabItems = [
     {
       code: 'recent',
@@ -166,18 +165,6 @@ export default class User extends Vue {
   private userPublic: IUserPublic | null = null;
   private userPublicForVisitor: IUserPublicForVisitor | null = null;
 
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get currentUserId() {
-    return readUserProfile(this.$store)?.uuid;
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
   get handle() {
     return this.$route.params.handle;
   }
@@ -193,11 +180,6 @@ export default class User extends Vue {
       this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
     }
   }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'user');
