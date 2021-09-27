@@ -190,18 +190,24 @@
                         :items="eduExpLeveNames"
                         label="教育水平"
                       />
-                      <v-text-field v-model="editedEduExp.major" label="专业/方向（选填）" />
+                      <v-text-field
+                        v-model="editedEduExp.major"
+                        label="专业/方向（选填）"
+                        clearable
+                      />
                       <div class="d-flex">
                         <v-autocomplete
                           class="mr-2"
                           :items="years"
                           v-model="editedEduExp.enroll_year"
                           label="入学年份（选填）"
+                          clearable
                         />
                         <v-autocomplete
                           :items="['在读'].concat(years)"
                           v-model="editedEduExp.graduate_year"
                           label="毕业年份（选填）"
+                          clearable
                         />
                       </div>
                     </v-card-text>
