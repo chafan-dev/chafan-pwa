@@ -173,10 +173,10 @@
                       :major="exp.major"
                     />
                     <div>
-                      <EditIcon @click="showEduExpEditor(index)" />
-                      <UpIcon @click="moveUpFrom(index, eduExps)" />
-                      <DownIcon @click="moveDownFrom(index, eduExps)" />
-                      <DeleteIcon @click="removeFrom(index, eduExps)" />
+                      <EditIcon class="pl-1" @click="showEduExpEditor(index)" />
+                      <UpIcon class="pl-1" @click="moveUpFrom(index, eduExps)" />
+                      <DownIcon class="pl-1" @click="moveDownFrom(index, eduExps)" />
+                      <DeleteIcon class="pl-1" @click="removeFromConfirm(index, eduExps)" />
                     </div>
                   </div>
                 </template>
@@ -232,10 +232,10 @@
                       :position-name="exp.position_topic_name"
                     />
                     <div>
-                      <EditIcon @click="showWorkExpEditor(index)" />
-                      <UpIcon @click="moveUpFrom(index, workExps)" />
-                      <DownIcon @click="moveDownFrom(index, workExps)" />
-                      <DeleteIcon @click="removeFrom(index, workExps)" />
+                      <EditIcon class="pl-1" @click="showWorkExpEditor(index)" />
+                      <UpIcon class="pl-1" @click="moveUpFrom(index, workExps)" />
+                      <DownIcon class="pl-1" @click="moveDownFrom(index, workExps)" />
+                      <DeleteIcon class="pl-1" @click="removeFrom(index, workExps)" />
                     </div>
                   </div>
                 </template>
@@ -256,6 +256,17 @@
                   </v-card>
                 </v-dialog>
               </v-card>
+
+              <v-dialog v-model="showRemoveConfirm" max-width="600">
+                <v-card>
+                  <v-card-title>从草稿中删除？</v-card-title>
+                  <v-card-actions>
+                    <v-spacer />
+                    <v-btn small depressed @click="showRemoveConfirm = false">取消</v-btn>
+                    <v-btn small depressed color="warning" @click="removeCallback">确认</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-form>
             <v-card-actions class="px-4">
               <v-spacer></v-spacer>
@@ -422,6 +433,9 @@ export default class UserProfileEdit extends Vue {
             return {
               school_topic_name: e.school_topic.name,
               level_name: e.level,
+              major: e.major,
+              enroll_year: e.enroll_year,
+              graduate_year: e.graduate_year,
             };
           });
         }
@@ -719,6 +733,16 @@ export default class UserProfileEdit extends Vue {
       this.workExps.splice(this.workExpEditedIndex, 1, this.editedWorkExp);
       this.workExpEditorShown = false;
     }
+  }
+
+  private showRemoveConfirm = false;
+  private removeCallback: (() => void) | null = null;
+  removeFromConfirm(index: number, arr) {
+    this.showRemoveConfirm = true;
+    this.removeCallback = () => {
+      this.removeFrom(index, arr);
+      this.showRemoveConfirm = false;
+    };
   }
 }
 </script>
