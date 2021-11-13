@@ -20,7 +20,7 @@ import {
 import { AppNotification, MainState } from './state';
 import { env } from '@/env';
 import { apiMe } from '@/api/me';
-import { captureException } from '@sentry/vue';
+import { captureException, captureMessage } from '@sentry/vue';
 import { translateErrorMsgCN } from '@/common';
 
 type MainContext = ActionContext<MainState, State>;
@@ -179,6 +179,7 @@ export const actions = {
   },
   async actionCheckApiError(context: MainContext, payload: AxiosError) {
     if (payload.toString() === 'Error: Network Error') {
+      captureMessage(`actionCheckApiError: ${payload}`);
       commitAddNotification(context, {
         color: 'warning',
         content: '无法连接到服务器',
