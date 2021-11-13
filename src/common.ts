@@ -539,8 +539,8 @@ export class CVue extends Vue {
     }
   }
 
-  protected commitErrMsg(err: AxiosError): boolean {
-    if (err.response) {
+  commitErrMsg(err: AxiosError): boolean {
+    if (err.response && err.response.data && err.response.data.detail) {
       commitAddNotification(this.$store, {
         content: translateErrorMsgCN(err.response.data.detail),
         color: 'error',

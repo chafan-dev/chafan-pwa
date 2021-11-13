@@ -33,6 +33,8 @@ import {
   IVerificationCodeRequest,
 } from './interfaces';
 import { authHeaders } from './utils';
+import { APIWrapper } from '@/apiWrapper';
+import { CVue } from '@/common';
 
 export const api = {
   async logInGetToken(username: string, password: string, hcaptcha_token: string) {
@@ -229,8 +231,11 @@ export const api = {
       authHeaders(token)
     );
   },
-  async getInvitationLink(uuid: string) {
-    return axios.get<IInvitationLink>(`${apiUrl}/api/v1/invitation-links/${uuid}`);
+  async getInvitationLink(ctx: CVue, uuid: string, cb: (IInvitationLink) => void) {
+    return new APIWrapper(ctx).get<IInvitationLink>(
+      `${apiUrl}/api/v1/invitation-links/${uuid}`,
+      cb
+    );
   },
   async getAuditLogs(token: string) {
     return axios.get<IAuditLog[]>(`${apiUrl}/api/v1/audit-logs/`, authHeaders(token));
