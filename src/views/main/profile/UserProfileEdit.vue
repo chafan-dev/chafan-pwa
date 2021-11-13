@@ -86,17 +86,9 @@
                 </div>
                 <v-expand-transition>
                   <div v-show="showAboutEditor" class="mt-2">
-                    <ChafanTiptap
-                      v-show="aboutEditor === 'tiptap'"
-                      ref="tiptap"
-                      :initial-content="userProfile.about"
-                      :onEditorChange="onEditorChange"
-                    />
-
                     <VditorCF
-                      v-show="aboutEditor !== 'tiptap'"
                       ref="vditor"
-                      :editor-mode="aboutEditor"
+                      editor-mode="wysiwyg"
                       :initial-content="userProfile.about"
                       :isMobile="isMobile"
                       :onEditorChange="onEditorChange"
@@ -310,7 +302,6 @@ import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
-import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { VditorCF } from 'chafan-vue-editors';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { getVditorUploadConfig } from '@/common';
@@ -355,7 +346,6 @@ interface IUserEducationExperienceItem {
     UpIcon,
     CloseIcon,
     VditorCF,
-    ChafanTiptap,
     ProfileIcon,
   },
 })
@@ -406,7 +396,6 @@ export default class UserProfileEdit extends Vue {
     const userProfile = readUserProfile(this.$store);
     this.categoryTopics = (await api.getCategoryTopics()).data;
     if (userProfile) {
-      this.aboutEditor = userProfile.about_editor;
       if (userProfile.avatar_url) {
         this.avatarURL = userProfile.avatar_url;
       } else {
@@ -686,24 +675,13 @@ export default class UserProfileEdit extends Vue {
   }
 
   private onEditorChange() {
-    if (this.aboutEditor === 'tiptap') {
-      const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
-      this.userUpdateMe.about = chafanTiptap.content || undefined;
-    } else {
-      const vditor = this.$refs.vditor as any;
-      this.userUpdateMe.about = vditor.getContent() || undefined;
-    }
-    this.userUpdateMe.about_editor = this.aboutEditor;
+    const vditor = this.$refs.vditor as any;
+    this.userUpdateMe.about = vditor.getContent() || undefined;
   }
 
   private clearAboutMe() {
-    if (this.aboutEditor === 'tiptap') {
-      const chafanTiptap = this.$refs.tiptap as ChafanTiptap;
-      chafanTiptap.reset();
-    } else {
-      const vditor = this.$refs.vditor as any;
-      vditor.init(this.aboutEditor, '');
-    }
+    const vditor = this.$refs.vditor as any;
+    vditor.init(this.aboutEditor, '');
     this.showAboutEditor = false;
     this.showClearAboutMe = false;
     this.userUpdateMe.about = null;

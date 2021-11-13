@@ -22,7 +22,6 @@ export interface IUserProfile {
   full_name?: string;
   handle: string;
   about?: string;
-  about_editor: editor_T;
   moderated_sites: ISite[];
   subscribed_topics: ITopic[];
   residency_topics: ITopic[];
@@ -124,7 +123,6 @@ export interface IUserUpdateMe {
   password?: string;
   is_active?: boolean;
   about?: string | null;
-  about_editor?: editor_T;
   residency_topic_uuids?: string[];
   profession_topic_uuid?: string;
   work_experiences?: IUserWorkExperienceUpdate[];
