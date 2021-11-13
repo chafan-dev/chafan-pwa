@@ -114,7 +114,8 @@ export default class InvitationLink extends CVue {
   private async joinSite() {
     await dispatchCaptureApiError(this.$store, async () => {
       await api.joinSiteWithInvitationLink(this.token, this.invitationLink!.uuid);
-      await this.$router.push(`/sites/${this.invitationLink!.invited_to_site!.subdomain}`);
+      const siteDomain = this.invitationLink!.invited_to_site!.subdomain;
+      await this.$router.push(`/sites/${siteDomain}`);
     });
   }
 }
