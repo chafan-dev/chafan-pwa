@@ -95,19 +95,14 @@ export default class InvitationLink extends CVue {
   }
 
   private async mounted() {
-    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-      action: async () => {
-        this.invitationLink = (await api.getInvitationLink(this.uuid)).data;
-        if (!this.invitationLink?.valid) {
-          commitAddNotification(this.$store, {
-            content: translateErrorMsgCN('Invalid invitation link'),
-            color: 'error',
-          });
-        }
-      },
-      errorFilter: (err: AxiosError) => {
-        return this.commitErrMsg(err);
-      },
+    await api.getInvitationLink(this, this.uuid, (link) => {
+      this.invitationLink = link;
+      if (!this.invitationLink?.valid) {
+        commitAddNotification(this.$store, {
+          content: translateErrorMsgCN('Invalid invitation link'),
+          color: 'error',
+        });
+      }
     });
   }
 
