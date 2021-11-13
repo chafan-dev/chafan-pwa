@@ -1098,6 +1098,7 @@ export interface IInvitationLink {
   invited_to_site?: ISite;
   inviter: IUserPreview;
   remaining_quota: number;
+  valid: boolean;
 }
 
 export interface IAuditLog {

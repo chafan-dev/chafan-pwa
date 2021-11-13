@@ -36,18 +36,29 @@
               </div>
             </v-card-text>
             <v-card-actions v-if="invitationLink">
-              <span v-if="!loggedIn" class="grey--text"
-                >已注册？ 请<a class="text-decoration-none" href="/login">登录</a>后刷新本页面
-              </span>
-              <v-spacer />
-              <template v-if="loggedIn">
-                <v-btn v-if="invitationLink.invited_to_site" color="primary" @click="joinSite">
-                  加入
+              <template v-if="invitationLink.valid">
+                <span v-if="!loggedIn" class="grey--text"
+                  >已注册？ 请<a class="text-decoration-none" href="/login">登录</a>后刷新本页面
+                </span>
+                <v-spacer />
+                <template v-if="loggedIn">
+                  <v-btn v-if="invitationLink.invited_to_site" color="primary" @click="joinSite">
+                    加入
+                  </v-btn>
+                </template>
+                <v-btn v-else :to="`/signup?invitation_link_uuid=${uuid}`" color="primary">
+                  前往注册
                 </v-btn>
               </template>
-              <v-btn v-else :to="`/signup?invitation_link_uuid=${uuid}`" color="primary">
-                前往注册
-              </v-btn>
+              <template v-else>
+                <span
+                  >该邀请码已失效，请联系站内用户重新生成或者前往
+                  <a href="https://about.cha.fan/signup/" target="_blank"
+                    >https://about.cha.fan/signup/</a
+                  >
+                  了解如何申请，谢谢！</span
+                >
+              </template>
             </v-card-actions>
           </v-card>
           <v-skeleton-loader v-else type="card" />
@@ -68,7 +79,8 @@ import {
   dispatchCaptureApiErrorWithErrorHandler,
 } from '@/store/main/actions';
 import { AxiosError } from 'axios';
-import { CVue } from '@/common';
+import { CVue, translateErrorMsgCN } from '@/common';
+import { commitAddNotification } from '@/store/main/mutations';
 
 @Component({
   components: { UserLink },
@@ -86,6 +98,12 @@ export default class InvitationLink extends CVue {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
         this.invitationLink = (await api.getInvitationLink(this.uuid)).data;
+        if (!this.invitationLink?.valid) {
+          commitAddNotification(this.$store, {
+            content: translateErrorMsgCN('Invalid invitation link'),
+            color: 'error',
+          });
+        }
       },
       errorFilter: (err: AxiosError) => {
         return this.commitErrMsg(err);
@@ -96,7 +114,7 @@ export default class InvitationLink extends CVue {
   private async joinSite() {
     await dispatchCaptureApiError(this.$store, async () => {
       await api.joinSiteWithInvitationLink(this.token, this.invitationLink!.uuid);
-      this.$router.push(`/sites/${this.invitationLink!.invited_to_site!.subdomain}`);
+      await this.$router.push(`/sites/${this.invitationLink!.invited_to_site!.subdomain}`);
     });
   }
 }
