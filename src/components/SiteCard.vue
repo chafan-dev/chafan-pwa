@@ -1,7 +1,9 @@
 <template>
   <div v-if="site">
     <div class="primary--text" :class="{ headline: !compactMode, title: compactMode }">
-      {{ site.name }}
+      <a :href="`/sites/${site.subdomain}`" target="_blank" class="text-decoration-none">{{
+        site.name
+      }}</a>
     </div>
     <div v-if="site !== null">
       <div v-if="site.description" class="site-desc">
@@ -195,7 +197,7 @@ export default class SiteCard extends CVue {
     }
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        if (this.site != null && this.site.moderator && !this.isMember) {
+        if (this.site !== null && this.site.moderator && !this.isMember) {
           this.applyToJoinIntermediate = true;
           const response = await apiSite.applySite(this.token, this.site.uuid);
           if (response) {
