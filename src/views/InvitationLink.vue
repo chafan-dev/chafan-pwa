@@ -74,11 +74,7 @@ import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import { api } from '@/api';
-import {
-  dispatchCaptureApiError,
-  dispatchCaptureApiErrorWithErrorHandler,
-} from '@/store/main/actions';
-import { AxiosError } from 'axios';
+import { dispatchCaptureApiError } from '@/store/main/actions';
 import { CVue, translateErrorMsgCN } from '@/common';
 import { commitAddNotification } from '@/store/main/mutations';
 
