@@ -26,7 +26,9 @@
             </v-card-title>
             <v-divider />
             <v-card-text v-if="invitationLink">
-              <div class="title text-center black--text mb-1">邀请码：{{ uuid }}</div>
+              <div class="title text-center black--text mb-1">
+                邀请码：{{ invitationLink.uuid }}
+              </div>
               <div class="text-center">
                 <span class="mr-4"> 剩余可使用次数：{{ invitationLink.remaining_quota }} </span>
                 <span>
