@@ -27,6 +27,13 @@
                     target="_blank"
                     >「社区行为守则」</a
                   >的内容。
+                  <a
+                    href="https://about.cha.fan/signup"
+                    class="text-decoration-none"
+                    target="_blank"
+                  >
+                    了解如何获取邀请码 </a
+                  >。
                 </div>
                 <v-form autocomplete="off">
                   <h3>请先填入邀请码（20位）</h3>
