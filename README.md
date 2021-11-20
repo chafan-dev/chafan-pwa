@@ -64,7 +64,6 @@ If you opened a PR against `master` branch, Netlify will build a preview website
 yarn run analyze
 ```
 
-
 ## Unit tests
 
 ```
@@ -83,8 +82,7 @@ yarn run check:prettier
 Fixes all:
 
 ```
-yarn run eslint --fix .
-yarn run prettier -w .
+make fix
 ```
 
 ## Debugging
