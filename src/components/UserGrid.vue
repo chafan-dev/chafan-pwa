@@ -4,11 +4,13 @@
       <v-row :key="i">
         <template v-for="j in memberCols">
           <v-col :key="(i - 1) * memberCols + (j - 1)">
-            <UserCard
-              v-if="(i - 1) * memberCols + (j - 1) < users.length"
-              :compactMode="true"
-              :userPreview="users[(i - 1) * memberCols + (j - 1)]"
-            />
+            <v-lazy>
+              <UserCard
+                v-if="(i - 1) * memberCols + (j - 1) < users.length"
+                :compactMode="true"
+                :userPreview="users[(i - 1) * memberCols + (j - 1)]"
+              />
+            </v-lazy>
           </v-col>
         </template>
       </v-row>
