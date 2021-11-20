@@ -20,6 +20,10 @@ The default server connected in this setting is hosted at https://chafan-test.he
 Thus, **it might be slow when you open it since the dyno will be suspended when unused for a long time and will
 take a minute to restart**.
 
+![Screen Shot 2021-11-20 at 13 07 28](https://user-images.githubusercontent.com/7168454/142740916-c72bb60f-e1ce-4fe9-84d3-72cea9a1d7cf.png)
+
+Open the "Network" URL in your browser.
+
 ## Showcase
 
 When developing locally, you can see `/showcase` for individual static components, for exploration and design purpose. For example:
@@ -59,6 +63,7 @@ If you opened a PR against `master` branch, Netlify will build a preview website
 ```
 yarn run analyze
 ```
+
 
 ## Unit tests
 
