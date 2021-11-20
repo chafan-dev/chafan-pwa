@@ -10,22 +10,6 @@ First, install NodeJS, npm and yarn on your OS. Then:
 yarn install
 ```
 
-Create a local environment file within this repo's top-level directory: `.env.local`, e.g.
-
-```
-VUE_APP_API=https://chafan-test.herokuapp.com
-VUE_APP_NAME=Chafan Dev
-VUE_APP_ENV=development
-VUE_APP_ADMIN_UUID=
-VUE_APP_HCAPTCHA_SITEKEY=10000000-ffff-ffff-ffff-000000000001
-VUE_APP_DEFAULT_SRC='self' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com
-VUE_APP_STYLE_SRC='self' 'unsafe-inline' cdn.jsdelivr.net
-VUE_APP_FRAME_SRC=assets.hcaptcha.com newassets.hcaptcha.com www.youtube.com player.bilibili.com
-VUE_APP_SCRIPT_SRC='self' 'unsafe-eval' 'unsafe-inline' cdn.jsdelivr.net hcaptcha.com assets.hcaptcha.com remotejs.com newassets.hcaptcha.com
-VUE_APP_CONNECT_SRC=* data:
-VUE_APP_ENABLE_CAPTCHA=false
-```
-
 Build for development and run hot-reload website:
 
 ```
