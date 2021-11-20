@@ -16,6 +16,10 @@ Build for development and run hot-reload website:
 yarn run serve
 ```
 
+The default server connected in this setting is hosted at https://chafan-test.herokuapp.com with free dyno.
+Thus, **it might be slow when you open it since the dyno will be suspended when unused for a long time and will
+take a minute to restart**.
+
 ## Showcase
 
 When developing locally, you can see `/showcase` for individual static components, for exploration and design purpose. For example:
