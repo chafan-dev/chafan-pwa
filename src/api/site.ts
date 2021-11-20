@@ -44,8 +44,8 @@ export const apiSite = {
   async getWebhooks(token: string, uuid: string) {
     return axios.get<IWebhook[]>(`${apiUrl}/api/v1/sites/${uuid}/webhooks/`, authHeaders(token));
   },
-  async getRelatedSites(token: string, uuid: string) {
-    return axios.get<ISite[]>(`${apiUrl}/api/v1/sites/${uuid}/related/`, authHeaders(token));
+  async getRelatedSites(uuid: string) {
+    return axios.get<ISite[]>(`${apiUrl}/api/v1/sites/${uuid}/related/`);
   },
   async createSite(token: string, payload: ISiteCreate) {
     return axios.post<ISite>(`${apiUrl}/api/v1/sites/`, payload, authHeaders(token));
