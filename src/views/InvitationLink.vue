@@ -48,7 +48,11 @@
                     加入
                   </v-btn>
                 </template>
-                <v-btn v-else :to="`/signup?invitation_link_uuid=${uuid}`" color="primary">
+                <v-btn
+                  v-else
+                  :to="`/signup?invitation_link_uuid=${invitationLink.uuid}`"
+                  color="primary"
+                >
                   前往注册
                 </v-btn>
               </template>
