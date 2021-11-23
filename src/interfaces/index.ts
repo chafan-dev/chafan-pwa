@@ -1184,3 +1184,7 @@ export interface IQuestionPage {
   question_subscription?: IUserQuestionSubscription;
   flags: IQuestionPageFlags;
 }
+
+export interface IDynoState {
+  state: 'up' | 'crashed' | 'down' | 'idle' | 'starting';
+}

@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { apiUrl } from '@/env';
+import { apiUrl, lambdaUrlBase } from '@/env';
 import {
   ICoinPayment,
   IComment,
+  IDynoState,
   IFeedback,
   IGenericResponse,
   INotification,
@@ -67,5 +68,8 @@ export const api2 = {
   },
   async getFeedbacks(token: string) {
     return axios.get<IFeedback[]>(`${apiUrl}/api/v1/feedbacks/`, authHeadersFormData(token));
+  },
+  async getDevDynoState() {
+    return axios.get<IDynoState>(`${lambdaUrlBase}/chafan-dyno-check`);
   },
 };
