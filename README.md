@@ -89,6 +89,20 @@ make fix
 
 https://github.com/Microsoft/vscode-recipes/tree/master/vuejs-cli
 
+## Dependency management
+
+Render dependency tree:
+
+```
+npm ls <package-name>
+```
+
+Upgrade general dependency:
+
+```
+yarn upgrade <package-name>
+```
+
 ## Contributing
 
 [CONTRIBUTING.md](CONTRIBUTING.md)
