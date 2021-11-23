@@ -23,12 +23,15 @@ import { readIsLoggedIn, readShowLoginPrompt } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { getLocalValue, setAppLocale } from '@/utils';
 import {
+  commitAddNotification,
   commitSetNarrowUI,
   commitSetShowLoginPrompt,
   commitSetTheme,
 } from './store/main/mutations';
 import { CVue, getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
 import { ThemeType } from '@/interfaces';
+import { api2 } from '@/api2';
+import { isDev } from '@/env';
 
 @Component({
   data: function () {
@@ -64,6 +67,16 @@ export default class App extends CVue {
   }
 
   public async mounted() {
+    if (isDev) {
+      const dynoState = (await api2.getDevDynoState()).data;
+      if (dynoState.state !== 'up') {
+        commitAddNotification(this.$store, {
+          content: `测试服务器已收到请求，正在启动，当前状态为：${dynoState.state}。请稍后几分钟。如有问题，请在 https://github.com/chafan-dev/chafan-frontend 提一个 issue`,
+          color: 'warning',
+        });
+      }
+      // https://github.com/chafan-dev/chafan-frontend
+    }
     document.addEventListener(
       'swUpdated',
       (event) => {
