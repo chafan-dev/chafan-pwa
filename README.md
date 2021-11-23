@@ -46,8 +46,6 @@ Build and serve：
 ```bash
 VUE_APP_ENV=staging yarn run build
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
-node e2e_tests/server.js --secure
-# Open https://localhost:8080
 ```
 
 ## CI-built `master` previews
