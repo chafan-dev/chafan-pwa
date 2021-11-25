@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card outlined>
     <ValidationObserver v-slot="{ handleSubmit }">
       <v-card-title v-if="showTitle" class="primary--text headline"> 分享 </v-card-title>
       <v-card-text>

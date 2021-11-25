@@ -75,11 +75,11 @@
       <v-tabs-slider />
 
       <v-tab-item v-if="showQuestionEditor">
-        <CreateQuestionForm :site="site" class="ma-1" />
+        <CreateQuestionForm :site="site" class="my-2" />
       </v-tab-item>
 
       <v-tab-item v-if="showSubmissionEditor">
-        <CreateSubmissionForm :site="site" class="ma-1" />
+        <CreateSubmissionForm :site="site" class="my-2" />
       </v-tab-item>
     </v-tabs>
 
