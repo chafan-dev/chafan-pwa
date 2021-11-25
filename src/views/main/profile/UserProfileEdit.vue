@@ -140,11 +140,18 @@
                   v-model="newResidencyTopicNames"
                   :delimiters="[',', '，', '、']"
                   hide-selected
-                  label="居住过的地方"
+                  label="居住过的地方（按Enter确认添加）"
                   multiple
                   small-chips
                 />
-                <v-text-field v-model="newProfessionTopicName" clearable label="所在行业" />
+                <v-combobox
+                  v-model="newProfessionTopicNames"
+                  :delimiters="[',', '，', '、']"
+                  hide-selected
+                  label="所在行业（按Enter确认添加）"
+                  multiple
+                  small-chips
+                />
               </v-card>
               <v-card class="pa-4 my-3 c-card">
                 <div class="title mb-4 d-flex">
@@ -352,7 +359,7 @@ interface IUserEducationExperienceItem {
 export default class UserProfileEdit extends Vue {
   public valid = true;
   private newResidencyTopicNames: string[] = [];
-  private newProfessionTopicName: string = '';
+  private newProfessionTopicNames: string[] = [];
   private userUpdateMe: IUserUpdateMe = {
     full_name: '',
     handle: '',
@@ -416,10 +423,8 @@ export default class UserProfileEdit extends Vue {
       this.userUpdateMe.twitter_username = userProfile.twitter_username;
       this.userUpdateMe.linkedin_url = userProfile.linkedin_url;
 
-      if (userProfile.profession_topic) {
-        this.userUpdateMe.profession_topic_uuid = userProfile.profession_topic.uuid;
-        this.newProfessionTopicName = userProfile.profession_topic.name;
-      }
+      this.userUpdateMe.profession_topic_uuids = userProfile.profession_topics.map((t) => t.uuid);
+      this.newProfessionTopicNames = userProfile.profession_topics.map((t) => t.name);
 
       await dispatchCaptureApiError(this.$store, async () => {
         const response = await apiPeople.getUserEducationExperiences(this.token, userProfile.uuid);
@@ -470,12 +475,10 @@ export default class UserProfileEdit extends Vue {
       );
       this.userUpdateMe.residency_topic_uuids = responses.map((r) => r.data.uuid);
 
-      if (this.newProfessionTopicName) {
-        const r = await apiTopic.createTopic(this.token, {
-          name: this.newProfessionTopicName,
-        });
-        this.userUpdateMe.profession_topic_uuid = r.data.uuid;
-      }
+      const responses2 = await Promise.all(
+        this.newProfessionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
+      );
+      this.userUpdateMe.profession_topic_uuids = responses2.map((r) => r.data.uuid);
 
       const workExps = await Promise.all(
         this.workExps.map(async (e) => {

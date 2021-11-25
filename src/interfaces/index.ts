@@ -25,7 +25,7 @@ export interface IUserProfile {
   moderated_sites: ISite[];
   subscribed_topics: ITopic[];
   residency_topics: ITopic[];
-  profession_topic: ITopic;
+  profession_topics: ITopic[];
   remaining_coins: number;
   view_times: number;
   personal_introduction?: string;
@@ -124,7 +124,7 @@ export interface IUserUpdateMe {
   is_active?: boolean;
   about?: string | null;
   residency_topic_uuids?: string[];
-  profession_topic_uuid?: string;
+  profession_topic_uuids?: string[];
   work_experiences?: IUserWorkExperienceUpdate[];
   education_experiences?: IUserEducationExperienceUpdate[];
   personal_introduction?: string;
@@ -564,7 +564,7 @@ export interface IUserPublic {
   questions_count: number;
   articles_count: number;
   created_at: string;
-  profession_topic?: ITopic;
+  profession_topics: ITopic[];
 }
 
 export interface IUserPublicForVisitor {

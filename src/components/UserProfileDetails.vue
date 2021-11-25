@@ -54,13 +54,19 @@
         </a>
       </div>
 
-      <template v-if="userPublic.profession_topic">
+      <template v-if="userPublic.profession_topics && userPublic.profession_topics.length > 0">
         <div class="my-3">
           <div class="subheading secondary--text text--lighten-3">所在行业</div>
-          <div class="title primary--text text--darken-2">
-            <v-chip :to="'/topics/' + userPublic.profession_topic.uuid"
-              >{{ userPublic.profession_topic.name }}
-            </v-chip>
+          <div>
+            <v-chip-group :column="!$vuetify.breakpoint.mobile">
+              <v-chip
+                v-for="topic in userPublic.profession_topics"
+                :key="topic.uuid"
+                :to="'/topics/' + topic.uuid"
+              >
+                {{ topic.name }}
+              </v-chip>
+            </v-chip-group>
           </div>
         </div>
       </template>
@@ -158,8 +164,14 @@
       style="cursor: pointer"
       @click="full = !full"
     >
-      <v-chip v-if="userPublic.profession_topic" color="amber lighten-4 mb-1">
-        {{ userPublic.profession_topic.name }}
+      <v-chip
+        v-for="topic in userPublic.profession_topics"
+        :key="topic.uuid"
+        :to="'/topics/' + topic.uuid"
+        class="ml-1"
+        color="amber lighten-4 mb-1"
+      >
+        {{ topic.name }}
       </v-chip>
 
       <v-chip
