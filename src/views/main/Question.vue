@@ -114,6 +114,18 @@
             class="mr-1"
           />
 
+          <v-btn
+            v-if="questionPage.flags.editable"
+            @click="showQuestionEditor = true"
+            class="mr-1 slim-btn"
+            depressed
+            elevation="0"
+            small
+          >
+            <EditIcon />
+            <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">编辑</span>
+          </v-btn>
+
           <ShareCardButton
             v-slot="{ shareQrCodeUrl }"
             :link="`/questions/${question.uuid}`"
@@ -147,20 +159,12 @@
 
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" class="slim-btn" depressed small>
+              <v-btn v-bind="attrs" v-on="on" class="slim-btn" small depressed>
                 <DotsIcon small />
                 <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">更多</span>
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item
-                v-if="questionPage.flags.editable"
-                dense
-                @click="showQuestionEditor = true"
-              >
-                <EditIcon class="mr-1" />
-                编辑
-              </v-list-item>
               <v-list-item
                 v-if="
                   questionPage.question_subscription &&
@@ -579,7 +583,7 @@ export default class Question extends CVue {
     try {
       if (localStorage.getItem('new-question')) {
         commitAddNotification(this.$store, {
-          content: '点击「更多」编辑细节',
+          content: '点击「编辑」加入更多细节',
           color: 'info',
         });
         localStorage.removeItem('new-question');
