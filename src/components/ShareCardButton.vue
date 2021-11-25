@@ -13,7 +13,7 @@
       </v-card>
     </v-dialog>
 
-    <v-btn icon tile small @click="showSharingCardDialog" class="icon-btn">
+    <v-btn depressed small @click="showSharingCardDialog" class="slim-btn">
       <ShareIcon small />
       <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">转发</span>
     </v-btn>
