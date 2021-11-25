@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card outlined>
     <v-card-title v-if="showTitle" class="primary--text headline"> 提问 </v-card-title>
     <v-card-text>
       <v-autocomplete
