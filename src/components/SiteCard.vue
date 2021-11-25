@@ -185,7 +185,9 @@ export default class SiteCard extends CVue {
       }
       this.loading = false;
       if (!this.compactMode) {
-        this.relatedSites = (await apiSite.getRelatedSites(this.site.uuid)).data;
+        this.relatedSites = (await apiSite.getRelatedSites(this.site.uuid)).data.filter(
+          (s) => s.uuid !== this.site.uuid
+        );
       }
     });
   }
