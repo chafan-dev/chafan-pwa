@@ -190,7 +190,11 @@
                 :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
                 icon
               >
-                <Avatar v-if="userProfile && userProfile.avatar_url" :userPreview="userProfile" />
+                <Avatar
+                  v-if="userProfile && (userProfile.avatar_url || isDev)"
+                  :userPreview="userProfile"
+                  color="primary"
+                />
                 <AccountIcon v-else />
               </v-btn>
             </template>
@@ -254,7 +258,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
-import { appName } from '@/env';
+import { appName, isDev } from '@/env';
 import {
   readDashboardMiniDrawer,
   readDashboardShowDrawer,
@@ -373,6 +377,10 @@ export default class Main extends Vue {
 
   get userMode() {
     return readUserMode(this.$store);
+  }
+
+  get isDev() {
+    return isDev;
   }
 
   private get hasModeratedSites() {
