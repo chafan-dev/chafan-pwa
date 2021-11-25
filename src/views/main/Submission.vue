@@ -88,6 +88,13 @@
               </span>
             </div>
 
+            <div class="d-flex">
+              <v-spacer />
+              <span class="grey--text caption"
+                >上次编辑：{{ $dayjs.utc(submission.updated_at).local().fromNow() }}</span
+              >
+            </div>
+
             <!-- Suggestion comment -->
             <div v-if="suggestionEditable && showSubmissionEditor">
               <v-text-field v-model="newSuggestionCommment" clearable label="附言（可选）" />
@@ -120,6 +127,7 @@
 
           <div v-if="!showSubmissionEditor" class="d-flex py-2">
             <Upvote
+              class="mr-1"
               v-if="upvotes"
               :disabled="!userProfile || userProfile.uuid === submission.author.uuid"
               :on-cancel-vote="cancelUpvote"
@@ -128,11 +136,16 @@
               :upvotes-count="upvotes.count"
             />
 
+            <v-btn v-if="editable" @click="showSubmissionEditor = true">
+              <EditIcon />
+              <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">编辑</span>
+            </v-btn>
+
             <ShareCardButton
               v-slot="{ shareQrCodeUrl }"
               :link="`/submissions/${submission.uuid}`"
               :link-text="submission.title"
-              class="text-decoration-none"
+              class="text-decoration-none mr-1"
             >
               <v-card-title>
                 {{ submission.title }}
@@ -163,10 +176,6 @@
                 </v-btn>
               </template>
               <v-list dense>
-                <v-list-item v-if="editable" @click="showSubmissionEditor = true">
-                  <EditIcon class="mr-1" />
-                  编辑
-                </v-list-item>
                 <v-list-item v-if="suggestionEditable" @click="showSubmissionEditor = true">
                   <EditIcon class="mr-1" />
                   提交编辑建议
@@ -174,7 +183,7 @@
 
                 <v-list-item dense @click="showHistoryDialog">
                   <HistoryIcon class="mr-1" />
-                  分享历史
+                  查看编辑历史
                 </v-list-item>
 
                 <v-list-item
