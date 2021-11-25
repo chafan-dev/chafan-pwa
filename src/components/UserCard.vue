@@ -8,9 +8,7 @@
     <v-row justify="center">
       <v-col v-if="avatarURL" align-self="center" style="max-width: 110px">
         <router-link :to="`/users/${userPreview.handle}`">
-          <v-avatar class="avatarDiv" size="90" tile>
-            <v-img :src="avatarURL" alt="Avatar" />
-          </v-avatar>
+          <Avatar :avatar-url="avatarURL" size="90" />
         </router-link>
       </v-col>
       <v-col align-self="center">
@@ -125,10 +123,11 @@ import { CVue } from '@/common';
 import { apiPeople } from '@/api/people';
 import { api } from '@/api';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import Avatar from '@/components/Avatar.vue';
 
 @Component({
   name: 'UserCard',
-  components: { CloseIcon },
+  components: { Avatar, CloseIcon },
 })
 export default class UserCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;

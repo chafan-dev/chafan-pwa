@@ -2,11 +2,9 @@
   <div :class="theme.baseCard.classKey" class="pa-3">
     <div class="row">
       <div :class="{ 'col-12': !$vuetify.breakpoint.mdAndUp }" class="pb-4">
-        <div v-if="avatarURL" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }" class="px-2">
+        <div v-if="avatarURL" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }" class="pa-3">
           <router-link :to="`/users/${userPreview.handle}`">
-            <v-avatar class="avatarDiv" size="150" tile>
-              <v-img :src="avatarURL" alt="Avatar" />
-            </v-avatar>
+            <Avatar :avatar-url="avatarURL" size="140" />
           </router-link>
         </div>
         <UserNameHeadline
@@ -148,9 +146,10 @@ import UserGrid from '@/components/UserGrid.vue';
 import { apiPeople } from '@/api/people';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { CVue } from '@/common';
+import Avatar from '@/components/Avatar.vue';
 
 @Component({
-  components: { CloseIcon, UserGrid, UserNameHeadline, UserProfileDetails },
+  components: { Avatar, CloseIcon, UserGrid, UserNameHeadline, UserProfileDetails },
 })
 export default class UserProfileCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
