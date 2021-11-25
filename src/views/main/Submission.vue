@@ -136,7 +136,13 @@
               :upvotes-count="upvotes.count"
             />
 
-            <v-btn v-if="editable" @click="showSubmissionEditor = true">
+            <v-btn
+              v-if="editable"
+              @click="showSubmissionEditor = true"
+              class="slim-btn"
+              depressed
+              small
+            >
               <EditIcon />
               <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">编辑</span>
             </v-btn>
