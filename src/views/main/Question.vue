@@ -66,17 +66,7 @@
         <!-- Question control -->
         <v-slide-group v-if="!showQuestionEditor" class="d-flex my-1">
           <v-btn
-            v-if="currentUserAnswerUUID"
-            class="mr-1 slim-btn"
-            depressed
-            small
-            @click="goToCurrentUserAnswer"
-          >
-            我的回答
-          </v-btn>
-
-          <v-btn
-            v-else-if="savedLocalEdit"
+            v-if="savedLocalEdit"
             class="mr-1 slim-btn"
             color="primary"
             depressed
@@ -470,7 +460,6 @@ export default class Question extends CVue {
   private handlingNewEdit = false;
   private archives: IQuestionArchive[] = [];
   private historyDialog = false;
-  private currentUserAnswerUUID: string | null = null;
   private commentSubmitIntermediate = false;
   private savedLocalEdit: LocalEdit | null = null;
   private loadedFullAnswers: IAnswer[] = [];
@@ -525,7 +514,6 @@ export default class Question extends CVue {
       this.showConfirmHideQuestionDialog = false;
       this.savedNewAnswer = null;
       this.archives = [];
-      this.currentUserAnswerUUID = null;
       this.questionPage = null;
       this.loadQuestion();
     }
@@ -570,20 +558,17 @@ export default class Question extends CVue {
           this.showEditor = true;
         }
         this.loadedFullAnswers = loadedFullAnswers.sort((a, b) => {
-          if (a.uuid === this.answerUUID) {
+          if (a.uuid === this.answerUUID || a.author.uuid === this.userProfile?.uuid) {
             return -1;
           }
-          if (b.uuid === this.answerUUID) {
+          if (b.uuid === this.answerUUID || b.author.uuid === this.userProfile?.uuid) {
             return 1;
           }
           return 1;
         });
-        loadedFullAnswers.forEach((a) => {
-          if (a.author.uuid === this.userProfile?.uuid) {
-            this.currentUserAnswerUUID = a.uuid;
-          }
-        });
-        if (!this.currentUserAnswerUUID) {
+        if (
+          loadedFullAnswers.filter((a) => a.author.uuid === this.userProfile?.uuid).length === 0
+        ) {
           this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + question.uuid);
         }
       }
@@ -760,14 +745,6 @@ export default class Question extends CVue {
       });
       await this.$router.push(`/sites/${this.questionPage!.question.site.subdomain}`);
     });
-  }
-
-  private async goToCurrentUserAnswer() {
-    if (this.currentUserAnswerUUID) {
-      await this.$router.replace(
-        `/questions/${this.question?.uuid}/answers/${this.currentUserAnswerUUID}`
-      );
-    }
   }
 
   private toggleShowComments() {

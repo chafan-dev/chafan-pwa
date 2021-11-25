@@ -380,6 +380,7 @@ const errorMsgCN = {
   'The article column is not owned by current user': '当前用户不是专栏所有者',
   "The application doesn't exists in the system": '申请不存在',
   Unauthorized: '访问受限',
+  'Unauthorized.': '访问受限',
   "The submission doesn't exists in the system": '分享不存在',
   "You can't invite yourself": '用户不能邀请自己',
   'Incorrect email or password': '错误的邮箱地址或密码',

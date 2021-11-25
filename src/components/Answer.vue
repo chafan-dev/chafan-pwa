@@ -186,7 +186,7 @@
             NOTE: Layout of this part is tricky since it can be quite wide when there are six emojis.
             Let's fix them later.
                       -->
-          <div class="d-flex justify-end mt-2">
+          <div class="d-flex justify-end mt-3">
             <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
           </div>
 
