@@ -12,7 +12,7 @@
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-row>
                 <v-col class="avatar-col">
-                  <v-avatar class="avatarDiv" size="150" tile>
+                  <v-avatar size="150" rounded>
                     <v-progress-circular
                       v-if="uploadAvatarIntermediate"
                       color="primary"
@@ -41,7 +41,7 @@
                     </v-btn>
                   </div>
                   <v-expand-transition>
-                    <v-avatar v-show="showGifAvatar" class="avatarDiv mt-2" size="150" tile>
+                    <v-avatar v-show="showGifAvatar" class="mt-2" size="150" rounded>
                       <v-progress-circular
                         v-if="uploadGifAvatarIntermediate"
                         color="primary"
