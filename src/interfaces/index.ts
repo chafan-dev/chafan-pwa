@@ -277,6 +277,7 @@ export interface IAnswerPreview {
   author: IUserPreview;
   question: IQuestionPreview;
   body: string;
+  body_is_truncated?: boolean;
   upvotes_count: number;
   is_hidden_by_moderator: boolean;
 }
