@@ -3,11 +3,12 @@
     <template v-if="compact">
       {{ schoolName }} · {{ levelName }}
       <span v-if="major || enrollYear || graduateYear" class="grey--text">
-        (<span v-if="major">{{ major }}, </span
-        ><span class="grey--text" v-if="enrollYear || graduateYear"
-          ><span v-if="enrollYear">{{ enrollYear }} - </span
-          ><span v-if="graduateYear">{{ graduateYear }}</span
-          ><span v-else>在读</span> </span
+        (<span v-if="major">{{ major }}</span>
+        <span class="grey--text" v-if="enrollYear || graduateYear">
+          <span v-if="major">, </span>
+          <span v-if="enrollYear">{{ enrollYear }} - </span>
+          <span v-if="graduateYear">{{ graduateYear }}</span>
+          <span v-else>在读</span> </span
         >)
       </span>
     </template>
