@@ -182,7 +182,7 @@ export default class UserCard extends CVue {
     if (this.infeed) {
       this.recommendedUsers = (
         await apiPeople.getRelatedUsers(this.token, this.userPreview.uuid)
-      ).data;
+      ).data.filter((u) => u.uuid !== this.userProfile?.uuid);
     }
   }
 
