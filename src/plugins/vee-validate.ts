@@ -10,14 +10,14 @@ extend('password1', {
   validate(value, args: Record<string, any>) {
     return value === args.target;
   },
-  message: 'Password confirmation does not match',
+  message: '密码不一致',
 });
 
 extend('password', {
   validate(value: string) {
-    return value.match(/^[\x00-\x7F]{8,30}$/g) !== null;
+    return value.length >= 8;
   },
-  message: 'Password must be between 8 and 30 characters long.',
+  message: '密码必须长于8位',
 });
 
 extend('url', {
@@ -31,14 +31,14 @@ extend('phone_number_e164', {
   validate(value: string) {
     return value.match(/^\+[1-9]\d{1,14}$/g) !== null;
   },
-  message: 'Invalid format, valid example: +1222333444, +8611122223333',
+  message: '无效格式，有效格式的例子：+1222333444, +8611122223333',
 });
 
 extend('subdomain', {
   validate(value: string) {
     return value.match(/^[\w-]+$/g) !== null;
   },
-  message: 'Only alphanumeric, underscore or hyphen is allowed in subdomain.',
+  message: '圈子域名中仅允许使用字母数字、下划线和"-"',
 });
 
 // No message specified.
