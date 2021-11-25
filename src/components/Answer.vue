@@ -365,7 +365,7 @@ export default class Answer extends CVue {
       await this.updateStateWithLoadedAnswer(response.data);
     }
 
-    if (this.loadFull) {
+    if (this.loadFull || this.answerPreview.body_is_truncated === false) {
       this.setLoading();
     } else {
       this.loading = false;
