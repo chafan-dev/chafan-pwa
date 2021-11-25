@@ -3,7 +3,7 @@
     <div class="d-flex">
       <span class="font-weight-bold subtitle-1">{{ title }}</span>
       <v-spacer />
-      <v-btn color="secondary" outlined small @click="rotate">
+      <v-btn color="secondary" outlined small @click="rotate" v-if="items.length > PAGE_SIZE">
         <span class="mr-1">换一批</span>
         <RefreshIcon />
       </v-btn>
@@ -26,15 +26,19 @@ export default class RotationList<T> extends Vue {
   @Prop() public readonly items!: T[];
   private itemsSubset: T[] = [];
   private subsetIndex = 0;
+  private readonly PAGE_SIZE = 5;
 
   private mounted() {
-    this.itemsSubset = this.items.slice(0, 5);
+    this.itemsSubset = this.items.slice(0, this.PAGE_SIZE);
   }
 
   private rotate() {
-    const pages = Math.ceil(this.items.length / 5);
+    const pages = Math.ceil(this.items.length / this.PAGE_SIZE);
     this.subsetIndex = (this.subsetIndex + 1) % pages;
-    this.itemsSubset = this.items.slice(this.subsetIndex * 5, (this.subsetIndex + 1) * 5);
+    this.itemsSubset = this.items.slice(
+      this.subsetIndex * this.PAGE_SIZE,
+      (this.subsetIndex + 1) * this.PAGE_SIZE
+    );
   }
 }
 </script>
