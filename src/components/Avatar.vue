@@ -1,5 +1,5 @@
 <template>
-  <v-avatar :size="size" color="primary" rounded>
+  <v-avatar class="avatar-div" :size="size" :color="color" rounded>
     <v-img :src="url" alt="Avatar" />
   </v-avatar>
 </template>
@@ -16,6 +16,7 @@ export default class Avatar extends Vue {
   @Prop() public readonly userPreview: IUserPreview | undefined;
   @Prop() public readonly avatarUrl: string | undefined;
   @Prop({ default: 30 }) public readonly size!: number;
+  @Prop() public readonly color: 'primary' | undefined;
 
   get url() {
     if (isDev) {
