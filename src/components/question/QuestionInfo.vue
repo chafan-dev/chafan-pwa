@@ -86,32 +86,21 @@ export default class QuestionInfo extends CVue {
   private relatedQuestions: IQuestionPreview[] | null = null;
 
   public async mounted() {
-    if (this.question.keywords && this.userProfile) {
-      this.relatedQuestions = (
-        await apiSearch.searchQuestions(
-          this.$store.state.main.token,
-          this.question.keywords.join(' ')
-        )
-      ).data;
-      const i = this.relatedQuestions?.findIndex((questionPreview) => {
-        return questionPreview.uuid === this.question.uuid;
+    if (this.userProfile) {
+      const query = this.question.keywords ? this.question.keywords.join(' ') : this.question.title;
+      const qs = (await apiSearch.searchQuestions(this.token, query)).data;
+      this.relatedQuestions = qs.filter((q) => {
+        return q.uuid !== this.question.uuid;
       });
-      if (i >= 0) {
-        this.relatedQuestions.splice(i, 1);
-      }
     }
   }
 
   public async inviteAnswer() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.invitedUserId !== null) {
-        const response = await api.inviteAnswer(
-          this.$store.state.main.token,
-          this.question.uuid,
-          this.invitedUserId
-        );
+        const response = await api.inviteAnswer(this.token, this.question.uuid, this.invitedUserId);
         if (this.inviteToAnswerRewardCoinAmount > 0) {
-          await api.createReward(this.$store.state.main.token, {
+          await api.createReward(this.token, {
             expired_after_days: 7,
             receiver_uuid: this.invitedUserId,
             coin_amount: this.inviteToAnswerRewardCoinAmount,
