@@ -1,5 +1,5 @@
 <template>
-  <span class="pl-1 pr-1">
+  <span>
     <v-dialog v-model="showSharingCard" max-width="600">
       <v-card @click-outside="showSharingCard = false">
         <div class="pa-4">
@@ -13,7 +13,7 @@
       </v-card>
     </v-dialog>
 
-    <v-btn class="slim-btn" depressed small @click="showSharingCardDialog">
+    <v-btn icon tile small @click="showSharingCardDialog" class="icon-btn">
       <ShareIcon small />
       <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">转发</span>
     </v-btn>
