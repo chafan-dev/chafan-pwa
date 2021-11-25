@@ -81,7 +81,7 @@
 
                   <v-menu v-if="currentUserIsAuthor" offset-y>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-bind="attrs" v-on="on" class="slim-btn m2-1" depressed small>
+                      <v-btn v-bind="attrs" v-on="on" class="slim-btn mr-1" depressed small>
                         设置
                       </v-btn>
                     </template>
