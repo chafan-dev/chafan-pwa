@@ -295,7 +295,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
 import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
@@ -311,7 +311,7 @@ import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
 import { VditorCF } from 'chafan-vue-editors';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { getVditorUploadConfig } from '@/common';
+import { CVue, getVditorUploadConfig } from '@/common';
 import UpIcon from '@/components/icons/UpIcon.vue';
 import DownIcon from '@/components/icons/DownIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
@@ -356,7 +356,7 @@ interface IUserEducationExperienceItem {
     ProfileIcon,
   },
 })
-export default class UserProfileEdit extends Vue {
+export default class UserProfileEdit extends CVue {
   public valid = true;
   private newResidencyTopicNames: string[] = [];
   private newProfessionTopicNames: string[] = [];
@@ -382,80 +382,74 @@ export default class UserProfileEdit extends Vue {
   private categoryTopics: ITopic[] | null = null;
   private years: string[] = [];
 
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
-  }
-
   get vditorUploadConfig() {
     return getVditorUploadConfig(readToken(this.$store));
   }
 
   public async mounted() {
     this.years = getRecentYears(this.$dayjs);
-    const userProfile = readUserProfile(this.$store);
     this.categoryTopics = (await api.getCategoryTopics()).data;
-    if (userProfile) {
-      if (userProfile.avatar_url) {
-        this.avatarURL = userProfile.avatar_url;
-      } else {
-        this.avatarURL = '/img/default-avatar.png';
-      }
-      if (userProfile.gif_avatar_url) {
-        this.gifAvatarURL = userProfile.gif_avatar_url;
-        this.showGifAvatar = true;
-      }
-      Object.keys(this.userUpdateMe).forEach((key) => {
-        this.userUpdateMe[key] = userProfile[key];
-      });
-      this.userUpdateMe.residency_topic_uuids = userProfile.residency_topics.map((t) => t.uuid);
-      this.newResidencyTopicNames = userProfile.residency_topics.map((t) => t.name);
-
-      this.userUpdateMe.homepage_url = userProfile.homepage_url;
-      this.userUpdateMe.github_username = userProfile.github_username;
-      this.userUpdateMe.twitter_username = userProfile.twitter_username;
-      this.userUpdateMe.linkedin_url = userProfile.linkedin_url;
-
+    const userProfile = this.userProfile;
+    if (!userProfile) {
+      return;
+    }
+    if (userProfile.avatar_url) {
+      this.avatarURL = userProfile.avatar_url;
+    } else {
+      this.avatarURL = '/img/default-avatar.png';
+    }
+    if (userProfile.gif_avatar_url) {
+      this.gifAvatarURL = userProfile.gif_avatar_url;
+      this.showGifAvatar = true;
+    }
+    Object.keys(this.userUpdateMe).forEach((key) => {
+      this.userUpdateMe[key] = userProfile[key];
+    });
+    this.userUpdateMe.residency_topic_uuids = userProfile.residency_topics.map((t) => t.uuid);
+    this.newResidencyTopicNames = userProfile.residency_topics.map((t) => t.name);
+    if (userProfile.profession_topics) {
       this.userUpdateMe.profession_topic_uuids = userProfile.profession_topics.map((t) => t.uuid);
       this.newProfessionTopicNames = userProfile.profession_topics.map((t) => t.name);
-
-      await dispatchCaptureApiError(this.$store, async () => {
-        const response = await apiPeople.getUserEducationExperiences(this.token, userProfile.uuid);
-        if (response.data) {
-          this.eduExps = response.data.map((e) => {
-            return {
-              school_topic_name: e.school_topic.name,
-              level_name: e.level,
-              major: e.major,
-              enroll_year: e.enroll_year,
-              graduate_year: e.graduate_year,
-            };
-          });
-        }
-        const response2 = await apiPeople.getUserWorkExperiences(this.token, userProfile.uuid);
-        if (response2.data) {
-          this.workExps = response2.data.map((e) => {
-            return {
-              company_topic_name: e.company_topic.name,
-              position_topic_name: e.position_topic.name,
-            };
-          });
-        }
-      });
+    } else {
+      this.userUpdateMe.profession_topic_uuids = [];
+      this.newProfessionTopicNames = [];
     }
+
+    this.userUpdateMe.homepage_url = userProfile.homepage_url;
+    this.userUpdateMe.github_username = userProfile.github_username;
+    this.userUpdateMe.twitter_username = userProfile.twitter_username;
+    this.userUpdateMe.linkedin_url = userProfile.linkedin_url;
+
+    await dispatchCaptureApiError(this.$store, async () => {
+      const response = await apiPeople.getUserEducationExperiences(this.token, userProfile.uuid);
+      if (response.data) {
+        this.eduExps = response.data.map((e) => {
+          return {
+            school_topic_name: e.school_topic.name,
+            level_name: e.level,
+            major: e.major,
+            enroll_year: e.enroll_year,
+            graduate_year: e.graduate_year,
+          };
+        });
+      }
+      const response2 = await apiPeople.getUserWorkExperiences(this.token, userProfile.uuid);
+      if (response2.data) {
+        this.workExps = response2.data.map((e) => {
+          return {
+            company_topic_name: e.company_topic.name,
+            position_topic_name: e.position_topic.name,
+          };
+        });
+      }
+    });
   }
 
   public resetAll(reset) {
     const userProfile = readUserProfile(this.$store);
     if (userProfile) {
       this.newResidencyTopicNames = userProfile.residency_topics.map((topic) => topic.name);
+      this.newProfessionTopicNames = userProfile.profession_topics.map((topic) => topic.name);
       Object.keys(this.userUpdateMe).forEach((key) => {
         this.userUpdateMe[key] = userProfile[key];
       });

@@ -526,6 +526,10 @@ export class CVue extends Vue {
     return readUserProfile(this.$store);
   }
 
+  get isMobile() {
+    return !this.$vuetify.breakpoint.mdAndUp;
+  }
+
   protected expectOkAndCommitMsg(response: IGenericResponse, msg: string) {
     if (response.success) {
       commitAddNotification(this.$store, {
