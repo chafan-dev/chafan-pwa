@@ -158,6 +158,7 @@ export const actions = {
             });
           }
         } catch (error) {
+          await dispatchRemoveLogIn(context);
           await dispatchCheckApiError(context, error);
         }
       } else {

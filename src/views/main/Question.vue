@@ -463,7 +463,6 @@ export default class Question extends CVue {
   private newQuestionTopicNames: string[] = [];
   private hintTopicNames: string[] = []; // TODO
   private showConfirmHideQuestionDialog = false;
-  private loading = true;
   private commitQuestionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
@@ -519,7 +518,6 @@ export default class Question extends CVue {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
     if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
       this.showEditor = false;
       this.showQuestionEditor = false;
       this.showComments = false;
@@ -528,6 +526,7 @@ export default class Question extends CVue {
       this.savedNewAnswer = null;
       this.archives = [];
       this.currentUserAnswerUUID = null;
+      this.questionPage = null;
       this.loadQuestion();
     }
   }
