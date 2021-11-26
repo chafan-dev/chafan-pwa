@@ -949,10 +949,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chafan/vditor@3.8.2-chafan.3":
-  version "3.8.2-chafan.3"
-  resolved "https://registry.yarnpkg.com/@chafan/vditor/-/vditor-3.8.2-chafan.3.tgz#b5002874f3f832a4546f635d43e4a20c6db0bcdc"
-  integrity sha512-pylSOllUavJb5kU+KLytv3RhqP9qQEbwfHDWuLefcvXF+nSFK8mm1EbL0dc8m7BAy8V3sQQpq/Dnj/f9XZN/9g==
+"@chafan/vditor@3.8.3":
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/@chafan/vditor/-/vditor-3.8.3.tgz#b4628c3a261df89135d3c8c5090a1d8964ff2497"
+  integrity sha512-0+E2rkCBgCHi1sqS2enrJWlWcslgXlLBQVhPn9bzWaroFReLhxQlPP9GDd1qP8N3P3x6RspiBwlglDPvNgU82Q==
   dependencies:
     diff-match-patch "^1.0.5"
     sanitize-html "^2.3.2"
@@ -3978,12 +3978,12 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.8.2:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.8.2.tgz#792627595b33b5453ef0061aeb19ceb4fe5139f1"
-  integrity sha512-YDrhqiBrj7+LK07iiwRbCC7+uEPxBG0Cdxu57G5DVPepkgRUHfzYkqLScWt87A4xbfxvfP6xMCvtMAcOWDCLbA==
+chafan-vue-editors@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.8.3.tgz#ad4a3282a9568f7bb69571260b78fcd0cf67e1fc"
+  integrity sha512-ql8iwL0CMvCxDk6kt3ZOBkgJXlNuqiYv+amMaUvISIXUSPrWRppaoPVmNLSjr+/ahmlllk2IRMvsxRW3iodcmA==
   dependencies:
-    "@chafan/vditor" "3.8.2-chafan.3"
+    "@chafan/vditor" "3.8.3"
     "@tiptap/core" "^2.0.0-beta.38"
     "@tiptap/extension-bubble-menu" "^2.0.0-beta.9"
     "@tiptap/extension-code-block-lowlight" "^2.0.0-beta.11"
