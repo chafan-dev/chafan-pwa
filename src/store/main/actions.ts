@@ -158,21 +158,17 @@ export const actions = {
             });
           }
         } catch (error) {
-          await dispatchRemoveLogIn(context);
           await dispatchCheckApiError(context, error);
         }
       } else {
-        await dispatchRemoveLogIn(context);
+        await dispatchLogOut(context);
       }
     }
   },
-  async actionRemoveLogIn(context: MainContext) {
+  async actionLogOut(context: MainContext) {
     removeLocalToken();
     commitSetToken(context, '');
     commitSetLoggedIn(context, false);
-  },
-  async actionLogOut(context: MainContext) {
-    await dispatchRemoveLogIn(context);
   },
   async actionUserLogOut(context: MainContext) {
     await dispatchLogOut(context);
@@ -311,7 +307,6 @@ export const dispatchCaptureApiErrorWithErrorHandler = dispatch(
   actions.apiErrorCapturedWithErrorHandler
 );
 export const dispatchUserLogOut = dispatch(actions.actionUserLogOut);
-export const dispatchRemoveLogIn = dispatch(actions.actionRemoveLogIn);
 export const dispatchRouteLoggedIn = dispatch(actions.actionRouteLoggedIn);
 export const dispatchUpdateUserProfile = dispatch(actions.actionUpdateUserProfile);
 export const dispatchAddFlag = dispatch(actions.actionAddFlag);

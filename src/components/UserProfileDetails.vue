@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="full">
+    <template>
       <div v-if="userPublic.about_content">
         <span class="subheading secondary--text text--lighten-3">关于我：</span>
         <Viewer :content="userPublic.about_content" />
@@ -131,7 +131,7 @@
             </span>
           </div>
           <div v-else>
-            <span class="subheading secondary--text text--lighten-3 mr-2"> 加入的圈子： </span>
+            <div class="subheading secondary--text text--lighten-3 mr-2">加入的圈子：</div>
             <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
           </div>
         </div>
@@ -158,54 +158,6 @@
         <span>{{ $dayjs.utc(userPublic.created_at).format('YYYY-MM-DD') }}</span>
       </div>
     </template>
-    <div
-      v-else
-      :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }"
-      style="cursor: pointer"
-      @click="full = !full"
-    >
-      <v-chip
-        v-for="topic in userPublic.profession_topics"
-        :key="topic.uuid"
-        :to="'/topics/' + topic.uuid"
-        class="ml-1"
-        color="amber lighten-4 mb-1"
-      >
-        {{ topic.name }}
-      </v-chip>
-
-      <v-chip
-        v-for="(eduExp, i) in eduExps"
-        :key="'edu-chip' + i"
-        class="ml-1"
-        color="light-blue lighten-4 mb-1"
-      >
-        {{ eduExp.school_topic.name }}
-      </v-chip>
-
-      <v-chip
-        v-for="(workExp, i) in workExps"
-        :key="'work-chip' + i"
-        class="ml-1"
-        color="light-green lighten-4 mb-1"
-      >
-        {{ workExp.company_topic.name }}
-      </v-chip>
-
-      <v-chip
-        v-for="topic in userPublic.residency_topics"
-        :key="topic.uuid"
-        :to="'/topics/' + topic.uuid"
-        class="ml-1"
-        color="yellow lighten-4 mb-1"
-        >{{ topic.name }}
-      </v-chip>
-
-      <WebIcon class="pb-1 px-1" v-if="userPublic.homepage_url" />
-      <GithubIcon class="pb-1 px-1" v-if="userPublic.github_username" />
-      <TwitterIcon class="pb-1 px-1" v-if="userPublic.twitter_username" />
-      <LinkedinIcon class="pb-1 px-1" v-if="userPublic.linkedin_url" />
-    </div>
 
     <div
       :class="{
@@ -214,12 +166,6 @@
       }"
       class="mt-1"
     >
-      <div class="mr-1">
-        <a @click="full = !full">
-          <span v-if="full">收起</span>
-          <span v-else>展开全部</span>
-        </a>
-      </div>
       <v-spacer :class="{ 'mb-3': !$vuetify.breakpoint.mdAndUp }" />
       <v-btn
         v-if="currentUserId === userPublic.uuid"
@@ -264,12 +210,8 @@ export default class UserProfileDetails extends CVue {
   private eduExps: IUserEducationExperience[] | null = null;
   private workExps: IUserWorkExperience[] | null = null;
   private sites: ISite[] | null = null;
-  private full: boolean = false;
 
   async mounted() {
-    if (this.$route.query.details) {
-      this.full = true;
-    }
     if (this.loggedIn) {
       this.eduExps = (
         await apiPeople.getUserEducationExperiences(this.token, this.userPublic.uuid)
