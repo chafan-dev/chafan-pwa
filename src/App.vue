@@ -31,7 +31,7 @@ import {
 import { CVue, getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
 import { ThemeType } from '@/interfaces';
 import { api2 } from '@/api2';
-import { isDev } from '@/env';
+import { apiUrl } from '@/env';
 
 @Component({
   data: function () {
@@ -67,7 +67,7 @@ export default class App extends CVue {
   }
 
   public async mounted() {
-    if (isDev) {
+    if (apiUrl.includes('heroku')) {
       const dynoState = (await api2.getDevDynoState()).data;
       if (dynoState.state !== 'up') {
         commitAddNotification(this.$store, {
