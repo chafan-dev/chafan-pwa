@@ -63,7 +63,7 @@
                 </v-col>
               </v-row>
 
-              <v-card class="pa-4 my-3 c-card">
+              <v-card class="pa-4 my-3" outlined>
                 <div class="d-flex my-1">
                   <v-btn
                     class="slim-btn"
@@ -153,7 +153,7 @@
                   small-chips
                 />
               </v-card>
-              <v-card class="pa-4 my-3 c-card">
+              <v-card class="pa-4 my-3" outlined>
                 <div class="title mb-4 d-flex">
                   教育经历
                   <v-spacer />
@@ -221,7 +221,7 @@
                 </v-dialog>
               </v-card>
 
-              <v-card class="pa-4 my-3 c-card">
+              <v-card class="pa-4 my-3" outlined>
                 <div class="title mb-4 d-flex">
                   工作经历
                   <v-spacer />

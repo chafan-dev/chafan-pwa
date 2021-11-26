@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card>
+    <v-card outlined>
       <v-card-title> 反馈状态 </v-card-title>
       <v-card-text>
         <v-list v-if="feedbacks.length > 0">
