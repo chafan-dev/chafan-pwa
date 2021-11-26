@@ -3,7 +3,7 @@
     <v-row class="mb-12" justify="center">
       <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
         <ValidationObserver v-slot="{ handleSubmit, reset }">
-          <v-card class="ma-3 pa-3">
+          <v-card class="ma-3 pa-3" outlined>
             <v-card-title primary-title>
               <div class="headline primary--text">更新密码</div>
             </v-card-title>
@@ -48,7 +48,7 @@
         </ValidationObserver>
 
         <ValidationObserver v-slot="{ handleSubmit }">
-          <v-card :loading="!userProfile" class="ma-3 pa-3">
+          <v-card :loading="!userProfile" class="ma-3 pa-3" outlined>
             <v-card-title primary-title>
               <div class="headline primary--text">管理登录方式</div>
             </v-card-title>
@@ -186,7 +186,7 @@
           </v-card>
         </ValidationObserver>
 
-        <v-card :loading="!userProfile" class="ma-3 pa-3">
+        <v-card :loading="!userProfile" class="ma-3 pa-3" outlined>
           <v-card-title>其他</v-card-title>
           <v-card-actions>
             <v-btn depressed small @click="showSecurityLogs">查看安全日志</v-btn>

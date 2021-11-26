@@ -210,15 +210,48 @@
           </v-tab-item>
 
           <v-tab-item value="coins">
-            <div class="d-flex ma-2">
+            <div class="d-flex my-2 ml-4">
               <div>
-                <span class="subheading secondary--text text--lighten-3">硬币</span>：
-                <span v-if="userProfile" class="title primary--text text--darken-2">{{
+                <span class="subheading secondary--text text--lighten-3">我的硬币</span>：
+                <span v-if="userProfile" class="title primary--text">{{
                   userProfile.remaining_coins
                 }}</span>
                 <span v-else class="title primary--text text--darken-2">-----</span>
               </div>
             </div>
+
+            <!-- Coin payments -->
+            <v-data-table
+              :headers="coinPaymentHeaders"
+              :items="coinPayments"
+              :items-per-page="10"
+              :loading="coinPaymentsIntermediate"
+              class="ma-2"
+            >
+              <template v-slot:top>
+                <v-toolbar flat>
+                  <v-toolbar-title>最近交易</v-toolbar-title>
+                </v-toolbar>
+              </template>
+              <template v-slot:item.created_at="{ item }">
+                {{ $dayjs.utc(item.created_at).local().fromNow() }}
+              </template>
+              <template v-slot:item.type="{ item }">
+                {{
+                  item.payer.uuid === userProfile.uuid
+                    ? '支出 → '
+                    : item.payee.uuid === userProfile.uuid
+                    ? '收入 ← '
+                    : '未知'
+                }}
+                <UserLink
+                  :userPreview="item.payer.uuid === userProfile.uuid ? item.payee : item.payer"
+                ></UserLink>
+              </template>
+              <template v-slot:item.reference="{ item }">
+                <Event v-if="item.event" :event="item.event" :type="'payment'" />
+              </template>
+            </v-data-table>
 
             <!-- Rewards -->
             <v-data-table
@@ -226,7 +259,7 @@
               :items="myRewards"
               :items-per-page="10"
               :loading="rewardsIntermediate"
-              class="elevation-1 ma-2"
+              class="ma-2"
             >
               <template v-slot:top>
                 <v-toolbar flat>
@@ -292,39 +325,6 @@
                     领取
                   </v-btn>
                 </template>
-              </template>
-            </v-data-table>
-
-            <!-- Coin payments -->
-            <v-data-table
-              :headers="coinPaymentHeaders"
-              :items="coinPayments"
-              :items-per-page="10"
-              :loading="coinPaymentsIntermediate"
-              class="elevation-1 ma-2"
-            >
-              <template v-slot:top>
-                <v-toolbar flat>
-                  <v-toolbar-title>最近交易</v-toolbar-title>
-                </v-toolbar>
-              </template>
-              <template v-slot:item.created_at="{ item }">
-                {{ $dayjs.utc(item.created_at).local().fromNow() }}
-              </template>
-              <template v-slot:item.type="{ item }">
-                {{
-                  item.payer.uuid === userProfile.uuid
-                    ? '支出 → '
-                    : item.payee.uuid === userProfile.uuid
-                    ? '收入 ← '
-                    : '未知'
-                }}
-                <UserLink
-                  :userPreview="item.payer.uuid === userProfile.uuid ? item.payee : item.payer"
-                ></UserLink>
-              </template>
-              <template v-slot:item.reference="{ item }">
-                <Event v-if="item.event" :event="item.event" :type="'payment'" />
               </template>
             </v-data-table>
           </v-tab-item>
