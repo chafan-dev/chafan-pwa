@@ -8,7 +8,7 @@ let envWsUrl = '';
 if (env === 'production') {
   envApiUrl = `https://${process.env.VUE_APP_API}`;
   envWsUrl = `wss://${process.env.VUE_APP_API}`;
-} else if (env === 'test') {
+} else if (env === 'staging') {
   envApiUrl = `https://${process.env.VUE_APP_API}`;
   envWsUrl = `wss://${process.env.VUE_APP_API}`;
 } else {
