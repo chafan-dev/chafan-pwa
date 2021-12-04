@@ -139,7 +139,7 @@
             <v-btn
               v-if="editable"
               @click="showSubmissionEditor = true"
-              class="slim-btn"
+              class="slim-btn mr-1"
               depressed
               small
             >

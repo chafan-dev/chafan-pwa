@@ -13,7 +13,7 @@
         </span>
         {{ answerPreviewBody }}
         <span :class="theme.answer.expand.text.classes">展开全文</span>
-        <v-progress-circular v-if="loading && expandClicked" class="ml-2" indeterminate size="20" />
+        <v-progress-circular v-if="loading" class="ml-2" indeterminate size="20" />
       </div>
       <div v-if="answer" v-show="!preview">
         <div v-if="showAuthor" class="d-flex align-center">
