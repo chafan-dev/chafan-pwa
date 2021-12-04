@@ -5,7 +5,10 @@
         <slot :item="item" class="my-4"></slot>
       </div>
       <div class="text-center">
-        <span v-if="noMore">没有更多了</span>
+        <span v-if="noMore">
+          <template v-if="loggedIn">没有更多了</template>
+          <template v-else>登录后查看更多</template>
+        </span>
       </div>
     </div>
     <EmptyPlaceholder v-else-if="items !== null" />
@@ -16,13 +19,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+import { CVue } from '@/common';
 
 @Component({
   components: { EmptyPlaceholder },
 })
-export default class DynamicItemList<T> extends Vue {
+export default class DynamicItemList<T> extends CVue {
   @Prop({ default: 20 }) public readonly pageLimit!: number;
   @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<(T | null)[] | null>;
 
@@ -35,7 +39,7 @@ export default class DynamicItemList<T> extends Vue {
     window.onscroll = () => {
       this.tryLoadMore(false);
     };
-    this.tryLoadMore(true);
+    await this.tryLoadMore(true);
   }
 
   private async tryLoadMore(ignoreScroll: boolean) {
