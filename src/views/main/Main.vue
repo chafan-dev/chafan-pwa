@@ -73,7 +73,7 @@
         </v-list>
       </v-layout>
     </v-navigation-drawer>
-    <v-app-bar color="primary" dark>
+    <v-app-bar color="primary" dark height="55">
       <div class="d-flex justify-space-between app-bar-inner">
         <div class="d-flex align-center">
           <v-app-bar-nav-icon
