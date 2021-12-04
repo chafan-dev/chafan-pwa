@@ -1,17 +1,13 @@
 <template>
   <div :class="theme.baseCard.classKey" class="pa-3">
     <div class="row">
-      <div :class="{ 'col-12': !$vuetify.breakpoint.mdAndUp }" class="pb-4">
-        <div v-if="avatarURL" :class="{ 'text-center': !$vuetify.breakpoint.mdAndUp }" class="pa-3">
+      <div :class="{ 'col-12': !isDesktop }" class="pb-4">
+        <div v-if="avatarURL" :class="{ 'text-center': !isDesktop }" class="pa-3">
           <router-link :to="`/users/${userPreview.handle}`">
             <Avatar :avatar-url="avatarURL" size="140" />
           </router-link>
         </div>
-        <UserNameHeadline
-          v-if="!$vuetify.breakpoint.mdAndUp"
-          :user-preview="userPreview"
-          class="text-center"
-        />
+        <UserNameHeadline v-if="!isDesktop" :user-preview="userPreview" class="text-center" />
         <div v-if="follows" class="text-center">
           <div>
             <a
@@ -118,8 +114,8 @@
         </div>
       </div>
       <div class="col align-self-center">
-        <UserNameHeadline v-if="$vuetify.breakpoint.mdAndUp" :user-preview="userPreview" />
-        <v-divider v-if="$vuetify.breakpoint.mdAndUp" class="my-2" />
+        <UserNameHeadline v-if="isDesktop" :user-preview="userPreview" />
+        <v-divider v-if="isDesktop" class="my-2" />
         <UserProfileDetails v-if="userPublic" :user-public="userPublic" />
 
         <div class="d-flex">
