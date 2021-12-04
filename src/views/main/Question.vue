@@ -175,11 +175,11 @@
                 @click="cancelSubscription"
               >
                 <ToBookmarkIcon class="mr-1" />
-                收藏
+                关注
               </v-list-item>
               <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
                 <BookmarkedIcon class="mr-1" />
-                取消收藏
+                取消关注
               </v-list-item>
               <v-list-item dense @click="showHistoryDialog">
                 <HistoryIcon class="mr-1" />
