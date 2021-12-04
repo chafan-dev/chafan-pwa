@@ -120,17 +120,8 @@
       </div>
 
       <template v-if="sites !== null">
-        <div v-if="sites.length > 0">
-          <div
-            v-if="$vuetify.breakpoint.mdAndUp"
-            class="subheading secondary--text text--lighten-3 d-flex align-center"
-          >
-            <span>加入的圈子：</span>
-            <span>
-              <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
-            </span>
-          </div>
-          <div v-else>
+        <div v-if="sites.length > 0" class="my-3">
+          <div>
             <div class="subheading secondary--text text--lighten-3 mr-2">加入的圈子：</div>
             <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
           </div>
