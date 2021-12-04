@@ -4,17 +4,17 @@
     <v-row v-else justify="center">
       <v-col
         :class="{
-          'col-8': $vuetify.breakpoint.mdAndUp,
+          'col-8': isDesktop,
           'fixed-narrow-col': isNarrowFeedUI,
-          'less-left-right-padding': !$vuetify.breakpoint.mdAndUp,
+          'less-left-right-padding': !isDesktop,
         }"
         class="mb-12"
         fluid
       >
         <v-tabs
           v-model="currentTabItem"
-          :align-with-title="$vuetify.breakpoint.mdAndUp"
-          :fixed-tabs="$vuetify.breakpoint.mdAndUp"
+          :align-with-title="isDesktop"
+          :fixed-tabs="isDesktop"
           show-arrows
         >
           <v-tabs-slider />
@@ -73,10 +73,7 @@
         </v-tabs>
       </v-col>
 
-      <v-col
-        v-if="$vuetify.breakpoint.mdAndUp"
-        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
-      >
+      <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'">
         <SiteCard
           :compactMode="false"
           :isMember="siteProfile !== null"
@@ -107,7 +104,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { api } from '@/api';
 import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interfaces';
 
@@ -119,10 +116,10 @@ import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 
-import { readNarrowUI, readToken, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual, updateHead } from '@/common';
+import { CVue, isEqual, updateHead } from '@/common';
 import { apiSite } from '@/api/site';
 
 @Component({
@@ -135,7 +132,7 @@ import { apiSite } from '@/api/site';
     DynamicItemList,
   },
 })
-export default class Site extends Vue {
+export default class Site extends CVue {
   private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
   private site: ISite | null = null;
   private siteProfile: IUserSiteProfile | null = null;
@@ -165,10 +162,6 @@ export default class Site extends Vue {
     return readNarrowUI(this.$store);
   }
 
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
   get readable() {
     return this.site && (this.siteProfile !== null || this.site.public_readable);
   }
@@ -183,10 +176,6 @@ export default class Site extends Vue {
     } else {
       this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
     }
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   get subdomain() {
@@ -267,21 +256,3 @@ export default class Site extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.less-left-right-padding {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-}
-
-/* FIXME: Potential code duplication with Home.vue */
-.fixed-narrow-col {
-  max-width: 800px;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.fixed-narrow-sidecol {
-  max-width: 400px;
-}
-</style>

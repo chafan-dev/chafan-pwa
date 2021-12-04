@@ -124,7 +124,7 @@
 
         <div class="d-flex">
           <v-spacer />
-          <span class="text-caption grey--text mt-2">
+          <span class="text-caption grey--text mt-2" v-if="userPublic.profile_view_times">
             这个主页被浏览了{{ userPublic.profile_view_times }}次
           </span>
         </div>

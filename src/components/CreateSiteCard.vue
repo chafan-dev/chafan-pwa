@@ -140,7 +140,7 @@ export default class CreateSite extends CVue {
           await this.$router.push(`/sites/${site.subdomain}`);
         },
         errorFilter: (err: AxiosError) => {
-          return this.commitErrMsg(err);
+          return this.commitErrMsg(err) !== null;
         },
       });
       this.intermediate = false;

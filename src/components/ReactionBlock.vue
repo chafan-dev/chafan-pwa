@@ -44,17 +44,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import UserLink from '@/components/UserLink.vue';
 import ReactionIcon from '@/components/icons/ReactionIcon.vue';
 import { IReactions } from '@/interfaces';
 import { api2 } from '@/api2';
-import { readIsLoggedIn } from '@/store/main/getters';
+import { CVue } from '@/common';
+import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 
 @Component({
   components: { UserLink, ReactionIcon },
 })
-export default class ReactionBlock extends Vue {
+export default class ReactionBlock extends CVue {
   @Prop() public readonly objectId!: string;
   @Prop() public readonly objectType!: 'question' | 'answer' | 'comment' | 'article';
 
@@ -63,15 +64,9 @@ export default class ReactionBlock extends Vue {
   private reactions: IReactions | null = null;
   private reactionIntermediate = false;
 
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
   private async mounted() {
-    this.reactions = (
-      await api2.getReactions(this.$store.state.main.token, this.objectId, this.objectType)
-    ).data;
-    this.updateMyReactionChoices();
+    this.reactions = (await api2.getReactions(this.token, this.objectId, this.objectType)).data;
+    await this.updateMyReactionChoices();
   }
 
   private async updateMyReactionChoices() {
@@ -87,17 +82,18 @@ export default class ReactionBlock extends Vue {
     action: 'add' | 'cancel'
   ) {
     if (!this.loggedIn) {
+      commitSetShowLoginPrompt(this.$store, true);
       return;
     }
     this.reactionIntermediate = true;
-    const response = await api2.updateReaction(this.$store.state.main.token, {
+    const response = await api2.updateReaction(this.token, {
       object_uuid: this.objectId,
       object_type: this.objectType,
       reaction,
       action,
     });
     this.reactions = response.data;
-    this.updateMyReactionChoices();
+    await this.updateMyReactionChoices();
     this.reactionIntermediate = false;
   }
 }

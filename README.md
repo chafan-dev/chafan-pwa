@@ -24,6 +24,18 @@ take a minute to restart**.
 
 Open the "Network" URL in your browser.
 
+## Overriding default development environ
+
+Add a new file `.start_local_dev.sh` containing e.g.:
+
+```bash
+export VUE_APP_API=localhost:4582
+export VUE_APP_NAME=Chafan Dev
+yarn run serve
+```
+
+And run `bash .start_local_dev.sh`
+
 ## Showcase
 
 When developing locally, you can see `/showcase` for individual static components, for exploration and design purpose. For example:

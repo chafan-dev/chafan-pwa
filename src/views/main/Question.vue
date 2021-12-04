@@ -534,7 +534,7 @@ export default class Question extends CVue {
         if (matched) {
           this.$router.push('/');
         }
-        return matched;
+        return matched !== null;
       },
     });
 
