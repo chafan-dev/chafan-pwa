@@ -69,20 +69,6 @@
       </v-menu>
     </div>
 
-    <v-tabs v-if="showQuestionEditor || showSubmissionEditor">
-      <v-tab v-if="showQuestionEditor">提问</v-tab>
-      <v-tab v-if="showSubmissionEditor">分享</v-tab>
-      <v-tabs-slider />
-
-      <v-tab-item v-if="showQuestionEditor">
-        <CreateQuestionForm :site="site" class="my-2" />
-      </v-tab-item>
-
-      <v-tab-item v-if="showSubmissionEditor">
-        <CreateSubmissionForm :site="site" class="my-2" />
-      </v-tab-item>
-    </v-tabs>
-
     <div v-if="relatedSites.length > 0 && !compactMode">
       <v-divider class="my-2" />
       <RotationCard v-slot="{ item }" :items="relatedSites" title="相关站点">
@@ -148,8 +134,6 @@ import RotationCard from '@/components/base/RotationCard.vue';
 export default class SiteCard extends CVue {
   @Prop() private readonly site!: ISite;
   @Prop() private readonly isMember: boolean | undefined;
-  @Prop() private readonly showQuestionEditor!: boolean;
-  @Prop() private readonly showSubmissionEditor!: boolean;
   @Prop({ default: true }) private readonly compactMode!: boolean;
   private notMember = true;
   private siteApplied = false;
