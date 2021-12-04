@@ -1027,7 +1027,6 @@ export interface ISubmissionSuggestionCreate {
 
 export interface ISubmissionSuggestionUpdate {
   status: 'pending' | 'accepted' | 'rejected' | 'retracted';
-  accepted_diff_base?: ISubmissionEditableSnapshot;
 }
 
 export interface ISubmissionEditableSnapshot {
