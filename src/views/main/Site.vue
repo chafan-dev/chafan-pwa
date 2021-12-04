@@ -1,16 +1,39 @@
 <template>
-  <v-container fluid>
+  <v-container :class="{ 'pa-1': !this.isDesktop }" fluid>
     <v-progress-linear v-if="loading" indeterminate />
-    <v-row v-else justify="center">
+    <v-row class="pt-3 pb-10" justify="center" v-else>
       <v-col
         :class="{
           'col-8': isDesktop,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !isDesktop,
         }"
-        class="mb-12"
+        class="mb-12 mx-4"
         fluid
       >
+        <div class="d-flex mb-2" v-if="site">
+          <div v-if="enableQuestionEditor">
+            <v-btn
+              class="primary darken-2 mr-1"
+              depressed
+              small
+              @click="showAskActionDialog = true"
+            >
+              提问
+            </v-btn>
+            <v-dialog v-model="showAskActionDialog" max-width="500">
+              <CreateQuestionForm :site="site" :showTitle="true" />
+            </v-dialog>
+          </div>
+          <div v-if="enableSubmissionEditor">
+            <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true"
+              >新分享</v-btn
+            >
+            <v-dialog v-model="showSubmissionActionDialog" max-width="500">
+              <CreateSubmissionForm :site="site" :showTitle="true" />
+            </v-dialog>
+          </div>
+        </div>
         <v-tabs
           v-model="currentTabItem"
           :align-with-title="isDesktop"
@@ -74,13 +97,7 @@
       </v-col>
 
       <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'">
-        <SiteCard
-          :compactMode="false"
-          :isMember="siteProfile !== null"
-          :showQuestionEditor="showQuestionEditor"
-          :showSubmissionEditor="showSubmissionEditor"
-          :site="site"
-        />
+        <SiteCard :compactMode="false" :isMember="siteProfile !== null" :site="site" />
       </v-col>
       <v-bottom-sheet v-else>
         <template v-slot:activator="{ on, attrs }">
@@ -90,13 +107,7 @@
           </div>
         </template>
         <v-sheet class="pa-2">
-          <SiteCard
-            :compactMode="false"
-            :isMember="siteProfile !== null"
-            :showQuestionEditor="showQuestionEditor"
-            :showSubmissionEditor="showSubmissionEditor"
-            :site="site"
-          />
+          <SiteCard :compactMode="false" :isMember="siteProfile !== null" :site="site" />
         </v-sheet>
       </v-bottom-sheet>
     </v-row>
@@ -121,9 +132,13 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
 import { CVue, isEqual, updateHead } from '@/common';
 import { apiSite } from '@/api/site';
+import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
+import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 
 @Component({
   components: {
+    CreateSubmissionForm,
+    CreateQuestionForm,
     QuestionPreview,
     SiteCard,
     UserCard,
@@ -137,8 +152,10 @@ export default class Site extends CVue {
   private site: ISite | null = null;
   private siteProfile: IUserSiteProfile | null = null;
   private siteProfiles: IUserSiteProfile[] | null = null;
-  private showQuestionEditor = false;
-  private showSubmissionEditor = false;
+  private showAskActionDialog = false;
+  private enableQuestionEditor = false;
+  private showSubmissionActionDialog = false;
+  private enableSubmissionEditor = false;
   private loading = true;
   private tabItems = [
     {
@@ -222,10 +239,10 @@ export default class Site extends CVue {
         }
       }
       if (this.siteProfile !== null || this.site!.public_writable_question) {
-        this.showQuestionEditor = true;
+        this.enableQuestionEditor = true;
       }
       if (this.siteProfile !== null || this.site!.public_writable_submission) {
-        this.showSubmissionEditor = true;
+        this.enableSubmissionEditor = true;
       }
       this.loading = false;
     });

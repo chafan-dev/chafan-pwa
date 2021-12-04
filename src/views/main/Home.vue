@@ -1,5 +1,5 @@
 <template>
-  <v-container :class="{ 'pa-1': !$vuetify.breakpoint.mdAndUp }" fluid>
+  <v-container :class="{ 'pa-1': !this.isDesktop }" fluid>
     <user-agreement v-if="userProfile" ref="userAgreement" :user-profile="userProfile" />
 
     <v-row class="pt-3 pb-10" justify="center">

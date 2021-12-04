@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex d-none">
+  <div class="d-flex">
     <div>
       <v-btn class="primary darken-2 mr-1" depressed small @click="showAskActionDialog = true">
         提问
@@ -64,11 +64,12 @@ import { commitAddNotification } from '@/store/main/mutations';
 import { Component, Vue } from 'vue-property-decorator';
 import RotationList from '@/components/base/RotationList.vue';
 import { readToken } from '@/store/main/getters';
+import { CVue } from '@/common';
 
 @Component({
   components: { RotationList, QuestionLink, CreateSubmissionForm, CreateQuestionForm },
 })
-export default class NewContentActionBar extends Vue {
+export default class NewContentActionBar extends CVue {
   private questionsToAnswer: IQuestionPreview[] = [];
 
   private showAskActionDialog = false;
@@ -82,18 +83,17 @@ export default class NewContentActionBar extends Vue {
 
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const token = readToken(this.$store);
-      if (token) {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(token)).data;
-        this.myArticleColumns = (await api.getMyArticleColumns(token)).data;
+      if (this.token) {
+        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
+        this.myArticleColumns = (await api.getMyArticleColumns(this.token)).data;
+        this.questionsToAnswer = (await apiDiscovery.getPendingQuestions(this.token)).data;
       }
-      this.questionsToAnswer = (await apiDiscovery.getPendingQuestions(token)).data;
     });
   }
 
   private async postNewArticle() {
     if (this.newArticleColumnUUID) {
-      this.$router.push(`/article-editor?articleColumnId=${this.newArticleColumnUUID}`);
+      await this.$router.push(`/article-editor?articleColumnId=${this.newArticleColumnUUID}`);
     } else {
       commitAddNotification(this.$store, {
         content: '请选择一个专栏发布文章，在「用户中心」中可以创建专栏',
