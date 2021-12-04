@@ -366,6 +366,9 @@ export const updateHead = (routePath: string, title: string, descriptionText?: s
     ?.setAttribute('content', 'https://cha.fan' + routePath);
 };
 
+export const INSUFFICIENT_KARMA_TO_JOIN_SITE = '加入圈子所需的 Karma 不足';
+export const MISSING_REQUIRED_SECONDARY_EMAIL = '没有符合要求的次要邮箱绑定';
+
 const errorMsgCN = {
   'The site with this id does not exist in the system': '圈子域名已存在',
   'The secondary email already exists': '次要邮件地址已存在',
@@ -375,7 +378,7 @@ const errorMsgCN = {
   'Insufficient coins': '硬币不够了',
   "The topic doesn't exists in the system": '话题不存在',
   "The deposit doesn't exist in the system": '存款不存在',
-  'No verified email': '没有验证过的邮件',
+  'No verified email': MISSING_REQUIRED_SECONDARY_EMAIL,
   'Invalid owner UUID': '所有者 UUID 无效',
   'The article column is not owned by current user': '当前用户不是专栏所有者',
   "The application doesn't exists in the system": '申请不存在',
@@ -435,7 +438,7 @@ const errorMsgCN = {
   "The comment doesn't exists in the system": '评论不存在',
   'Missing hCaptcha token': '缺少 CAPTCHA token',
   'The user with this username already exists in the system': '该用户名已被使用',
-  'Insuffient karma for joining site': '加入圈子所需的 Karma 不足',
+  'Insuffient karma for joining site': INSUFFICIENT_KARMA_TO_JOIN_SITE,
   'Invalid category topic id': '无效的话题类型ID',
   "Author can't upvote authored comment": '不能给自己的评论点赞',
   'The verification code is not present in the system': '验证码无效',
@@ -498,6 +501,9 @@ export const translateErrorMsgCN = (s: string) => {
   if (s + '.' in errorMsgCN) {
     return errorMsgCN[s + '.'];
   }
+  if (s.endsWith('.') && s.substr(0, s.length - 1) in errorMsgCN) {
+    return errorMsgCN[s.substr(0, s.length - 1)];
+  }
   return s;
 };
 
@@ -526,8 +532,8 @@ export class CVue extends Vue {
     return readUserProfile(this.$store);
   }
 
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
+  get isDesktop() {
+    return this.$vuetify.breakpoint.mdAndUp;
   }
 
   protected expectOkAndCommitMsg(response: IGenericResponse, msg: string) {
@@ -544,15 +550,16 @@ export class CVue extends Vue {
     }
   }
 
-  commitErrMsg(err: AxiosError): boolean {
+  commitErrMsg(err: AxiosError) {
     if (err.response && err.response.data && err.response.data.detail) {
+      const translated = translateErrorMsgCN(err.response.data.detail);
       commitAddNotification(this.$store, {
-        content: translateErrorMsgCN(err.response.data.detail),
-        color: 'error',
+        content: translated,
+        color: 'warning',
       });
-      return true;
+      return translated;
     }
-    return false;
+    return null;
   }
 
   async sendToAdmin(msg: string) {

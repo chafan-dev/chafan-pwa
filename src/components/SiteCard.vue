@@ -55,7 +55,7 @@
         <template v-slot:activator="{ on, attrs }">
           <v-btn v-bind="attrs" v-on="on" class="ml-2" depressed small>
             <SettingsIcon small />
-            <span v-if="!$vuetify.breakpoint.mobile" class="ml-1">设置</span>
+            <span v-if="isDesktop" class="ml-1">设置</span>
           </v-btn>
         </template>
         <v-list>
@@ -123,7 +123,7 @@ import { AxiosError } from 'axios';
 import DoorIcon from '@/components/icons/DoorIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { apiSite } from '@/api/site';
-import { CVue } from '@/common';
+import { CVue, INSUFFICIENT_KARMA_TO_JOIN_SITE, MISSING_REQUIRED_SECONDARY_EMAIL } from '@/common';
 import SiteBtn from '@/components/SiteBtn.vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import RotationCard from '@/components/base/RotationCard.vue';
@@ -214,11 +214,14 @@ export default class SiteCard extends CVue {
       },
       errorFilter: (err: AxiosError) => {
         const matched = this.commitErrMsg(err);
-        if (matched) {
+        if (
+          matched === INSUFFICIENT_KARMA_TO_JOIN_SITE ||
+          matched === MISSING_REQUIRED_SECONDARY_EMAIL
+        ) {
           this.showJoinConditionsDialog = true;
           this.applyToJoinIntermediate = false;
         }
-        return matched;
+        return matched !== null;
       },
     });
   }

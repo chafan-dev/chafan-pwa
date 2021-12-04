@@ -16,7 +16,7 @@ export class APIWrapper {
         cb(ret.data);
       },
       errorFilter: (err: AxiosError) => {
-        return this.ctx.commitErrMsg(err);
+        return this.ctx.commitErrMsg(err) !== null;
       },
     });
   }

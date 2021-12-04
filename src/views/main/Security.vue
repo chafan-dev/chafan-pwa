@@ -324,14 +324,14 @@ export default class Security extends CVue {
           verification_code: this.verificationCode,
           phone_number: this.phoneNumber!,
         };
-        response = await apiMe.updatePhoneNumber(this.$store.state.main.token, payload);
+        response = await apiMe.updatePhoneNumber(this.token, payload);
       } else if (this.editLoginMode === 'email') {
         const payload: IUserUpdatePrimaryEmail = {
           email: this.newEmail!,
           verification_code: this.verificationCode,
         };
         await apiMe
-          .updatePrimaryEmail(this.$store.state.main.token, payload)
+          .updatePrimaryEmail(this.token, payload)
           .then((r) => {
             response = r;
           })
@@ -344,7 +344,7 @@ export default class Security extends CVue {
           action: 'add',
           verification_code: this.verificationCode,
         };
-        response = await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload);
+        response = await apiMe.updateSecondaryEmail(this.token, payload);
       }
       if (response) {
         commitAddNotification(this.$store, {
@@ -368,8 +368,7 @@ export default class Security extends CVue {
         secondary_email: email,
         action: 'remove',
       };
-      const newProfile = (await apiMe.updateSecondaryEmail(this.$store.state.main.token, payload))
-        .data;
+      const newProfile = (await apiMe.updateSecondaryEmail(this.token, payload)).data;
       commitAddNotification(this.$store, {
         content: '更新成功',
         color: 'success',
@@ -416,7 +415,7 @@ export default class Security extends CVue {
 
   private async showSecurityLogs() {
     this.showSecurityLogsDialog = true;
-    this.auditLogs = (await api.getAuditLogs(this.$store.state.main.token)).data;
+    this.auditLogs = (await api.getAuditLogs(this.token)).data;
   }
 }
 </script>

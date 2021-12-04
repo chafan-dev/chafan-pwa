@@ -286,7 +286,7 @@ export default class Article extends CVue {
         if (matched) {
           this.$router.push('/');
         }
-        return matched;
+        return matched !== null;
       },
     });
   }
