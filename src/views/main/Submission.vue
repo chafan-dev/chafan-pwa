@@ -883,11 +883,6 @@ export default class Submission extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
         status: 'accepted',
-        accepted_diff_base: {
-          title: this.submission!.title,
-          desc: this.submission?.desc,
-          topic_uuids: this.submission!.topics.map((topic) => topic.uuid),
-        },
       });
       this.$router.go(0);
     });
