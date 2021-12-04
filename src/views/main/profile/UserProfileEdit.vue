@@ -90,24 +90,26 @@
                       ref="vditor"
                       editor-mode="wysiwyg"
                       :initial-content="userProfile.about"
-                      :isMobile="isMobile"
+                      :isMobile="!isDesktop"
                       :onEditorChange="onEditorChange"
                       :vditorUploadConfig="vditorUploadConfig"
                     />
                   </div>
                 </v-expand-transition>
 
-                <!-- TODO: validate -->
                 <v-text-field
                   v-model="userUpdateMe.personal_introduction"
                   clearable
                   label="个人签名"
                 />
-                <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页">
-                  <template v-slot:prepend>
-                    <WebIcon />
-                  </template>
-                </v-text-field>
+                <ValidateUrl>
+                  <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页">
+                    <template v-slot:prepend>
+                      <WebIcon />
+                    </template>
+                  </v-text-field>
+                </ValidateUrl>
+
                 <v-text-field
                   v-model="userUpdateMe.github_username"
                   clearable
@@ -126,15 +128,18 @@
                     <TwitterIcon />
                   </template>
                 </v-text-field>
-                <v-text-field
-                  v-model="userUpdateMe.linkedin_url"
-                  clearable
-                  label="Linkedin 主页地址"
-                >
-                  <template v-slot:prepend>
-                    <LinkedinIcon />
-                  </template>
-                </v-text-field>
+
+                <ValidateUrl>
+                  <v-text-field
+                    v-model="userUpdateMe.linkedin_url"
+                    clearable
+                    label="Linkedin 主页地址"
+                  >
+                    <template v-slot:prepend>
+                      <LinkedinIcon />
+                    </template>
+                  </v-text-field>
+                </ValidateUrl>
 
                 <v-combobox
                   v-model="newResidencyTopicNames"
@@ -322,6 +327,7 @@ import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
+import ValidateUrl from '@/components/base/ValidateUrl.vue';
 
 interface IUserWorkExperienceItem {
   company_topic_name?: string;
@@ -341,6 +347,7 @@ interface IUserEducationExperienceItem {
 
 @Component({
   components: {
+    ValidateUrl,
     WorkExp,
     EduExp,
     EditIcon,

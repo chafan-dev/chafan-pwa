@@ -501,7 +501,7 @@ export const translateErrorMsgCN = (s: string) => {
   if (s + '.' in errorMsgCN) {
     return errorMsgCN[s + '.'];
   }
-  if (s.endsWith('.') && s.substr(0, s.length - 1) in errorMsgCN) {
+  if (s[s.length - 1] === '.' && s.substr(0, s.length - 1) in errorMsgCN) {
     return errorMsgCN[s.substr(0, s.length - 1)];
   }
   return s;
