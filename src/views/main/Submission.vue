@@ -293,8 +293,7 @@
                 <template v-if="suggestion.status === 'accepted' && suggestion.accepted_diff_base">
                   <div
                     v-if="
-                      suggestion.accepted_diff_base.title !== suggestion.title &&
-                      suggestion.title !== undefined
+                      suggestion.accepted_diff_base.title !== suggestion.title && suggestion.title
                     "
                   >
                     <span class="font-weight-bold">标题改动：</span>
@@ -302,7 +301,7 @@
                   </div>
                   <div
                     v-if="
-                      suggestion.desc !== undefined &&
+                      suggestion.desc &&
                       (!suggestion.accepted_diff_base.desc ||
                         suggestion.accepted_diff_base.desc.source !== suggestion.desc.source)
                     "
@@ -319,15 +318,13 @@
                   </div>
                 </template>
                 <template v-else-if="suggestion.status !== 'accepted'">
-                  <div
-                    v-if="submission.title !== suggestion.title && suggestion.title !== undefined"
-                  >
+                  <div v-if="submission.title !== suggestion.title && suggestion.title">
                     <span class="font-weight-bold">标题改动：</span>
                     <Diff :s1="submission.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
-                      suggestion.desc !== undefined &&
+                      suggestion.desc &&
                       (!submission.desc || submission.desc.source !== suggestion.desc.source)
                     "
                   >
