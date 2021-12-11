@@ -61,9 +61,8 @@ import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import RotationList from '@/components/base/RotationList.vue';
-import { readToken } from '@/store/main/getters';
 import { CVue } from '@/common';
 
 @Component({

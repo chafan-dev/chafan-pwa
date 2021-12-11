@@ -8,7 +8,9 @@
               :answer-preview="mockData.exampleAnswerPreview"
               :answer-prop="mockData.exampleAnswer"
               :show-author="true"
+              :load-full="true"
               :answer-upvotes-prop="mockData.exampleAnswerUpvotes"
+              :answer-prop-delay-milli-seconds-for-test="1000"
             />
           </v-card-text>
         </v-card>
