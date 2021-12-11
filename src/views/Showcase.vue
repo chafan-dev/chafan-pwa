@@ -4,6 +4,16 @@
       <div>
         <v-card>
           <v-card-text>
+            <Answer
+              :answer-preview="mockData.exampleAnswerPreview"
+              :answer-prop="mockData.exampleAnswer"
+              :show-author="true"
+              :answer-upvotes-prop="mockData.exampleAnswerUpvotes"
+            />
+          </v-card-text>
+        </v-card>
+        <v-card>
+          <v-card-text>
             <v-sheet outlined>
               <QuestionPreview
                 :question-preview="mockData.exampleQuestionPreview"
@@ -50,9 +60,11 @@ import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import ExampleSubmissionPreview from '@/views/showcase/ExampleSubmissionPreview.vue';
 import RotationCard from '@/components/base/RotationCard.vue';
 import SiteCard from '@/components/SiteCard.vue';
+import Answer from '@/components/Answer.vue';
 
 @Component({
   components: {
+    Answer,
     SiteCard,
     RotationCard,
     ExampleSubmissionPreview,

@@ -1,4 +1,7 @@
 import {
+  IAnswer,
+  IAnswerPreview,
+  IAnswerUpvotes,
   IQuestionPreview,
   IQuestionUpvotes,
   ISite,
@@ -10,6 +13,18 @@ import {
 const EXAMPLE_USER1_UUID = 'example-user-1-uuid';
 const EXAMPLE_USER1_HANDLE = 'example-user-1';
 const EXAMPLE_USER1_FULL_NAME = 'Example User 1';
+const exampleLongTextPreview =
+  '壬戌之秋，七月既望，苏子与客泛舟游于赤壁之下。清风徐来，水波不兴。举酒属客...';
+const exampleLongText =
+  '壬戌之秋，七月既望，苏子与客泛舟游于赤壁之下。清风徐来，水波不兴。举酒属客，诵明月之诗，歌窈窕之章。少焉，月出于东山之上，徘徊于斗牛之间。白露横江，水光接天。纵一苇之所如，凌万顷之茫然。浩浩乎如冯虚御风，而不知其所止；飘飘乎如遗世独立，羽化而登仙。 \n' +
+  '\n' +
+  '　　于是饮酒乐甚，扣舷而歌之。歌曰：“桂棹兮兰桨，击空明兮溯流光。渺渺兮于怀，望美人兮天一方。”客有吹洞萧者，倚歌而和之，其声呜呜然：如怨如慕，如泣如诉；余音袅袅，不绝如缕；舞幽壑之潜蛟，泣孤舟之嫠妇。 \n' +
+  '\n' +
+  '　　苏子愀然，正襟危坐，而问客曰：“何为其然也？”客曰：“月明星稀，乌鹊南飞，此非曹孟德之诗乎？西望夏口，东望武昌。山川相缪，郁乎苍苍；此非孟德之困于周郎者乎？方其破荆州，下江陵，顺流而东也，舳舻千里，旌旗蔽空，酾酒临江，横槊赋诗；固一世之雄也，而今安在哉？况吾与子，渔樵于江渚之上，侣鱼虾而友糜鹿，驾一叶之扁舟，举匏樽以相属；寄蜉蝣与天地，渺沧海之一粟。哀吾生之须臾，羡长江之无穷；挟飞仙以遨游，抱明月而长终；知不可乎骤得，托遗响于悲风。” \n' +
+  '\n' +
+  '　　苏子曰：“客亦知夫水与月乎？逝者如斯，而未尝往也；盈虚者如彼，而卒莫消长也。盖将自其变者而观之，而天地曾不能一瞬；自其不变者而观之，则物于我皆无尽也。而又何羡乎？且夫天地之间，物各有主。苟非吾之所有，虽一毫而莫取。惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色。取之无禁，用之不竭。是造物者之无尽藏也，而吾与子之所共适。” \n' +
+  '\n' +
+  '　　客喜而笑，洗盏更酌，肴核既尽，杯盘狼藉。相与枕藉乎舟中，不知东方之既白。 ';
 
 const example_user1_preview = {
   uuid: EXAMPLE_USER1_UUID,
@@ -148,3 +163,43 @@ export const exampleSubmissionUpvotes: ISubmissionUpvotes = {
 };
 
 export const sites: ISite[] = [example_site1, example_site2];
+
+const exampleAnswerUUID = 'answer-0001';
+
+export const exampleAnswerPreview: IAnswerPreview = {
+  uuid: exampleAnswerUUID,
+  author: example_user1_preview,
+  question: exampleQuestionPreview,
+  body: exampleLongTextPreview,
+  body_is_truncated: true,
+  upvotes_count: 12,
+  is_hidden_by_moderator: false,
+};
+
+export const exampleAnswer: IAnswer = {
+  archives_count: 0,
+  bookmarked: false,
+  uuid: exampleAnswerUUID,
+  author: example_user1_preview,
+  site: example_site1,
+  question: exampleQuestionPreview,
+  updated_at: '2021-03-05T19:30:57.482069+00:00',
+  is_published: true,
+  comments: [],
+  is_hidden_by_moderator: false,
+  view_times: 100,
+  comment_writable: true,
+  bookmark_count: 12,
+  visibility: 'anyone',
+  content: {
+    source: exampleLongText,
+    rendered_text: exampleLongText,
+    editor: 'markdown',
+  },
+};
+
+export const exampleAnswerUpvotes: IAnswerUpvotes = {
+  answer_uuid: exampleAnswerUUID,
+  count: 23,
+  upvoted: false,
+};

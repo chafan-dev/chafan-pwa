@@ -314,6 +314,7 @@ import { CVue } from '@/common';
 export default class Answer extends CVue {
   @Prop() private readonly answerPreview!: IAnswerPreview;
   @Prop() private readonly answerProp: IAnswer | undefined;
+  @Prop() private readonly answerUpvotesProp: IAnswerUpvotes | undefined;
   @Prop({ default: false }) private readonly loadFull!: boolean;
   @Prop() private readonly showAuthor!: boolean;
   @Prop({ default: false }) private readonly draftMode!: boolean;
@@ -484,7 +485,11 @@ export default class Answer extends CVue {
         });
       }
     }
-    this.upvotes = (await apiAnswer.getAnswerUpvotes(this.token, this.answer.uuid)).data;
+    if (this.answerUpvotesProp) {
+      this.upvotes = this.answerUpvotesProp;
+    } else {
+      this.upvotes = (await apiAnswer.getAnswerUpvotes(this.token, this.answer.uuid)).data;
+    }
     this.commentWritable = this.answer.comment_writable;
     this.userBookmark = {
       answer_uuid: this.answer.uuid,
