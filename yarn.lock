@@ -949,13 +949,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chafan/vditor@3.8.3":
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/@chafan/vditor/-/vditor-3.8.3.tgz#b4628c3a261df89135d3c8c5090a1d8964ff2497"
-  integrity sha512-0+E2rkCBgCHi1sqS2enrJWlWcslgXlLBQVhPn9bzWaroFReLhxQlPP9GDd1qP8N3P3x6RspiBwlglDPvNgU82Q==
+"@chafan/vditor@3.8.8-chafan.2":
+  version "3.8.8-chafan.2"
+  resolved "https://registry.yarnpkg.com/@chafan/vditor/-/vditor-3.8.8-chafan.2.tgz#33a4b905a21727cc81742c4bec82643b8083c0d5"
+  integrity sha512-doGP26uDCkZBND2SOnLFeZnr0zEPPgqsk46i69GPoLTPh/Hj0kMxVRYeclLSvBpVPGrX2eIq+3jEGJb5yqidYg==
   dependencies:
     diff-match-patch "^1.0.5"
-    sanitize-html "^2.3.2"
+    sanitize-html "^2.6.1"
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -3978,12 +3978,12 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chafan-vue-editors@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.9.0.tgz#1eff9f276661561f038a20ea6bb73b095c7174b1"
-  integrity sha512-pakrNn7XpalFj8K/PNvfqjEahz6Dcz8P5+SVOByKY7N7lgNBjM/8xvJ2bwZG9XzPQ8hp7UbTfspH/VLxKnw5Aw==
+chafan-vue-editors@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/chafan-vue-editors/-/chafan-vue-editors-0.9.1.tgz#c7f85a8380b9ecee64802e0edf9b0b3e6957c57c"
+  integrity sha512-OTzKzvPhlzNP4y8PF6h5kxXp2Ufbxv4gKAGxWH8rin2WY5MXd2nqpqtq0yIe2GFXJJkMzlcnuXo+x30vCBitpA==
   dependencies:
-    "@chafan/vditor" "3.8.3"
+    "@chafan/vditor" "3.8.8-chafan.2"
     "@tiptap/core" "^2.0.0-beta.38"
     "@tiptap/extension-bubble-menu" "^2.0.0-beta.9"
     "@tiptap/extension-code-block-lowlight" "^2.0.0-beta.11"
@@ -8883,7 +8883,7 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-klona@^2.0.3, klona@^2.0.4:
+klona@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
@@ -9574,10 +9574,10 @@ nan@^2.13.2:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.2.tgz#f5376400695168f4cc694ac9393d0c9585eeea19"
   integrity sha512-M2ufzIiINKCuDfBSAUr1vWQ+vuVcA9kqx8JJUsbQi6yf1uGRyb7HfpdfUr5qLXf3B/t8dPvcjhKMmlfnP47EzQ==
 
-nanoid@^3.1.22:
-  version "3.1.22"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.22.tgz#b35f8fb7d151990a8aebd5aa5015c03cf726f844"
-  integrity sha512-/2ZUaJX2ANuLtTvqTlgqBQNJoQO398KyJgZloL0PZkC0dpysjncRUPsFe3DUPzz/y3h+u7C46np8RMuvF3jsSQ==
+nanoid@^3.1.30:
+  version "3.1.30"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.30.tgz#63f93cc548d2a113dc5dfbc63bfa09e2b9b64362"
+  integrity sha512-zJpuPDwOv8D2zq2WRoMe1HsfZthVewpel9CAvTfc/2mBD1uUT/agc5f7GHGWXlYkFvi1mVxe4IjvP2HNrop7nQ==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -10832,14 +10832,14 @@ postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.27, postcss@^7.0.3
     picocolors "^0.2.1"
     source-map "^0.6.1"
 
-postcss@^8.0.2:
-  version "8.2.13"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.2.13.tgz#dbe043e26e3c068e45113b1ed6375d2d37e2129f"
-  integrity sha512-FCE5xLH+hjbzRdpbRb1IMCvPv9yZx2QnDarBEYSN0N0HYk+TcXsEhwdFcFb+SRWOKzKGErhIEbBK2ogyLdTtfQ==
+postcss@^8.3.11:
+  version "8.4.4"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.4.tgz#d53d4ec6a75fd62557a66bb41978bf47ff0c2869"
+  integrity sha512-joU6fBsN6EIer28Lj6GDFoC/5yOZzLCfn0zHAn/MYXI7aPt4m4hK5KC5ovEZXy+lnCjmYIbQWngvju2ddyEr8Q==
   dependencies:
-    colorette "^1.2.2"
-    nanoid "^3.1.22"
-    source-map "^0.6.1"
+    nanoid "^3.1.30"
+    picocolors "^1.0.0"
+    source-map-js "^1.0.1"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -11695,18 +11695,17 @@ sane@^4.0.3:
     minimist "^1.1.1"
     walker "~1.0.5"
 
-sanitize-html@^2.3.2:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/sanitize-html/-/sanitize-html-2.3.3.tgz#3db382c9a621cce4c46d90f10c64f1e9da9e8353"
-  integrity sha512-DCFXPt7Di0c6JUnlT90eIgrjs6TsJl/8HYU3KLdmrVclFN4O0heTcVbJiMa23OKVr6aR051XYtsgd8EWwEBwUA==
+sanitize-html@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/sanitize-html/-/sanitize-html-2.6.1.tgz#5d37c08e189c61c0631560a889b10d9d155d000e"
+  integrity sha512-DzjSz3H5qDntD7s1TcWCSoRPmNR8UmA+y+xZQOvWgjATe2Br9ZW73+vD3Pj6Snrg0RuEuJdXgrKvnYuiuixRkA==
   dependencies:
     deepmerge "^4.2.2"
     escape-string-regexp "^4.0.0"
     htmlparser2 "^6.0.0"
     is-plain-object "^5.0.0"
-    klona "^2.0.3"
     parse-srcset "^1.0.2"
-    postcss "^8.0.2"
+    postcss "^8.3.11"
 
 sass-graph@2.2.5:
   version "2.2.5"
@@ -12117,6 +12116,11 @@ source-map-explorer@^2.5.2:
     source-map "^0.7.3"
     temp "^0.9.4"
     yargs "^16.2.0"
+
+source-map-js@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.1.tgz#a1741c131e3c77d048252adfa24e23b908670caf"
+  integrity sha512-4+TN2b3tqOCd/kaGRJ/sTYA0tR0mdXx26ipdolxcwtJVqEnqNYvlCAt1q3ypy4QMlYus+Zh34RNtYLoq2oQ4IA==
 
 source-map-resolve@^0.5.0, source-map-resolve@^0.5.2:
   version "0.5.3"
