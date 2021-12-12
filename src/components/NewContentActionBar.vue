@@ -15,20 +15,23 @@
       <v-card>
         <v-card-title primary-title>
           <div class="headline primary--text">写文章</div>
+          <v-spacer />
+          <CloseIcon @click="showArticleActionDialog = false" />
         </v-card-title>
-        <div class="ma-4 pa-2">
+        <v-card-text>
           <v-select
             v-model="newArticleColumnUUID"
             :items="myArticleColumns"
-            label="专栏"
+            label="选择专栏"
             item-text="name"
             item-value="uuid"
+            hide-details
           />
-        </div>
-        <v-card-text> 在「用户中心」中可以创建专栏</v-card-text>
+        </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" depressed small @click="postNewArticle">创建文章</v-btn>
+          <CreateArticleColumn class="mr-2" />
+          <v-btn color="primary" depressed small @click="postNewArticle">开始写作</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -64,9 +67,18 @@ import { commitAddNotification } from '@/store/main/mutations';
 import { Component } from 'vue-property-decorator';
 import RotationList from '@/components/base/RotationList.vue';
 import { CVue } from '@/common';
+import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 @Component({
-  components: { RotationList, QuestionLink, CreateSubmissionForm, CreateQuestionForm },
+  components: {
+    CloseIcon,
+    CreateArticleColumn,
+    RotationList,
+    QuestionLink,
+    CreateSubmissionForm,
+    CreateQuestionForm,
+  },
 })
 export default class NewContentActionBar extends CVue {
   private questionsToAnswer: IQuestionPreview[] = [];

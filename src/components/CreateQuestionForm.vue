@@ -10,7 +10,7 @@
         item-value="site"
         label="圈子 (加入后在此处可见, 「大广场」不限话题)"
       />
-      <v-textarea v-model="newQuestionTitle" auto-grow dense label="标题" rows="3" />
+      <v-textarea v-model="newQuestionTitle" auto-grow dense label="标题" rows="3" hide-details />
       <div class="d-flex">
         <v-spacer />
         <span class="text-caption grey--text"> 创建后添加细节 </span>
