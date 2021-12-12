@@ -11,9 +11,16 @@
           item-value="site"
           label="圈子 (加入后在此处可见, 「大广场」不限话题)"
         />
-        <v-textarea v-model="newSubmissionTitle" auto-grow dense label="标题" rows="1" />
+        <v-textarea
+          v-model="newSubmissionTitle"
+          auto-grow
+          dense
+          label="标题"
+          rows="1"
+          hide-details
+        />
         <ValidationProvider v-slot="{ errors }" name="URL" rules="url">
-          <v-text-field v-model="newSubmissionURL" label="URL（可选）" />
+          <v-text-field v-model="newSubmissionURL" label="URL（可选）" hide-details />
           <span class="error--text">{{ errors[0] }}</span>
         </ValidationProvider>
       </v-card-text>

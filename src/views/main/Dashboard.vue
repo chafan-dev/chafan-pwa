@@ -137,34 +137,10 @@
           </v-tab-item>
 
           <v-tab-item value="my_columns">
-            <!-- Dialog for creating a new article column -->
-            <v-dialog v-model="dialogNewArticleColumn" max-width="500px">
-              <v-card>
-                <v-card-title><span class="headline">创建新专栏</span></v-card-title>
-                <v-card-text>
-                  <v-text-field v-model="newArticleColumn.name" label="专栏名称" required />
-                  <v-textarea v-model="newArticleColumn.description" label="专栏描述" />
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn
-                    :disabled="commitNewArticleColumnIntermediate"
-                    color="primary"
-                    depressed
-                    small
-                    @click="commitNewArticleColumn"
-                    >创建
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-
             <v-card-title primary-title>
               <div class="headline primary--text">我的专栏</div>
               <v-spacer />
-              <v-btn color="primary" depressed small @click="dialogNewArticleColumn = true"
-                >创建新专栏
-              </v-btn>
+              <CreateArticleColumn />
             </v-card-title>
             <div v-if="!articleColumnsIntermediate">
               <ArticleColumnCard
@@ -405,7 +381,6 @@ import {
   editor_T,
   IAnswerPreview,
   IArticleColumn,
-  IArticleColumnCreate,
   IArticlePreview,
   IChannel,
   ICoinPayment,
@@ -417,7 +392,6 @@ import {
 } from '@/interfaces';
 import { api } from '@/api';
 import { api2 } from '@/api2';
-import { apiArticle } from '@/api/article';
 import {
   commitAddNotification,
   commitSetTheme,
@@ -444,9 +418,11 @@ import SiteName from '@/components/SiteName.vue';
 import { apiActivity } from '@/api/activity';
 import { getLocalValue, setLocalValue } from '@/utils';
 import AdminCenter from '@/views/main/dashboard/AdminCenter.vue';
+import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 
 @Component({
   components: {
+    CreateArticleColumn,
     SiteName,
     CloseIcon,
     EmptyPlaceholder,
@@ -470,13 +446,10 @@ export default class Dashboard extends CVue {
   private myChannels: IChannel[] = [];
   private myRewards: IReward[] = [];
   private myArticleColumns: IArticleColumn[] = [];
-  private dialogNewArticleColumn: boolean = false;
-  private newArticleColumn: IArticleColumnCreate = { name: '' };
   private channelsIntermediate = true;
   private rewardsIntermediate = true;
   private articleColumnsIntermediate = true;
   private coinPaymentsIntermediate = true;
-  private commitNewArticleColumnIntermediate = false;
   private showExportDialog = false;
   private showLabsDialog = false;
   private tiptapEditorOptionOn = false;
@@ -666,21 +639,6 @@ export default class Dashboard extends CVue {
       items = (await apiMe.getArticleBookmarks(this.token, skip, limit)).data;
     });
     return items;
-  }
-
-  private async commitNewArticleColumn() {
-    if (this.newArticleColumn.name.length === 0) {
-      commitAddNotification(this.$store, {
-        content: '专栏名不能为空',
-        color: 'error',
-      });
-      return;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.commitNewArticleColumnIntermediate = true;
-      const response = await apiArticle.createArticleColumn(this.token, this.newArticleColumn);
-      await this.$router.push(`/article-columns/${response.data.uuid}`);
-    });
   }
 
   private async onChangeEmailNotifications() {
