@@ -6,18 +6,16 @@
           <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />
           </v-overlay>
-          g
           <!-- Editor of title -->
-          <div>
-            <v-textarea
-              v-model="articleTitle"
-              auto-grow
-              class="headline mt-2"
-              dense
-              label="标题"
-              rows="1"
-            />
-          </div>
+          <v-textarea
+            v-model="articleTitle"
+            auto-grow
+            class="headline my-4"
+            dense
+            label="标题"
+            rows="1"
+            hide-details
+          />
 
           <!-- Editor of body -->
           <ChafanTiptap
