@@ -189,6 +189,14 @@
                 <TransferIcon class="mr-1" />
                 转移问题
               </v-list-item>
+              <v-list-item
+                dense
+                v-if="questionPage.flags.hideable"
+                @click="showConfirmHideQuestionDialog = true"
+              >
+                <LockOutlineIcon class="mr-1" />
+                隐藏问题
+              </v-list-item>
             </v-list>
           </v-menu>
 
@@ -237,6 +245,20 @@
               </v-expansion-panels>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
+            <v-card>
+              <v-card-title primary-title>
+                <div class="headline primary--text">确认隐藏问题</div>
+              </v-card-title>
+              <v-card-text>隐藏后问题仍可通过地址访问，但是会从问题列表中隐藏。</v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn color="warning" depressed small @click="confirmHideQuestion"
+                  >确认隐藏
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-slide-group>
 
         <!-- Question editor control -->
@@ -260,31 +282,6 @@
             >取消
           </v-btn>
           <v-spacer />
-
-          <v-btn
-            v-if="showQuestionEditor & questionPage.flags.hideable"
-            class="ml-2"
-            color="warning"
-            depressed
-            small
-            @click="showConfirmHideQuestionDialog = true"
-          >
-            隐藏问题
-          </v-btn>
-          <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
-            <v-card>
-              <v-card-title primary-title>
-                <div class="headline primary--text">确认隐藏问题</div>
-              </v-card-title>
-              <v-card-text>隐藏后问题将对所有用户不可见。</v-card-text>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn color="warning" depressed small @click="confirmHideQuestion"
-                  >确认隐藏
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </div>
 
         <div class="d-flex justify-end mb-2">
@@ -420,9 +417,11 @@ import DotsIcon from '@/components/icons/DotsIcon.vue';
 import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
 import TransferIcon from '@/components/icons/TransferIcon.vue';
 import SiteSearch from '@/components/SiteSearch.vue';
+import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 
 @Component({
   components: {
+    LockOutlineIcon,
     SiteSearch,
     TransferIcon,
     QuestionUpvotes,
