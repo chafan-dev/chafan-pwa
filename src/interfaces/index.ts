@@ -37,6 +37,7 @@ export interface IUserProfile {
   twitter_username?: string;
   linkedin_url?: string;
   homepage_url?: string;
+  zhihu_url?: string;
   karma: number;
   enable_deliver_unread_notifications: boolean;
   default_editor_mode: editor_T;
@@ -136,6 +137,7 @@ export interface IUserUpdateMe {
   twitter_username?: string;
   linkedin_url?: string;
   homepage_url?: string;
+  zhihu_url?: string;
   enable_deliver_unread_notifications?: boolean;
   default_editor_mode?: editor_T;
 }
@@ -556,6 +558,7 @@ export interface IUserPublic {
   github_username?: string;
   twitter_username?: string;
   linkedin_url?: string;
+  zhihu_url?: string;
   homepage_url?: string;
   residency_topics: ITopic[];
   karma: number;

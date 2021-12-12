@@ -109,6 +109,13 @@
                     </template>
                   </v-text-field>
                 </ValidateUrl>
+                <ValidateUrl>
+                  <v-text-field v-model="userUpdateMe.zhihu_url" clearable label="知乎个人页">
+                    <template v-slot:prepend>
+                      <ZhihuIcon />
+                    </template>
+                  </v-text-field>
+                </ValidateUrl>
 
                 <v-text-field
                   v-model="userUpdateMe.github_username"
@@ -328,6 +335,7 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
 import ValidateUrl from '@/components/base/ValidateUrl.vue';
+import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
 
 interface IUserWorkExperienceItem {
   company_topic_name?: string;
@@ -347,6 +355,7 @@ interface IUserEducationExperienceItem {
 
 @Component({
   components: {
+    ZhihuIcon,
     ValidateUrl,
     WorkExp,
     EduExp,
@@ -423,6 +432,7 @@ export default class UserProfileEdit extends CVue {
     }
 
     this.userUpdateMe.homepage_url = userProfile.homepage_url;
+    this.userUpdateMe.zhihu_url = userProfile.zhihu_url;
     this.userUpdateMe.github_username = userProfile.github_username;
     this.userUpdateMe.twitter_username = userProfile.twitter_username;
     this.userUpdateMe.linkedin_url = userProfile.linkedin_url;
