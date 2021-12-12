@@ -6,18 +6,18 @@
     class="pa-3"
   >
     <v-row justify="center">
-      <v-col v-if="avatarURL" align-self="center" style="max-width: 110px">
+      <v-col v-if="avatarURL" align-self="center" style="max-width: 100px">
         <router-link :to="`/users/${userPreview.handle}`">
-          <Avatar :avatar-url="avatarURL" size="90" />
+          <Avatar :avatar-url="avatarURL" size="85" />
         </router-link>
       </v-col>
       <v-col align-self="center">
         <div class="mb-1 mt-1" style="min-width: 100px">
           <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none">
             <span v-if="userPreview.full_name">
-              {{ userPreview.full_name }}
+              {{ shortName(userPreview.full_name) }}
             </span>
-            <span v-else> @{{ userPreview.handle }} </span>
+            <span v-else> @{{ shortName(userPreview.handle) }} </span>
           </router-link>
         </div>
 
@@ -28,8 +28,9 @@
         <template v-if="follows">
           <v-row class="compact-row">
             <v-col class="compact-col">
-              <span class="text-caption mr-2"> 有{{ follows.followers_count }}个关注者 </span>
-              <span class="text-caption"> 关注了{{ follows.followed_count }}个人 </span>
+              <span v-if="follows.followers_count" class="text-caption mr-2 grey--text"
+                >{{ follows.followers_count }}关注者
+              </span>
             </v-col>
           </v-row>
 
@@ -142,14 +143,22 @@ export default class UserCard extends CVue {
   private avatarURL: string | null = null;
   private recommendedUsers: IUserPreview[] = [];
 
-  shortIntro(intro: string) {
-    if (!intro) {
-      return intro;
+  shortText(text: string, limit: number) {
+    if (!text) {
+      return text;
     }
-    if (intro.length > 25) {
-      return intro.substring(0, 25) + '...';
+    if (text.length > limit) {
+      return text.substring(0, limit) + '...';
     }
-    return intro;
+    return text;
+  }
+
+  shortIntro(s) {
+    return this.shortText(s, 100);
+  }
+
+  shortName(s) {
+    return this.shortText(s, 60);
   }
 
   async mounted() {

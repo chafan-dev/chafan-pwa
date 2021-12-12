@@ -21,9 +21,7 @@
                   <v-card-title
                     >关注TA的人
                     <v-spacer />
-                    <v-btn depressed primary small @click="showFollowersDialog = false">
-                      <CloseIcon />
-                    </v-btn>
+                    <CloseIcon @click="showFollowersDialog = false" />
                   </v-card-title>
                   <v-card-text>
                     <v-lazy v-if="followers">
@@ -51,9 +49,7 @@
                   <v-card-title
                     >TA关注的人
                     <v-spacer />
-                    <v-btn depressed primary small @click="showFollowedDialog = false">
-                      <CloseIcon />
-                    </v-btn>
+                    <CloseIcon @click="showFollowedDialog = false" />
                   </v-card-title>
                   <v-card-text>
                     <v-lazy v-if="followed">

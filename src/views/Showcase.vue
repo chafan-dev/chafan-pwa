@@ -1,54 +1,56 @@
 <template>
   <v-main>
     <v-container fill-height fluid>
-      <div>
-        <v-card>
-          <v-card-text>
-            <Answer
-              :answer-preview="mockData.exampleAnswerPreview"
-              :answer-prop="mockData.exampleAnswer"
-              :show-author="true"
-              :load-full="true"
-              :answer-upvotes-prop="mockData.exampleAnswerUpvotes"
-              :answer-prop-delay-milli-seconds-for-test="1000"
-            />
-          </v-card-text>
-        </v-card>
-        <v-card>
-          <v-card-text>
-            <v-sheet outlined>
-              <QuestionPreview
-                :question-preview="mockData.exampleQuestionPreview"
-                :upvotes-placeholder="mockData.exampleQuestionUpvotes"
-                :disabled-placeholder="questionPreviewDisabled"
+      <v-row justify="center">
+        <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+          <v-card>
+            <v-card-text>
+              <Answer
+                :answer-preview="mockData.exampleAnswerPreview"
+                :answer-prop="mockData.exampleAnswer"
+                :show-author="true"
+                :load-full="true"
+                :answer-upvotes-prop="mockData.exampleAnswerUpvotes"
+                :answer-prop-delay-milli-seconds-for-test="1000"
               />
-            </v-sheet>
-          </v-card-text>
-          <v-card-actions>
-            <v-switch label="upvoted" v-model="mockData.exampleQuestionUpvotes.upvoted" />
-            <v-switch class="ml-4" label="disabled" v-model="questionPreviewDisabled" />
-          </v-card-actions>
-        </v-card>
-        <v-divider class="my-4" />
-        <v-card>
-          <v-card-text>
-            <v-sheet outlined>
-              <UserGrid :users="mockData.randomUserPreviews" />
-            </v-sheet>
-          </v-card-text>
-        </v-card>
-        <v-divider class="my-4" />
-        <v-row>
-          <v-col>
-            <ExampleSubmissionPreview />
-          </v-col>
-          <v-col>
-            <RotationCard v-slot="{ item }" :items="mockData.sites" title="相关站点">
-              <SiteCard :is-member="true" :compact-mode="true" :site="item" />
-            </RotationCard>
-          </v-col>
-        </v-row>
-      </div>
+            </v-card-text>
+          </v-card>
+          <v-card>
+            <v-card-text>
+              <v-sheet outlined>
+                <QuestionPreview
+                  :question-preview="mockData.exampleQuestionPreview"
+                  :upvotes-placeholder="mockData.exampleQuestionUpvotes"
+                  :disabled-placeholder="questionPreviewDisabled"
+                />
+              </v-sheet>
+            </v-card-text>
+            <v-card-actions>
+              <v-switch label="upvoted" v-model="mockData.exampleQuestionUpvotes.upvoted" />
+              <v-switch class="ml-4" label="disabled" v-model="questionPreviewDisabled" />
+            </v-card-actions>
+          </v-card>
+          <v-divider class="my-4" />
+          <v-card>
+            <v-card-text>
+              <v-sheet outlined>
+                <UserGrid :users="mockData.randomUserPreviews" />
+              </v-sheet>
+            </v-card-text>
+          </v-card>
+          <v-divider class="my-4" />
+          <v-row>
+            <v-col>
+              <ExampleSubmissionPreview />
+            </v-col>
+            <v-col>
+              <RotationCard v-slot="{ item }" :items="mockData.sites" title="相关站点">
+                <SiteCard :is-member="true" :compact-mode="true" :site="item" />
+              </RotationCard>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>

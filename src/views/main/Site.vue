@@ -70,26 +70,20 @@
             >
               <SubmissionPreview :submission="item" />
             </DynamicItemList>
-            <div v-else-if="userProfile" class="my-4 text-center">仅圈子成员可以查看该内容</div>
+            <div v-else-if="loggedIn" class="my-4 text-center">仅圈子成员可以查看该内容</div>
             <div v-else class="my-4 text-center">登录后查看更多</div>
           </v-tab-item>
 
           <v-tab-item value="members">
-            <div v-if="siteProfiles !== null" class="my-4">
-              <template v-for="i in Math.floor((this.siteProfiles.length - 1) / memberCols) + 1">
-                <v-row :key="i">
-                  <template v-for="j in memberCols">
-                    <v-col :key="(i - 1) * memberCols + (j - 1)">
-                      <UserCard
-                        v-if="(i - 1) * memberCols + (j - 1) < siteProfiles.length"
-                        :compactMode="true"
-                        :siteKarmas="siteProfiles[(i - 1) * memberCols + (j - 1)].karma"
-                        :userPreview="siteProfiles[(i - 1) * memberCols + (j - 1)].owner"
-                      />
-                    </v-col>
-                  </template>
-                </v-row>
-              </template>
+            <div v-if="siteProfiles !== null" class="pa-4">
+              <v-lazy v-for="profile in siteProfiles" :key="profile.owner.uuid">
+                <UserCard
+                  class="my-2"
+                  :compactMode="true"
+                  :siteKarmas="profile.karma"
+                  :userPreview="profile.owner"
+                />
+              </v-lazy>
             </div>
             <div v-else class="my-4 text-center">仅圈子成员可以查看该内容</div>
           </v-tab-item>

@@ -1,20 +1,8 @@
 <template>
   <div>
-    <template v-for="i in Math.floor((users.length - 1) / memberCols) + 1">
-      <v-row :key="i">
-        <template v-for="j in memberCols">
-          <v-col :key="(i - 1) * memberCols + (j - 1)">
-            <v-lazy>
-              <UserCard
-                v-if="(i - 1) * memberCols + (j - 1) < users.length"
-                :compactMode="true"
-                :userPreview="users[(i - 1) * memberCols + (j - 1)]"
-              />
-            </v-lazy>
-          </v-col>
-        </template>
-      </v-row>
-    </template>
+    <v-lazy v-for="user in users" :key="user.uuid" class="my-2">
+      <UserCard :compactMode="true" :userPreview="user" />
+    </v-lazy>
   </div>
 </template>
 
