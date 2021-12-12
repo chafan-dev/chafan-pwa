@@ -565,6 +565,9 @@ export interface IUserPublic {
   articles_count: number;
   created_at: string;
   profession_topics: ITopic[];
+  follows?: IUserFollows;
+  edu_exps: IUserEducationExperience[];
+  work_exps: IUserWorkExperience[];
 }
 
 export interface IUserPublicForVisitor {
