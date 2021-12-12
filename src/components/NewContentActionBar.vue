@@ -30,7 +30,15 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <CreateArticleColumn class="mr-2" />
+          <CreateArticleColumn
+            class="mr-2"
+            :on-new-article-column="
+              (a) => {
+                myArticleColumns.push(a);
+                newArticleColumnUUID = a.uuid;
+              }
+            "
+          />
           <v-btn color="primary" depressed small @click="postNewArticle">开始写作</v-btn>
         </v-card-actions>
       </v-card>

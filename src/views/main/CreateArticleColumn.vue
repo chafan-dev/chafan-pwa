@@ -29,9 +29,9 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { CVue } from '@/common';
-import { IArticleColumnCreate } from '@/interfaces';
+import { IArticleColumn, IArticleColumnCreate } from '@/interfaces';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
@@ -40,6 +40,8 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
   components: { CloseIcon },
 })
 export default class CreateArticleColumn extends CVue {
+  @Prop() readonly onNewArticleColumn: ((articleColumn: IArticleColumn) => void) | undefined;
+
   private dialogNewArticleColumn: boolean = false;
   private newArticleColumn: IArticleColumnCreate = { name: '' };
   private commitNewArticleColumnIntermediate = false;
@@ -55,7 +57,12 @@ export default class CreateArticleColumn extends CVue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.commitNewArticleColumnIntermediate = true;
       const response = await apiArticle.createArticleColumn(this.token, this.newArticleColumn);
-      await this.$router.push(`/article-columns/${response.data.uuid}`);
+      if (this.onNewArticleColumn) {
+        this.onNewArticleColumn(response.data);
+        this.dialogNewArticleColumn = false;
+      } else {
+        await this.$router.push(`/article-columns/${response.data.uuid}`);
+      }
     });
   }
 }
