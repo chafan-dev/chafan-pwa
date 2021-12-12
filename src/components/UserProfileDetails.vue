@@ -108,7 +108,7 @@
       >
         <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
         <div>
-          <v-chip-group :column="!$vuetify.breakpoint.mobile">
+          <v-chip-group :column="!isDesktop">
             <v-chip
               v-for="topic in userPublic.residency_topics"
               :key="topic.uuid"
@@ -152,12 +152,12 @@
 
     <div
       :class="{
-        'd-flex': $vuetify.breakpoint.mdAndUp,
-        'text-center': !$vuetify.breakpoint.mdAndUp,
+        'd-flex': isDesktop,
+        'text-center': !isDesktop,
       }"
       class="mt-1"
     >
-      <v-spacer :class="{ 'mb-3': !$vuetify.breakpoint.mdAndUp }" />
+      <v-spacer :class="{ 'mb-3': !isDesktop }" />
       <v-btn
         v-if="currentUserId === userPublic.uuid"
         color="primary"
@@ -180,7 +180,6 @@ import WebIcon from '@/components/icons/WebIcon.vue';
 import GithubIcon from '@/components/icons/GithubIcon.vue';
 import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 import { apiPeople } from '@/api/people';
-import { apiSite } from '@/api/site';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
 import { CVue } from '@/common';
@@ -204,16 +203,13 @@ export default class UserProfileDetails extends CVue {
 
   async mounted() {
     if (this.loggedIn) {
-      this.eduExps = (
-        await apiPeople.getUserEducationExperiences(this.token, this.userPublic.uuid)
-      ).data;
-      this.workExps = (
-        await apiPeople.getUserWorkExperiences(this.token, this.userPublic.uuid)
-      ).data;
-      const responses = await Promise.all(
-        this.userPublic.profiles.map((p) => apiSite.getSite(p.site.subdomain))
-      );
-      this.sites = responses.map((r) => r.data);
+      this.eduExps = this.userPublic.edu_exps
+        ? this.userPublic.edu_exps
+        : (await apiPeople.getUserEducationExperiences(this.token, this.userPublic.uuid)).data;
+      this.workExps = this.userPublic.work_exps
+        ? this.userPublic.work_exps
+        : (await apiPeople.getUserWorkExperiences(this.token, this.userPublic.uuid)).data;
+      this.sites = await Promise.all(this.userPublic.profiles.map((p) => p.site));
     }
   }
 
