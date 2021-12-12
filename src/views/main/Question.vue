@@ -306,9 +306,7 @@
 
         <div class="ml-2 text-center">
           <span v-if="showEditor && userProfile" class="text-caption grey--text">编辑答案</span>
-          <span v-else-if="loadedFullAnswers.length === 0" class="text-caption grey--text"
-            >暂无答案</span
-          >
+          <span v-else-if="answers.length === 0" class="text-caption grey--text">暂无答案</span>
         </div>
 
         <!-- Answer editor -->
@@ -326,7 +324,7 @@
 
         <!-- Answers -->
         <div
-          v-for="answer in loadedFullAnswers"
+          v-for="answer in answers"
           :key="answer.uuid"
           :class="theme.question.answer.classes"
           class="mb-4"
@@ -334,7 +332,7 @@
           <Answer
             :answerPreview="answerPreviewOf(answer.uuid)"
             :answerProp="answer"
-            :loadFull="loadedFullAnswers.indexOf(answer) <= 2"
+            :loadFull="answers.indexOf(answer) <= 2"
             :showAuthor="true"
             :showCommentId="answerCommentId"
             :showQuestionInCard="false"
@@ -466,7 +464,7 @@ export default class Question extends CVue {
   private historyDialog = false;
   private commentSubmitIntermediate = false;
   private savedLocalEdit: LocalEdit | null = null;
-  private loadedFullAnswers: IAnswer[] = [];
+  private answers: IAnswer[] = [];
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -514,7 +512,7 @@ export default class Question extends CVue {
       this.showEditor = false;
       this.showQuestionEditor = false;
       this.showComments = false;
-      this.loadedFullAnswers = [];
+      this.answers = [];
       this.showConfirmHideQuestionDialog = false;
       this.savedNewAnswer = null;
       this.archives = [];
@@ -548,20 +546,20 @@ export default class Question extends CVue {
 
         this.newQuestionTitle = question.title;
         this.newQuestionTopicNames = question.topics.map((topic) => topic.name);
-        const loadedFullAnswers = this.questionPage.full_answers;
+        const answers = this.questionPage.full_answers;
         if (this.answerUUID !== null) {
           // TODO: Fix when there is continuation
-          if (!loadedFullAnswers.find((preview) => preview.uuid === this.answerUUID)) {
+          if (!answers.find((preview) => preview.uuid === this.answerUUID)) {
             commitAddNotification(this.$store, {
               content: '答案不存在',
               color: 'error',
             });
           }
         }
-        if (loadedFullAnswers.length === 0 && !this.showQuestionEditor) {
+        if (answers.length === 0 && !this.showQuestionEditor) {
           this.showEditor = true;
         }
-        this.loadedFullAnswers = loadedFullAnswers.sort((a, b) => {
+        this.answers = answers.sort((a, b) => {
           if (a.uuid === this.answerUUID || a.author.uuid === this.userProfile?.uuid) {
             return -1;
           }
@@ -570,9 +568,7 @@ export default class Question extends CVue {
           }
           return 1;
         });
-        if (
-          loadedFullAnswers.filter((a) => a.author.uuid === this.userProfile?.uuid).length === 0
-        ) {
+        if (answers.filter((a) => a.author.uuid === this.userProfile?.uuid).length === 0) {
           this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + question.uuid);
         }
       }
@@ -594,11 +590,11 @@ export default class Question extends CVue {
   }
 
   private updateOrAddFullyLoadedAnswer(answer: IAnswer) {
-    const answerUUIDx = this.loadedFullAnswers.findIndex((a) => a.uuid === answer.uuid);
+    const answerUUIDx = this.answers.findIndex((a) => a.uuid === answer.uuid);
     if (answerUUIDx === -1) {
-      this.loadedFullAnswers.unshift(answer);
+      this.answers.unshift(answer);
     } else {
-      this.loadedFullAnswers[answerUUIDx] = answer;
+      this.answers[answerUUIDx] = answer;
     }
   }
 
@@ -722,14 +718,14 @@ export default class Question extends CVue {
   private cancelHandler() {
     this.showEditor = false;
     if (this.questionPage && this.savedNewAnswer) {
-      this.loadedFullAnswers.unshift(this.savedNewAnswer);
+      this.answers.unshift(this.savedNewAnswer);
     }
   }
 
   private removeAnswer(answerUUID: string) {
-    let idx = this.loadedFullAnswers.findIndex((answer) => answer.uuid === answerUUID);
+    let idx = this.answers.findIndex((answer) => answer.uuid === answerUUID);
     if (idx !== -1) {
-      this.loadedFullAnswers.splice(idx, 1);
+      this.answers.splice(idx, 1);
     }
   }
 
