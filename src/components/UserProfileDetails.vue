@@ -11,7 +11,8 @@
           userPublic.homepage_url ||
           userPublic.github_username ||
           userPublic.twitter_username ||
-          userPublic.linkedin_url
+          userPublic.linkedin_url ||
+          userPublic.zhihu_url
         "
         class="my-3"
       >
