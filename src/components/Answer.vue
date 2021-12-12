@@ -327,7 +327,7 @@ export default class Answer extends CVue {
   @Prop({ default: false }) private readonly loadFull!: boolean;
   @Prop() private readonly showAuthor!: boolean;
   @Prop({ default: false }) private readonly draftMode!: boolean;
-  @Prop() private readonly showCommentId: number | undefined;
+  @Prop() private readonly showCommentId: string | undefined;
   @Prop({ default: true }) private readonly showQuestionInCard!: boolean;
   private answer: IAnswer | null = null;
   private upvotes: IAnswerUpvotes | null = null;
