@@ -16,7 +16,7 @@
     "@sentry/tracing": "^6.15.0",
     "@sentry/vue": "^6.15.0",
     "axios": "^0.21.2",
-    "chafan-vue-editors": "^0.9.1",
+    "chafan-vue-editors": "^0.9.2",
     "core-js": "^3.8.3",
     "dayjs": "^1.10.4",
     "dompurify": "^2.2.7",
