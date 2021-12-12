@@ -52,6 +52,15 @@
           <LinkedinIcon />
           Linkedin
         </a>
+        <a
+          v-if="userPublic.zhihu_url"
+          :href="userPublic.zhihu_url"
+          class="text-decoration-none"
+          target="_blank"
+        >
+          <ZhihuIcon />
+          知乎
+        </a>
       </div>
 
       <template v-if="userPublic.profession_topics && userPublic.profession_topics.length > 0">
@@ -183,9 +192,11 @@ import { apiPeople } from '@/api/people';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
 import { CVue } from '@/common';
+import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
 
 @Component({
   components: {
+    ZhihuIcon,
     WorkExp,
     EduExp,
     SiteBtn,
