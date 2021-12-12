@@ -112,7 +112,7 @@ function randomString() {
 
 function randomSentence() {
   let s = '';
-  const words = Math.ceil(Math.random() * 10);
+  const words = Math.ceil(Math.random() * 20);
   for (let i = 0; i < words; i++) {
     s += randomString() + ' ';
   }
