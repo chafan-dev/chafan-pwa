@@ -6,7 +6,7 @@
           <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />
           </v-overlay>
-
+          g
           <!-- Editor of title -->
           <div>
             <v-textarea
@@ -32,7 +32,7 @@
             ref="vditor"
             :editor-mode="editor"
             :initial-content="body"
-            :isMobile="isMobile"
+            :isMobile="!isDesktop"
             :onEditorChange="onEditorChange"
             :vditorUploadConfig="vditorUploadConfig"
             class="mb-2 mt-2"
@@ -175,7 +175,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import {
   clearLocalEdit,
   getArticleDraft,
@@ -199,7 +199,7 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
 import { env } from '@/env';
 import { readToken, readUserProfile } from '@/store/main/getters';
-import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { CVue, getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 
 @Component({
   components: {
@@ -212,7 +212,7 @@ import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
     SettingsIcon,
   },
 })
-export default class ArticleEditor extends Vue {
+export default class ArticleEditor extends CVue {
   private newArticleId: string | null = null;
   private handlingNewEdit = false;
 
@@ -240,10 +240,6 @@ export default class ArticleEditor extends Vue {
   private topLevelEditor: 'vditor' | 'tiptap' = 'vditor';
   private topLevelEditorItems: { text: string; value: string }[] | null = null;
 
-  get token() {
-    return readToken(this.$store);
-  }
-
   get articleColumnId() {
     const id = this.$route.query.articleColumnId;
     if (id) {
@@ -254,7 +250,7 @@ export default class ArticleEditor extends Vue {
 
   get articleId() {
     const id = this.$route.query.articleId;
-    if (id !== undefined) {
+    if (id) {
       return id.toString();
     }
     if (this.newArticleId) {
@@ -269,10 +265,6 @@ export default class ArticleEditor extends Vue {
 
   get vditorComponent() {
     return this.$refs.vditor as any;
-  }
-
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
   }
 
   get vditorUploadConfig() {
