@@ -561,10 +561,18 @@ export default class Question extends CVue {
           this.showEditor = true;
         }
         this.answers = answers.sort((a, b) => {
-          if (a.uuid === this.answerUUID || a.author.uuid === this.userProfile?.uuid) {
+          // First priority
+          if (a.uuid === this.answerUUID) {
             return -1;
           }
-          if (b.uuid === this.answerUUID || b.author.uuid === this.userProfile?.uuid) {
+          if (b.uuid === this.answerUUID) {
+            return 1;
+          }
+          // Second priority
+          if (a.author.uuid === this.userProfile?.uuid) {
+            return -1;
+          }
+          if (b.author.uuid === this.userProfile?.uuid) {
             return 1;
           }
           return 1;
