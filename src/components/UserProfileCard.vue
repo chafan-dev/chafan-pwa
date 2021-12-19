@@ -24,9 +24,7 @@
                     <CloseIcon @click="showFollowersDialog = false" />
                   </v-card-title>
                   <v-card-text>
-                    <v-lazy v-if="followers">
-                      <UserGrid :users="followers" />
-                    </v-lazy>
+                    <UserGrid v-if="followers" :users="followers" />
                     <div class="text-center" v-else>
                       <v-progress-circular indeterminate size="25" color="primary" />
                     </div>
@@ -52,9 +50,7 @@
                     <CloseIcon @click="showFollowedDialog = false" />
                   </v-card-title>
                   <v-card-text>
-                    <v-lazy v-if="followed">
-                      <UserGrid :users="followed" />
-                    </v-lazy>
+                    <UserGrid v-if="followed" :users="followed" />
                     <div class="text-center" v-else>
                       <v-progress-circular indeterminate size="25" color="primary" />
                     </div>
@@ -108,6 +104,7 @@
             </v-btn>
           </div>
         </div>
+        <v-skeleton-loader type="list-item-three-line" v-else />
       </div>
       <div class="col align-self-center">
         <UserNameHeadline v-if="isDesktop" :user-preview="userPreview" />
