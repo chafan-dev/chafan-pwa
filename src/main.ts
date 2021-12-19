@@ -78,6 +78,7 @@ const i18n = new VueI18n({
       'verb.create_site': '{who}创建了圈子「{site}」',
       'verb.upvote_submission': '{who}赞了分享「{submission}」',
       'verb.comment_submission': '{who}评论了你的分享「{submission}」：「{comment}」',
+      'verb.create_site_need_approval': '{who}申请创建圈子（{channel_message}）',
     },
   },
 });

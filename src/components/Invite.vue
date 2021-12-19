@@ -37,7 +37,6 @@ import SiteIcon from '@/components/icons/SiteIcon.vue';
 import ShieldCheckIcon from '@/components/icons/ShieldCheckIcon.vue';
 import { ISite } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readToken } from '@/store/main/getters';
 import { CVue } from '@/common';
 
 @Component({
@@ -60,7 +59,7 @@ export default class Invite extends CVue {
         });
         return;
       }
-      const response = await api2.inviteUser(readToken(this.$store), {
+      const response = await api2.inviteUser(this.token, {
         site_uuid: this.site.uuid,
         user_uuid: this.friendId,
       });
