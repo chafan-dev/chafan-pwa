@@ -8,7 +8,7 @@
         {{ questionPreview.title }}
       </router-link>
     </div>
-    <div v-if="shortDesc" class="grey--text subtitle-2">
+    <div v-if="shortDesc" class="grey--text subtitle-2 mb-1">
       {{ shortDesc }}
     </div>
 
