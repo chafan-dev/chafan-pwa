@@ -360,15 +360,6 @@
               <ArticlePreview :article-preview="item" />
             </DynamicItemList>
           </v-tab-item>
-
-          <v-tab-item value="admin_center">
-            <v-card-title primary-title>
-              <div class="headline primary--text">站务中心</div>
-            </v-card-title>
-            <div class="ma-3">
-              <AdminCenter />
-            </div>
-          </v-tab-item>
         </v-tabs>
       </v-col>
     </v-row>
@@ -417,7 +408,6 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SiteName from '@/components/SiteName.vue';
 import { apiActivity } from '@/api/activity';
 import { getLocalValue, setLocalValue } from '@/utils';
-import AdminCenter from '@/views/main/dashboard/AdminCenter.vue';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 
 @Component({
@@ -438,7 +428,6 @@ import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
     InfoIcon,
     NewInviteLinkBtn,
     ChatWindow,
-    AdminCenter,
   },
 })
 export default class Dashboard extends CVue {
@@ -489,10 +478,6 @@ export default class Dashboard extends CVue {
     {
       text: '收藏的文章',
       code: 'bookmarked_articles',
-    },
-    {
-      text: '站务中心',
-      code: 'admin_center',
     },
   ];
   private readonly coinPaymentHeaders = [
