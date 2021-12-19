@@ -4,9 +4,9 @@
     <v-row v-else class="px-2" justify="center">
       <v-col
         :class="{
-          'col-8': $vuetify.breakpoint.mdAndUp,
+          'col-8': isDesktop,
           'fixed-narrow-col': isNarrowFeedUI,
-          'less-left-right-padding': !$vuetify.breakpoint.mdAndUp,
+          'less-left-right-padding': !isDesktop,
         }"
         class="mb-12"
         fluid
@@ -77,7 +77,7 @@
           </v-btn>
 
           <v-btn
-            v-else-if="questionPage.flags.answer_writable"
+            v-else-if="questionPage.flags.answer_writable && !answeredBefore"
             class="mr-1 slim-btn"
             color="primary"
             depressed
@@ -102,7 +102,8 @@
                 写回答
               </v-btn>
             </template>
-            <span>该圈子仅会员可以写回答</span>
+            <span v-if="answeredBefore">已回答过</span>
+            <span v-else>该圈子仅会员可以写回答</span>
           </v-tooltip>
 
           <CommentBtn :count="question.comments.length" class="mr-1" @click="toggleShowComments" />
@@ -464,6 +465,7 @@ export default class Question extends CVue {
   private commentSubmitIntermediate = false;
   private savedLocalEdit: LocalEdit | null = null;
   private answers: IAnswer[] = [];
+  private answeredBefore: boolean = false;
 
   get isUserMode() {
     return readUserMode(this.$store);
@@ -567,7 +569,9 @@ export default class Question extends CVue {
           }
           return 1;
         });
-        if (answers.filter((a) => a.author.uuid === this.userProfile?.uuid).length === 0) {
+        this.answeredBefore =
+          answers.filter((a) => a.author.uuid === this.userProfile?.uuid).length > 0;
+        if (!this.answeredBefore) {
           this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + question.uuid);
         }
       }
