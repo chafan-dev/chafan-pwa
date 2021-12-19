@@ -7,8 +7,8 @@ export const apiTopic = {
   async createTopic(token: string, payload: ITopicCreate) {
     return axios.post<ITopic>(`${apiUrl}/api/v1/topics/`, payload, authHeaders(token));
   },
-  async getTopic(token: string, topicUUID: string) {
-    return axios.get<ITopic>(`${apiUrl}/api/v1/topics/${topicUUID}`, authHeaders(token));
+  async getTopic(topicUUID: string) {
+    return axios.get<ITopic>(`${apiUrl}/api/v1/topics/${topicUUID}`);
   },
   async updateTopic(token: string, topicUUID: string, payload: ITopicUpdate) {
     return axios.put<ITopic>(`${apiUrl}/api/v1/topics/${topicUUID}`, payload, authHeaders(token));

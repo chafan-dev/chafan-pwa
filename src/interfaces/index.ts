@@ -42,6 +42,8 @@ export interface IUserProfile {
   enable_deliver_unread_notifications: boolean;
   default_editor_mode: editor_T;
   feed_settings?: IUserFeedSettings;
+  can_create_public_site: boolean;
+  can_create_private_site: boolean;
 }
 
 export interface IUserSiteProfile {
@@ -605,6 +607,11 @@ export interface ISiteCreate {
   permission_type: 'public' | 'private';
 }
 
+export interface ICreateSiteResponse {
+  created_site?: ISite;
+  application_channel?: IChannel;
+}
+
 export interface IChannel {
   id: number;
   name: string;
@@ -612,6 +619,7 @@ export interface IChannel {
   private_with_user: IUserPreview;
   admin: IUserPreview;
   feedback_subject?: IFeedback;
+  site_creation_subject?: ISiteCreate;
 }
 
 export interface IChannelCreate {

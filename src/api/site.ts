@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  ICreateSiteResponse,
   IGenericResponse,
   IQuestionPreview,
   ISite,
@@ -48,7 +49,7 @@ export const apiSite = {
     return axios.get<ISite[]>(`${apiUrl}/api/v1/sites/${uuid}/related/`);
   },
   async createSite(token: string, payload: ISiteCreate) {
-    return axios.post<ISite>(`${apiUrl}/api/v1/sites/`, payload, authHeaders(token));
+    return axios.post<ICreateSiteResponse>(`${apiUrl}/api/v1/sites/`, payload, authHeaders(token));
   },
   async getSiteApply(token: string, siteUUID: string) {
     return axios.get<ISiteApplicationResponse>(

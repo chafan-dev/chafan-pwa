@@ -50,6 +50,7 @@
                 </template>
                 <v-btn
                   v-else
+                  depressed
                   :to="`/signup?invitation_link_uuid=${invitationLink.uuid}`"
                   color="primary"
                 >

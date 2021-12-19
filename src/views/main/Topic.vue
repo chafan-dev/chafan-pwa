@@ -51,7 +51,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { apiTopic } from '@/api/topic';
 import { IQuestionPreview, ITopic } from '@/interfaces';
 import QuestionLink from '@/components/question/QuestionLink.vue';
@@ -59,15 +59,15 @@ import TopicCard from '@/components/TopicCard.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { CVue, isEqual } from '@/common';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
-import { readNarrowUI, readToken } from '@/store/main/getters';
+import { readNarrowUI } from '@/store/main/getters';
 
 @Component({
   components: { DynamicItemList, QuestionPreview, QuestionLink, TopicCard, InfoIcon },
 })
-export default class Topic extends Vue {
+export default class Topic extends CVue {
   private topic: ITopic | null = null;
   private questions: IQuestionPreview[] = [];
   private loading = true;
@@ -75,10 +75,6 @@ export default class Topic extends Vue {
 
   get id() {
     return this.$route.params.id;
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   get isNarrowFeedUI() {
@@ -102,7 +98,7 @@ export default class Topic extends Vue {
 
   private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
-      const response = await apiTopic.getTopic(this.$store.state.main.token, this.id);
+      const response = await apiTopic.getTopic(this.id);
       this.loadingProgress = 33;
       if (response) {
         this.topic = response.data;

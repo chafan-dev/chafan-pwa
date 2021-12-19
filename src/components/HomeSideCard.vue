@@ -94,21 +94,6 @@ v{{ buildInfo.commitHashShort }}</pre
         >
         <v-expand-transition>
           <div v-show="expandDebugInfo">
-            Commit:
-            <a
-              :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.commitHash"
-              class="grey--text text-decoration-none"
-              target="blank"
-              ><code>{{ buildInfo.commitHashShort }}</code></a
-            >
-            <br />
-            Branch:
-            <a
-              :href="'https://github.com/chafan-dev/chafan-frontend/tree/' + buildInfo.branch"
-              class="grey--text text-decoration-none"
-              >{{ buildInfo.branch }}</a
-            >
-            <br />
             Commited at {{ $dayjs(buildInfo.commitTime).fromNow() }}
           </div>
         </v-expand-transition>
@@ -122,19 +107,19 @@ import { IQuestionPreview, IUserSiteProfile } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSiteCard from '@/components/CreateSiteCard.vue';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiDiscovery } from '@/api/discovery';
 import { apiMe } from '@/api/me';
-import { readIsLoggedIn, readToken } from '@/store/main/getters';
 
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { buildInfo } from '@/env';
+import { CVue } from '@/common';
 
 @Component({
   components: { SiteBtn, QuestionLink, CreateSiteCard, MoreIcon },
 })
-export default class HomeSideCard extends Vue {
+export default class HomeSideCard extends CVue {
   private siteProfiles: IUserSiteProfile[] = [];
   private visibleSiteProfiles: IUserSiteProfile[] = [];
   private showAllSiteProfilesDialog = false;
@@ -146,10 +131,6 @@ export default class HomeSideCard extends Vue {
 
   private showCreateSiteDialog = false;
 
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
   get buildInfo() {
     return buildInfo;
   }
@@ -158,9 +139,8 @@ export default class HomeSideCard extends Vue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.questions = (await apiDiscovery.getPinnedQuestions()).data;
       this.loadingPinnedQuestions = false;
-      const token = readToken(this.$store);
-      if (token) {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(token)).data;
+      if (this.token) {
+        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
         if (!this.$vuetify.breakpoint.mdAndUp) {
           this.visibleSiteProfiles = this.siteProfiles.slice(0, 9);
           if (this.visibleSiteProfiles.length < this.siteProfiles.length) {
