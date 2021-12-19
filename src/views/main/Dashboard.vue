@@ -159,7 +159,8 @@
               <div class="headline primary--text">私信</div>
             </v-card-title>
             <div v-if="!channelsIntermediate">
-              <v-tabs :vertical="$vuetify.breakpoint.mdAndUp">
+              <EmptyPlaceholder v-if="myChannels.length === 0" />
+              <v-tabs :vertical="isDesktop" v-else>
                 <v-tabs-slider />
                 <v-tab
                   v-for="channel in myChannels"

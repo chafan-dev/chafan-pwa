@@ -611,6 +611,7 @@ export interface IChannel {
   is_private: boolean;
   private_with_user: IUserPreview;
   admin: IUserPreview;
+  feedback_subject?: IFeedback;
 }
 
 export interface IChannelCreate {
