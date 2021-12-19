@@ -173,9 +173,13 @@ export default class UserProfileCard extends CVue {
     } else {
       this.avatarURL = '/img/default-avatar.png';
     }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.follows = (await apiMe.getUserFollows(this.token, this.userPreview.uuid)).data;
-    });
+    if (this.userPublic?.follows) {
+      this.follows = this.userPublic.follows;
+    } else {
+      await dispatchCaptureApiError(this.$store, async () => {
+        this.follows = (await apiMe.getUserFollows(this.token, this.userPreview.uuid)).data;
+      });
+    }
     this.loading = false;
   }
 
