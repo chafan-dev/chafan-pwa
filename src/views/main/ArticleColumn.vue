@@ -1,11 +1,11 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }" fluid>
         <ArticleColumnCard v-if="articleColumn" :articleColumn="articleColumn" />
         <v-skeleton-loader v-else type="card" />
-        <v-divider class="mb-2 mx-2" />
-        <div class="mx-2">
+        <v-divider class="my-1 mx-2" />
+        <div>
           <template v-if="articles !== null">
             <div v-if="articles.length">
               <ArticlePreview
@@ -17,7 +17,7 @@
             </div>
             <EmptyPlaceholder v-else />
           </template>
-          <div v-if="!userProfile" class="text-center grey--text">登录后查看更多</div>
+          <div v-if="!loggedIn" class="text-center grey--text">登录后查看更多</div>
         </div>
       </v-col>
     </v-row>
@@ -25,30 +25,25 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { apiArticle } from '@/api/article';
 import { IArticleColumn, IArticlePreview } from '@/interfaces';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readUserProfile } from '@/store/main/getters';
 import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
+import { CVue, isEqual } from '@/common';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 
 @Component({
   components: { ArticlePreview, EmptyPlaceholder, ArticleColumnCard },
 })
-export default class ArticleColumn extends Vue {
+export default class ArticleColumn extends CVue {
   private articleColumn: IArticleColumn | null = null;
   private articles: IArticlePreview[] | null = null;
 
   get id() {
     return this.$route.params.id;
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
   }
 
   beforeRouteUpdate(to: Route, from: Route, next: () => void) {

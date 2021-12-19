@@ -21,7 +21,7 @@
               :to="`/article-editor?articleColumnId=${articleColumn.uuid}`"
               class="slim-btn"
               depressed
-              outlined
+              color="primary"
               small
             >
               写文章
