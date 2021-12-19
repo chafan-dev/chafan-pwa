@@ -3,13 +3,21 @@
     <v-progress-linear indeterminate />
   </div>
   <div v-else>
-    <span v-if="channel && channel.private_with_user" class="title">
-      和<UserLink
-        :user-preview="
-          channel.admin.uuid === currentUserId ? channel.private_with_user : channel.admin
-        "
-      />的聊天记录
-    </span>
+    <div v-if="channel && channel.private_with_user">
+      <template v-if="channel.feedback_subject">
+        <span class="title">关于反馈</span>
+        <v-card flat outlined class="pa-2">
+          <Feedback :feedback="channel.feedback_subject" />
+        </v-card>
+      </template>
+      <span class="title" v-else>
+        和<UserLink
+          :user-preview="
+            channel.admin.uuid === currentUserId ? channel.private_with_user : channel.admin
+          "
+        />的聊天记录
+      </span>
+    </div>
     <div v-if="messages.length === 0">
       <EmptyPlaceholder />
     </div>
@@ -69,9 +77,10 @@ import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { CVue } from '@/common';
+import Feedback from '@/views/main/dashboard/Feedback.vue';
 
 @Component({
-  components: { EmptyPlaceholder, UserLink, ChannelIcon, Viewer },
+  components: { Feedback, EmptyPlaceholder, UserLink, ChannelIcon, Viewer },
 })
 export default class ChatWindow extends CVue {
   @Prop() public readonly channel!: IChannel;
