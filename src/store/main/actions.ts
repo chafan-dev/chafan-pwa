@@ -275,6 +275,13 @@ export const actions = {
       await dispatchCheckApiError(context, err);
     }
   },
+  async tryApi<T>(context: MainContext, action: () => Promise<T>): Promise<T | undefined> {
+    try {
+      return await action();
+    } catch (err) {
+      return;
+    }
+  },
   async apiErrorCapturedWithErrorHandler(
     context: MainContext,
     fns: {
@@ -303,6 +310,7 @@ export const dispatchGetModeratedSites = dispatch(actions.actionGetModeratedSite
 export const dispatchLogIn = dispatch(actions.actionLogIn);
 export const dispatchLogOut = dispatch(actions.actionLogOut);
 export const dispatchCaptureApiError = dispatch(actions.apiErrorCaptured);
+export const tryApi = dispatch(actions.tryApi);
 export const dispatchCaptureApiErrorWithErrorHandler = dispatch(
   actions.apiErrorCapturedWithErrorHandler
 );

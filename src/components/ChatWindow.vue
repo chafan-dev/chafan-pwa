@@ -13,7 +13,10 @@
       <template v-if="channel.site_creation_subject">
         <h1 class="title">关于创建圈子申请</h1>
         <v-card flat outlined class="pa-2 my-1">
-          <SiteCreation :site_creation="channel.site_creation_subject" />
+          <SiteCreation
+            :applicant-uuid="channel.admin.uuid"
+            :site_creation="channel.site_creation_subject"
+          />
         </v-card>
       </template>
       <span class="title" v-else>

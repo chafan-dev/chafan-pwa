@@ -343,6 +343,12 @@ export interface CommentQuestion {
   question: IQuestionPreview;
 }
 
+export interface CreateSiteNeedApproval {
+  verb: 'create_site_need_approval';
+  subject: IUserPreview;
+  channel: IChannel;
+}
+
 export interface EditQuestion {
   verb: 'edit_question';
   subject: IUserPreview;
@@ -482,7 +488,8 @@ export interface IEvent {
     | UpvoteSubmission
     | SystemSendInvitation
     | SiteBroadcast
-    | EditQuestion;
+    | EditQuestion
+    | CreateSiteNeedApproval;
 }
 
 export interface IActivity {
