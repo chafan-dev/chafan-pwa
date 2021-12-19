@@ -2,7 +2,7 @@
   <v-row :loading="loading" justify="center">
     <v-col
       :class="{
-        'col-8': $vuetify.breakpoint.mdAndUp,
+        'col-8': isDesktop,
         'fixed-narrow-col': isNarrowFeedUI,
       }"
       fluid
@@ -10,10 +10,7 @@
       <div v-if="article" class="my-4 px-2">
         <div class="d-flex align-center">
           <UserLink :showAvatar="true" :userPreview="article.author" />
-          <span
-            v-if="article.author.personal_introduction && $vuetify.breakpoint.mdAndUp"
-            class="grey--text ml-2"
-          >
+          <span v-if="article.author.personal_introduction && isDesktop" class="grey--text ml-2">
             {{ article.author.personal_introduction }}
           </span>
           <v-spacer />
@@ -26,16 +23,16 @@
               {{ article.article_column.name }}
             </router-link>
           </span>
-          <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text mr-3">
+          <span v-if="isDesktop" class="text-caption grey--text">
             发表于
             {{ $dayjs.utc(article.updated_at).local().fromNow() }}
           </span>
         </div>
 
-        <div class="headline my-2 mx-1 font-weight-bold">
+        <div class="headline my-2 font-weight-bold">
           {{ article.title }}
         </div>
-        <div class="my-3 mx-1">
+        <div class="my-3">
           <v-chip v-if="article && !article.is_published" class="mb-1" color="warning" small
             >此为初稿仅自己可见
           </v-chip>
@@ -45,7 +42,7 @@
           <Viewer ref="viewer" :content="article.content" />
         </div>
 
-        <div class="mx-1">
+        <div>
           <v-row>
             <v-col class="d-flex">
               <Upvote
