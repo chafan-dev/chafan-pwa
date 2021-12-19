@@ -10,6 +10,12 @@
           <Feedback :feedback="channel.feedback_subject" />
         </v-card>
       </template>
+      <template v-if="channel.site_creation_subject">
+        <h1 class="title">关于创建圈子申请</h1>
+        <v-card flat outlined class="pa-2 my-1">
+          <SiteCreation :site_creation="channel.site_creation_subject" />
+        </v-card>
+      </template>
       <span class="title" v-else>
         和<UserLink
           :user-preview="
@@ -93,9 +99,19 @@ import { CVue } from '@/common';
 import Feedback from '@/views/main/dashboard/Feedback.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
+import SiteCreation from '@/views/main/dashboard/SiteCreation.vue';
 
 @Component({
-  components: { HelpIcon, CloseIcon, Feedback, EmptyPlaceholder, UserLink, ChannelIcon, Viewer },
+  components: {
+    SiteCreation,
+    HelpIcon,
+    CloseIcon,
+    Feedback,
+    EmptyPlaceholder,
+    UserLink,
+    ChannelIcon,
+    Viewer,
+  },
 })
 export default class ChatWindow extends CVue {
   @Prop() public readonly channel!: IChannel;

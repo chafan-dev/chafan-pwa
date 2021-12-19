@@ -29,17 +29,22 @@
               item-value="value"
               label="圈子类型*"
             />
-            <div v-if="siteCreate.permission_type === 'public'">
+            <div v-if="siteCreate.permission_type === 'public'" class="text-caption grey--text">
               提示：「公开」类型一般适合话题型的圈子，内容对所有人可见，注册用户可以参与讨论，但是不能做公共编辑等操作。申请加入可以附加条件。
             </div>
-            <div v-else-if="siteCreate.permission_type === 'private'">
+            <div
+              v-else-if="siteCreate.permission_type === 'private'"
+              class="text-caption grey--text"
+            >
               提示：「私密」类型一般适合有确定的人群范围的圈子，内容仅对成员可见。申请加入可以附加条件。
             </div>
             <v-textarea v-model="siteCreate.description" hide-details label="描述" />
           </v-form>
+          <v-skeleton-loader type="list-item-three-line" v-else />
         </template>
       </v-card-text>
       <v-card-actions>
+        <span v-if="!valid" class="text-caption pl-2">提示：表格未填写完</span>
         <v-spacer />
         <v-btn depressed small @click="cancel">取消</v-btn>
         <v-btn depressed small @click="resetAll(reset)">重置</v-btn>
@@ -63,15 +68,9 @@
 import { Component } from 'vue-property-decorator';
 import { ISiteCreate, ITopic } from '@/interfaces';
 import { api } from '@/api';
-import {
-  dispatchCaptureApiError,
-  dispatchCaptureApiErrorWithErrorHandler,
-} from '@/store/main/actions';
+import { dispatchCaptureApiErrorWithErrorHandler } from '@/store/main/actions';
 import UserSearch from '@/components/UserSearch.vue';
 import { AxiosError } from 'axios';
-import { commitAddNotification } from '@/store/main/mutations';
-import { readUserProfile } from '@/store/main/getters';
-import { adminUUID, env } from '@/env';
 import { apiSite } from '@/api/site';
 import { CVue } from '@/common';
 
@@ -98,20 +97,6 @@ export default class CreateSite extends CVue {
   private intermediate = false;
   private categoryTopics: ITopic[] | null = null;
 
-  get canCreateSite() {
-    if (env !== 'production') {
-      return true;
-    }
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile && userProfile.karma >= 1000 && this.siteCreate.permission_type === 'public') {
-      return true;
-    }
-    if (userProfile && userProfile.karma >= 200 && this.siteCreate.permission_type === 'private') {
-      return true;
-    }
-    return false;
-  }
-
   private async mounted() {
     this.categoryTopics = (await api.getCategoryTopics()).data;
   }
@@ -131,33 +116,31 @@ export default class CreateSite extends CVue {
     this.$router.back();
   }
 
+  get canCreateSite() {
+    if (this.siteCreate.permission_type === 'public') {
+      return this.userProfile?.can_create_public_site;
+    } else if (this.siteCreate.permission_type === 'private') {
+      return this.userProfile?.can_create_private_site;
+    }
+    return false;
+  }
+
   private async submit() {
     this.intermediate = true;
-    if (this.canCreateSite) {
-      await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-        action: async () => {
-          const site = (await apiSite.createSite(this.token, this.siteCreate)).data;
-          await this.$router.push(`/sites/${site.subdomain}`);
-        },
-        errorFilter: (err: AxiosError) => {
-          return this.commitErrMsg(err) !== null;
-        },
-      });
-      this.intermediate = false;
-    } else {
-      const siteCreateInfo = JSON.stringify(this.siteCreate);
-      await dispatchCaptureApiError(this.$store, async () => {
-        if (adminUUID) {
-          await this.sendToAdmin('申请创建圈子：\n' + siteCreateInfo);
-        } else {
-          commitAddNotification(this.$store, {
-            content: '网站内部错误，请联系管理员',
-            color: 'error',
-          });
+    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
+      action: async () => {
+        const r = (await apiSite.createSite(this.token, this.siteCreate)).data;
+        if (r.created_site) {
+          await this.$router.push(`/sites/${r.created_site.subdomain}`);
+        } else if (r.application_channel) {
+          await this.$router.push(`/channels/${r.application_channel.id}`);
         }
-      });
-      this.intermediate = false;
-    }
+      },
+      errorFilter: (err: AxiosError) => {
+        return this.commitErrMsg(err) !== null;
+      },
+    });
+    this.intermediate = false;
   }
 }
 </script>

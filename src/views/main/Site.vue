@@ -142,7 +142,6 @@ import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
   },
 })
 export default class Site extends CVue {
-  private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 2 : 1;
   private site: ISite | null = null;
   private siteProfile: IUserSiteProfile | null = null;
   private siteProfiles: IUserSiteProfile[] | null = null;

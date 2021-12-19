@@ -69,13 +69,11 @@
           <div class="subheading secondary--text text--lighten-3">所在行业</div>
           <div>
             <v-chip-group :column="!$vuetify.breakpoint.mobile">
-              <v-chip
+              <TopicChip
+                :topic="topic"
                 v-for="topic in userPublic.profession_topics"
                 :key="topic.uuid"
-                :to="'/topics/' + topic.uuid"
-              >
-                {{ topic.name }}
-              </v-chip>
+              />
             </v-chip-group>
           </div>
         </div>
@@ -119,12 +117,7 @@
         <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
         <div>
           <v-chip-group :column="!isDesktop">
-            <v-chip
-              v-for="topic in userPublic.residency_topics"
-              :key="topic.uuid"
-              :to="'/topics/' + topic.uuid"
-              >{{ topic.name }}
-            </v-chip>
+            <TopicChip v-for="topic in userPublic.residency_topics" :key="topic.uuid" />
           </v-chip-group>
         </div>
       </div>
@@ -144,14 +137,7 @@
         class="my-3"
       >
         <div class="subheading secondary--text text--lighten-3">关注的话题：</div>
-        <v-chip
-          v-for="topic in userPublic.subscribed_topics"
-          :key="topic.uuid"
-          :to="'/topics/' + topic.uuid"
-          class="mr-1 mb-1"
-          small
-          >{{ topic.name }}
-        </v-chip>
+        <TopicChip v-for="topic in userPublic.subscribed_topics" :key="topic.uuid" />
       </div>
 
       <div class="pt-2">
@@ -194,9 +180,11 @@ import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
 import { CVue } from '@/common';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
+import TopicChip from '@/components/widgets/TopicChip.vue';
 
 @Component({
   components: {
+    TopicChip,
     ZhihuIcon,
     WorkExp,
     EduExp,
