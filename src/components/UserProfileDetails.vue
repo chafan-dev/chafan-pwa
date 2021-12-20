@@ -68,10 +68,10 @@
         <div class="my-3">
           <div class="subheading secondary--text text--lighten-3">所在行业</div>
           <div>
-            <v-chip-group :column="!$vuetify.breakpoint.mobile">
+            <v-chip-group :column="!isDesktop">
               <TopicChip
-                :topic="topic"
                 v-for="topic in userPublic.profession_topics"
+                :topic="topic"
                 :key="topic.uuid"
               />
             </v-chip-group>
@@ -117,7 +117,11 @@
         <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
         <div>
           <v-chip-group :column="!isDesktop">
-            <TopicChip v-for="topic in userPublic.residency_topics" :key="topic.uuid" />
+            <TopicChip
+              v-for="topic in userPublic.residency_topics"
+              :topic="topic"
+              :key="topic.uuid"
+            />
           </v-chip-group>
         </div>
       </div>
@@ -137,7 +141,7 @@
         class="my-3"
       >
         <div class="subheading secondary--text text--lighten-3">关注的话题：</div>
-        <TopicChip v-for="topic in userPublic.subscribed_topics" :key="topic.uuid" />
+        <TopicChip v-for="topic in userPublic.subscribed_topics" :topic="topic" :key="topic.uuid" />
       </div>
 
       <div class="pt-2">
