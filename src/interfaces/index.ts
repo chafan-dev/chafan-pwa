@@ -581,7 +581,7 @@ export interface IUserPublic {
   follows?: IUserFollows;
   edu_exps: IUserEducationExperience[];
   work_exps: IUserWorkExperience[];
-  contributions?: number[];
+  contributions?: { year: number; data: number[] }[];
 }
 
 export interface IUserPublicForVisitor {
