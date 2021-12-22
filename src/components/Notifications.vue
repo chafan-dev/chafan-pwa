@@ -148,7 +148,7 @@ export default class Notifications extends CVue {
       this.loadNotifsIntermediate = false;
 
       const wsToken = (await api2.getWsToken(this.token)).data.token;
-      this.wsConnection = new WebSocket(wsUrl + '/api/v1/ws?token=' + wsToken);
+      this.wsConnection = new WebSocket(wsUrl + '/ws?token=' + wsToken);
       this.wsConnection.onmessage = (message) => {
         const wsMsg = JSON.parse(message.data) as IWsUserMsg;
         this.handleWsMsg(wsMsg);

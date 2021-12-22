@@ -5,17 +5,17 @@ import { IQuestionPreview, ITopic, ITopicCreate, ITopicUpdate } from '@/interfac
 
 export const apiTopic = {
   async createTopic(token: string, payload: ITopicCreate) {
-    return axios.post<ITopic>(`${apiUrl}/api/v1/topics/`, payload, authHeaders(token));
+    return axios.post<ITopic>(`${apiUrl}/topics/`, payload, authHeaders(token));
   },
   async getTopic(topicUUID: string) {
-    return axios.get<ITopic>(`${apiUrl}/api/v1/topics/${topicUUID}`);
+    return axios.get<ITopic>(`${apiUrl}/topics/${topicUUID}`);
   },
   async updateTopic(token: string, topicUUID: string, payload: ITopicUpdate) {
-    return axios.put<ITopic>(`${apiUrl}/api/v1/topics/${topicUUID}`, payload, authHeaders(token));
+    return axios.put<ITopic>(`${apiUrl}/topics/${topicUUID}`, payload, authHeaders(token));
   },
   async getQuestionsOfTopic(token: string, topicUUID: string) {
     return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/api/v1/topics/${topicUUID}/questions/`,
+      `${apiUrl}/topics/${topicUUID}/questions/`,
       authHeaders(token)
     );
   },

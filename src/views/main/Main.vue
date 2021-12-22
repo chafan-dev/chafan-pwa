@@ -256,7 +256,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 
 import { appName, isDev } from '@/env';
 import {
@@ -297,6 +297,7 @@ import BaseCard from '@/components/base/BaseCard.vue';
 import html2canvas from 'html2canvas';
 import FeedbackIcon from '@/components/icons/FeedbackIcon.vue';
 import Notifications from '@/components/Notifications.vue';
+import { CVue } from '@/common';
 
 const routeGuardMain = async (to, from, next) => {
   if (to.meta && to.meta.title) {
@@ -329,7 +330,7 @@ const routeGuardMain = async (to, from, next) => {
     HomeIcon,
   },
 })
-export default class Main extends Vue {
+export default class Main extends CVue {
   private appName = appName;
 
   private readonly accountItems = [
@@ -364,10 +365,6 @@ export default class Main extends Vue {
 
   set showDrawer(value) {
     commitSetDashboardShowDrawer(this.$store, value);
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
   }
 
   get isModerator() {
@@ -441,7 +438,7 @@ export default class Main extends Vue {
     if (!this.userProfile) {
       formData.append('email', this.feedbackEmail);
     }
-    await api2.uploadFeedback(this.$store.state.main.token, formData);
+    await api2.uploadFeedback(this.token, formData);
     this.sendingFeedback = false;
     this.showFeedbackForm = false;
   }

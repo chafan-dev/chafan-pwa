@@ -14,60 +14,53 @@ import { authHeaders } from '@/utils';
 export const apiQuestion = {
   async upvoteQuestion(token: string, questionUUID: string) {
     return axios.post<IQuestionUpvotes>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/upvotes/`,
+      `${apiUrl}/questions/${questionUUID}/upvotes/`,
       null,
       authHeaders(token)
     );
   },
   async cancelUpvoteQuestion(token: string, questionUUID: string) {
     return axios.delete<IQuestionUpvotes>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/upvotes/`,
+      `${apiUrl}/questions/${questionUUID}/upvotes/`,
       authHeaders(token)
     );
   },
   async getQuestionArchives(token: string, questionUUID: string) {
     return axios.get<IQuestionArchive[]>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/archives/`,
+      `${apiUrl}/questions/${questionUUID}/archives/`,
       authHeaders(token)
     );
   },
   async getUpvotes(token: string, questionUUID: string) {
     return axios.get<IQuestionUpvotes>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/upvotes/`,
+      `${apiUrl}/questions/${questionUUID}/upvotes/`,
       authHeaders(token)
     );
   },
   async bumpViewsCounter(token: string, questionUUID: string) {
     return axios.post<IGenericResponse>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/views/`,
+      `${apiUrl}/questions/${questionUUID}/views/`,
       null,
       authHeaders(token)
     );
   },
   async hideQuestion(token: string, questionUUID: string) {
     return axios.put<IQuestion>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/hide`,
+      `${apiUrl}/questions/${questionUUID}/hide`,
       null,
       authHeaders(token)
     );
   },
   async getQuestion(token: string, questionUUID: string) {
-    return axios.get<IQuestion>(`${apiUrl}/api/v1/questions/${questionUUID}`, authHeaders(token));
+    return axios.get<IQuestion>(`${apiUrl}/questions/${questionUUID}`, authHeaders(token));
   },
   async getQuestionPage(token: string, questionUUID: string) {
-    return axios.get<IQuestionPage>(
-      `${apiUrl}/api/v1/questions/${questionUUID}/page`,
-      authHeaders(token)
-    );
+    return axios.get<IQuestionPage>(`${apiUrl}/questions/${questionUUID}/page`, authHeaders(token));
   },
   async postQuestion(token: string, data: IQuestionCreate) {
-    return axios.post<IQuestion>(`${apiUrl}/api/v1/questions/`, data, authHeaders(token));
+    return axios.post<IQuestion>(`${apiUrl}/questions/`, data, authHeaders(token));
   },
   async updateQuestion(token: string, questionUUID: string, payload: IQuestionUpdate) {
-    return axios.put<IQuestion>(
-      `${apiUrl}/api/v1/questions/${questionUUID}`,
-      payload,
-      authHeaders(token)
-    );
+    return axios.put<IQuestion>(`${apiUrl}/questions/${questionUUID}`, payload, authHeaders(token));
   },
 };

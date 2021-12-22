@@ -1,3 +1,5 @@
+import { AxiosRequestConfig } from 'axios';
+
 const CHAFAN_TOKEN = 'chafan:token';
 
 export const getLocalValue = (key: string, defaultVal: string | null = null) => {
@@ -224,6 +226,15 @@ export const authHeaders = (token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  };
+};
+
+export const authHeadersArrayBuffer = (token: string): AxiosRequestConfig => {
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    responseType: 'arraybuffer',
   };
 };
 

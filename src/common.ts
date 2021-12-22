@@ -118,7 +118,7 @@ export const getVditorUploadConfig = (token: string) => {
     // TODO: token for CORS validation
     accept: 'image/png, image/jpeg, image/bmp, image/gif',
     fieldName: 'files',
-    url: `${apiUrl}/api/v1/upload/vditor/`,
+    url: `${apiUrl}/upload/vditor/`,
     headers: {
       Authorization: `Bearer ${token}`,
     },
