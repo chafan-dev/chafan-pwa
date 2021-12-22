@@ -7,7 +7,7 @@
       <div v-if="showQuestionInCard" class="title mb-2">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
-      <v-skeleton-loader type="paragraph" v-if="loading || rendering" />
+      <v-skeleton-loader type="paragraph" v-if="(loading || rendering) && !preview" />
       <template v-if="!loading">
         <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
           <span v-show="showAuthor">
@@ -347,7 +347,7 @@ export default class Answer extends CVue {
   private showEditor: boolean = false;
   private confirmDeleteDialog = false;
   private loading = true;
-  private rendering = false;
+  private rendering = true;
   private preview = true;
   private deleteAnswerIntermediate = false;
   private bookmarkIntermediate = false;
@@ -522,7 +522,6 @@ export default class Answer extends CVue {
       bookmarkers_count: this.answer.bookmark_count,
       bookmarked_by_me: this.answer.bookmarked,
     };
-    this.loading = false;
   }
 
   private expandDown() {
