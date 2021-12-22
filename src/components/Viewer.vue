@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Emit, Prop } from 'vue-property-decorator';
 import { VditorViewerCF } from 'chafan-vue-editors';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { CVue, postProcessViewerDOM } from '@/common';
@@ -33,11 +33,11 @@ export default class Viewer extends CVue {
   public textContent: string | null = null;
   @Prop() private readonly content!: IRichText;
 
+  @Emit('viewer-ready')
   private onViewerReady(contentElem: HTMLElement) {
     this.$data.contentElem = contentElem;
     postProcessViewerDOM(this.token, contentElem);
     this.textContent = contentElem.innerText;
-    this.$emit('viewer-ready');
   }
 }
 </script>

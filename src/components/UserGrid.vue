@@ -12,11 +12,9 @@ import UserCard from '@/components/UserCard.vue';
 import { IUserPreview } from '@/interfaces';
 
 @Component({
-  name: 'UserGrid',
   components: { UserCard },
 })
 export default class UserGrid extends Vue {
   @Prop() private readonly users!: IUserPreview[];
-  private readonly memberCols = this.$vuetify.breakpoint.mdAndUp ? 3 : 2;
 }
 </script>
