@@ -198,6 +198,38 @@ export const exampleAnswer: IAnswer = {
   },
 };
 
+export const exampleAnswerPreview2: IAnswerPreview = {
+  uuid: exampleAnswerUUID,
+  author: example_user1_preview,
+  question: exampleQuestionPreview,
+  body: exampleLongTextPreview,
+  body_is_truncated: false,
+  upvotes_count: 12,
+  is_hidden_by_moderator: false,
+};
+
+export const exampleAnswer2: IAnswer = {
+  archives_count: 0,
+  bookmarked: false,
+  uuid: exampleAnswerUUID,
+  author: example_user1_preview,
+  site: example_site1,
+  question: exampleQuestionPreview,
+  updated_at: '2021-03-05T19:30:57.482069+00:00',
+  is_published: true,
+  comments: [],
+  is_hidden_by_moderator: false,
+  view_times: 100,
+  comment_writable: true,
+  bookmark_count: 12,
+  visibility: 'anyone',
+  content: {
+    source: exampleLongTextPreview,
+    rendered_text: exampleLongTextPreview,
+    editor: 'markdown',
+  },
+};
+
 export const exampleAnswerUpvotes: IAnswerUpvotes = {
   answer_uuid: exampleAnswerUUID,
   count: 23,
