@@ -149,7 +149,7 @@
         <span>{{ $dayjs.utc(userPublic.created_at).format('YYYY-MM-DD') }}</span>
       </div>
       <div class="my-2" v-if="userPublic.contributions">
-        <ContribGraph :data="userPublic.contributions" />
+        <ContribGraphs :data="userPublic.contributions" />
       </div>
     </template>
 
@@ -188,11 +188,11 @@ import WorkExp from '@/components/WorkExp.vue';
 import { CVue } from '@/common';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
-import ContribGraph from '@/components/widgets/ContribGraph.vue';
+import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
 
 @Component({
   components: {
-    ContribGraph,
+    ContribGraphs,
     TopicChip,
     ZhihuIcon,
     WorkExp,

@@ -5,7 +5,7 @@
         <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
           <v-card>
             <v-card-text>
-              <ContribGraph />
+              <ContribGraphs />
             </v-card-text>
           </v-card>
           <v-divider class="my-4" />
@@ -88,9 +88,11 @@ import RotationCard from '@/components/base/RotationCard.vue';
 import SiteCard from '@/components/SiteCard.vue';
 import Answer from '@/components/Answer.vue';
 import ContribGraph from '@/components/widgets/ContribGraph.vue';
+import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
 
 @Component({
   components: {
+    ContribGraphs,
     ContribGraph,
     Answer,
     SiteCard,
