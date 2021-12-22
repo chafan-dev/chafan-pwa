@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-auto">
+  <div class="overflow-hidden">
     <div class="contrib-graph">
       <ul class="contrib-months">
         <li>Jan</li>
@@ -114,9 +114,9 @@ export default class ContribGraph extends Vue {
 /* Other styling */
 
 .contrib-graph {
-  padding: 20px;
+  padding: 10px;
   border: 1px #e1e4e8 solid;
-  margin: 20px;
+  border-radius: 5px;
 }
 
 .contrib-days {
