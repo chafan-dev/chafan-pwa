@@ -25,7 +25,7 @@
           <span>{{ shortIntro(userPreview.personal_introduction) }}</span>
         </div>
 
-        <v-lazy v-if="follows">
+        <div v-if="follows">
           <v-row class="compact-row">
             <v-col class="compact-col">
               <span v-if="follows.followers_count" class="text-caption mr-2 grey--text"
@@ -85,7 +85,7 @@
             </v-col>
             <div v-else class="mb-2" />
           </v-row>
-        </v-lazy>
+        </div>
         <v-skeleton-loader v-else type="text" />
       </v-col>
     </v-row>
