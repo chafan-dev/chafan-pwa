@@ -112,9 +112,6 @@ export default class ChafanTiptap extends Vue {
   }
 
   private onEditorReadyInternal(contentElem: HTMLElement) {
-    if (this.onEditorReady) {
-      this.onEditorReady(contentElem);
-    }
     if (!this.editable) {
       renderMathInElement(contentElem, {
         delimiters: [
@@ -124,6 +121,9 @@ export default class ChafanTiptap extends Vue {
           { left: '\\[', right: '\\]', display: true },
         ],
       });
+    }
+    if (this.onEditorReady) {
+      this.onEditorReady(contentElem);
     }
   }
 
