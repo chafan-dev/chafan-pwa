@@ -2,24 +2,26 @@ import dayjs from 'dayjs';
 
 export const env = process.env.VUE_APP_ENV;
 
-let envApiUrl = '';
-let envWsUrl = '';
+let envApi = '';
+let envWs = '';
 
 if (env === 'production') {
-  envApiUrl = `https://${process.env.VUE_APP_API}`;
-  envWsUrl = `wss://${process.env.VUE_APP_API}`;
+  envApi = `https://${process.env.VUE_APP_API}`;
+  envWs = `wss://${process.env.VUE_APP_API}`;
 } else if (env === 'staging') {
-  envApiUrl = `https://${process.env.VUE_APP_API}`;
-  envWsUrl = `wss://${process.env.VUE_APP_API}`;
+  envApi = `https://${process.env.VUE_APP_API}`;
+  envWs = `wss://${process.env.VUE_APP_API}`;
 } else {
-  envApiUrl = `http://${process.env.VUE_APP_API}`;
-  envWsUrl = `ws://${process.env.VUE_APP_API}`;
+  envApi = `http://${process.env.VUE_APP_API}`;
+  envWs = `ws://${process.env.VUE_APP_API}`;
 }
 
 export const isDev = env !== 'production';
 
-export const apiUrl = envApiUrl;
-export const wsUrl = envWsUrl;
+const apiVersionSuffix = '/api/v1';
+
+export const apiUrl = envApi + apiVersionSuffix;
+export const wsUrl = envWs + apiVersionSuffix;
 export const appName = process.env.VUE_APP_NAME;
 export const sentryDSN = process.env.VUE_APP_SENTRY_DSN;
 export const adminUUID = process.env.VUE_APP_ADMIN_UUID;

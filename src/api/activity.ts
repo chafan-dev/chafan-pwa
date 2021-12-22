@@ -24,20 +24,14 @@ export const apiActivity = {
     if (payload.random !== undefined) {
       params.set('random', payload.random.toString());
     }
-    return axios.get<IFeedSequence>(
-      `${apiUrl}/api/v1/activities/`,
-      authHeadersWithParams(token, params)
-    );
+    return axios.get<IFeedSequence>(`${apiUrl}/activities/`, authHeadersWithParams(token, params));
   },
   async getSettings(token: string) {
-    return axios.get<IUserFeedSettings>(
-      `${apiUrl}/api/v1/activities/settings/`,
-      authHeaders(token)
-    );
+    return axios.get<IUserFeedSettings>(`${apiUrl}/activities/settings/`, authHeaders(token));
   },
   async updateOrigins(token: string, payload: IUpdateOrigins) {
     return axios.put<IGenericResponse>(
-      `${apiUrl}/api/v1/activities/settings/blocked-origins/`,
+      `${apiUrl}/activities/settings/blocked-origins/`,
       payload,
       authHeaders(token)
     );

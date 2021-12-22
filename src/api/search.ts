@@ -16,39 +16,33 @@ export const apiSearch = {
     const params = new URLSearchParams();
     params.append('q', fragment);
     return axios.get<IUserPreview[]>(
-      `${apiUrl}/api/v1/search/users/`,
+      `${apiUrl}/search/users/`,
       authHeadersWithParams(token, params)
     );
   },
   async searchTopics(token: string, fragment: string) {
     const params = new URLSearchParams();
     params.append('q', fragment);
-    return axios.get<ITopic[]>(
-      `${apiUrl}/api/v1/search/topics/`,
-      authHeadersWithParams(token, params)
-    );
+    return axios.get<ITopic[]>(`${apiUrl}/search/topics/`, authHeadersWithParams(token, params));
   },
   async searchQuestions(token: string, fragment: string) {
     const params = new URLSearchParams();
     params.append('q', fragment);
     return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/api/v1/search/questions/`,
+      `${apiUrl}/search/questions/`,
       authHeadersWithParams(token, params)
     );
   },
   async searchSites(token: string, fragment: string) {
     const params = new URLSearchParams();
     params.append('q', fragment);
-    return axios.get<ISite[]>(
-      `${apiUrl}/api/v1/search/sites/`,
-      authHeadersWithParams(token, params)
-    );
+    return axios.get<ISite[]>(`${apiUrl}/search/sites/`, authHeadersWithParams(token, params));
   },
   async searchSubmissions(token: string, fragment: string) {
     const params = new URLSearchParams();
     params.append('q', fragment);
     return axios.get<ISubmission[]>(
-      `${apiUrl}/api/v1/search/submissions/`,
+      `${apiUrl}/search/submissions/`,
       authHeadersWithParams(token, params)
     );
   },
@@ -56,7 +50,7 @@ export const apiSearch = {
     const params = new URLSearchParams();
     params.append('q', fragment);
     return axios.get<IAnswerPreview[]>(
-      `${apiUrl}/api/v1/search/answers/`,
+      `${apiUrl}/search/answers/`,
       authHeadersWithParams(token, params)
     );
   },
@@ -64,7 +58,7 @@ export const apiSearch = {
     const params = new URLSearchParams();
     params.append('q', fragment);
     return axios.get<IArticlePreview[]>(
-      `${apiUrl}/api/v1/search/articles/`,
+      `${apiUrl}/search/articles/`,
       authHeadersWithParams(token, params)
     );
   },
