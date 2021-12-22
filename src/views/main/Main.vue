@@ -265,7 +265,6 @@ import {
   readHasModeratedSites,
   readModeratedSites,
   readUserMode,
-  readUserProfile,
 } from '@/store/main/getters';
 import {
   commitSetDashboardMiniDrawer,
