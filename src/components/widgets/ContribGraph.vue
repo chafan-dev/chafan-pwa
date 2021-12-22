@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden">
+  <div class="overflow-auto">
     <div class="contrib-graph">
       <ul class="contrib-months">
         <li>Jan</li>
