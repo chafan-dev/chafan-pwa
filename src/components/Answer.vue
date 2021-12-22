@@ -7,7 +7,7 @@
       <div v-if="showQuestionInCard" class="title mb-2">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
-      <v-skeleton-loader type="paragraph" v-if="(loading || rendering) && !preview" />
+      <v-skeleton-loader type="paragraph" v-if="loading || rendering" />
       <template v-if="!loading">
         <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
           <span v-show="showAuthor">
@@ -347,7 +347,7 @@ export default class Answer extends CVue {
   private showEditor: boolean = false;
   private confirmDeleteDialog = false;
   private loading = true;
-  private rendering = true;
+  private rendering = false;
   private preview = true;
   private deleteAnswerIntermediate = false;
   private bookmarkIntermediate = false;
@@ -483,6 +483,7 @@ export default class Answer extends CVue {
     this.$emit('load');
     this.answer = answer;
     this.rendering = true;
+    this.preview = false;
     this.loading = false;
     if (this.userProfile) {
       this.currentUserIsAuthor = this.userProfile.uuid === this.answer.author.uuid;

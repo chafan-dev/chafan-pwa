@@ -5,7 +5,15 @@
         <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
           <v-card>
             <v-card-text>
+              <ContribGraph />
+            </v-card-text>
+          </v-card>
+          <v-divider class="my-4" />
+          <v-card>
+            <v-card-text>
               <Answer
+                v-if="answerExample === 0"
+                :key="answerExample"
                 :answer-preview="mockData.exampleAnswerPreview"
                 :answer-prop="mockData.exampleAnswer"
                 :show-author="true"
@@ -13,8 +21,22 @@
                 :answer-upvotes-prop="mockData.exampleAnswerUpvotes"
                 :answer-prop-delay-milli-seconds-for-test="1000"
               />
+              <Answer
+                v-if="answerExample === 1"
+                :key="answerExample"
+                :answer-preview="mockData.exampleAnswerPreview2"
+                :answer-prop="mockData.exampleAnswer2"
+                :show-author="true"
+                :answer-upvotes-prop="mockData.exampleAnswerUpvotes"
+              />
             </v-card-text>
+            <v-card-actions>
+              <v-card-actions>
+                <v-select label="answer example" :items="[0, 1]" v-model="answerExample" />
+              </v-card-actions>
+            </v-card-actions>
           </v-card>
+          <v-divider class="my-4" />
           <v-card>
             <v-card-text>
               <v-sheet outlined>
@@ -65,9 +87,11 @@ import ExampleSubmissionPreview from '@/views/showcase/ExampleSubmissionPreview.
 import RotationCard from '@/components/base/RotationCard.vue';
 import SiteCard from '@/components/SiteCard.vue';
 import Answer from '@/components/Answer.vue';
+import ContribGraph from '@/components/widgets/ContribGraph.vue';
 
 @Component({
   components: {
+    ContribGraph,
     Answer,
     SiteCard,
     RotationCard,
@@ -80,5 +104,7 @@ import Answer from '@/components/Answer.vue';
 export default class Showcase extends Vue {
   private mockData = mockData;
   private questionPreviewDisabled = false;
+
+  private answerExample: number = 0;
 }
 </script>
