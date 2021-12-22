@@ -350,7 +350,9 @@ export const themeDefs: { [key in ThemeType]: IThemeDef } = {
 export const updateHead = (routePath: string, title: string, descriptionText?: string) => {
   document.title = title;
   document.querySelector('meta[property="og.title"]')?.setAttribute('content', title);
-  document.querySelector('meta[property="og.site_name"]')?.setAttribute('content', appName);
+  if (appName) {
+    document.querySelector('meta[property="og.site_name"]')?.setAttribute('content', appName);
+  }
   if (descriptionText) {
     document.querySelector('meta[name="description"]')?.setAttribute('content', descriptionText);
     document
@@ -564,7 +566,7 @@ export class CVue extends Vue {
 
   async sendToAdmin(msg: string) {
     const r0 = await api.createChannel(this.token, {
-      private_with_user_uuid: adminUUID,
+      private_with_user_uuid: adminUUID!,
     });
     const channelId = r0.data.id;
     await api.createMessage(this.token, {
