@@ -99,6 +99,7 @@ export interface IAnswer {
   visibility: 'anyone' | 'registered';
   keywords?: string[];
   content: IRichText;
+  upvotes?: IAnswerUpvotes;
 }
 
 export interface IQuestion {
@@ -580,6 +581,7 @@ export interface IUserPublic {
   follows?: IUserFollows;
   edu_exps: IUserEducationExperience[];
   work_exps: IUserWorkExperience[];
+  contributions?: number[];
 }
 
 export interface IUserPublicForVisitor {

@@ -514,6 +514,8 @@ export default class Answer extends CVue {
     }
     if (this.answerUpvotesProp) {
       this.upvotes = this.answerUpvotesProp;
+    } else if (this.answer.upvotes) {
+      this.upvotes = this.answer.upvotes;
     } else {
       this.upvotes = (await apiAnswer.getAnswerUpvotes(this.token, this.answer.uuid)).data;
     }
