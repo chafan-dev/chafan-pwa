@@ -7,8 +7,8 @@
       <div v-if="showQuestionInCard" class="title mb-2">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
-      <v-skeleton-loader type="paragraph" v-if="loading" />
-      <template v-else>
+      <v-skeleton-loader type="paragraph" v-if="loading || rendering" />
+      <template v-if="!loading">
         <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
           <span v-show="showAuthor">
             <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
@@ -16,7 +16,7 @@
           {{ answerPreviewBody }}
           <span :class="theme.answer.expand.text.classes">展开全文</span>
         </div>
-        <div v-if="answer" v-show="!preview">
+        <div v-if="answer" v-show="!preview && !rendering">
           <div v-if="showAuthor" class="d-flex align-center">
             <UserLink v-show="!preview" :showAvatar="true" :userPreview="answer.author" />
             <span
@@ -36,7 +36,11 @@
           <div class="mt-1">
             <template v-if="draftMode">
               <v-chip v-if="answer" color="info" small> 草稿</v-chip>
-              <Viewer v-if="draftContent !== null" :content="draftContent" />
+              <Viewer
+                v-if="draftContent !== null"
+                :content="draftContent"
+                @viewer-ready="rendering = false"
+              />
             </template>
             <template v-else>
               <v-chip v-if="answer && !answer.is_published" color="warning" small>
@@ -46,7 +50,11 @@
                 编辑器中有未发表的草稿
               </v-chip>
 
-              <Viewer v-intersect.once="onReadFullAnswer" :content="answer.content" />
+              <Viewer
+                v-intersect.once="onReadFullAnswer"
+                :content="answer.content"
+                @viewer-ready="rendering = false"
+              />
             </template>
           </div>
 
@@ -339,6 +347,7 @@ export default class Answer extends CVue {
   private showEditor: boolean = false;
   private confirmDeleteDialog = false;
   private loading = true;
+  private rendering = false;
   private preview = true;
   private deleteAnswerIntermediate = false;
   private bookmarkIntermediate = false;
@@ -473,6 +482,8 @@ export default class Answer extends CVue {
   private async updateStateWithLoadedAnswer(answer: IAnswer) {
     this.$emit('load');
     this.answer = answer;
+    this.rendering = true;
+    this.loading = false;
     if (this.userProfile) {
       this.currentUserIsAuthor = this.userProfile.uuid === this.answer.author.uuid;
       if (this.currentUserIsAuthor) {
