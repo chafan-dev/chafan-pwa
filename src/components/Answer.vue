@@ -385,6 +385,7 @@ export default class Answer extends CVue {
     }
 
     if (loadFull) {
+      await delay(1000);
       this.preview = false;
     }
   }
@@ -514,9 +515,7 @@ export default class Answer extends CVue {
       bookmarkers_count: this.answer.bookmark_count,
       bookmarked_by_me: this.answer.bookmarked,
     };
-    await delay(100);
     this.loading = false;
-    this.preview = false;
   }
 
   private expandDown() {
