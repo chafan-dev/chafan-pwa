@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const fs = require('fs');
 const { spawnSync } = require('child_process');
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
@@ -80,6 +81,14 @@ module.exports = {
   },
   devServer: {
     disableHostCheck: true,
+    https:
+      process.env.NODE_ENV === 'production'
+        ? {
+            key: fs.readFileSync('./dev.cha.fan-key.pem'),
+            cert: fs.readFileSync('./dev.cha.fan.pem'),
+          }
+        : undefined,
+    public: process.env.NODE_ENV === 'production' ? 'https://dev.cha.fan:8080/' : undefined,
   },
 };
 
