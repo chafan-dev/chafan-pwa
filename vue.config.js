@@ -84,8 +84,12 @@ module.exports = {
     https:
       process.env.NODE_ENV === 'production'
         ? {
-            key: fs.readFileSync('./dev.cha.fan-key.pem'),
-            cert: fs.readFileSync('./dev.cha.fan.pem'),
+            key: fs.existsSync('./dev.cha.fan-key.pem')
+              ? fs.readFileSync('./dev.cha.fan-key.pem')
+              : undefined,
+            cert: fs.existsSync('./dev.cha.fan.pem')
+              ? fs.readFileSync('./dev.cha.fan.pem')
+              : undefined,
           }
         : undefined,
     public: process.env.NODE_ENV === 'production' ? 'https://dev.cha.fan:8080/' : undefined,
