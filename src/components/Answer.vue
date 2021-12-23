@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!showEditor" class="pt-1">
+  <div v-if="!showEditor" class="pt-1 mx-2">
     <div v-if="isHiddenByMod">
       <v-card-text>内容已被隐藏</v-card-text>
     </div>
@@ -31,7 +31,7 @@
           </div>
 
           <!-- Answer Content Block -->
-          <div class="my-1 ml-1">
+          <div class="mb-1 mt-2">
             <!-- Draft content -->
             <template v-if="draftMode && draftContent !== null">
               <v-chip v-if="answer" color="info" small> 草稿</v-chip>

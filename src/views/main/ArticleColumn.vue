@@ -6,7 +6,8 @@
         <v-skeleton-loader v-else type="card" />
         <v-divider class="my-1 mx-2" />
         <div>
-          <template v-if="articles !== null">
+          <v-skeleton-loader type="list-item-three-line" v-if="loading" />
+          <template v-else>
             <div v-if="articles.length">
               <ArticlePreview
                 v-for="article in articles"
@@ -41,6 +42,7 @@ import ArticlePreview from '@/components/ArticlePreview.vue';
 export default class ArticleColumn extends CVue {
   private articleColumn: IArticleColumn | null = null;
   private articles: IArticlePreview[] | null = null;
+  private loading: boolean = true;
 
   get id() {
     return this.$route.params.id;
@@ -50,18 +52,16 @@ export default class ArticleColumn extends CVue {
     next();
     const matched = from.matched.find((record: RouteRecord) => record.name === 'article-column');
     if (matched && !isEqual(to.params, from.params)) {
+      this.loading = true;
       this.load();
     }
   }
 
   private async load() {
     await dispatchCaptureApiError(this.$store, async () => {
-      this.articleColumn = (
-        await apiArticle.getArticleColumn(this.$store.state.main.token, this.id)
-      ).data;
-      this.articles = (
-        await apiArticle.getArticlesOfColumn(this.$store.state.main.token, this.id)
-      ).data;
+      this.articleColumn = (await apiArticle.getArticleColumn(this.token, this.id)).data;
+      this.articles = (await apiArticle.getArticlesOfColumn(this.token, this.id)).data;
+      this.loading = false;
     });
   }
 

@@ -220,7 +220,7 @@ export const themeDefs: { [key in ThemeType]: IThemeDef } = {
   default: {
     answer: {
       expand: { text: { classes: 'primary--text' } },
-      controls: { classes: '', buttonsCol: { classes: 'd-flex pl-1 pb-0' } },
+      controls: { classes: '', buttonsCol: { classes: 'd-flex pb-0' } },
     },
     feed: {
       submissionPreview: {
