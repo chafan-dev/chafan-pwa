@@ -7,8 +7,8 @@
       <div v-if="showQuestionInCard" class="title mb-2">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
-      <v-progress-linear indeterminate v-if="loading" height="1" />
-      <template v-if="!loading">
+      <v-progress-linear indeterminate v-if="loading" height="2" class="mb-2" />
+      <template>
         <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
           <span v-show="showAuthor">
             <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
@@ -147,7 +147,7 @@
                               <UserLink :showAvatar="true" :userPreview="answer.author" />
                               <span
                                 v-if="answer.author.personal_introduction"
-                                :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+                                :class="{ 'text-caption': !isDesktop }"
                                 class="grey--text ml-2"
                               >
                                 {{ answer.author.personal_introduction }}
