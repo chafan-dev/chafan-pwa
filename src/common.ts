@@ -220,7 +220,7 @@ export const themeDefs: { [key in ThemeType]: IThemeDef } = {
   default: {
     answer: {
       expand: { text: { classes: 'primary--text' } },
-      controls: { classes: '', buttonsCol: { classes: 'd-flex pl-3 pb-0' } },
+      controls: { classes: '', buttonsCol: { classes: 'd-flex pl-1 pb-0' } },
     },
     feed: {
       submissionPreview: {
@@ -536,6 +536,10 @@ export class CVue extends Vue {
 
   get isDesktop() {
     return this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  fromNow(datetime: string) {
+    return this.$dayjs.utc(datetime).local().fromNow();
   }
 
   protected expectOkAndCommitMsg(response: IGenericResponse, msg: string) {
