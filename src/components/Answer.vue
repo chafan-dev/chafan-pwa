@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!showEditor" class="pa-1">
+  <div v-if="!showEditor" class="pt-1">
     <div v-if="isHiddenByMod">
       <v-card-text>内容已被隐藏</v-card-text>
     </div>
@@ -7,7 +7,7 @@
       <div v-if="showQuestionInCard" class="title mb-2">
         <QuestionLink :questionPreview="answerPreview.question" />
       </div>
-      <v-skeleton-loader type="paragraph" v-if="loading || rendering" />
+      <v-progress-linear indeterminate v-if="loading" height="1" />
       <template v-if="!loading">
         <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
           <span v-show="showAuthor">
@@ -16,32 +16,28 @@
           {{ answerPreviewBody }}
           <span :class="theme.answer.expand.text.classes">展开全文</span>
         </div>
-        <div v-if="answer" v-show="!preview && !rendering">
+        <div v-if="answer" v-show="!preview">
+          <!-- Author block -->
           <div v-if="showAuthor" class="d-flex align-center">
             <UserLink v-show="!preview" :showAvatar="true" :userPreview="answer.author" />
             <span
               v-if="answer.author.personal_introduction"
-              :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+              :class="{ 'text-caption': !isDesktop }"
               class="grey--text ml-2"
             >
               {{ truncatedIntro(answer.author.personal_introduction) }}
             </span>
             <v-spacer />
-            <span v-if="$vuetify.breakpoint.mdAndUp" class="text-caption grey--text">
-              上次编辑：
-              {{ $dayjs.utc(answer.updated_at).local().fromNow() }}
-            </span>
           </div>
 
-          <div class="mt-1">
-            <template v-if="draftMode">
+          <!-- Answer Content Block -->
+          <div class="my-1 ml-1">
+            <!-- Draft content -->
+            <template v-if="draftMode && draftContent !== null">
               <v-chip v-if="answer" color="info" small> 草稿</v-chip>
-              <Viewer
-                v-if="draftContent !== null"
-                :content="draftContent"
-                @viewer-ready="rendering = false"
-              />
+              <Viewer :content="draftContent" />
             </template>
+            <!-- Published content -->
             <template v-else>
               <v-chip v-if="answer && !answer.is_published" color="warning" small>
                 此为初稿仅自己可见
@@ -50,17 +46,14 @@
                 编辑器中有未发表的草稿
               </v-chip>
 
-              <Viewer
-                v-intersect.once="onReadFullAnswer"
-                :content="answer.content"
-                @viewer-ready="rendering = false"
-              />
+              <Viewer v-intersect.once="onReadFullAnswer" :content="answer.content" />
             </template>
           </div>
 
           <div :class="theme.answer.controls.classes">
-            <v-row>
-              <v-col :class="theme.answer.controls.buttonsCol.classes" align-self="end">
+            <!-- Main control block -->
+            <div class="d-flex">
+              <div :class="theme.answer.controls.buttonsCol.classes" class="align-self-center">
                 <div class="d-flex mt-1">
                   <Upvote
                     v-if="upvotes"
@@ -187,21 +180,21 @@
 
                   <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
                 </div>
-              </v-col>
+              </div>
+
+              <v-spacer />
 
               <!-- Column of variable width -->
-              <v-col v-if="$vuetify.breakpoint.mdAndUp & !preview && userProfile" md="auto">
-                <span class="text-caption grey--text mt-2">
-                  已被阅读{{ answer.view_times }}次
+              <div v-if="isDesktop & !preview && userProfile" class="align-self-center">
+                <span class="text-caption grey--text mr-1">
+                  编辑于
+                  {{ fromNow(answer.updated_at) }}， 已被阅读{{ answer.view_times }}次
                 </span>
-              </v-col>
-            </v-row>
+              </div>
+            </div>
 
-            <!--
-                NOTE: Layout of this part is tricky since it can be quite wide when there are six emojis.
-                Let's fix them later.
-                          -->
-            <div class="d-flex justify-end mt-3">
+            <!-- Reactions block -->
+            <div class="d-flex justify-end">
               <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
             </div>
 
@@ -347,7 +340,6 @@ export default class Answer extends CVue {
   private showEditor: boolean = false;
   private confirmDeleteDialog = false;
   private loading = true;
-  private rendering = false;
   private preview = true;
   private deleteAnswerIntermediate = false;
   private bookmarkIntermediate = false;
@@ -482,9 +474,6 @@ export default class Answer extends CVue {
   private async updateStateWithLoadedAnswer(answer: IAnswer) {
     this.$emit('load');
     this.answer = answer;
-    this.rendering = true;
-    this.preview = false;
-    this.loading = false;
     if (this.userProfile) {
       this.currentUserIsAuthor = this.userProfile.uuid === this.answer.author.uuid;
       if (this.currentUserIsAuthor) {
@@ -525,6 +514,9 @@ export default class Answer extends CVue {
       bookmarkers_count: this.answer.bookmark_count,
       bookmarked_by_me: this.answer.bookmarked,
     };
+    await delay(100);
+    this.loading = false;
+    this.preview = false;
   }
 
   private expandDown() {
