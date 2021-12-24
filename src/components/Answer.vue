@@ -389,7 +389,6 @@ export default class Answer extends CVue {
     }
 
     if (loadFull) {
-      await delay(1000);
       this.preview = false;
     }
   }

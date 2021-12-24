@@ -24,6 +24,7 @@ export const apiActivity = {
     if (payload.random !== undefined) {
       params.set('random', payload.random.toString());
     }
+    params.set('full_answers', 'true');
     return axios.get<IFeedSequence>(`${apiUrl}/activities/`, authHeadersWithParams(token, params));
   },
   async getSettings(token: string) {

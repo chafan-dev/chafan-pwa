@@ -24,10 +24,14 @@
                     <CloseIcon @click="showFollowersDialog = false" />
                   </v-card-title>
                   <v-card-text>
-                    <UserGrid v-if="followers" :users="followers" />
-                    <div class="text-center" v-else>
-                      <v-progress-circular indeterminate size="25" color="primary" />
-                    </div>
+                    <DynamicItemList
+                      :load-items="loadFollowers"
+                      v-slot="{ item }"
+                      emptyItemsText="暂无"
+                      nullItemText=""
+                    >
+                      <UserCard :compactMode="true" :userPreview="item" />
+                    </DynamicItemList>
                   </v-card-text>
                 </v-card>
               </v-dialog>
@@ -50,10 +54,14 @@
                     <CloseIcon @click="showFollowedDialog = false" />
                   </v-card-title>
                   <v-card-text>
-                    <UserGrid v-if="followed" :users="followed" />
-                    <div class="text-center" v-else>
-                      <v-progress-circular indeterminate size="25" color="primary" />
-                    </div>
+                    <DynamicItemList
+                      :load-items="loadFollowed"
+                      v-slot="{ item }"
+                      emptyItemsText="暂无"
+                      nullItemText=""
+                    >
+                      <UserCard :compactMode="true" :userPreview="item" />
+                    </DynamicItemList>
                   </v-card-text>
                 </v-card>
               </v-dialog>
@@ -136,9 +144,19 @@ import { apiPeople } from '@/api/people';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { CVue } from '@/common';
 import Avatar from '@/components/Avatar.vue';
+import DynamicItemList from '@/components/DynamicItemList.vue';
+import UserCard from '@/components/UserCard.vue';
 
 @Component({
-  components: { Avatar, CloseIcon, UserGrid, UserNameHeadline, UserProfileDetails },
+  components: {
+    UserCard,
+    DynamicItemList,
+    Avatar,
+    CloseIcon,
+    UserGrid,
+    UserNameHeadline,
+    UserProfileDetails,
+  },
 })
 export default class UserProfileCard extends CVue {
   @Prop() public readonly userPreview!: IUserPreview;
@@ -150,8 +168,6 @@ export default class UserProfileCard extends CVue {
   private cancelFollowIntermediate = false;
   private privateMessageIntermediate = false;
   private avatarURL: string | null = null;
-  private followers: IUserPreview[] | null = null;
-  private followed: IUserPreview[] | null = null;
   private showFollowersDialog = false;
   private showFollowedDialog = false;
 
@@ -222,12 +238,20 @@ export default class UserProfileCard extends CVue {
 
   private async showFollowers() {
     this.showFollowersDialog = true;
-    this.followers = (await apiPeople.getUserFollowers(this.token, this.userPreview.uuid)).data;
   }
 
   private async showFollowed() {
     this.showFollowedDialog = true;
-    this.followed = (await apiPeople.getUserFollowed(this.token, this.userPreview.uuid)).data;
+  }
+
+  private async loadFollowed(skip: number, limit: number) {
+    console.log('loadFollowed...');
+    return (await apiPeople.getUserFollowed(this.token, this.userPreview.uuid, skip, limit)).data;
+  }
+
+  private async loadFollowers(skip: number, limit: number) {
+    console.log('loadFollowers...');
+    return (await apiPeople.getUserFollowers(this.token, this.userPreview.uuid, skip, limit)).data;
   }
 }
 </script>
