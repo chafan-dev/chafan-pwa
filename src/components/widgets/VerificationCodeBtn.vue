@@ -1,5 +1,5 @@
 <template>
-  <v-btn :disabled="disabled" color="primary" depressed small @click="onClick">
+  <v-btn :disabled="disabled || disabledProp" color="primary" depressed small @click="onClick">
     发送验证码
     <v-progress-circular v-if="intermediate" indeterminate size="20" />
     <span v-if="seconds !== null"> ({{ 60 - seconds }}s) </span>
@@ -13,6 +13,7 @@ import { CVue } from '@/common';
 @Component
 export default class VerificationCodeBtn extends CVue {
   @Prop() public readonly sendVerificationCodeHandler!: () => Promise<boolean>;
+  @Prop({ default: false }) readonly disabledProp!: boolean;
 
   private seconds: number | null = null;
   private disabled = false;

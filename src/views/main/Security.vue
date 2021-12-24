@@ -47,7 +47,7 @@
           </v-card>
         </ValidationObserver>
 
-        <ValidationObserver v-slot="{ handleSubmit }">
+        <ValidationObserver v-slot="{ handleSubmit, valid }">
           <v-card :loading="!userProfile" class="ma-3 pa-3" outlined>
             <v-card-title primary-title>
               <div class="headline primary--text">管理登录方式</div>
@@ -168,12 +168,13 @@
 
               <VerificationCodeBtn
                 v-show="editLoginMode"
+                :disabled-prop="!valid"
                 :send-verification-code-handler="sendVerificationCode"
               />
 
               <v-btn
                 v-show="editLoginMode"
-                :disabled="intermediate"
+                :disabled="intermediate || !valid"
                 color="primary"
                 depressed
                 small
