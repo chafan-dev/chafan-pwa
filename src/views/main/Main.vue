@@ -437,6 +437,7 @@ export default class Main extends CVue {
     if (!this.userProfile) {
       formData.append('email', this.feedbackEmail);
     }
+    formData.append('location_url', this.$route.fullPath);
     await api2.uploadFeedback(this.token, formData);
     this.sendingFeedback = false;
     this.showFeedbackForm = false;
