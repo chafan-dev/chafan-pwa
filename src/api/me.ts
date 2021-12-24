@@ -22,11 +22,24 @@ import {
   IUserUpdateSecondaryEmails,
 } from '../interfaces';
 
+function addSchemeToUrl(url: string | undefined) {
+  if (!url) {
+    return url;
+  }
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return 'http://' + url;
+}
+
 export const apiMe = {
   async getMe(token: string) {
     return axios.get<IUserProfile>(`${apiUrl}/me`, authHeaders(token));
   },
   async updateMe(token: string, data: IUserUpdateMe) {
+    data.zhihu_url = addSchemeToUrl(data.zhihu_url);
+    data.homepage_url = addSchemeToUrl(data.homepage_url);
+    data.linkedin_url = addSchemeToUrl(data.linkedin_url);
     return axios.put<IUserProfile>(`${apiUrl}/me`, data, authHeaders(token));
   },
   async updatePhoneNumber(token: string, data: IUserUpdateLoginPhoneNumber) {
