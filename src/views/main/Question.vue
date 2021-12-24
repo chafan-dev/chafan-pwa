@@ -331,7 +331,6 @@
             :answerPreview="answerPreviewOf(answer.uuid)"
             :answerProp="answer"
             :loadFull="answers.indexOf(answer) <= 2"
-            :showAuthor="true"
             :showCommentId="answerCommentId"
             :showQuestionInCard="false"
             @delete-answer="deleteHandler"

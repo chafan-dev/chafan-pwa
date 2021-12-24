@@ -111,7 +111,7 @@
           </div>
 
           <div v-if="activity.verb === 'upvote_answer'">
-            <Answer :answerPreview="activity.event.content.answer" :showAuthor="true" />
+            <Answer :answerPreview="activity.event.content.answer" />
           </div>
           <div v-if="activity.verb === 'upvote_question'">
             <QuestionPreview :questionPreview="activity.event.content.question" />
@@ -156,7 +156,10 @@
             <ArticlePreview :articlePreview="activity.event.content.article" />
           </div>
           <div v-else-if="activity.verb === 'answer_question'">
-            <Answer :answerPreview="activity.event.content.answer" :showAuthor="false" />
+            <Answer
+              :answerPreview="activity.event.content.answer"
+              :inAnswerQuestionFeedCard="true"
+            />
           </div>
           <div v-else-if="activity.verb === 'create_question'">
             <QuestionPreview :questionPreview="activity.event.content.question" />
