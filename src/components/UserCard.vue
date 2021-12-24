@@ -186,12 +186,9 @@ export default class UserCard extends CVue {
     this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
     this.followIntermediate = false;
 
-    // TODO: rotate grid
-    if (this.infeed) {
-      this.recommendedUsers = (
-        await apiPeople.getRelatedUsers(this.token, this.userPreview.uuid)
-      ).data.filter((u) => u.uuid !== this.userProfile?.uuid);
-    }
+    this.recommendedUsers = (
+      await apiPeople.getRelatedUsers(this.token, this.userPreview.uuid)
+    ).data.filter((u) => u.uuid !== this.userProfile?.uuid);
   }
 
   private async cancelFollow() {
