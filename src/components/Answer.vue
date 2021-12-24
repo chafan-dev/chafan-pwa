@@ -10,7 +10,7 @@
       <v-progress-linear indeterminate v-if="loading" height="2" class="mb-2" />
       <template>
         <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
-          <span v-show="showAuthor">
+          <span v-show="!inAnswerQuestionFeedCard">
             <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
           </span>
           {{ answerPreviewBody }}
@@ -18,7 +18,7 @@
         </div>
         <div v-if="answer" v-show="!preview">
           <!-- Author block -->
-          <div v-if="showAuthor" class="d-flex align-center">
+          <div v-if="!inAnswerQuestionFeedCard" class="d-flex align-center">
             <UserLink v-show="!preview" :showAvatar="true" :userPreview="answer.author" />
             <span
               v-if="answer.author.personal_introduction"
@@ -187,8 +187,10 @@
               <!-- Column of variable width -->
               <div v-if="isDesktop & !preview && userProfile" class="align-self-center">
                 <span class="text-caption grey--text mr-1">
-                  编辑于
-                  {{ fromNow(answer.updated_at) }}， 已被阅读{{ answer.view_times }}次
+                  <span v-if="!inAnswerQuestionFeedCard"
+                    >编辑于 {{ fromNow(answer.updated_at) }}，</span
+                  >
+                  已被阅读{{ answer.view_times }}次
                 </span>
               </div>
             </div>
@@ -326,7 +328,7 @@ export default class Answer extends CVue {
   @Prop() private readonly answerPropDelayMilliSecondsForTest: number | undefined;
   @Prop() private readonly answerUpvotesProp: IAnswerUpvotes | undefined;
   @Prop({ default: false }) private readonly loadFull!: boolean;
-  @Prop() private readonly showAuthor!: boolean;
+  @Prop({ default: false }) private readonly inAnswerQuestionFeedCard!: boolean;
   @Prop({ default: false }) private readonly draftMode!: boolean;
   @Prop() private readonly showCommentId: string | undefined;
   @Prop({ default: true }) private readonly showQuestionInCard!: boolean;

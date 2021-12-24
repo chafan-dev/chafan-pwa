@@ -3,15 +3,78 @@
     <div class="d-flex">
       <UserLink :userPreview="comment.author" />
       <v-spacer />
-      <span class="text-caption grey--text">{{
-        $dayjs.utc(comment.updated_at).local().fromNow()
-      }}</span>
+      <span class="text-caption grey--text">{{ fromNow(comment.updated_at) }}</span>
     </div>
 
     <!-- Comment body -->
     <div v-if="!showUpdateEditor" class="ml-1">
       <Viewer v-if="!comment.is_deleted" :content="comment.content" />
       <div v-else class="grey--text">已删除</div>
+    </div>
+
+    <!-- New comment editor -->
+    <v-expand-transition>
+      <div v-show="showEditor" class="ml-4">
+        <SimpleEditor
+          ref="commentReplyEditor"
+          :onMentionedHandles="onMentionedHandles"
+          class="mt-2 mb-2"
+          placeholder="回复"
+        />
+        <div class="d-flex">
+          <span v-if="mentioned.length" class="grey--text caption">
+            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
+              handle
+            }}</v-chip>
+          </span>
+          <v-spacer />
+          <v-btn
+            :disabled="submitIntermediate"
+            class="mr-2"
+            color="primary"
+            depressed
+            small
+            @click="submitNewReplyBody"
+          >
+            发送回复
+            <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
+          </v-btn>
+          <v-btn depressed small @click="showEditor = false"> 取消</v-btn>
+        </div>
+      </div>
+    </v-expand-transition>
+
+    <!-- Update comment editor -->
+    <div v-if="writable && !comment.is_deleted">
+      <div v-if="showUpdateEditor">
+        <SimpleEditor
+          ref="commentUpdateEditor"
+          :editor-prop="comment.content.editor"
+          :initialValue="comment.content.source"
+          :onMentionedHandles="onMentionedHandles"
+          class="mt-2 mb-2"
+        />
+        <div class="d-flex">
+          <span v-if="mentioned.length">
+            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
+              handle
+            }}</v-chip>
+          </span>
+          <v-spacer />
+          <v-btn
+            :disabled="submitIntermediate"
+            class="mr-2"
+            color="primary"
+            depressed
+            small
+            @click="submitUpdateCommentBody"
+          >
+            提交
+            <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
+          </v-btn>
+          <v-btn depressed small @click="showUpdateEditor = false"> 取消</v-btn>
+        </div>
+      </div>
     </div>
 
     <!-- Comment control -->
@@ -101,70 +164,6 @@
       </template>
     </div>
 
-    <!-- Editor -->
-    <div v-if="writable && !comment.is_deleted">
-      <div v-if="showUpdateEditor">
-        <SimpleEditor
-          ref="commentUpdateEditor"
-          :editor-prop="comment.content.editor"
-          :initialValue="comment.content.source"
-          :onMentionedHandles="onMentionedHandles"
-          class="mt-2 mb-2"
-        />
-        <div class="d-flex">
-          <span v-if="mentioned.length">
-            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
-              handle
-            }}</v-chip>
-          </span>
-          <v-spacer />
-          <v-btn
-            :disabled="submitIntermediate"
-            class="mr-2"
-            color="primary"
-            depressed
-            small
-            @click="submitUpdateCommentBody"
-          >
-            提交
-            <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
-          </v-btn>
-          <v-btn depressed small @click="showUpdateEditor = false"> 取消</v-btn>
-        </div>
-      </div>
-
-      <v-expand-transition>
-        <div v-show="showEditor" class="ml-4">
-          <SimpleEditor
-            ref="commentReplyEditor"
-            :onMentionedHandles="onMentionedHandles"
-            class="mt-2 mb-2"
-            placeholder="回复"
-          />
-          <div class="d-flex">
-            <span v-if="mentioned.length" class="grey--text caption">
-              将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
-                handle
-              }}</v-chip>
-            </span>
-            <v-spacer />
-            <v-btn
-              :disabled="submitIntermediate"
-              class="mr-2"
-              color="primary"
-              depressed
-              small
-              @click="submitNewReplyBody"
-            >
-              发送回复
-              <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
-            </v-btn>
-            <v-btn depressed small @click="showEditor = false"> 取消</v-btn>
-          </div>
-        </div>
-      </v-expand-transition>
-    </div>
-
     <!-- Replies -->
     <v-expand-transition v-if="childComments">
       <div v-show="childCommentsExpanded">
@@ -195,7 +194,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
@@ -212,9 +211,9 @@ import { api2 } from '@/api2';
 import { apiComment } from '@/api/comment';
 import { rankComments } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { readIsLoggedIn, readToken, readUserProfile } from '@/store/main/getters';
 import UpvotedIcon from '@/components/icons/UpvotedIcon.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
+import { CVue } from '@/common';
 
 @Component({
   name: 'Comment',
@@ -233,7 +232,7 @@ import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
     Viewer,
   },
 })
-export default class Comment extends Vue {
+export default class Comment extends CVue {
   @Prop() private readonly comment!: IComment;
   @Prop() private readonly writable!: boolean;
   @Prop({ default: 0 }) private readonly depth!: number;
@@ -251,10 +250,6 @@ export default class Comment extends Vue {
   private showCancelUpvoteDialog: boolean = false;
 
   private mentioned: string[] = [];
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
 
   get answerCommentId() {
     const acid = this.$route.params.acid;
@@ -290,14 +285,6 @@ export default class Comment extends Vue {
     } else {
       return null;
     }
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
   }
 
   get currentUserIsAuthor() {
