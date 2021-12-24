@@ -78,7 +78,7 @@
     </div>
 
     <!-- Comment control -->
-    <div class="d-flex mt-1 align-center">
+    <div class="d-flex mt-1 align-center" v-if="!showUpdateEditor && !showEditor">
       <!-- Part I -->
       <template v-if="upvotes && !comment.is_deleted">
         <UpvoteStat v-if="currentUserIsAuthor" :count="upvotes.count" class="mr-2" />
