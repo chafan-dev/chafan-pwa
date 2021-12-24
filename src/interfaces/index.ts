@@ -285,6 +285,7 @@ export interface IAnswerPreview {
   body_is_truncated?: boolean;
   upvotes_count: number;
   is_hidden_by_moderator: boolean;
+  full_answer?: IAnswer;
 }
 
 export interface CreateQuestion {

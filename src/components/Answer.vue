@@ -381,6 +381,8 @@ export default class Answer extends CVue {
         await delay(this.answerPropDelayMilliSecondsForTest);
       }
       await this.updateStateWithLoadedAnswer(this.answerProp);
+    } else if (this.answerPreview.full_answer) {
+      await this.updateStateWithLoadedAnswer(this.answerPreview.full_answer);
     } else {
       const response = await apiAnswer.getAnswer(this.token, this.answerPreview.uuid);
       await this.updateStateWithLoadedAnswer(response.data);
