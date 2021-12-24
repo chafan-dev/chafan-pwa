@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }" fluid>
         <ValidationObserver v-slot="{ handleSubmit, reset }">
           <div v-if="userProfile">
             <v-card-title primary-title>
@@ -613,7 +613,7 @@ export default class UserProfileEdit extends CVue {
   private async uploadAvatar() {
     this.uploadAvatarIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
       if (fileInput !== null) {
         if (fileInput.files && fileInput.files[0]) {
           const file = fileInput.files[0];
