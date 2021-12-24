@@ -146,7 +146,7 @@
 
       <div class="pt-2">
         <span class="subheading secondary--text text--lighten-3">加入茶饭的日子：</span>
-        <span>{{ $dayjs.utc(userPublic.created_at).format('YYYY-MM-DD') }}</span>
+        <span>{{ $dayjs.utc(userPublic.created_at).local().format('YYYY-MM-DD') }}</span>
       </div>
       <div class="my-2" v-if="userPublic.contributions && userPublic.contributions.length > 0">
         <ContribGraphs :data="userPublic.contributions" />
