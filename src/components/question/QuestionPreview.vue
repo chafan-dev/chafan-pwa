@@ -8,7 +8,7 @@
         {{ questionPreview.title }}
       </router-link>
     </div>
-    <div v-if="shortDesc" class="grey--text subtitle-2 mb-1">
+    <div v-if="shortDesc" class="grey--text text-body-2 mb-1">
       {{ shortDesc }}
     </div>
 
@@ -24,14 +24,14 @@
       </v-lazy>
       <div class="align-self-center pl-2">
         <CommentsIcon class="mr-1" small />
-        <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
+        <span v-if="isDesktop" class="text-caption">
           {{ questionPreview.comments_count }}条评论
         </span>
         <span v-else class="text-caption">{{ questionPreview.comments_count }}</span>
       </div>
       <div class="align-self-center pl-2">
         <AnswerIcon class="mr-1" small />
-        <span v-if="!$vuetify.breakpoint.mobile" class="text-caption">
+        <span v-if="isDesktop" class="text-caption">
           {{ questionPreview.answers_count }}个回答
         </span>
         <span v-else class="text-caption">{{ questionPreview.answers_count }}</span>
