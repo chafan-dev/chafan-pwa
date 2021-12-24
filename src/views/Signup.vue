@@ -191,7 +191,7 @@ export default class Signup extends Vue {
           content: '账号创建成功，返回登陆界面',
           color: 'success',
         });
-        this.$router.push('/login');
+        await this.$router.push('/login');
       }
       this.intermediate = false;
     });

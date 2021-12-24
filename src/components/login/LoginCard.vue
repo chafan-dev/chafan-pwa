@@ -1,7 +1,7 @@
 <template>
   <v-sheet v-bind="$attrs">
     <v-row align="center" class="fill-height" no-gutters>
-      <v-col v-if="$vuetify.breakpoint.lgAndUp && showTopBar" cols="12" md="6">
+      <v-col v-if="isDesktop && showTopBar" cols="12" md="6">
         <v-sheet color="primary darken-2" dark height="100vh" width="100%">
           <v-container class="justify-center" fill-height>
             <div class="d-flex align-center flex-column text-center">
