@@ -16,11 +16,23 @@ export const apiPeople = {
   async getUserPublic(token: string, handle: string) {
     return axios.get<IUserPublic>(`${apiUrl}/people/${handle}`, authHeaders(token));
   },
-  async getUserFollowers(token: string, userUUID: string) {
-    return axios.get<IUserPreview[]>(`${apiUrl}/people/${userUUID}/followers/`, authHeaders(token));
+  async getUserFollowers(token: string, userUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<IUserPreview[]>(
+      `${apiUrl}/people/${userUUID}/followers/`,
+      authHeadersWithParams(token, params)
+    );
   },
-  async getUserFollowed(token: string, userUUID: string) {
-    return axios.get<IUserPreview[]>(`${apiUrl}/people/${userUUID}/followed/`, authHeaders(token));
+  async getUserFollowed(token: string, userUUID: string, skip: number, limit: number) {
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', limit.toString());
+    return axios.get<IUserPreview[]>(
+      `${apiUrl}/people/${userUUID}/followed/`,
+      authHeadersWithParams(token, params)
+    );
   },
   async getRelatedUsers(token: string, userUUID: string) {
     return axios.get<IUserPreview[]>(`${apiUrl}/people/${userUUID}/related/`, authHeaders(token));

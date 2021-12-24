@@ -13,7 +13,7 @@
     </div>
     <EmptyPlaceholder v-else-if="items !== null" />
     <div v-if="!noMore" class="my-4 text-center">
-      <v-progress-circular color="primary" indeterminate size="20" />
+      <v-progress-circular color="primary" indeterminate size="20" v-intersect:once="tryLoadMore" />
     </div>
   </div>
 </template>
