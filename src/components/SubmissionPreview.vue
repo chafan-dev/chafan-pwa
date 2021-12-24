@@ -8,6 +8,9 @@
         {{ submission.title }}
       </router-link>
     </div>
+    <div v-if="shortDesc" class="grey--text text-body-2">
+      {{ shortDesc }}
+    </div>
     <div :class="theme.feed.submissionPreview.stats.classes">
       <v-lazy>
         <SubmissionUpvotes
@@ -32,9 +35,6 @@
           {{ shortUrl(submission.url) }}
         </a>
       </div>
-    </div>
-    <div v-if="shortDesc" class="grey--text subtitle-2">
-      {{ shortDesc }}
     </div>
   </div>
 </template>

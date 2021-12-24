@@ -229,7 +229,7 @@ export const themeDefs: { [key in ThemeType]: IThemeDef } = {
           classes: 'text-decoration-none',
         },
         stats: {
-          classes: 'd-flex align-center',
+          classes: 'd-flex align-center pt-2',
         },
       },
       questionPreview: {
