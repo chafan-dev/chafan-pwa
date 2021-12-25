@@ -87,9 +87,7 @@
 
             <div class="d-flex">
               <v-spacer />
-              <span class="grey--text caption"
-                >上次编辑：{{ $dayjs.utc(submission.updated_at).local().fromNow() }}</span
-              >
+              <span class="grey--text caption">上次编辑：{{ fromNow(submission.updated_at) }}</span>
             </div>
 
             <!-- Suggestion comment -->
@@ -270,16 +268,16 @@
                 <span>
                   <UserLink :show-avatar="true" :user-preview="suggestion.author" /> 的建议编辑：
                   <template v-if="suggestion.status === 'pending'">
-                    待处理（{{ $dayjs.utc(suggestion.created_at).local().fromNow() }}）
+                    待处理（{{ fromNow(suggestion.created_at) }}）
                   </template>
                   <template v-if="suggestion.status === 'accepted'">
-                    已接受（{{ $dayjs.utc(suggestion.accepted_at).local().fromNow() }}）
+                    已接受（{{ fromNow(suggestion.accepted_at) }}）
                   </template>
                   <template v-if="suggestion.status === 'rejected'">
-                    已拒绝（{{ $dayjs.utc(suggestion.rejected_at).local().fromNow() }}）
+                    已拒绝（{{ fromNow(suggestion.rejected_at) }}）
                   </template>
                   <template v-if="suggestion.status === 'retracted'">
-                    已撤回（{{ $dayjs.utc(suggestion.retracted_at).local().fromNow() }}）
+                    已撤回（{{ fromNow(suggestion.retracted_at) }}）
                   </template>
                 </span>
               </v-expansion-panel-header>

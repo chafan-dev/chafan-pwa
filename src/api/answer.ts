@@ -8,6 +8,9 @@ import {
   IAnswerUpdate,
   IAnswerUpvotes,
   IGenericResponse,
+  IAnswerSuggestEdit,
+  IAnswerSuggestEditCreate,
+  IAnswerSuggestEditUpdate,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
@@ -63,6 +66,26 @@ export const apiAnswer = {
     return axios.get<IAnswerArchive[]>(
       `${apiUrl}/answers/${answerUUID}/archives/`,
       authHeadersWithParams(token, params)
+    );
+  },
+  async getSuggestions(token: string, uuid: string) {
+    return axios.get<IAnswerSuggestEdit[]>(
+      `${apiUrl}/answers/${uuid}/suggestions/`,
+      authHeaders(token)
+    );
+  },
+  async createSuggestion(token: string, payload: IAnswerSuggestEditCreate) {
+    return axios.post<IAnswerSuggestEdit>(
+      `${apiUrl}/answer-suggest-edits/`,
+      payload,
+      authHeaders(token)
+    );
+  },
+  async updateSuggestion(token: string, uuid: string, payload: IAnswerSuggestEditUpdate) {
+    return axios.put<IAnswerSuggestEdit>(
+      `${apiUrl}/answer-suggest-edits/${uuid}`,
+      payload,
+      authHeaders(token)
     );
   },
 };

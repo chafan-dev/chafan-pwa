@@ -196,6 +196,7 @@ export const exampleAnswer: IAnswer = {
     rendered_text: exampleLongText,
     editor: 'markdown',
   },
+  suggest_editable: true,
 };
 
 export const exampleAnswerPreview2: IAnswerPreview = {
@@ -228,6 +229,7 @@ export const exampleAnswer2: IAnswer = {
     rendered_text: exampleLongTextPreview,
     editor: 'markdown',
   },
+  suggest_editable: true,
 };
 
 export const exampleAnswerUpvotes: IAnswerUpvotes = {

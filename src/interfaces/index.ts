@@ -100,6 +100,7 @@ export interface IAnswer {
   keywords?: string[];
   content: IRichText;
   upvotes?: IAnswerUpvotes;
+  suggest_editable: boolean;
 }
 
 export interface IQuestion {
@@ -1041,6 +1042,7 @@ export interface INewEditEvent {
   writingSessionUUID: string;
   saveCallback?: (answer: IAnswer) => void;
   saveArticleCallback?: (article: IArticle) => void;
+  submitAnswerSuggestEditCallback?: (edit: IAnswerSuggestEdit) => void;
 }
 
 export interface IApplication {
@@ -1072,6 +1074,16 @@ export interface ISubmissionSuggestionCreate {
 }
 
 export interface ISubmissionSuggestionUpdate {
+  status: 'pending' | 'accepted' | 'rejected' | 'retracted';
+}
+
+export interface IAnswerSuggestEditCreate {
+  answer_uuid: string;
+  body_rich_text: IRichText;
+  comment?: string;
+}
+
+export interface IAnswerSuggestEditUpdate {
   status: 'pending' | 'accepted' | 'rejected' | 'retracted';
 }
 
