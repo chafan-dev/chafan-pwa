@@ -306,6 +306,24 @@ export interface CreateSubmissionSuggestion {
   submission_suggestion: ISubmissionSuggestion;
 }
 
+export interface AcceptSubmissionSuggestion {
+  verb: 'accept_submission_suggestion';
+  subject: IUserPreview;
+  submission_suggestion: ISubmissionSuggestion;
+}
+
+export interface CreateAnswerSuggestEdit {
+  verb: 'create_answer_suggest_edit';
+  subject: IUserPreview;
+  answer_suggest_edit: IAnswerSuggestEdit;
+}
+
+export interface AcceptAnswerSuggestEdit {
+  verb: 'accept_answer_suggest_edit';
+  subject: IUserPreview;
+  answer_suggest_edit: IAnswerSuggestEdit;
+}
+
 export interface CreateArticle {
   verb: 'create_article';
   subject: IUserPreview;
@@ -486,6 +504,9 @@ export interface IEvent {
     | SubscribeArticleColumn
     | CreateSubmission
     | CreateSubmissionSuggestion
+    | AcceptSubmissionSuggestion
+    | CreateAnswerSuggestEdit
+    | AcceptAnswerSuggestEdit
     | CommentSubmission
     | UpvoteSubmission
     | SystemSendInvitation
@@ -1073,6 +1094,20 @@ export interface ISubmissionSuggestion {
   submission: ISubmission;
   topics?: ITopic[];
   accepted_diff_base?: ISubmissionEditableSnapshot;
+  comment?: string;
+}
+
+export interface IAnswerSuggestEdit {
+  uuid: string;
+  body_rich_text?: IRichText;
+  created_at: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'retracted';
+  accepted_at?: string;
+  rejected_at?: string;
+  retracted_at?: string;
+  author: IUserPreview;
+  answer: IAnswer;
+  accepted_diff_base?: IRichText;
   comment?: string;
 }
 

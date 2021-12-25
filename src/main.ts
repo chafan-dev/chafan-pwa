@@ -75,6 +75,8 @@ const i18n = new VueI18n({
       'verb.create_submission': '{who}创建了分享「{submission}」',
       'verb.create_submission_suggestion': '{who}添加了对分享的建议编辑「{submission_suggestion}」',
       'verb.accept_submission_suggestion': '{who}采纳了对分享的建议编辑「{submission_suggestion}」',
+      'verb.create_answer_suggest_edit': '{who}添加了对问题回答的建议编辑「{answer_suggest_edit}」',
+      'verb.accept_answer_suggest_edit': '{who}采纳了对问题回答的建议编辑「{answer_suggest_edit}」',
       'verb.create_site': '{who}创建了圈子「{site}」',
       'verb.upvote_submission': '{who}赞了分享「{submission}」',
       'verb.comment_submission': '{who}评论了你的分享「{submission}」：「{comment}」',

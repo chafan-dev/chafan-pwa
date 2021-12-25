@@ -582,7 +582,7 @@ export default class Answer extends CVue {
         color: 'success',
       });
     } else {
-      dispatchCaptureApiError(this.$store, async () => {
+      await dispatchCaptureApiError(this.$store, async () => {
         await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
         commitAddNotification(this.$store, {
           content: '答案已永久删除',
