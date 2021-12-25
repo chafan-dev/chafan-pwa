@@ -35,7 +35,7 @@ class AnswerEditHandler {
     return this.vueInstance.$store.state.main.token;
   }
 
-  public async newEditHandler(payload: INewEditEvent) {
+  public async newEditHandler(payload: INewEditEvent, isAuthor: boolean) {
     if (this.handlingNewEdit) {
       return;
     }
@@ -89,26 +89,46 @@ class AnswerEditHandler {
         // Existing answer
         const answerUUID = this.answerUUID ? this.answerUUID : payload.answerId!;
         logDebug(`newEditHandler existing answer payload.edit: ${JSON.stringify(payload.edit)}`);
-        const response = await apiAnswer.updateAnswer(this.token, answerUUID, {
-          updated_content: {
-            source: payload.edit.body,
-            rendered_text: payload.edit.rendered_body_text || '',
-            editor: payload.edit.editor,
-          },
-          is_draft: payload.edit.is_draft,
-          visibility: payload.edit.visibility,
-        });
-        if (response) {
-          if (!payload.isAutosaved) {
+        if (isAuthor) {
+          const response = await apiAnswer.updateAnswer(this.token, answerUUID, {
+            updated_content: {
+              source: payload.edit.body,
+              rendered_text: payload.edit.rendered_body_text || '',
+              editor: payload.edit.editor,
+            },
+            is_draft: payload.edit.is_draft,
+            visibility: payload.edit.visibility,
+          });
+          if (response) {
+            if (!payload.isAutosaved) {
+              commitAddNotification(this.vueInstance.$store, {
+                content: payload.edit.is_draft ? '答案草稿已更新' : '更新已发表',
+                color: 'success',
+              });
+            }
+            if (payload.saveCallback) {
+              payload.saveCallback(response.data);
+            }
+            this.updatedAnswerCallback(response.data, payload.isAutosaved);
+          }
+        } else {
+          const response = await apiAnswer.createSuggestion(this.token, {
+            answer_uuid: answerUUID,
+            body_rich_text: {
+              source: payload.edit.body,
+              rendered_text: payload.edit.rendered_body_text || '',
+              editor: payload.edit.editor,
+            },
+          });
+          if (response) {
             commitAddNotification(this.vueInstance.$store, {
-              content: payload.edit.is_draft ? '答案草稿已更新' : '更新已发表',
+              content: '建议提交成功',
               color: 'success',
             });
+            if (payload.submitAnswerSuggestEditCallback) {
+              payload.submitAnswerSuggestEditCallback(response.data);
+            }
           }
-          if (payload.saveCallback) {
-            payload.saveCallback(response.data);
-          }
-          this.updatedAnswerCallback(response.data, payload.isAutosaved);
         }
       }
       this.handlingNewEdit = false;

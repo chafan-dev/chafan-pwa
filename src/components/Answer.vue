@@ -158,24 +158,44 @@
                       </v-card-text>
                     </ShareCardButton>
 
-                    <template v-if="userBookmark">
-                      <span
-                        v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                        style="cursor: pointer"
-                        @click="unbookmark"
-                      >
-                        <BookmarkedIcon :disabled="unbookmarkIntermediate" />
-                        <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
-                      </span>
-                      <span
-                        v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                        style="cursor: pointer"
-                        @click="bookmark"
-                      >
-                        <ToBookmarkIcon :disabled="bookmarkIntermediate" />
-                        <span class="mr-1">{{ userBookmark.bookmarkers_count }}</span>
-                      </span>
-                    </template>
+                    <v-menu offset-y>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn v-bind="attrs" v-on="on" class="slim-btn ml-1" depressed small>
+                          <DotsIcon small />
+                          <span v-if="isDesktop" class="ml-1">更多</span>
+                        </v-btn>
+                      </template>
+                      <v-list dense>
+                        <v-list-item
+                          dense
+                          v-if="!currentUserIsAuthor && loggedIn && answer.suggest_editable"
+                          @click="loadEditor"
+                        >
+                          <EditIcon class="mr-1" />
+                          提交编辑建议
+                        </v-list-item>
+                        <template v-if="userBookmark">
+                          <v-list-item
+                            v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
+                            :disabled="unbookmarkIntermediate || bookmarkIntermediate"
+                            dense
+                            @click="unbookmark"
+                          >
+                            <BookmarkedIcon class="mr-1" />
+                            取消收藏（{{ userBookmark.bookmarkers_count }}）
+                          </v-list-item>
+                          <v-list-item
+                            v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
+                            :disabled="unbookmarkIntermediate || bookmarkIntermediate"
+                            dense
+                            @click="bookmark"
+                          >
+                            <ToBookmarkIcon class="mr-1" />
+                            收藏（{{ userBookmark.bookmarkers_count }}）
+                          </v-list-item>
+                        </template>
+                      </v-list>
+                    </v-menu>
                   </template>
 
                   <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
@@ -199,6 +219,131 @@
             <div class="d-flex justify-end">
               <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
             </div>
+
+            <!-- Suggested edits -->
+            <v-expansion-panels v-if="answer && suggestedEdits" class="mt-2">
+              <v-expansion-panel v-for="suggestion in suggestedEdits" :key="suggestion.uuid">
+                <v-expansion-panel-header
+                  :class="{
+                    'grey--text': suggestion.status !== 'pending',
+                    'primary--text': suggestion.uuid === showSuggestionUuid,
+                  }"
+                >
+                  <span>
+                    <UserLink :show-avatar="true" :user-preview="suggestion.author" /> 的建议编辑：
+                    <template v-if="suggestion.status === 'pending'">
+                      待处理（{{ fromNow(suggestion.created_at) }}）
+                    </template>
+                    <template v-if="suggestion.status === 'accepted'">
+                      已接受（{{ fromNow(suggestion.accepted_at) }}）
+                    </template>
+                    <template v-if="suggestion.status === 'rejected'">
+                      已拒绝（{{ fromNow(suggestion.rejected_at) }}）
+                    </template>
+                    <template v-if="suggestion.status === 'retracted'">
+                      已撤回（{{ fromNow(suggestion.retracted_at) }}）
+                    </template>
+                  </span>
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <div v-if="suggestion.comment">
+                    <span class="font-weight-bold">附言：</span>{{ suggestion.comment }}
+                  </div>
+                  <template
+                    v-if="suggestion.status === 'accepted' && suggestion.accepted_diff_base"
+                  >
+                    <div
+                      v-if="
+                        suggestion.accepted_diff_base.source !== suggestion.body_rich_text.source
+                      "
+                    >
+                      <Diff
+                        :s1="suggestion.accepted_diff_base.rendered_text"
+                        :s2="suggestion.body_rich_text.rendered_text"
+                      />
+                    </div>
+                    <div v-else>无改动</div>
+                  </template>
+                  <template v-else-if="suggestion.status !== 'accepted'">
+                    <div v-if="answer.content.source !== suggestion.body_rich_text.source">
+                      <Diff
+                        :s1="answer.content.rendered_text"
+                        :s2="suggestion.body_rich_text.rendered_text"
+                      />
+                    </div>
+                  </template>
+                  <div class="d-flex justify-end mt-1">
+                    <template v-if="suggestion.status === 'pending'">
+                      <v-btn class="mr-2" outlined small @click="previewSuggestion(suggestion)">
+                        预览
+                      </v-btn>
+                      <v-btn
+                        v-if="userProfile.uuid === suggestion.author.uuid"
+                        outlined
+                        small
+                        @click="retractSuggestion(suggestion)"
+                      >
+                        撤回
+                      </v-btn>
+                      <template v-if="currentUserIsAuthor">
+                        <v-btn
+                          class="mr-2"
+                          color="green"
+                          outlined
+                          small
+                          @click="acceptSuggestion(suggestion)"
+                        >
+                          接受
+                        </v-btn>
+                        <v-btn color="warning" outlined small @click="rejectSuggestion(suggestion)">
+                          拒绝
+                        </v-btn>
+                      </template>
+                    </template>
+                    <template v-if="suggestion.status === 'rejected'">
+                      <v-btn
+                        v-if="userProfile.uuid === suggestion.author.uuid"
+                        outlined
+                        small
+                        @click="retractSuggestion(suggestion)"
+                      >
+                        撤回
+                      </v-btn>
+                      <template v-if="currentUserIsAuthor">
+                        <v-btn
+                          class="mr-2"
+                          color="green"
+                          outlined
+                          small
+                          @click="acceptSuggestion(suggestion)"
+                        >
+                          接受
+                        </v-btn>
+                      </template>
+                    </template>
+                    <template v-if="suggestion.status === 'retracted'">
+                      <v-btn
+                        v-if="userProfile.uuid === suggestion.author.uuid"
+                        outlined
+                        small
+                        @click="revertRetractSuggestion(suggestion)"
+                      >
+                        取消撤回
+                      </v-btn>
+                    </template>
+                  </div>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+
+            <v-dialog v-model="showSuggestionPreviewDialog">
+              <v-card v-if="previewedSuggestion" :key="previewedSuggestion.uuid">
+                <v-card-title> 建议改动后内容预览 </v-card-title>
+                <v-card-text>
+                  <Viewer :content="previewedSuggestion.body_rich_text" />
+                </v-card-text>
+              </v-card>
+            </v-dialog>
 
             <!-- Comments -->
             <v-expand-transition v-if="!preview">
@@ -255,6 +400,8 @@
     :archivesCount="answer.archives_count"
     :inPrivateSite="!answer.site.public_readable"
     :questionIdProp="answer.question.uuid"
+    :is-author="currentUserIsAuthor"
+    :submit-answer-suggest-edit-callback="submitAnswerSuggestEditCallback"
     @delete-draft="deleteDraft"
     @cancel-edit="cancelHandler"
     @updated-answer="updatedAnswerCallback"
@@ -267,6 +414,7 @@ import {
   IAnswer,
   IAnswerDraft,
   IAnswerPreview,
+  IAnswerSuggestEdit,
   IAnswerUpvotes,
   IRichEditorState,
   IRichText,
@@ -301,9 +449,15 @@ import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import Upvote from '@/components/Upvote.vue';
 import { CVue } from '@/common';
+import DotsIcon from '@/components/icons/DotsIcon.vue';
+import EditIcon from '@/components/icons/EditIcon.vue';
+import Diff from '@/components/widgets/Diff.vue';
 
 @Component({
   components: {
+    Diff,
+    EditIcon,
+    DotsIcon,
     Upvote,
     CommentBtn,
     UpvotedBtn,
@@ -331,6 +485,7 @@ export default class Answer extends CVue {
   @Prop({ default: false }) private readonly inAnswerQuestionFeedCard!: boolean;
   @Prop({ default: false }) private readonly draftMode!: boolean;
   @Prop() private readonly showCommentId: string | undefined;
+  @Prop() private readonly showSuggestionUuid: string | undefined;
   @Prop({ default: true }) private readonly showQuestionInCard!: boolean;
   private answer: IAnswer | null = null;
   private upvotes: IAnswerUpvotes | null = null;
@@ -518,6 +673,7 @@ export default class Answer extends CVue {
       bookmarkers_count: this.answer.bookmark_count,
       bookmarked_by_me: this.answer.bookmarked,
     };
+    this.suggestedEdits = (await apiAnswer.getSuggestions(this.token, this.answer.uuid)).data;
     this.loading = false;
   }
 
@@ -536,30 +692,44 @@ export default class Answer extends CVue {
   }
 
   private async loadEditor() {
-    if (this.answer && this.draftPromise) {
-      const draft = await this.draftPromise;
-      if (this.bodyDraftFromLocalSavedEdit) {
-        commitAddNotification(this.$store, {
-          content: '载入最近的草稿',
-          color: 'success',
-        });
-        commitSetWorkingDraft(
-          this.$store,
-          this.bodyDraftFromLocalSavedEdit.edit as IRichEditorState
-        );
-      } else if (draft && draft.content_draft) {
-        commitAddNotification(this.$store, {
-          content: '载入最近的草稿',
-          color: 'success',
-        });
-        commitSetWorkingDraft(this.$store, {
-          body: draft.content_draft?.source || '',
-          rendered_body_text: null,
-          is_draft: true,
-          editor: draft.content_draft?.editor || 'wysiwyg',
-          visibility: this.answer.visibility,
-        });
-      } else {
+    if (this.answer) {
+      // load editor for author user
+      if (this.currentUserIsAuthor && this.draftPromise) {
+        const draft = await this.draftPromise;
+        if (this.bodyDraftFromLocalSavedEdit) {
+          commitAddNotification(this.$store, {
+            content: '载入最近的草稿',
+            color: 'success',
+          });
+          commitSetWorkingDraft(
+            this.$store,
+            this.bodyDraftFromLocalSavedEdit.edit as IRichEditorState
+          );
+        } else if (draft && draft.content_draft) {
+          commitAddNotification(this.$store, {
+            content: '载入最近的草稿',
+            color: 'success',
+          });
+          commitSetWorkingDraft(this.$store, {
+            body: draft.content_draft?.source || '',
+            rendered_body_text: null,
+            is_draft: true,
+            editor: draft.content_draft?.editor || 'wysiwyg',
+            visibility: this.answer.visibility,
+          });
+        } else {
+          commitSetWorkingDraft(this.$store, {
+            body: this.answer.content.source,
+            rendered_body_text: null,
+            visibility: this.answer.visibility,
+            editor: this.answer.content.editor,
+            is_draft: false,
+          });
+        }
+        this.showEditor = true;
+      }
+      // Load editor for non-author user for suggest
+      if (!this.currentUserIsAuthor && this.answer.suggest_editable) {
         commitSetWorkingDraft(this.$store, {
           body: this.answer.content.source,
           rendered_body_text: null,
@@ -567,8 +737,8 @@ export default class Answer extends CVue {
           editor: this.answer.content.editor,
           is_draft: false,
         });
+        this.showEditor = true;
       }
-      this.showEditor = true;
     }
   }
 
@@ -625,6 +795,57 @@ export default class Answer extends CVue {
         return intro;
       }
     }
+  }
+
+  private suggestedEdits: IAnswerSuggestEdit[] = [];
+  private submitAnswerSuggestEditCallback(edit: IAnswerSuggestEdit) {
+    this.showEditor = false;
+    this.suggestedEdits.push(edit);
+  }
+
+  private previewedSuggestion: IAnswerSuggestEdit | null = null;
+  private showSuggestionPreviewDialog = false;
+  private previewSuggestion(suggestion: IAnswerSuggestEdit) {
+    this.previewedSuggestion = suggestion;
+    this.showSuggestionPreviewDialog = true;
+  }
+
+  private async acceptSuggestion(suggestion: IAnswerSuggestEdit) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
+        status: 'accepted',
+      });
+      this.$router.go(0);
+    });
+  }
+
+  private async rejectSuggestion(suggestion: IAnswerSuggestEdit) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      const r = await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
+        status: 'rejected',
+      });
+      suggestion.status = r.data.status;
+      suggestion.rejected_at = r.data.rejected_at;
+    });
+  }
+
+  private async retractSuggestion(suggestion: IAnswerSuggestEdit) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      const r = await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
+        status: 'retracted',
+      });
+      suggestion.status = r.data.status;
+      suggestion.retracted_at = r.data.retracted_at;
+    });
+  }
+
+  private async revertRetractSuggestion(suggestion: IAnswerSuggestEdit) {
+    await dispatchCaptureApiError(this.$store, async () => {
+      const r = await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
+        status: 'pending',
+      });
+      suggestion.status = r.data.status;
+    });
   }
 }
 </script>

@@ -16,7 +16,7 @@
         :class="{ 'mt-2': focusMode }"
         :editorMode="contentEditor"
         :initial-content="topLevelEditor === 'vditor' ? initialContent : undefined"
-        :isMobile="isMobile"
+        :isMobile="!isDesktop"
         :onEditorChange="onEditorChange"
         :vditorUploadConfig="vditorUploadConfig"
         class="mb-2"
@@ -32,10 +32,11 @@
         small
         @click="submitEdit(true)"
       >
-        发表答案
+        <template v-if="isAuthor"> 发表答案 </template>
+        <template v-else> 提交建议 </template>
       </v-btn>
 
-      <span class="ml-2">
+      <span class="ml-2" v-if="isAuthor">
         <!-- NOTE: wrap in span to avoid ml-2 problem when disabled during progress -->
         <v-btn
           :disabled="savingIntermediate"
@@ -58,15 +59,12 @@
         size="20"
       />
       <v-spacer />
-      <span
-        v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp"
-        class="mr-2 text-caption grey--text"
-      >
+      <span v-if="lastAutoSavedAt && isDesktop && isAuthor" class="mr-2 text-caption grey--text">
         自动保存于
-        {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
+        {{ fromNow(lastAutoSavedAt) }}
       </span>
 
-      <v-tooltip v-if="answerId" bottom>
+      <v-tooltip v-if="answerId && isAuthor" bottom>
         <template v-slot:activator="{ on, attrs }">
           <div v-bind="attrs" v-on="on" class="d-flex">
             <HistoryIcon class="ml-2" @click="showHistoryDialog" />
@@ -75,7 +73,7 @@
         <span>版本历史</span>
       </v-tooltip>
 
-      <v-menu :close-on-content-click="false" offset-y top>
+      <v-menu :close-on-content-click="false" offset-y top v-if="isAuthor">
         <template v-slot:activator="{ on, attrs }">
           <SettingsIcon v-bind="attrs" v-on="on" class="ml-1" />
         </template>
@@ -144,7 +142,7 @@
                 <v-btn class="mr-4" depressed max-width="100px" small @click="loadArchive(archive)">
                   加载该版本
                 </v-btn>
-                {{ $dayjs.utc(archive.created_at).local().fromNow() }}
+                {{ fromNow(archive.created_at) }}
                 <v-spacer />
               </v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -166,23 +164,30 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
+import { Component, Emit, Prop } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
 import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import { readToken, readUserProfile, readWorkingDraft } from '@/store/main/getters';
+import { readWorkingDraft } from '@/store/main/getters';
 import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
-import { editor_T, IAnswer, IAnswerArchive, INewEditEvent, IRichEditorState } from '@/interfaces';
+import {
+  editor_T,
+  IAnswer,
+  IAnswerArchive,
+  IAnswerSuggestEdit,
+  INewEditEvent,
+  IRichEditorState,
+} from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { env } from '@/env';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
-import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { CVue, getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { AnswerEditHandler } from '@/handlers';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
@@ -200,7 +205,7 @@ import EditorHelp from '@/components/editor/EditorHelp.vue';
     RegisteredVisibilityIcon,
   },
 })
-export default class AnswerEditor extends Vue {
+export default class AnswerEditor extends CVue {
   // Events:
   // - cancel-edit
   // - updated-answer
@@ -210,7 +215,11 @@ export default class AnswerEditor extends Vue {
   @Prop() private readonly answerIdProp: string | undefined;
   @Prop() private readonly questionIdProp!: string;
   @Prop({ default: false }) private readonly inPrivateSite!: boolean;
+  @Prop({ default: true }) private readonly isAuthor!: boolean;
   @Prop() private readonly archivesCount: number | undefined;
+  @Prop() private readonly submitAnswerSuggestEditCallback:
+    | ((edit: IAnswerSuggestEdit) => void)
+    | undefined;
 
   private topLevelEditorItems: { text: string; value: string }[] | null = null;
   private readonly visibilityItems = [
@@ -255,10 +264,6 @@ export default class AnswerEditor extends Vue {
     this.updatedAnswerCallback
   );
 
-  get token() {
-    return this.$store.state.main.token;
-  }
-
   // For local edit saving identification
   get contentId() {
     if (this.answerId) {
@@ -269,13 +274,8 @@ export default class AnswerEditor extends Vue {
     }
     return null;
   }
-
-  get isMobile() {
-    return !this.$vuetify.breakpoint.mdAndUp;
-  }
-
   get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
+    return getVditorUploadConfig(this.token);
   }
 
   @Emit('delete-draft')
@@ -301,7 +301,7 @@ export default class AnswerEditor extends Vue {
       this.initEditor(workingDraft.body, workingDraft.editor);
       this.lastSaveLength = workingDraft.body.length;
     } else {
-      this.initEditor(null, readUserProfile(this.$store)!.default_editor_mode);
+      this.initEditor(null, this.userProfile!.default_editor_mode);
     }
 
     if (this.archivesCount !== undefined) {
@@ -314,7 +314,7 @@ export default class AnswerEditor extends Vue {
         value: 'vditor',
       },
     ];
-    const userProfile = readUserProfile(this.$store);
+    const userProfile = this.userProfile;
     if (userProfile!.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
       topLevelEditorItems.push({
         text: 'Tiptap 编辑器',
@@ -417,28 +417,31 @@ export default class AnswerEditor extends Vue {
     };
   }
 
-  private async newEditHandler(payload: INewEditEvent) {
-    await this.answerEditHandler.newEditHandler(payload);
-  }
-
   private submitEdit(isPublished: boolean) {
     this.savingIntermediate = true;
-    this.newEditHandler({
-      isAutosaved: false,
-      edit: this.readState(isPublished),
-      answerId: this.answerId ? this.answerId : undefined,
-      writingSessionUUID: this.writingSessionUUID,
-      saveCallback: (answer: IAnswer) => {
-        if (this.answerId) {
-          clearLocalEdit('answer', 'answer-of-' + this.answerId);
-        }
-        clearLocalEdit('answer', 'answer-of-' + this.questionIdProp);
-        this.lastAutoSavedAt = answer.updated_at;
+    this.answerEditHandler.newEditHandler(
+      {
+        isAutosaved: false,
+        edit: this.readState(isPublished),
+        answerId: this.answerId ? this.answerId : undefined,
+        writingSessionUUID: this.writingSessionUUID,
+        saveCallback: (answer: IAnswer) => {
+          if (this.answerId) {
+            clearLocalEdit('answer', 'answer-of-' + this.answerId);
+          }
+          clearLocalEdit('answer', 'answer-of-' + this.questionIdProp);
+          this.lastAutoSavedAt = answer.updated_at;
+        },
+        submitAnswerSuggestEditCallback: this.submitAnswerSuggestEditCallback,
       },
-    });
+      this.isAuthor
+    );
   }
 
   private onEditorChange(textContent: string) {
+    if (!this.isAuthor) {
+      return;
+    }
     if (Math.abs(textContent.length - this.lastSaveLength) > 10) {
       // More frequent local backup
       saveLocalEdit('answer', this.contentId, this.readState(false));
