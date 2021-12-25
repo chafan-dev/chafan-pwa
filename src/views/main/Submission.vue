@@ -6,10 +6,7 @@
       :indeterminate="loadingProgress === 0"
     />
     <v-row v-else justify="center">
-      <v-col
-        :class="{ 'col-8': $vuetify.breakpoint.mdAndUp, 'fixed-narrow-col': isNarrowFeedUI }"
-        fluid
-      >
+      <v-col :class="{ 'col-8': isDesktop, 'fixed-narrow-col': isNarrowFeedUI }" fluid>
         <ValidationObserver v-slot="{ handleSubmit }">
           <div class="d-flex justify-space-between">
             <UserLink :show-avatar="true" :userPreview="submission.author" />
@@ -111,7 +108,7 @@
               <v-expansion-panels>
                 <v-expansion-panel v-for="archive in archives" :key="archive.id">
                   <v-expansion-panel-header>
-                    {{ $dayjs.utc(archive.created_at).local().fromNow() }}
+                    {{ fromNow(archive.created_at) }}
                     <v-spacer />
                   </v-expansion-panel-header>
                   <v-expansion-panel-content>
@@ -178,7 +175,7 @@
               <template v-slot:activator="{ on, attrs }">
                 <v-btn v-bind="attrs" v-on="on" class="slim-btn" depressed small>
                   <DotsIcon small />
-                  <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">更多</span>
+                  <span v-if="isDesktop" class="ml-1">更多</span>
                 </v-btn>
               </template>
               <v-list dense>
@@ -473,7 +470,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 
 import Answer from '@/components/Answer.vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
@@ -493,7 +490,7 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
-import { readNarrowUI, readToken, readUserMode, readUserProfile } from '@/store/main/getters';
+import { readNarrowUI, readUserMode } from '@/store/main/getters';
 import {
   IComment,
   IRichText,
@@ -512,7 +509,7 @@ import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { Route, RouteRecord } from 'vue-router';
-import { doNothing, isEqual, updateHead } from '@/common';
+import { CVue, doNothing, isEqual, updateHead } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
@@ -552,7 +549,7 @@ import Diff from '@/components/widgets/Diff.vue';
     SimpleEditor,
   },
 })
-export default class Submission extends Vue {
+export default class Submission extends CVue {
   private showHelp: boolean = false;
   private submission: ISubmission | null = null;
   private newSubmissionTitle: string = '';
@@ -599,14 +596,6 @@ export default class Submission extends Vue {
 
   get submissionSuggestionUUID() {
     return this.$route.params.submission_suggestion_id;
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  get token() {
-    return readToken(this.$store);
   }
 
   get isNarrowFeedUI() {

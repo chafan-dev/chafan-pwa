@@ -88,6 +88,13 @@
       >
 
       <router-link
+        v-if="event.content.answer_suggest_edit"
+        :to="`/questions/${event.content.answer_suggest_edit.answer.question.uuid}/answers/${event.content.answer_suggest_edit.answer.uuid}/suggestions/${event.content.answer_suggest_edit.uuid}`"
+        place="answer_suggest_edit"
+        >{{ event.content.answer_suggest_edit.answer.question.title }}</router-link
+      >
+
+      <router-link
         v-if="event.content.site"
         :to="`/sites/${event.content.site.subdomain}`"
         place="site"
