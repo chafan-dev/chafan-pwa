@@ -87,6 +87,11 @@ const routes: RouteConfig[] = [
                 component: () =>
                   import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
               },
+              {
+                path: 'suggestions/:asid',
+                component: () =>
+                  import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+              },
             ],
           },
           {
