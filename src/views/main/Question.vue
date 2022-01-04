@@ -332,6 +332,7 @@
             :answerProp="answer"
             :loadFull="answers.indexOf(answer) <= 2"
             :showCommentId="answerCommentId"
+            :show-suggestion-uuid="answerSuggestionId"
             :showQuestionInCard="false"
             @delete-answer="deleteHandler"
           />
@@ -491,6 +492,15 @@ export default class Question extends CVue {
     const acid = this.$route.params.acid;
     if (acid) {
       return acid;
+    } else {
+      return null;
+    }
+  }
+
+  get answerSuggestionId() {
+    const asid = this.$route.params.asid;
+    if (asid) {
+      return asid;
     } else {
       return null;
     }

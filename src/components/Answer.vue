@@ -221,7 +221,11 @@
             </div>
 
             <!-- Suggested edits -->
-            <v-expansion-panels v-if="answer && suggestedEdits" class="mt-2">
+            <v-expansion-panels
+              v-if="answer && suggestedEdits"
+              class="mt-2"
+              v-model="openedSuggestionIdx"
+            >
               <v-expansion-panel v-for="suggestion in suggestedEdits" :key="suggestion.uuid">
                 <v-expansion-panel-header
                   :class="{
@@ -512,6 +516,7 @@ export default class Answer extends CVue {
   private draftPromise: Promise<IAnswerDraft> | null = null;
   private commentSubmitIntermediate = false;
   private draftContent: IRichText | null = null;
+  private openedSuggestionIdx: number | null = null;
 
   private async mounted() {
     const loadFull = this.loadFull || this.answerPreview.body_is_truncated === false;
@@ -674,6 +679,11 @@ export default class Answer extends CVue {
       bookmarked_by_me: this.answer.bookmarked,
     };
     this.suggestedEdits = (await apiAnswer.getSuggestions(this.token, this.answer.uuid)).data;
+    if (this.showSuggestionUuid) {
+      this.openedSuggestionIdx = this.suggestedEdits.findIndex(
+        (v) => v.uuid === this.showSuggestionUuid
+      );
+    }
     this.loading = false;
   }
 
