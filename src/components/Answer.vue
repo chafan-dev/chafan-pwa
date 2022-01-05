@@ -678,11 +678,13 @@ export default class Answer extends CVue {
       bookmarkers_count: this.answer.bookmark_count,
       bookmarked_by_me: this.answer.bookmarked,
     };
-    this.suggestedEdits = (await apiAnswer.getSuggestions(this.token, this.answer.uuid)).data;
-    if (this.showSuggestionUuid) {
-      this.openedSuggestionIdx = this.suggestedEdits.findIndex(
-        (v) => v.uuid === this.showSuggestionUuid
-      );
+    if (this.token) {
+      this.suggestedEdits = (await apiAnswer.getSuggestions(this.token, this.answer.uuid)).data;
+      if (this.showSuggestionUuid) {
+        this.openedSuggestionIdx = this.suggestedEdits.findIndex(
+          (v) => v.uuid === this.showSuggestionUuid
+        );
+      }
     }
     this.loading = false;
   }
