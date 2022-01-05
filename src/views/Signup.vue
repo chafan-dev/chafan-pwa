@@ -65,7 +65,10 @@
                       <VerifyCodeIcon />
                     </template>
                     <template v-slot:append-outer>
-                      <VerificationCodeBtn :send-verification-code-handler="sendVerificationCode" />
+                      <VerificationCodeBtn
+                        :send-verification-code-handler="sendVerificationCode"
+                        :disabled-prop="!email"
+                      />
                     </template>
                   </v-text-field>
 
