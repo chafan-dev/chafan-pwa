@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row justify="center">
       <!-- Main panel -->
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }" fluid>
         <UserProfileCard
           v-if="userPublic || userPublicForVisitor"
           :userPreview="userPublic ? userPublic : userPublicForVisitor"
@@ -12,7 +12,7 @@
         <v-skeleton-loader v-else type="card" />
 
         <div v-if="loggedIn">
-          <v-tabs v-model="currentTabItem" :fixed-tabs="$vuetify.breakpoint.mdAndUp" show-arrows>
+          <v-tabs v-model="currentTabItem" :fixed-tabs="isDesktop" show-arrows>
             <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
               {{ item.text }}
               <span v-if="item.tabExtraCount && userPublic" class="ml-1">
