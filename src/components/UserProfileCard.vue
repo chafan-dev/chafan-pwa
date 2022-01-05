@@ -205,20 +205,16 @@ export default class UserProfileCard extends CVue {
       return;
     }
     this.followIntermediate = true;
-    if (this.userPreview !== null) {
-      this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
-      this.followIntermediate = false;
-    }
+    this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
+    this.followIntermediate = false;
   }
 
   private async cancelFollow() {
-    if (this.userPreview !== null) {
-      this.cancelFollowIntermediate = true;
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.follows = (await apiMe.cancelFollowUser(this.token, this.userPreview.uuid)).data;
-        this.cancelFollowIntermediate = false;
-      });
-    }
+    this.cancelFollowIntermediate = true;
+    await dispatchCaptureApiError(this.$store, async () => {
+      this.follows = (await apiMe.cancelFollowUser(this.token, this.userPreview.uuid)).data;
+      this.cancelFollowIntermediate = false;
+    });
   }
 
   private async privateMessage() {

@@ -256,13 +256,13 @@ export interface ISocialAnnotations {
 
 export interface IUserPreview {
   uuid: string;
-  full_name?: string;
   handle: string;
+  full_name?: string;
   avatar_url?: string;
   personal_introduction?: string;
   karma: number;
-  follows?: IUserFollows; // For front-end mocking only
   social_annotations: ISocialAnnotations;
+  follows?: IUserFollows; // For front-end mocking only
 }
 
 export interface IQuestionPreview {
@@ -578,15 +578,11 @@ export interface IUserTopicSubscription {
   subscription_count: number;
 }
 
-export interface IUserPublic {
+export interface IUserPublic extends IUserPreview {
   gif_avatar_url?: string;
-  uuid: string;
-  full_name?: string;
-  handle: string;
   about_content?: IRichText;
   profiles: IUserSiteProfile[];
   profile_view_times: number;
-  personal_introduction?: string;
   subscribed_topics: ITopic[];
   github_username?: string;
   twitter_username?: string;
@@ -594,14 +590,12 @@ export interface IUserPublic {
   zhihu_url?: string;
   homepage_url?: string;
   residency_topics: ITopic[];
-  karma: number;
   answers_count: number;
   submissions_count: number;
   questions_count: number;
   articles_count: number;
   created_at: string;
   profession_topics: ITopic[];
-  follows?: IUserFollows;
   edu_exps: IUserEducationExperience[];
   work_exps: IUserWorkExperience[];
   contributions?: { year: number; data: number[] }[];
