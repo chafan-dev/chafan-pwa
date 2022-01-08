@@ -53,7 +53,7 @@
               v-if="readable"
               v-slot="{ item }"
               :loadItems="loadQuestions"
-              emptyItemsText="No questions for now"
+              emptyItemsText="暂无问题"
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
@@ -66,7 +66,7 @@
               v-if="readable"
               v-slot="{ item }"
               :loadItems="loadSubmissions"
-              emptyItemsText="No submissions for now"
+              emptyItemsText="暂无分享"
             >
               <SubmissionPreview :submission="item" />
             </DynamicItemList>
