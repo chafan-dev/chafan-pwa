@@ -1,5 +1,7 @@
 <template>
-  <v-chip :to="'/topics/' + topic.uuid" class="mr-1 mb-1" small>{{ topic.name }} </v-chip>
+  <v-chip :to="'/topics/' + topic.uuid" class="mr-1 mb-1" small label color="grey lighten-4"
+    >{{ topic.name }}
+  </v-chip>
 </template>
 
 <script lang="ts">

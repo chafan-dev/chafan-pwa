@@ -25,6 +25,8 @@
                 :key="topic.uuid"
                 :to="'/topics/' + topic.uuid"
                 small
+                label
+                color="grey lighten-4"
               >
                 {{ topic.name }}
               </v-chip>

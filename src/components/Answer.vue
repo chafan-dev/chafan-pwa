@@ -28,6 +28,8 @@
               {{ truncatedIntro(answer.author.personal_introduction) }}
             </span>
             <v-spacer />
+            <!-- Featured badge -->
+            <v-chip small color="yellow lighten-4" label v-if="answer.featured_at">精选</v-chip>
           </div>
 
           <!-- Answer Content Block -->
