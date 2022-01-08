@@ -552,7 +552,7 @@ export interface ICommentUpdate {
 
 export interface IQuestionUpdate {
   title?: string;
-  desc?: IRichText;
+  desc?: IRichText | null;
   topic_uuids?: string[];
 }
 
