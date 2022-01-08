@@ -51,7 +51,7 @@ export default class ChafanTiptap extends Vue {
     return this.$refs.base as any;
   }
 
-  get content(): string | null {
+  public getContent(): string | null {
     const json = this.base.getJSON();
     if (json) {
       return JSON.stringify(json);
@@ -59,7 +59,7 @@ export default class ChafanTiptap extends Vue {
     return null;
   }
 
-  set content(value: string | null) {
+  public setContent(value: string | null) {
     if (!value) {
       this.base.reset();
       return;

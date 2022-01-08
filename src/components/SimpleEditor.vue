@@ -52,18 +52,18 @@ export default class SimpleEditor extends Vue {
     return this.$refs.tiptap as ChafanTiptap;
   }
 
-  get content(): string | null {
+  public getContent(): string | null {
     if (this.editor === 'tiptap') {
-      return this.tiptap.content;
+      return this.tiptap.getContent();
     } else {
       return this.simpleVditor.content;
     }
   }
 
-  set content(value: string | null) {
+  public setContent(value: string | null) {
     if (value) {
       if (this.editor === 'tiptap') {
-        this.tiptap.content = value;
+        this.tiptap.setContent(value);
       } else {
         this.simpleVditor.content = value;
       }

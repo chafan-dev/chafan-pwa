@@ -311,7 +311,7 @@ export default class Comment extends CVue {
 
   private async submitNewReplyBody() {
     const editor = this.$refs.commentReplyEditor as SimpleEditor;
-    if (!editor.content) {
+    if (!editor.getContent()) {
       commitAddNotification(this.$store, {
         content: '评论内容不能为空',
         color: 'error',
@@ -324,7 +324,7 @@ export default class Comment extends CVue {
         site_uuid: this.siteId,
         parent_comment_uuid: this.comment.uuid,
         content: {
-          source: editor.content!,
+          source: editor.getContent()!,
           rendered_text: editor.getTextContent() || '',
           editor: editor.editor,
         },
@@ -344,7 +344,7 @@ export default class Comment extends CVue {
 
   private async submitUpdateCommentBody() {
     const editor = this.$refs.commentUpdateEditor as SimpleEditor;
-    if (!editor.content) {
+    if (!editor.getContent()) {
       commitAddNotification(this.$store, {
         content: '评论内容不能为空',
         color: 'error',
@@ -355,7 +355,7 @@ export default class Comment extends CVue {
       this.submitIntermediate = true;
       await apiComment.updateComment(this.token, this.comment.uuid, {
         content: {
-          source: editor.content!,
+          source: editor.getContent()!,
           rendered_text: editor.getTextContent() || '',
           editor: editor.editor,
         },
@@ -366,7 +366,7 @@ export default class Comment extends CVue {
         color: 'success',
       });
       this.showUpdateEditor = false;
-      this.comment.content.source = editor.content!;
+      this.comment.content.source = editor.getContent()!;
       this.submitIntermediate = false;
     });
   }

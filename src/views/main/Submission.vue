@@ -741,13 +741,13 @@ export default class Submission extends CVue {
     this.commitSubmissionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       const descEditor = this.$refs.descEditor as SimpleEditor;
-      if ((descEditor.content || this.newSubmissionTitle) && this.submission) {
+      if ((descEditor.getContent() || this.newSubmissionTitle) && this.submission) {
         const responses = await Promise.all(
           this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
         const desc: IRichText = {
-          source: descEditor.content || '',
+          source: descEditor.getContent() || '',
           rendered_text: descEditor.getTextContent() || undefined,
           editor: descEditor.editor,
         };

@@ -341,7 +341,7 @@ export default class AnswerEditor extends CVue {
 
   private getContent(): string | null {
     if (this.topLevelEditor === 'tiptap') {
-      return (this.$refs.tiptap as ChafanTiptap).content;
+      return (this.$refs.tiptap as ChafanTiptap).getContent();
     } else if (this.topLevelEditor === 'vditor') {
       return (this.$refs.vditor as any).getContent();
     }

@@ -70,14 +70,15 @@ export default class CommentBlock extends Vue {
   @Emit('submit-new-comment')
   public submitNewComment() {
     const editor = this.$refs.simpleEditor as SimpleEditor;
-    if (!editor.content || editor.content.length === 0) {
+    const content = editor.getContent();
+    if (!content || content.length === 0) {
       commitAddNotification(this.$store, {
         content: '评论不能为空',
         color: 'error',
       });
       return;
     }
-    const commentCopy = `${editor.content}`;
+    const commentCopy = `${content}`;
     const commentText = editor.getTextContent();
     editor.reset();
     return {

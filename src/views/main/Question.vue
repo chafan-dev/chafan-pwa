@@ -655,15 +655,16 @@ export default class Question extends CVue {
     this.commitQuestionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
       const descEditor = this.$refs.descEditor as SimpleEditor;
-      if (this.questionPage && (this.newQuestionTitle || descEditor.content)) {
+      if (this.questionPage && (this.newQuestionTitle || descEditor.getContent())) {
         const responses = await Promise.all(
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
         );
         const topicsUUIDs = responses.map((r) => r.data.uuid);
-        let desc: IRichText | undefined = undefined;
-        if (descEditor.content) {
+        let desc: IRichText | null = null;
+        const content = descEditor.getContent();
+        if (content) {
           desc = {
-            source: descEditor.content,
+            source: content,
             rendered_text: descEditor.getTextContent() || undefined,
             editor: descEditor.editor,
           };
