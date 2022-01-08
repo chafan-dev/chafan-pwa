@@ -20,16 +20,12 @@
           >
             <SiteBtn :site="question.site" class="elevation-0" />
             <v-chip-group>
-              <v-chip
+              <TopicChip
                 v-for="topic in question.topics"
                 :key="topic.uuid"
-                :to="'/topics/' + topic.uuid"
-                small
-                label
-                color="grey lighten-4"
-              >
-                {{ topic.name }}
-              </v-chip>
+                :topic="topic"
+                :more-margin="false"
+              />
             </v-chip-group>
           </v-slide-group>
           <v-combobox
@@ -421,9 +417,11 @@ import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
 import TransferIcon from '@/components/icons/TransferIcon.vue';
 import SiteSearch from '@/components/SiteSearch.vue';
 import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
+import TopicChip from '@/components/widgets/TopicChip.vue';
 
 @Component({
   components: {
+    TopicChip,
     LockOutlineIcon,
     SiteSearch,
     TransferIcon,

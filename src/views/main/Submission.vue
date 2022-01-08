@@ -17,14 +17,12 @@
           <div>
             <!-- Submission topics display/editor -->
             <v-chip-group v-if="!showSubmissionEditor">
-              <v-chip
+              <TopicChip
                 v-for="topic in submission.topics"
                 :key="topic.uuid"
-                :to="'/topics/' + topic.uuid"
-                small
-              >
-                {{ topic.name }}
-              </v-chip>
+                :topic="topic"
+                :more-margin="false"
+              />
             </v-chip-group>
             <v-combobox
               v-if="showSubmissionEditor"
@@ -517,9 +515,11 @@ import Upvote from '@/components/Upvote.vue';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import Diff from '@/components/widgets/Diff.vue';
+import TopicChip from '@/components/widgets/TopicChip.vue';
 
 @Component({
   components: {
+    TopicChip,
     Diff,
     DeleteIcon,
     DotsIcon,
