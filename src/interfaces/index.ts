@@ -87,6 +87,7 @@ export interface IAnswer {
   site: ISite;
   question: IQuestionPreview;
   updated_at: string;
+  featured_at?: string;
   draft_saved_at?: string;
   is_published: boolean;
   comments: IComment[];
@@ -287,6 +288,7 @@ export interface IAnswerPreview {
   upvotes_count: number;
   is_hidden_by_moderator: boolean;
   full_answer?: IAnswer;
+  featured_at?: string;
 }
 
 export interface CreateQuestion {
