@@ -69,9 +69,11 @@
               size="20"
             />
             <v-spacer />
-            <span v-if="lastAutoSavedAt && isDesktop" class="mr-2 text-caption grey--text">
-              自动保存于
-              {{ fromNow(lastAutoSavedAt) }}
+            <span v-if="isDesktop" class="mr-2 text-caption grey--text">
+              <template v-if="lastAutoSavedAt">
+                自动保存于
+                {{ $dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
+              </template>
             </span>
 
             <v-tooltip v-if="articleId" bottom>
@@ -508,23 +510,34 @@ export default class ArticleEditor extends CVue {
     });
   }
 
+  private doAutoSave(textContent: string) {
+    if (!this.lastSaveIntermediate) {
+      this.lastSaveIntermediate = true;
+      this.lastSaveLength = textContent.length;
+      this.autoSaveEdit();
+      if (this.lastSaveTimerId !== null) {
+        clearTimeout(this.lastSaveTimerId);
+      }
+      this.lastSaveTimerId = setTimeout(() => {
+        this.lastSaveIntermediate = false;
+      }, 5000);
+    }
+  }
+
+  private trackingChangesButNotSaving = false;
   private onEditorChange(textContent: string) {
+    // Auto save if changed a lot
+    if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
+      this.doAutoSave(textContent);
+    } else {
+      // Auto save if not changing for a while
+      this.lastSaveTimerId = setTimeout(() => {
+        this.doAutoSave(textContent);
+      }, 3000);
+    }
     if (Math.abs(textContent.length - this.lastSaveLength) > 10) {
       // More frequent local backup
       saveLocalEdit('article', this.articleId, this.readState(false));
-    }
-    if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
-      if (!this.lastSaveIntermediate) {
-        this.lastSaveIntermediate = true;
-        this.lastSaveLength = textContent.length;
-        this.autoSaveEdit();
-        if (this.lastSaveTimerId !== null) {
-          clearTimeout(this.lastSaveTimerId);
-        }
-        this.lastSaveTimerId = setTimeout(() => {
-          this.lastSaveIntermediate = false;
-        }, 5000);
-      }
     }
   }
 

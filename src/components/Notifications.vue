@@ -115,6 +115,7 @@ import { api2 } from '@/api2';
 import { wsUrl } from '@/env';
 import Event from '@/components/Event.vue';
 import { CVue } from '@/common';
+import { logDebug } from '@/utils';
 
 @Component({
   components: {
@@ -153,17 +154,15 @@ export default class Notifications extends CVue {
         const wsMsg = JSON.parse(message.data) as IWsUserMsg;
         this.handleWsMsg(wsMsg);
       };
-      if (process.env.NODE_ENV === 'development') {
-        this.wsConnection.onerror = (err) => {
-          console.log('ws err: ' + err);
-        };
-        this.wsConnection.onopen = () => {
-          console.log('ws opened');
-        };
-        this.wsConnection.onclose = () => {
-          console.log('ws closed');
-        };
-      }
+      this.wsConnection.onerror = (err) => {
+        logDebug('notif ws err: ' + err);
+      };
+      this.wsConnection.onopen = () => {
+        logDebug('notif ws opened');
+      };
+      this.wsConnection.onclose = () => {
+        logDebug('notif ws closed');
+      };
     });
   }
 
