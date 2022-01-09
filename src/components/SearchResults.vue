@@ -118,7 +118,7 @@ export default class SearchResults extends Vue {
       return item.data.title;
     }
     if (item.type === 'site') {
-      return item.data.name;
+      return `${item.data.name} (${item.data.subdomain})`;
     }
     if (item.type === 'submission') {
       return item.data.title;
