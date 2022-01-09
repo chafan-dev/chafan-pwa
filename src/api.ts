@@ -19,6 +19,8 @@ import {
   IMessageCreate,
   INotification,
   INotificationUpdate,
+  IReport,
+  IReportCreate,
   IReward,
   IRewardCreate,
   ISiteMaps,
@@ -232,5 +234,8 @@ export const api = {
       authHeadersArrayBuffer(token)
     );
     return Buffer.from(r.data, 'binary').toString('base64');
+  },
+  async createReport(token: string, payload: IReportCreate) {
+    return axios.post<IReport>(`${apiUrl}/reports/`, payload, authHeaders(token));
   },
 };
