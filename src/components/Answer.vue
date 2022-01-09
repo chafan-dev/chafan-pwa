@@ -29,6 +29,9 @@
             </span>
             <v-spacer />
             <!-- Featured badge -->
+            <v-chip v-if="currentUserIsAuthor" color="info" label small class="mr-1"
+              >我的回答</v-chip
+            >
             <v-chip small color="yellow lighten-4" label v-if="answer.featured_at">精选</v-chip>
           </div>
 
@@ -196,9 +199,59 @@
                             收藏（{{ userBookmark.bookmarkers_count }}）
                           </v-list-item>
                         </template>
+                        <v-list-item dense @click="reportDialog = true">
+                          <FlagIcon class="mr-1" />
+                          举报
+                        </v-list-item>
                       </v-list>
                     </v-menu>
                   </template>
+
+                  <v-dialog v-model="reportDialog" max-width="600">
+                    <v-card>
+                      <v-card-title
+                        >举报 <UserLink :user-preview="answerPreview.author" />的回答
+                        <v-spacer />
+                        <CloseIcon @click="reportDialog = false" />
+                      </v-card-title>
+                      <v-card-text>
+                        <p>
+                          <v-select
+                            :items="reportReasonItems"
+                            v-model="reportReason"
+                            item-text="text"
+                            item-value="value"
+                            label="举报原因"
+                          />
+                        </p>
+                        <p>
+                          <v-textarea
+                            v-model="reportReasonComment"
+                            hide-details
+                            label="备注（可选）"
+                          />
+                        </p>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer />
+                        <v-btn
+                          color="warning"
+                          small
+                          depressed
+                          @click="submitReport"
+                          :disabled="submitReportIntermediate"
+                        >
+                          提交
+                          <v-progress-circular
+                            v-if="submitReportIntermediate"
+                            indeterminate
+                            size="15"
+                            class="ml-1"
+                          />
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
 
                   <CollapseUpIcon class="pl-1 pr-1" @click="preview = true" />
                 </div>
@@ -424,6 +477,7 @@ import {
   IAnswerUpvotes,
   IRichEditorState,
   IRichText,
+  ISevereReportReason,
   IUserAnswerBookmark,
 } from '@/interfaces';
 import ReactionBlock from '@/components/ReactionBlock.vue';
@@ -458,9 +512,13 @@ import { CVue } from '@/common';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import Diff from '@/components/widgets/Diff.vue';
+import FlagIcon from '@/components/icons/FlagIcon.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 @Component({
   components: {
+    CloseIcon,
+    FlagIcon,
     Diff,
     EditIcon,
     DotsIcon,
@@ -860,6 +918,50 @@ export default class Answer extends CVue {
       });
       suggestion.status = r.data.status;
     });
+  }
+
+  private reportDialog: boolean = false;
+  private reportReasonItems = [
+    {
+      value: 'SPAM',
+      text: '垃圾信息',
+    },
+    {
+      value: 'OFF_TOPIC',
+      text: '和主题范围无关',
+    },
+    {
+      value: 'RUDE_OR_ABUSIVE',
+      text: '恶意、极端、偏激类言论',
+    },
+    {
+      value: 'RIGHT_INFRINGEMENT',
+      text: '抄袭或者侵犯他人隐私',
+    },
+    {
+      value: 'NEED_MODERATOR_INTERVENTION',
+      text: '需要管理员人工判断',
+    },
+  ];
+  private reportReason: ISevereReportReason = 'NEED_MODERATOR_INTERVENTION';
+  private reportReasonComment: string | null = null;
+  private submitReportIntermediate = false;
+
+  private async submitReport() {
+    this.submitReportIntermediate = true;
+    const r = (
+      await api.createReport(this.token, {
+        answer_uuid: this.answerPreview.uuid,
+        reason: this.reportReason,
+        reason_comment: this.reportReasonComment || undefined,
+      })
+    ).data;
+    commitAddNotification(this.$store, {
+      color: 'success',
+      content: '举报提交成功',
+    });
+    this.submitReportIntermediate = false;
+    this.reportDialog = false;
   }
 }
 </script>
