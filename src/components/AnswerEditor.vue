@@ -61,7 +61,7 @@
       <v-spacer />
       <span v-if="lastAutoSavedAt && isDesktop && isAuthor" class="mr-2 text-caption grey--text">
         自动保存于
-        {{ fromNow(lastAutoSavedAt) }}
+        {{ $dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
       </span>
 
       <v-tooltip v-if="answerId && isAuthor" bottom>
@@ -172,17 +172,15 @@ import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
 import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { readWorkingDraft } from '@/store/main/getters';
-import { clearLocalEdit, saveLocalEdit, uuidv4 } from '@/utils';
+import { clearLocalEdit, logDebug, saveLocalEdit, uuidv4 } from '@/utils';
 import {
   editor_T,
   IAnswer,
   IAnswerArchive,
   IAnswerSuggestEdit,
-  INewEditEvent,
   IRichEditorState,
 } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
-import { env } from '@/env';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { VditorCF } from 'chafan-vue-editors';
@@ -386,27 +384,25 @@ export default class AnswerEditor extends CVue {
     this.contentLoaded = true;
   }
 
-  private autoSaveEdit(): INewEditEvent {
-    if (env === 'development') {
-      console.log('autoSaveEdit, this.answerId: ' + this.answerId);
-    }
-    return {
-      isAutosaved: true,
-      answerId: this.answerId ? this.answerId : undefined,
-      edit: this.readState(false),
-      writingSessionUUID: this.writingSessionUUID,
-      saveCallback: (answer: IAnswer) => {
-        if (env === 'development') {
-          console.log('autoSaveEdit saveCallback');
-        }
-        this.answerId = answer.uuid;
-        if (answer.draft_saved_at) {
-          this.lastAutoSavedAt = answer.draft_saved_at;
-        } else {
-          this.lastAutoSavedAt = answer.updated_at;
-        }
+  private autoSaveEdit() {
+    this.answerEditHandler.newEditHandler(
+      {
+        isAutosaved: true,
+        answerId: this.answerId ? this.answerId : undefined,
+        edit: this.readState(false),
+        writingSessionUUID: this.writingSessionUUID,
+        saveCallback: (answer: IAnswer) => {
+          logDebug('autoSaveEdit saveCallback');
+          this.answerId = answer.uuid;
+          if (answer.draft_saved_at) {
+            this.lastAutoSavedAt = answer.draft_saved_at;
+          } else {
+            this.lastAutoSavedAt = answer.updated_at;
+          }
+        },
       },
-    };
+      this.isAuthor
+    );
   }
 
   @Emit('updated-answer')
@@ -438,27 +434,36 @@ export default class AnswerEditor extends CVue {
     );
   }
 
+  private doAutoSave(textContent: string) {
+    if (!this.lastSaveIntermediate) {
+      this.lastSaveIntermediate = true;
+      this.lastSaveLength = textContent.length;
+      this.autoSaveEdit();
+      if (this.lastSaveTimerId !== null) {
+        clearTimeout(this.lastSaveTimerId);
+      }
+      this.lastSaveTimerId = setTimeout(() => {
+        this.lastSaveIntermediate = false;
+      }, 5000);
+    }
+  }
+
   private onEditorChange(textContent: string) {
     if (!this.isAuthor) {
       return;
+    }
+    if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
+      this.doAutoSave(textContent);
+    } else {
+      // Auto save if not changing for a while
+      this.lastSaveTimerId = setTimeout(() => {
+        this.doAutoSave(textContent);
+      }, 3000);
     }
     if (Math.abs(textContent.length - this.lastSaveLength) > 10) {
       // More frequent local backup
       saveLocalEdit('answer', this.contentId, this.readState(false));
       this.lastSaveLength = textContent.length;
-    }
-    if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
-      if (!this.lastSaveIntermediate) {
-        this.lastSaveIntermediate = true;
-        this.lastSaveLength = textContent.length;
-        this.autoSaveEdit();
-        if (this.lastSaveTimerId !== null) {
-          clearTimeout(this.lastSaveTimerId);
-        }
-        this.lastSaveTimerId = setTimeout(() => {
-          this.lastSaveIntermediate = false;
-        }, 5000);
-      }
     }
   }
 

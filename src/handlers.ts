@@ -37,11 +37,13 @@ class AnswerEditHandler {
 
   public async newEditHandler(payload: INewEditEvent, isAuthor: boolean) {
     if (this.handlingNewEdit) {
+      logDebug('newEditHandler: skip since handlingNewEdit');
       return;
     }
     this.handlingNewEdit = true;
     await dispatchCaptureApiError(this.vueInstance.$store, async () => {
       if (!payload.edit.rendered_body_text || payload.edit.rendered_body_text.length < 5) {
+        logDebug('newEditHandler: answer too short');
         if (!payload.isAutosaved) {
           commitAddNotification(this.vueInstance.$store, {
             content: '答案内容太短了',
@@ -52,6 +54,7 @@ class AnswerEditHandler {
         return;
       }
       if (!payload.edit.body || payload.edit.body.length < 5) {
+        logDebug('newEditHandler: answer too short');
         if (!payload.isAutosaved) {
           commitAddNotification(this.vueInstance.$store, {
             content: '答案内容太短了',
