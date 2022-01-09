@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }" fluid>
         <div>
           <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />
@@ -69,12 +69,9 @@
               size="20"
             />
             <v-spacer />
-            <span
-              v-if="lastAutoSavedAt && $vuetify.breakpoint.mdAndUp"
-              class="mr-2 text-caption grey--text"
-            >
+            <span v-if="lastAutoSavedAt && isDesktop" class="mr-2 text-caption grey--text">
               自动保存于
-              {{ $dayjs.utc(lastAutoSavedAt).local().fromNow() }}
+              {{ fromNow(lastAutoSavedAt) }}
             </span>
 
             <v-tooltip v-if="articleId" bottom>
@@ -145,7 +142,7 @@
                         @click="loadArticleArchive(archive)"
                         >加载该版本
                       </v-btn>
-                      {{ $dayjs.utc(archive.created_at).local().fromNow() }}
+                      {{ fromNow(archive.created_at) }}
                       <v-spacer />
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
@@ -343,11 +340,12 @@ export default class ArticleEditor extends CVue {
           });
         }
         this.handlingNewEdit = false;
+        this.savingIntermediate = false;
         return;
       }
       if (
         !payload.edit.rendered_body_text ||
-        payload.edit.rendered_body_text.length < 5 ||
+        payload.edit.rendered_body_text.length < 1 ||
         !payload.edit.body
       ) {
         if (!payload.isAutosaved) {
@@ -357,6 +355,7 @@ export default class ArticleEditor extends CVue {
           });
         }
         this.handlingNewEdit = false;
+        this.savingIntermediate = false;
         return;
       }
       if (this.articleColumnId !== null && !this.articleId && !payload.articleId) {
