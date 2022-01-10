@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-3">
     <template v-if="contentLoaded">
       <ChafanTiptap
         v-show="topLevelEditor === 'tiptap'"
@@ -8,6 +8,7 @@
         :initial-content="topLevelEditor === 'tiptap' ? initialContent : undefined"
         :onEditorChange="onEditorChange"
         class="mb-2"
+        placeholder="谢谢你的贡献！发言前别忘了社区行为守则"
       />
 
       <VditorCF
@@ -20,6 +21,7 @@
         :onEditorChange="onEditorChange"
         :vditorUploadConfig="vditorUploadConfig"
         class="mb-2"
+        placeholder="谢谢你的贡献！发言前别忘了社区行为守则"
       />
     </template>
 
