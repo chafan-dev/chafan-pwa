@@ -36,18 +36,18 @@
           </div>
 
           <!-- Answer Content Block -->
-          <div class="mb-1 mt-2">
+          <div class="mb-2">
             <!-- Draft content -->
             <template v-if="draftMode && draftContent !== null">
-              <v-chip v-if="answer" color="info" small> 草稿</v-chip>
+              <v-chip class="mb-1" v-if="answer" color="info" small>草稿</v-chip>
               <Viewer :content="draftContent" />
             </template>
             <!-- Published content -->
             <template v-else>
-              <v-chip v-if="answer && !answer.is_published" color="warning" small>
+              <v-chip v-if="answer && !answer.is_published" color="warning" small class="mb-1">
                 此为初稿仅自己可见
               </v-chip>
-              <v-chip v-else-if="showHasDraftBadge" color="info" small>
+              <v-chip v-else-if="showHasDraftBadge" color="info" small class="mb-1">
                 编辑器中有未发表的草稿
               </v-chip>
 
