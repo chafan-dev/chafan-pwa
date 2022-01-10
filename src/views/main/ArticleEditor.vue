@@ -197,6 +197,7 @@ import EditorHelp from '@/components/editor/EditorHelp.vue';
 import { env } from '@/env';
 import { readToken, readUserProfile } from '@/store/main/getters';
 import { CVue, getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { Route } from 'vue-router';
 
 @Component({
   components: {
@@ -615,6 +616,44 @@ export default class ArticleEditor extends CVue {
         const oldContent = this.chafanTiptap.getHTML();
         this.vditorComponent.init('wysiwyg', undefined, oldContent);
       }
+    }
+  }
+
+  // duplicated in answer editor
+  beforeRouteLeave(to: Route, from: Route, next: (boolean?) => void) {
+    // If the form is dirty and the user did not confirm leave,
+    // prevent losing unsaved changes by canceling navigation
+    if (this.confirmStayInDirtyForm()) {
+      next(false);
+    } else {
+      // Navigate to next view
+      next();
+    }
+  }
+
+  created() {
+    window.addEventListener('beforeunload', this.beforeWindowUnload);
+  }
+
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.beforeWindowUnload);
+  }
+
+  confirmLeave() {
+    return window.confirm('确认离开？');
+  }
+
+  confirmStayInDirtyForm() {
+    // TODO: check form dirty
+    return !this.confirmLeave();
+  }
+
+  beforeWindowUnload(e) {
+    if (this.confirmStayInDirtyForm()) {
+      // Cancel the event
+      e.preventDefault();
+      // Chrome requires returnValue to be set
+      e.returnValue = '';
     }
   }
 }

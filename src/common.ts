@@ -12,6 +12,7 @@ import {
 } from '@/store/main/getters';
 import { commitAddNotification } from '@/store/main/mutations';
 import { AxiosError } from 'axios';
+import { Route } from 'vue-router';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 

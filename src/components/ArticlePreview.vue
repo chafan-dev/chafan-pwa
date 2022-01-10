@@ -8,7 +8,7 @@
     </div>
     <div
       v-if="articlePreview.body_text && articlePreview.body_text.trim()"
-      class="grey--text subtitle-2"
+      class="grey--text text-body-2 mb-1"
     >
       {{ shortBodyText }}
     </div>
