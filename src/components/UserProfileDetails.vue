@@ -141,7 +141,14 @@
         class="my-3"
       >
         <div class="subheading secondary--text text--lighten-3">关注的话题：</div>
-        <TopicChip v-for="topic in userPublic.subscribed_topics" :topic="topic" :key="topic.uuid" />
+        <v-chip-group>
+          <TopicChip
+            v-for="topic in userPublic.subscribed_topics"
+            :topic="topic"
+            :key="topic.uuid"
+            more-margin
+          />
+        </v-chip-group>
       </div>
 
       <div class="pt-2">

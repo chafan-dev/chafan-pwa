@@ -36,7 +36,7 @@
           </div>
 
           <!-- Answer Content Block -->
-          <div class="mb-2">
+          <div class="mb-2 mt-1">
             <!-- Draft content -->
             <template v-if="draftMode && draftContent !== null">
               <v-chip class="mb-1" v-if="answer" color="info" small>草稿</v-chip>
