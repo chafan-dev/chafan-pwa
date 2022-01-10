@@ -267,6 +267,7 @@ import {
   readUserMode,
 } from '@/store/main/getters';
 import {
+  commitAddNotification,
   commitSetDashboardMiniDrawer,
   commitSetDashboardShowDrawer,
   commitSetShowLoginPrompt,
@@ -439,6 +440,10 @@ export default class Main extends CVue {
     }
     formData.append('location_url', this.$route.fullPath);
     await api2.uploadFeedback(this.token, formData);
+    commitAddNotification(this.$store, {
+      color: 'success',
+      content: '反馈已成功提交',
+    });
     this.sendingFeedback = false;
     this.showFeedbackForm = false;
   }
