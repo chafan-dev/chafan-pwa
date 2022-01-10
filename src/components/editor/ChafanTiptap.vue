@@ -14,6 +14,7 @@
       :upload="upload"
       :user-href="userHref"
       :user-label="userLabel"
+      :placeholder="placeholder"
     />
   </div>
 </template>
@@ -46,6 +47,7 @@ export default class ChafanTiptap extends Vue {
   @Prop({ default: true }) private readonly editable!: boolean;
   @Prop({ default: false }) private readonly commentMode!: boolean;
   @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
+  @Prop() private readonly placeholder: string | undefined;
 
   get base() {
     return this.$refs.base as any;
