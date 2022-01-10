@@ -24,7 +24,7 @@
               <DashboardIcon />
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>个人中心</v-list-item-title>
+              <v-list-item-title>用户中心</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item to="/profile/edit">
