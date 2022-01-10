@@ -114,21 +114,17 @@
               <v-spacer />
             </v-card-title>
             <div v-if="myAnswerDrafts !== null && myArticleDrafts !== null">
-              <Answer
-                v-for="answer in myAnswerDrafts"
-                :key="answer.uuid"
-                :answerPreview="answer"
-                :draftMode="true"
-                class="ma-3"
-                @delete-answer-draft="onDeleteAnswerDraft"
-              />
-
-              <ArticlePreview
-                v-for="article in myArticleDrafts"
-                :key="article.uuid"
-                :articlePreview="article"
-                class="ma-3"
-              />
+              <BaseCard class="c-card ma-3" v-for="answer in myAnswerDrafts" :key="answer.uuid">
+                <Answer
+                  :answerPreview="answer"
+                  :draftMode="true"
+                  class="ma-3"
+                  @delete-answer-draft="onDeleteAnswerDraft"
+                />
+              </BaseCard>
+              <BaseCard class="c-card ma-3" v-for="article in myArticleDrafts" :key="article.uuid">
+                <ArticlePreview :articlePreview="article" class="ma-3" />
+              </BaseCard>
               <EmptyPlaceholder
                 v-if="myAnswerDrafts.length === 0 && myArticleDrafts.length === 0"
               />
@@ -410,9 +406,11 @@ import SiteName from '@/components/SiteName.vue';
 import { apiActivity } from '@/api/activity';
 import { getLocalValue, setLocalValue } from '@/utils';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
+import BaseCard from '@/components/base/BaseCard.vue';
 
 @Component({
   components: {
+    BaseCard,
     CreateArticleColumn,
     SiteName,
     CloseIcon,
