@@ -1,8 +1,8 @@
 <template>
   <div :class="theme.baseCard.classKey" class="pa-3">
     <template v-if="isDesktop">
-      <div class="row">
-        <div class="col pb-4">
+      <v-row>
+        <v-col class="col-auto pb-4 px-4">
           <div v-if="avatarURL" class="pa-3 text-center">
             <router-link :to="`/users/${userPreview.handle}`">
               <Avatar :avatar-url="avatarURL" size="120" />
@@ -114,8 +114,8 @@
             </div>
           </div>
           <v-skeleton-loader type="list-item-three-line" v-else />
-        </div>
-        <div class="col align-self-center">
+        </v-col>
+        <v-col class="col-8 align-self-center">
           <UserProfileDetails v-if="userPublic" :user-public="userPublic" />
 
           <div class="d-flex">
@@ -124,8 +124,8 @@
               这个主页被浏览了{{ userPublic.profile_view_times }}次
             </span>
           </div>
-        </div>
-      </div>
+        </v-col>
+      </v-row>
     </template>
     <template v-else>
       <div class="pb-4">
