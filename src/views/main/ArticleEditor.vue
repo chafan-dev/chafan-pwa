@@ -509,6 +509,9 @@ export default class ArticleEditor extends CVue {
       writingSessionUUID: this.writingSessionUUID,
       saveArticleCallback: (article: IArticle) => {
         this.lastAutoSavedAt = article.updated_at;
+        if (isPublished) {
+          this.formIsDirty = false;
+        }
       },
     });
   }
@@ -621,11 +624,12 @@ export default class ArticleEditor extends CVue {
     }
   }
 
+  private formIsDirty = true;
   // duplicated in answer editor
   beforeRouteLeave(to: Route, from: Route, next: (boolean?) => void) {
     // If the form is dirty and the user did not confirm leave,
     // prevent losing unsaved changes by canceling navigation
-    if (this.confirmStayInDirtyForm()) {
+    if (this.formIsDirty && this.confirmStayInDirtyForm()) {
       next(false);
     } else {
       // Navigate to next view
