@@ -23,6 +23,7 @@
             ref="tiptap"
             :onEditorChange="onEditorChange"
             class="mb-2 mt-2"
+            placeholder="开始写作"
           />
           <VditorCF
             v-if="editor !== null && body !== null"
@@ -33,6 +34,7 @@
             :isMobile="!isDesktop"
             :onEditorChange="onEditorChange"
             :vditorUploadConfig="vditorUploadConfig"
+            placeholder="开始写作"
             class="mb-2 mt-2"
           />
 
