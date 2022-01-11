@@ -83,24 +83,9 @@
                       small
                       @click="loadEditor"
                     >
+                      <EditIcon class="mr-1" />
                       {{ editButtonText }}
                     </v-btn>
-
-                    <v-menu v-if="currentUserIsAuthor" offset-y>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn v-bind="attrs" v-on="on" class="slim-btn mr-1" depressed small>
-                          设置
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item @click="confirmDeleteDialog = true">
-                          <v-list-item-icon>
-                            <DeleteIcon />
-                          </v-list-item-icon>
-                          <v-list-item-content>永久删除</v-list-item-content>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
 
                     <v-dialog v-model="confirmDeleteDialog" max-width="400">
                       <v-card>
@@ -202,6 +187,12 @@
                         <v-list-item dense @click="reportDialog = true">
                           <FlagIcon class="mr-1" />
                           举报
+                        </v-list-item>
+                        <v-list-item v-if="currentUserIsAuthor" @click="confirmDeleteDialog = true">
+                          <v-list-item-icon>
+                            <DeleteIcon class="mr-1" />
+                            永久删除
+                          </v-list-item-icon>
                         </v-list-item>
                       </v-list>
                     </v-menu>
