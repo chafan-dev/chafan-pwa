@@ -430,6 +430,9 @@ export default class AnswerEditor extends CVue {
           }
           clearLocalEdit('answer', 'answer-of-' + this.questionIdProp);
           this.lastAutoSavedAt = answer.updated_at;
+          if (isPublished) {
+            this.formIsDirty = false;
+          }
         },
         submitAnswerSuggestEditCallback: this.submitAnswerSuggestEditCallback,
       },
@@ -520,11 +523,12 @@ export default class AnswerEditor extends CVue {
     }
   }
 
+  private formIsDirty = true;
   // duplicated in answer editor
   beforeRouteLeave(to: Route, from: Route, next: (boolean?) => void) {
     // If the form is dirty and the user did not confirm leave,
     // prevent losing unsaved changes by canceling navigation
-    if (this.confirmStayInDirtyForm()) {
+    if (this.formIsDirty && this.confirmStayInDirtyForm()) {
       next(false);
     } else {
       // Navigate to next view
