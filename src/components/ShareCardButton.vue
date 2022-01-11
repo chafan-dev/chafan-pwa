@@ -3,9 +3,10 @@
     <v-dialog v-model="showSharingCard" max-width="600">
       <v-card @click-outside="showSharingCard = false">
         <div class="pa-4">
-          <v-btn small depressed @click="onClickCopy" class="mr-2">点击复制链接</v-btn>
-          <a :href="link">https://cha.fan{{ link }}</a
-          ><br />
+          <div class="pb-2">
+            <v-btn small depressed @click="onClickCopy" class="mr-2">点击复制链接</v-btn>
+            <a :href="link">https://cha.fan{{ link }}</a>
+          </div>
           或者截屏分享卡片：
         </div>
         <v-divider class="mx-4" />
@@ -15,22 +16,23 @@
 
     <v-btn depressed small @click="showSharingCardDialog" class="slim-btn">
       <ShareIcon small />
-      <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">转发</span>
+      <span v-if="isDesktop" class="ml-1">转发</span>
     </v-btn>
   </span>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 
 import QRious from 'qrious';
 import { commitAddNotification } from '@/store/main/mutations';
+import { CVue } from '@/common';
 
 @Component({
   components: { ShareIcon },
 })
-export default class ShareCardButton extends Vue {
+export default class ShareCardButton extends CVue {
   @Prop() private readonly link!: string;
   @Prop() private readonly linkText!: string;
   @Prop() private readonly onClickShare!: (() => void) | undefined;
