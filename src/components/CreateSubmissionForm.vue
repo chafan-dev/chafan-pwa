@@ -43,19 +43,20 @@
 
 <script lang="ts">
 import { apiSubmission } from '@/api/submission';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { ISite, IUserSiteProfile } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
-import { readToken } from '@/store/main/getters';
+import { CVue } from '@/common';
+import SiteSearch from '@/components/SiteSearch.vue';
 
 @Component({
-  components: { UserLink, Invite },
+  components: { SiteSearch, UserLink, Invite },
 })
-export default class CreateSubmissionForm extends Vue {
+export default class CreateSubmissionForm extends CVue {
   @Prop() private readonly site: ISite | undefined;
   @Prop({ default: false }) private readonly showTitle!: boolean;
 
@@ -64,10 +65,6 @@ export default class CreateSubmissionForm extends Vue {
   private postNewSubmissionIntermediate = false;
   private siteProfiles: IUserSiteProfile[] = [];
   private selectedSite: ISite | null = null;
-
-  get token() {
-    return readToken(this.$store);
-  }
 
   public async mounted() {
     // FIXME: Cache user's site profile on the client side

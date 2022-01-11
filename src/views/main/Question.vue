@@ -203,7 +203,7 @@
             <v-card>
               <v-card-title> 转移问题 </v-card-title>
               <v-card-text>
-                <SiteSearch v-model="transferToSiteSubdomain" />
+                <SiteSearch v-model="transferToSite" />
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
@@ -394,6 +394,7 @@ import {
   IQuestionPage,
   IRichEditorState,
   IRichText,
+  ISite,
 } from '@/interfaces';
 import Viewer from '@/components/Viewer.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
@@ -785,12 +786,12 @@ export default class Question extends CVue {
     this.showQuestionEditor = false;
   }
 
-  private transferToSiteSubdomain: string = '';
+  private transferToSite: ISite | null = null;
   private transferQuestionDialog: boolean = false;
   private async transferQuestion() {
-    if (this.transferToSiteSubdomain) {
+    if (this.transferToSite) {
       await this.sendToAdmin(
-        `申请转移问题「${this.question?.title}」（UUID：${this.question?.uuid}）到圈子 /${this.transferToSiteSubdomain}`
+        `申请转移问题「${this.question?.title}」（UUID：${this.question?.uuid}）到圈子 /${this.transferToSite.subdomain}`
       );
     }
   }
