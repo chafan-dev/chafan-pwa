@@ -64,9 +64,8 @@
 
 <script lang="ts">
 import { api } from '@/api';
-import { apiMe } from '@/api/me';
 import { apiDiscovery } from '@/api/discovery';
-import { IArticleColumn, IQuestionPreview, IUserSiteProfile } from '@/interfaces';
+import { IArticleColumn, IQuestionPreview } from '@/interfaces';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
@@ -98,12 +97,10 @@ export default class NewContentActionBar extends CVue {
 
   private myArticleColumns: IArticleColumn[] = [];
   private newArticleColumnUUID: string | null = null;
-  private siteProfiles: IUserSiteProfile[] = [];
 
   public async mounted() {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.token) {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
         this.myArticleColumns = (await api.getMyArticleColumns(this.token)).data;
         this.questionsToAnswer = (await apiDiscovery.getPendingQuestions(this.token)).data;
       }

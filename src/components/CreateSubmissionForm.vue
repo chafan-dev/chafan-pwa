@@ -3,15 +3,13 @@
     <ValidationObserver v-slot="{ handleSubmit }">
       <v-card-title v-if="showTitle" class="primary--text headline"> 分享 </v-card-title>
       <v-card-text>
-        <v-autocomplete
+        <SiteSearch
           v-if="site === undefined"
           v-model="selectedSite"
-          :items="siteProfiles"
-          item-text="site.name"
-          item-value="site"
           label="圈子 (加入后在此处可见, 「大广场」不限话题)"
         />
         <v-textarea
+          class="mt-4"
           v-model="newSubmissionTitle"
           auto-grow
           dense
@@ -45,11 +43,10 @@
 import { apiSubmission } from '@/api/submission';
 import { Component, Prop } from 'vue-property-decorator';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
-import { ISite, IUserSiteProfile } from '@/interfaces';
+import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { apiMe } from '@/api/me';
 import { CVue } from '@/common';
 import SiteSearch from '@/components/SiteSearch.vue';
 
@@ -63,17 +60,7 @@ export default class CreateSubmissionForm extends CVue {
   private newSubmissionTitle: string = '';
   private newSubmissionURL: string | null = null;
   private postNewSubmissionIntermediate = false;
-  private siteProfiles: IUserSiteProfile[] = [];
   private selectedSite: ISite | null = null;
-
-  public async mounted() {
-    // FIXME: Cache user's site profile on the client side
-    if (this.site === undefined && this.token) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
-      });
-    }
-  }
 
   private async postNewSubmission() {
     if (!this.token) {

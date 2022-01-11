@@ -2,15 +2,20 @@
   <v-card outlined>
     <v-card-title v-if="showTitle" class="primary--text headline"> 提问 </v-card-title>
     <v-card-text>
-      <v-autocomplete
+      <SiteSearch
         v-if="site === undefined"
         v-model="selectedSite"
-        :items="siteProfiles"
-        item-text="site.name"
-        item-value="site"
         label="圈子 (加入后在此处可见, 「大广场」不限话题)"
       />
-      <v-textarea v-model="newQuestionTitle" auto-grow dense label="标题" rows="3" hide-details />
+      <v-textarea
+        class="mt-4"
+        v-model="newQuestionTitle"
+        auto-grow
+        dense
+        label="标题"
+        rows="3"
+        hide-details
+      />
       <div class="d-flex">
         <v-spacer />
         <span class="text-caption grey--text"> 创建后添加细节 </span>
@@ -27,40 +32,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
-import { ISite, IUserSiteProfile } from '@/interfaces';
+import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { apiMe } from '@/api/me';
 import { apiQuestion } from '@/api/question';
-import { readToken } from '@/store/main/getters';
+import { CVue } from '@/common';
+import SiteSearch from '@/components/SiteSearch.vue';
 
 @Component({
-  components: { UserLink, Invite },
+  components: { SiteSearch, UserLink, Invite },
 })
-export default class CreateQuestionForm extends Vue {
+export default class CreateQuestionForm extends CVue {
   @Prop() private readonly site: ISite | undefined;
   @Prop({ default: false }) private readonly showTitle!: boolean;
 
   private newQuestionTitle: string = '';
   private intermediate = false;
-  private siteProfiles: IUserSiteProfile[] = [];
   private selectedSite: ISite | null = null;
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  private async mounted() {
-    // FIXME: Cache user's site profile on the client side
-    if (this.site === undefined && this.token) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
-      });
-    }
-  }
 
   private async postNewQuestion() {
     if (!this.token) {
