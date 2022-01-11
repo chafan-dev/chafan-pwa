@@ -617,7 +617,7 @@ export default class UserProfileEdit extends CVue {
       if (fileInput !== null) {
         if (fileInput.files && fileInput.files[0]) {
           const file = fileInput.files[0];
-          if (file.size <= 10 * 1024) {
+          if (file.size <= 128) {
             commitAddNotification(this.$store, {
               content: '头像文件过小',
               color: 'error',
@@ -654,7 +654,7 @@ export default class UserProfileEdit extends CVue {
       if (fileInput !== null) {
         if (fileInput.files && fileInput.files[0]) {
           const file = fileInput.files[0];
-          if (file.size <= 10 * 1024) {
+          if (file.size <= 128) {
             commitAddNotification(this.$store, {
               content: '头像文件过小',
               color: 'error',
