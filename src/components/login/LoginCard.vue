@@ -30,7 +30,7 @@
                 <div class="mt-4">
                   <!-- NOTE(zhen): v-if doesn't work on ValidationProvider -->
                   <template v-if="loginMethod === 'email'">
-                    <ValidationProvider v-slot="{ errors }" name="email" rules="email">
+                    <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
                       <v-text-field
                         v-model="email"
                         label="邮箱地址"
@@ -133,7 +133,7 @@
                     </v-btn>
                   </v-sheet>
 
-                  <v-sheet :class="{ 'd-flex': $vuetify.breakpoint.mdAndUp }" class="mt-4">
+                  <v-sheet :class="{ 'd-flex': isDesktop }" class="mt-4">
                     <v-btn
                       class="text-capitalize"
                       depressed
