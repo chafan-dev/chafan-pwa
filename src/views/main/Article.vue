@@ -102,7 +102,7 @@
                         <UserLink :showAvatar="true" :userPreview="article.author" />
                         <span
                           v-if="article.author.personal_introduction"
-                          :class="{ 'text-caption': !$vuetify.breakpoint.mdAndUp }"
+                          :class="{ 'text-caption': !isDesktop }"
                           class="grey--text ml-2"
                         >
                           {{ article.author.personal_introduction }}
@@ -205,7 +205,7 @@ import {
   dispatchCaptureApiErrorWithErrorHandler,
 } from '@/store/main/actions';
 
-import { commitAddNotification } from '@/store/main/mutations';
+import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { apiComment } from '@/api/comment';
 import { readNarrowUI } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
@@ -300,6 +300,10 @@ export default class Article extends CVue {
   }
 
   private async upvote() {
+    if (!this.userProfile) {
+      commitSetShowLoginPrompt(this.$store, true);
+      return;
+    }
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.article) {
         this.upvotes = (await apiArticle.upvoteArticle(this.token, this.article.uuid)).data;
