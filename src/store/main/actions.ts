@@ -39,10 +39,17 @@ export const actions = {
     try {
       let response;
       if (payload.type === 'email') {
+        if (!payload.username || !payload.password) {
+          commitAddNotification(context, {
+            content: '错误：没有指定邮箱或密码，无法登录',
+            color: 'error',
+          });
+          return;
+        }
         response = await api.logInGetToken(
-          payload.username!,
-          payload.password!,
-          payload.hcaptcha_token!
+          payload.username,
+          payload.password,
+          payload.hcaptcha_token
         );
       } else {
         response = await api.logInWithCodeGetToken(payload.phoneNumber!, payload.code!);

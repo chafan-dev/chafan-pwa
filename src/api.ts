@@ -39,11 +39,13 @@ import { APIWrapper } from '@/apiWrapper';
 import { CVue } from '@/common';
 
 export const api = {
-  async logInGetToken(username: string, password: string, hcaptcha_token: string) {
+  async logInGetToken(username: string, password: string, hcaptcha_token?: string) {
     const params = new URLSearchParams();
     params.append('username', username);
     params.append('password', password);
-    params.append('hcaptcha_token', hcaptcha_token);
+    if (hcaptcha_token) {
+      params.append('hcaptcha_token', hcaptcha_token);
+    }
     return axios.post(`${apiUrl}/login/access-token`, params);
   },
   async logInWithCodeGetToken(phoneNumber: string, code: string) {
