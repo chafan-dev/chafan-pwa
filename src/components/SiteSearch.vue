@@ -3,7 +3,7 @@
     v-model="selectedSiteSubdomain"
     :item-text="getItemText"
     :items="sites"
-    label="圈子"
+    :label="label"
     :loading="loading"
     :search-input.sync="search"
     cache-items
@@ -11,7 +11,7 @@
     hide-no-data
     placeholder="搜索..."
     item-value="subdomain"
-    @input="$emit('input', selectedSiteSubdomain)"
+    @input="$emit('input', selectedSite)"
   ></v-autocomplete>
 </template>
 
@@ -25,6 +25,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    label: {
+      type: String,
+      default: '圈子',
+    },
   },
   data() {
     return {
@@ -36,7 +40,7 @@ export default {
   },
   watch: {
     search(val) {
-      if (val && val !== this.selectedSiteSubdomain) {
+      if (val) {
         this.querySelections(val);
       }
     },
@@ -44,6 +48,9 @@ export default {
   computed: {
     token() {
       return readToken(this.$store);
+    },
+    selectedSite() {
+      return this.sites.find((site) => site.subdomain === this.selectedSiteSubdomain);
     },
   },
   methods: {
