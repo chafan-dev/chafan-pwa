@@ -1,7 +1,7 @@
 import { api } from '@/api';
 import { IUserUpdateMe } from '@/interfaces';
 import router from '@/router';
-import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
+import { getLocalToken, isDev, removeLocalToken, saveLocalToken } from '@/utils';
 import { AxiosError } from 'axios';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
@@ -18,7 +18,6 @@ import {
   commitSetUserProfile,
 } from './mutations';
 import { AppNotification, MainState } from './state';
-import { env } from '@/env';
 import { apiMe } from '@/api/me';
 import { captureException, captureMessage } from '@sentry/vue';
 import { translateErrorMsgCN } from '@/common';
@@ -196,7 +195,7 @@ export const actions = {
       commitAddNotification(context, { content: message, color: 'error' });
       if (payload.response && payload.response.status === 401) {
         await dispatchLogOut(context);
-      } else if (env !== 'development') {
+      } else if (!isDev) {
         captureException(payload);
       } else {
         throw payload;

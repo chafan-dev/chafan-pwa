@@ -62,7 +62,7 @@
         </div>
 
         <!-- Question control -->
-        <v-slide-group v-if="!showQuestionEditor" class="d-flex my-1">
+        <v-slide-group v-if="!showQuestionEditor" class="d-flex mt-3 mb-1">
           <v-btn
             v-if="savedLocalEdit"
             class="mr-1 slim-btn"

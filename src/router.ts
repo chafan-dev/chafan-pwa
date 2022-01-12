@@ -3,7 +3,7 @@ import Router, { RouteConfig } from 'vue-router';
 
 import RouterComponent from './components/RouterComponent.vue';
 import { constants } from '@/common';
-import { isDev } from '@/env';
+import { isDev } from '@/utils';
 
 Vue.use(Router);
 

@@ -162,7 +162,7 @@ export const newAnswerHandler = async (
       return newAnswer;
     }
   } catch (err) {
-    if (env !== 'development') {
+    if (!isDev) {
       captureException(err);
       await dispatchCheckApiError(vueInstance.$store, err);
     } else {
@@ -171,8 +171,10 @@ export const newAnswerHandler = async (
   }
 };
 
+export const isDev = env !== 'production' || window.location.hostname === 'dev.cha.fan';
+
 export const logDebug = (msg: string) => {
-  if (env === 'development') {
+  if (isDev) {
     console.log(msg);
   }
 };
@@ -212,7 +214,7 @@ export const newArticleHandler = async (
     }
     return newArticle;
   } catch (err) {
-    if (env !== 'development') {
+    if (!isDev) {
       captureException(err);
       await dispatchCheckApiError(vueInstance.$store, err);
     } else {

@@ -75,24 +75,20 @@
 
 <script lang="ts">
 import { api } from '@/api';
-import { env } from '@/env';
 import { IClaimWelcomeTestScoreMsg, IFormResponse } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
+import { CVue } from '@/common';
 
 @Component
-export default class FormResponseCard extends Vue {
+export default class FormResponseCard extends CVue {
   @Prop() public readonly formResponse!: IFormResponse;
   private welcomeTestFormUUID = '';
   private showWelcomeTestResultDialog = false;
   private claimWelcomeTestScoreMsg: IClaimWelcomeTestScoreMsg | null = null;
 
-  get currentUserUUID() {
-    return this.$store.state.main.userProfile.uuid;
-  }
-
   private async mounted() {
-    if (this.currentUserUUID === this.formResponse.response_author.uuid) {
-      if (env === 'development') {
+    if (this.currentUserId === this.formResponse.response_author.uuid) {
+      if (this.isDev) {
         this.welcomeTestFormUUID = '48i9bNDXk2NXwp9fELCE';
       } else {
         this.welcomeTestFormUUID = '4CGv4iReMxuWjs3T2PEY';

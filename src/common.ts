@@ -13,6 +13,7 @@ import {
 import { commitAddNotification } from '@/store/main/mutations';
 import { AxiosError } from 'axios';
 import { Route } from 'vue-router';
+import { isDev } from '@/utils';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 
@@ -537,6 +538,10 @@ export class CVue extends Vue {
 
   get isDesktop() {
     return this.$vuetify.breakpoint.mdAndUp;
+  }
+
+  get isDev() {
+    return isDev;
   }
 
   fromNow(datetime: string) {

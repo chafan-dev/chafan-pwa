@@ -65,6 +65,7 @@
         自动保存于
         {{ $dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
       </span>
+      <DebugSpan>formIsDirty={{ formIsDirty }}</DebugSpan>
 
       <v-tooltip v-if="answerId && isAuthor" bottom>
         <template v-slot:activator="{ on, attrs }">
@@ -192,9 +193,11 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { AnswerEditHandler } from '@/handlers';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
 import { Route } from 'vue-router';
+import DebugSpan from '@/components/base/DebugSpan.vue';
 
 @Component({
   components: {
+    DebugSpan,
     EditorHelp,
     ChafanTiptap,
     EditIcon,
@@ -270,6 +273,7 @@ export default class AnswerEditor extends CVue {
   private invalidAnswerCallback() {
     logDebug('invalid answer');
     this.savingIntermediate = false;
+    this.formIsDirty = false;
   }
 
   // For local edit saving identification
@@ -478,6 +482,7 @@ export default class AnswerEditor extends CVue {
       saveLocalEdit('answer', this.contentId, this.readState(false));
       this.lastSaveLength = textContent.length;
     }
+    logDebug('onEditorChange textContent: ' + textContent);
   }
 
   private async showHistoryDialog() {
@@ -535,6 +540,7 @@ export default class AnswerEditor extends CVue {
   beforeRouteLeave(to: Route, from: Route, next: (boolean?) => void) {
     // If the form is dirty and the user did not confirm leave,
     // prevent losing unsaved changes by canceling navigation
+    logDebug('beforeRouteLeave formIsDirty = ' + this.formIsDirty);
     if (this.formIsDirty && this.confirmStayInDirtyForm()) {
       next(false);
     } else {
