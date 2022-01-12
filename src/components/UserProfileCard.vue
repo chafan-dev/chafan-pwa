@@ -114,7 +114,7 @@
           </div>
           <v-skeleton-loader type="list-item-three-line" v-else />
         </v-col>
-        <v-col class="col-8 align-self-center">
+        <v-col class="align-self-center">
           <UserNameHeadline :user-preview="userPreview" />
 
           <UserProfileDetails v-if="userPublic" :user-public="userPublic" />

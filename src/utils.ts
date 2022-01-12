@@ -172,6 +172,7 @@ export const newAnswerHandler = async (
 };
 
 export const isDev = env !== 'production' || window.location.hostname === 'dev.cha.fan';
+export const isProdDev = window.location.hostname === 'dev.cha.fan';
 
 export const logDebug = (msg: string) => {
   if (isDev) {

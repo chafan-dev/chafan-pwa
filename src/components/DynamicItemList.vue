@@ -1,5 +1,6 @@
 <template>
   <div>
+    <DebugSpan>noMore={{ noMore }}, emptyItems={{ emptyItems }}</DebugSpan>
     <div v-if="items !== null && items.length > 0">
       <div v-for="item in items" :key="item.uuid" class="ma-3">
         <slot :item="item" class="my-4"></slot>
@@ -11,7 +12,7 @@
         </span>
       </div>
     </div>
-    <EmptyPlaceholder v-else-if="items !== null" />
+    <EmptyPlaceholder v-if="emptyItems" />
     <div v-if="!noMore" class="my-4 text-center">
       <v-progress-circular color="primary" indeterminate size="20" v-intersect:once="tryLoadMore" />
     </div>
@@ -22,9 +23,10 @@
 import { Component, Prop } from 'vue-property-decorator';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { CVue } from '@/common';
+import DebugSpan from '@/components/base/DebugSpan.vue';
 
 @Component({
-  components: { EmptyPlaceholder },
+  components: { DebugSpan, EmptyPlaceholder },
 })
 export default class DynamicItemList<T> extends CVue {
   @Prop({ default: 20 }) public readonly pageLimit!: number;
@@ -34,6 +36,7 @@ export default class DynamicItemList<T> extends CVue {
 
   private currentPage = 0;
   private noMore = false;
+  private emptyItems = false;
 
   private async mounted() {
     window.onscroll = () => {
@@ -58,19 +61,17 @@ export default class DynamicItemList<T> extends CVue {
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
     if (newItems) {
-      const newItemsNotNull: T[] = [];
-      for (const item of newItems) {
-        if (item) {
-          newItemsNotNull.push(item);
-        }
-      }
-      if (this.items) {
-        this.items.push(...newItemsNotNull);
+      const newNotNullItems: T[] = newItems.filter((x) => x !== null) as T[];
+      if (!this.items) {
+        this.items = newNotNullItems;
       } else {
-        this.items = newItemsNotNull;
+        this.items.push(...newNotNullItems);
       }
       if (newItems.length < this.pageLimit) {
         this.noMore = true;
+        if (!this.items) {
+          this.emptyItems = true;
+        }
       }
     }
   }
