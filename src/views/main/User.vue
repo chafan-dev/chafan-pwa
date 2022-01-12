@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row justify="center">
       <!-- Main panel -->
-      <v-col :class="{ 'col-8': isDesktop }" fluid>
+      <v-col fluid style="max-width: 1000px">
         <UserProfileCard
           v-if="userPublic || userPublicForVisitor"
           :userPreview="userPublic ? userPublic : userPublicForVisitor"
