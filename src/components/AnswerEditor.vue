@@ -562,8 +562,7 @@ export default class AnswerEditor extends CVue {
   }
 
   confirmStayInDirtyForm() {
-    // TODO: check form dirty
-    return !this.confirmLeave();
+    return this.formIsDirty && !this.confirmLeave();
   }
 
   beforeWindowUnload(e) {

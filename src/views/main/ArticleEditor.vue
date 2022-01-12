@@ -345,6 +345,7 @@ export default class ArticleEditor extends CVue {
         }
         this.handlingNewEdit = false;
         this.savingIntermediate = false;
+        this.formIsDirty = false;
         return;
       }
       if (
@@ -360,6 +361,7 @@ export default class ArticleEditor extends CVue {
         }
         this.handlingNewEdit = false;
         this.savingIntermediate = false;
+        this.formIsDirty = false;
         return;
       }
       if (this.articleColumnId !== null && !this.articleId && !payload.articleId) {
@@ -647,8 +649,7 @@ export default class ArticleEditor extends CVue {
   }
 
   confirmStayInDirtyForm() {
-    // TODO: check form dirty
-    return !this.confirmLeave();
+    return this.formIsDirty && !this.confirmLeave();
   }
 
   beforeWindowUnload(e) {
