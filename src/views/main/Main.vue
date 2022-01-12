@@ -258,7 +258,7 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 
-import { appName, isDev } from '@/env';
+import { appName } from '@/env';
 import {
   readDashboardMiniDrawer,
   readDashboardShowDrawer,
@@ -374,10 +374,6 @@ export default class Main extends CVue {
 
   get userMode() {
     return readUserMode(this.$store);
-  }
-
-  get isDev() {
-    return isDev;
   }
 
   private get hasModeratedSites() {

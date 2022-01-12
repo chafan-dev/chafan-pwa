@@ -16,8 +16,6 @@ if (env === 'production') {
   envWs = `ws://${process.env.VUE_APP_API}`;
 }
 
-export const isDev = env !== 'production';
-
 const apiVersionSuffix = '/api/v1';
 
 export const apiUrl = envApi + apiVersionSuffix;

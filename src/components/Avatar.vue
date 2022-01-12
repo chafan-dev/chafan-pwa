@@ -6,20 +6,20 @@
 
 <script lang="ts">
 import { IUserPreview } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { isDev } from '@/env';
+import { Component, Prop } from 'vue-property-decorator';
+import { CVue } from '@/common';
 
 const DEFAULT_URL = '/img/default-avatar.png';
 
 @Component
-export default class Avatar extends Vue {
+export default class Avatar extends CVue {
   @Prop() public readonly userPreview: IUserPreview | undefined;
   @Prop() public readonly avatarUrl: string | undefined;
   @Prop({ default: 30 }) public readonly size!: number;
   @Prop() public readonly color: 'primary' | undefined;
 
   get url() {
-    if (isDev) {
+    if (this.isDev) {
       return 'https://assets.cha.fan/fc1ea5eef9dd0519b5076094deae5d3e7968bea2c9009d116f1ca51cf0cc94a1';
     } else if (this.userPreview) {
       return this.userPreview.avatar_url ? this.userPreview.avatar_url : DEFAULT_URL;

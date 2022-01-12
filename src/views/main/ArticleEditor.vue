@@ -196,7 +196,6 @@ import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
-import { env } from '@/env';
 import { readToken, readUserProfile } from '@/store/main/getters';
 import { CVue, getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import { Route } from 'vue-router';
@@ -487,9 +486,7 @@ export default class ArticleEditor extends CVue {
       edit: this.readState(false),
       writingSessionUUID: this.writingSessionUUID,
       saveArticleCallback: (article: IArticle) => {
-        if (env === 'development') {
-          console.log('autoSaveEdit saveCallback');
-        }
+        logDebug('autoSaveEdit saveCallback');
         this.newArticleId = article.uuid;
         if (article.draft_saved_at) {
           this.lastAutoSavedAt = article.draft_saved_at;
