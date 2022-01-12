@@ -16,19 +16,22 @@ class AnswerEditHandler {
   private questionUUID: string;
   private updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void;
   private newAnswerCallback?: (answer: IAnswer, isAutoSaved: boolean) => void;
+  private invalidAnswerCallback?: () => void;
 
   constructor(
     vueInstance: any,
     answerUUID: string | null,
     questionUUID: string,
     updatedAnswerCallback: (answer: IAnswer, isAutoSaved: boolean) => void,
-    newAnswerCallback?: (answer: IAnswer, isAutoSaved: boolean) => void
+    newAnswerCallback?: (answer: IAnswer, isAutoSaved: boolean) => void,
+    invalidAnswerCallback?: () => void
   ) {
     this.vueInstance = vueInstance;
     this.answerUUID = answerUUID;
     this.questionUUID = questionUUID;
     this.updatedAnswerCallback = updatedAnswerCallback;
     this.newAnswerCallback = newAnswerCallback;
+    this.invalidAnswerCallback = invalidAnswerCallback;
   }
 
   get token() {
@@ -51,6 +54,9 @@ class AnswerEditHandler {
           });
         }
         this.handlingNewEdit = false;
+        if (this.invalidAnswerCallback) {
+          this.invalidAnswerCallback();
+        }
         return;
       }
       if (!payload.edit.body || payload.edit.body.length < 5) {
@@ -62,6 +68,9 @@ class AnswerEditHandler {
           });
         }
         this.handlingNewEdit = false;
+        if (this.invalidAnswerCallback) {
+          this.invalidAnswerCallback();
+        }
         return;
       }
       // new answer to question

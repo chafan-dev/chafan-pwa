@@ -311,7 +311,6 @@
             v-if="showEditor"
             :inPrivateSite="!question.site.public_readable"
             :questionIdProp="question.uuid"
-            class="ma-1"
             @updated-answer="updatedAnswerCallback"
             @cancel-edit="cancelHandler"
             @delete-draft="deleteDraft"

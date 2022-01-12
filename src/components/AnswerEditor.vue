@@ -262,8 +262,15 @@ export default class AnswerEditor extends CVue {
     this,
     this.answerId,
     this.questionIdProp,
-    this.updatedAnswerCallback
+    this.updatedAnswerCallback,
+    undefined,
+    this.invalidAnswerCallback
   );
+
+  private invalidAnswerCallback() {
+    logDebug('invalid answer');
+    this.savingIntermediate = false;
+  }
 
   // For local edit saving identification
   get contentId() {
