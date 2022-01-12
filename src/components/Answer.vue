@@ -443,19 +443,20 @@
       </v-row>
     </div>
   </div>
-  <AnswerEditor
-    v-else-if="answer && showEditor"
-    ref="editor"
-    :answerIdProp="answer.uuid"
-    :archivesCount="answer.archives_count"
-    :inPrivateSite="!answer.site.public_readable"
-    :questionIdProp="answer.question.uuid"
-    :is-author="currentUserIsAuthor"
-    :submit-answer-suggest-edit-callback="submitAnswerSuggestEditCallback"
-    @delete-draft="deleteDraft"
-    @cancel-edit="cancelHandler"
-    @updated-answer="updatedAnswerCallback"
-  />
+  <div v-else-if="answer && showEditor">
+    <AnswerEditor
+      ref="editor"
+      :answerIdProp="answer.uuid"
+      :archivesCount="answer.archives_count"
+      :inPrivateSite="!answer.site.public_readable"
+      :questionIdProp="answer.question.uuid"
+      :is-author="currentUserIsAuthor"
+      :submit-answer-suggest-edit-callback="submitAnswerSuggestEditCallback"
+      @delete-draft="deleteDraft"
+      @cancel-edit="cancelHandler"
+      @updated-answer="updatedAnswerCallback"
+    />
+  </div>
 </template>
 
 <script lang="ts">
@@ -560,6 +561,7 @@ export default class Answer extends CVue {
   private answerPreviewBody: string = this.answerPreview.body;
   private currentUserIsAuthor = false;
   private expandClicked = false;
+  private answerSuggestEditComment: string | null = null;
 
   private editButtonText = '编辑';
   private showHasDraftBadge = false;
