@@ -610,12 +610,7 @@ export default class Question extends CVue {
   }
 
   private updateOrAddFullyLoadedAnswer(answer: IAnswer) {
-    const answerUUIDx = this.answers.findIndex((a) => a.uuid === answer.uuid);
-    if (answerUUIDx === -1) {
-      this.answers.unshift(answer);
-    } else {
-      this.answers[answerUUIDx] = answer;
-    }
+    this.$router.go(0);
   }
 
   private updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
