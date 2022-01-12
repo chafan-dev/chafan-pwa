@@ -268,7 +268,7 @@
 
             <!-- Suggested edits -->
             <v-expansion-panels
-              v-if="answer && suggestedEdits"
+              v-if="answer && suggestedEdits && suggestedEdits.length"
               class="mt-2"
               v-model="openedSuggestionIdx"
             >
@@ -807,13 +807,17 @@ export default class Answer extends CVue {
 
   private async deleteAnswer() {
     if (this.draftMode) {
-      await (this.$refs.editor as AnswerEditor).deleteDraft();
+      const editor = this.$refs.editor as AnswerEditor;
+      if (editor) {
+        await (this.$refs.editor as AnswerEditor).deleteDraft();
+      }
       clearLocalEdit('answer', this.answerPreview.uuid);
       await apiAnswer.deleteAnswerDraft(this.token, this.answerPreview.uuid);
       commitAddNotification(this.$store, {
         content: '草稿已删除',
         color: 'success',
       });
+      this.$emit('delete-answer-draft', this.answerPreview.uuid);
     } else {
       await dispatchCaptureApiError(this.$store, async () => {
         await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
