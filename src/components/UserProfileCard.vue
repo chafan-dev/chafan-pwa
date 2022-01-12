@@ -8,7 +8,6 @@
               <Avatar :avatar-url="avatarURL" size="120" />
             </router-link>
           </div>
-          <UserNameHeadline :user-preview="userPreview" class="text-center" />
           <div v-if="follows" class="text-center">
             <div>
               <a
@@ -116,6 +115,8 @@
           <v-skeleton-loader type="list-item-three-line" v-else />
         </v-col>
         <v-col class="col-8 align-self-center">
+          <UserNameHeadline :user-preview="userPreview" />
+
           <UserProfileDetails v-if="userPublic" :user-public="userPublic" />
 
           <div class="d-flex">
