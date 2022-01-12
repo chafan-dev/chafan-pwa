@@ -1038,6 +1038,7 @@ export interface INewEditEvent {
   writingSessionUUID: string;
   saveCallback?: (answer: IAnswer) => void;
   saveArticleCallback?: (article: IArticle) => void;
+  answerSuggestEditComment?: string;
   submitAnswerSuggestEditCallback?: (edit: IAnswerSuggestEdit) => void;
 }
 

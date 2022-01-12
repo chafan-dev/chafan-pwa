@@ -163,6 +163,13 @@
       </v-dialog>
     </div>
     <EditorHelp :show-help="showHelp" />
+
+    <v-textarea
+      v-if="!isAuthor"
+      class="mt-2"
+      label="答案改动建议附言"
+      v-model="answerSuggestEditComment"
+    />
   </div>
 </template>
 
@@ -269,6 +276,7 @@ export default class AnswerEditor extends CVue {
     undefined,
     this.invalidAnswerCallback
   );
+  private answerSuggestEditComment: string | null = null;
 
   private invalidAnswerCallback() {
     logDebug('invalid answer');
@@ -445,6 +453,9 @@ export default class AnswerEditor extends CVue {
             this.formIsDirty = false;
           }
         },
+        answerSuggestEditComment: this.answerSuggestEditComment
+          ? this.answerSuggestEditComment
+          : undefined,
         submitAnswerSuggestEditCallback: this.submitAnswerSuggestEditCallback,
       },
       this.isAuthor

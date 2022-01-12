@@ -131,6 +131,7 @@ class AnswerEditHandler {
               rendered_text: payload.edit.rendered_body_text || '',
               editor: payload.edit.editor,
             },
+            comment: payload.answerSuggestEditComment,
           });
           if (response) {
             commitAddNotification(this.vueInstance.$store, {

@@ -336,10 +336,7 @@
         </div>
       </v-col>
 
-      <v-col
-        v-if="$vuetify.breakpoint.mdAndUp"
-        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
-      >
+      <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'">
         <QuestionInfo
           :question="question"
           :questionSubscription="questionPage.question_subscription"
