@@ -13,7 +13,7 @@ import {
 import { commitAddNotification } from '@/store/main/mutations';
 import { AxiosError } from 'axios';
 import { Route } from 'vue-router';
-import { isDev } from '@/utils';
+import { isDev, isProdDev } from '@/utils';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
 
@@ -542,6 +542,10 @@ export class CVue extends Vue {
 
   get isDev() {
     return isDev;
+  }
+
+  get isProdDev() {
+    return isProdDev;
   }
 
   fromNow(datetime: string) {
