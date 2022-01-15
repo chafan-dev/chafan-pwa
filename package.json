@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@hcaptcha/vue-hcaptcha": "^0.3.0",
-    "@sentry/tracing": "^6.15.0",
-    "@sentry/vue": "^6.15.0",
+    "@sentry/tracing": "^6.16.1",
+    "@sentry/vue": "^6.16.1",
     "axios": "^0.21.2",
     "chafan-vue-editors": "^0.9.4",
     "core-js": "^3.8.3",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@mdi/js": "^5.9.55",
-    "@sentry/webpack-plugin": "^1.17.1",
+    "@sentry/webpack-plugin": "^1.18.3",
     "@types/diff": "^5.0.0",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.168",
