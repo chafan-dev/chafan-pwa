@@ -28,99 +28,53 @@
                 <h3 class="text-h3 font-weight-bold text-center">登录</h3>
 
                 <div class="mt-4">
-                  <!-- NOTE(zhen): v-if doesn't work on ValidationProvider -->
-                  <template v-if="loginMethod === 'email'">
-                    <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
-                      <v-text-field
-                        v-model="email"
-                        label="邮箱地址"
-                        name="login"
-                        type="text"
-                        @keyup.enter="submit"
-                      >
-                        <template v-slot:prepend>
-                          <AccountCircleOutlineIcon />
-                        </template>
-                      </v-text-field>
-                      <span class="error--text">{{ errors[0] }}</span>
-                    </ValidationProvider>
-
-                    <ValidationProvider v-slot="{ errors }" name="password" rules="required">
-                      <v-text-field
-                        id="password"
-                        v-model="password"
-                        label="密码"
-                        name="password"
-                        required
-                        type="password"
-                        @keyup.enter="submit"
-                      >
-                        <template v-slot:prepend>
-                          <LockOutlineIcon />
-                        </template>
-                      </v-text-field>
-                      <span class="error--text">{{ errors[0] }}</span>
-                    </ValidationProvider>
-
-                    <div v-if="enableCaptcha" class="text-center">
-                      <vue-hcaptcha :sitekey="hCaptchaSiteKey" @verify="verifiedCaptchaToken" />
-                    </div>
-
-                    <v-sheet class="mb-2">
-                      <div v-if="loginError">
-                        <v-alert :value="loginError" transition="fade-transition" type="error">
-                          邮箱地址或密码不正确
-                        </v-alert>
-                      </div>
-                    </v-sheet>
-                  </template>
-
-                  <v-sheet v-else-if="loginMethod === 'cellphone'">
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      name="phonenumber"
-                      rules="phone_number_e164"
+                  <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
+                    <v-text-field
+                      v-model="email"
+                      label="邮箱地址"
+                      name="login"
+                      type="text"
+                      @keyup.enter="submit"
                     >
-                      <v-text-field
-                        v-model="phoneNumber"
-                        label="手机号"
-                        name="phonenumber"
-                        type="text"
-                        @keyup.enter="submit"
-                      >
-                        <template v-slot:prepend>
-                          <CellphoneIcon />
-                        </template>
-                      </v-text-field>
-                      <span class="error--text">{{ errors[0] }}</span>
-                    </ValidationProvider>
+                      <template v-slot:prepend>
+                        <AccountCircleOutlineIcon />
+                      </template>
+                    </v-text-field>
+                    <span class="error--text">{{ errors[0] }}</span>
+                  </ValidationProvider>
 
-                    <div class="d-flex">
-                      <v-text-field
-                        v-model="verificationCode"
-                        label="验证码"
-                        name="verification-code"
-                        type="text"
-                      >
-                        <template v-slot:prepend>
-                          <VerifyCodeIcon />
-                        </template>
-                      </v-text-field>
-                      <VerificationCodeBtn
-                        class="mt-4"
-                        :send-verification-code-handler="sendVerificationCode"
-                      />
+                  <ValidationProvider v-slot="{ errors }" name="password" rules="required">
+                    <v-text-field
+                      id="password"
+                      v-model="password"
+                      label="密码"
+                      name="password"
+                      required
+                      type="password"
+                      @keyup.enter="submit"
+                    >
+                      <template v-slot:prepend>
+                        <LockOutlineIcon />
+                      </template>
+                    </v-text-field>
+                    <span class="error--text">{{ errors[0] }}</span>
+                  </ValidationProvider>
+
+                  <div v-if="enableCaptcha" class="text-center">
+                    <vue-hcaptcha :sitekey="hCaptchaSiteKey" @verify="verifiedCaptchaToken" />
+                  </div>
+
+                  <v-sheet class="mb-2">
+                    <div v-if="loginError">
+                      <v-alert :value="loginError" transition="fade-transition" type="error">
+                        邮箱地址或密码不正确
+                      </v-alert>
                     </div>
                   </v-sheet>
 
                   <v-sheet>
                     <v-btn
-                      :disabled="
-                        submitIntermediate ||
-                        (loginMethod === 'cellphone' && !verificationCode) ||
-                        (loginMethod === 'email' && enableCaptcha && !captchaToken) ||
-                        !valid
-                      "
+                      :disabled="submitIntermediate || (enableCaptcha && !captchaToken) || !valid"
                       block
                       class="white--text"
                       color="primary"
@@ -180,15 +134,6 @@
 
                     <v-sheet color="grey lighten-2" height=".5" width="100%" />
                   </div>
-                </div>
-
-                <div class="text-center">
-                  <v-btn class="text-capitalize" depressed large @click="switchLoginMethod">
-                    使用
-                    <template v-if="loginMethod === 'email'"> 手机号</template>
-                    <template v-else> 邮箱</template>
-                    登录
-                  </v-btn>
                 </div>
               </ValidationObserver>
             </v-col>
