@@ -48,12 +48,6 @@ export const api = {
     }
     return axios.post(`${apiUrl}/login/access-token`, params);
   },
-  async logInWithCodeGetToken(phoneNumber: string, code: string) {
-    return axios.post(`${apiUrl}/login-with-verification-code/access-token`, {
-      phone_number: phoneNumber,
-      code,
-    });
-  },
   async logInInvitedGetToken(inviteToken: string) {
     return axios.post(`${apiUrl}/login/access-token-for-invited`, {
       invite_token: inviteToken,

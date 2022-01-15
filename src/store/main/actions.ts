@@ -25,34 +25,26 @@ import { translateErrorMsgCN } from '@/common';
 type MainContext = ActionContext<MainState, State>;
 
 export interface ILoginPayload {
-  type: 'email' | 'cellphone';
   username?: string;
   password?: string;
-  code?: string;
-  phoneNumber?: string;
   hcaptcha_token?: string;
 }
 
 export const actions = {
   async actionLogIn(context: MainContext, payload: ILoginPayload) {
     try {
-      let response;
-      if (payload.type === 'email') {
-        if (!payload.username || !payload.password) {
-          commitAddNotification(context, {
-            content: '错误：没有指定邮箱或密码，无法登录',
-            color: 'error',
-          });
-          return;
-        }
-        response = await api.logInGetToken(
-          payload.username,
-          payload.password,
-          payload.hcaptcha_token
-        );
-      } else {
-        response = await api.logInWithCodeGetToken(payload.phoneNumber!, payload.code!);
+      if (!payload.username || !payload.password) {
+        commitAddNotification(context, {
+          content: '错误：没有指定邮箱或密码，无法登录',
+          color: 'error',
+        });
+        return;
       }
+      const response = await api.logInGetToken(
+        payload.username,
+        payload.password,
+        payload.hcaptcha_token
+      );
       const token = response.data.access_token;
       if (token) {
         saveLocalToken(token);

@@ -16,7 +16,6 @@ import {
   IUserSiteProfile,
   IUserSubmissionSubscription,
   IUserTopicSubscription,
-  IUserUpdateLoginPhoneNumber,
   IUserUpdateMe,
   IUserUpdatePrimaryEmail,
   IUserUpdateSecondaryEmails,
@@ -41,9 +40,6 @@ export const apiMe = {
     data.homepage_url = addSchemeToUrl(data.homepage_url);
     data.linkedin_url = addSchemeToUrl(data.linkedin_url);
     return axios.put<IUserProfile>(`${apiUrl}/me`, data, authHeaders(token));
-  },
-  async updatePhoneNumber(token: string, data: IUserUpdateLoginPhoneNumber) {
-    return axios.put<IUserProfile>(`${apiUrl}/me/phone-number`, data, authHeaders(token));
   },
   async updatePrimaryEmail(token: string, data: IUserUpdatePrimaryEmail) {
     return axios.put<IUserProfile>(`${apiUrl}/me/login`, data, authHeaders(token));

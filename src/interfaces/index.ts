@@ -16,7 +16,6 @@ export interface IUserProfile {
   uuid: string;
   email: string;
   secondary_emails: string[];
-  phone_number?: string;
   is_active: boolean;
   is_superuser: boolean;
   full_name?: string;
@@ -149,7 +148,6 @@ export interface IUserUpdateMe {
 
 export interface IUserProfileUpdate {
   email?: string;
-  phone_number?: string;
   full_name?: string;
   handle?: string;
   password?: string;
@@ -233,11 +231,6 @@ export interface IUserFollows {
   followers_count: number;
   followed_count: number;
   followed_by_me: boolean;
-}
-
-export interface IUserUpdateLoginPhoneNumber {
-  phone_number: string;
-  verification_code: string;
 }
 
 export interface IUserUpdateSecondaryEmails {
@@ -899,7 +892,6 @@ export interface IUserArticleColumnSubscription {
 
 export interface IVerificationCodeRequest {
   email?: string;
-  phone_number?: string;
 }
 
 export interface ITopicUpdate {
