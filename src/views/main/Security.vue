@@ -54,12 +54,6 @@
             </v-card-title>
             <div v-if="userProfile" class="pa-4">
               <div>
-                <div v-if="phoneNumber" class="mb-2">
-                  <CellphoneIcon />
-                  手机号：
-                  {{ phoneNumber }}
-                  <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'cellphone'" />
-                </div>
                 <div class="mb-2">
                   <div>
                     <EmailIcon />
@@ -85,32 +79,17 @@
               </div>
 
               <v-divider v-if="editLoginMode" class="mt-3 mb-2" />
-              <v-form v-if="editLoginMode === 'cellphone'">
-                <ValidationProvider
-                  v-slot="{ errors }"
-                  name="phone-number"
-                  rules="phone_number_e164"
-                >
-                  <v-text-field v-model="phoneNumber" label="手机号" type="text">
-                    <template v-slot:prepend>
-                      <CellphoneIcon />
-                    </template>
-                  </v-text-field>
-                  <span class="error--text">{{ errors[0] }}</span>
-                </ValidationProvider>
-
-                <v-text-field
-                  v-show="showCodeInput"
-                  v-model="verificationCode"
-                  label="验证码"
-                  name="verification-code"
-                  type="text"
-                >
-                  <template v-slot:prepend>
-                    <VerifyCodeIcon />
-                  </template>
-                </v-text-field>
-              </v-form>
+              <v-text-field
+                v-show="showCodeInput"
+                v-model="verificationCode"
+                label="验证码"
+                name="verification-code"
+                type="text"
+              >
+                <template v-slot:prepend>
+                  <VerifyCodeIcon />
+                </template>
+              </v-text-field>
 
               <v-form v-if="editLoginMode === 'email' || editLoginMode === 'add_secondary_email'">
                 <ValidationProvider v-slot="{ errors }" name="email" rules="email">
@@ -153,14 +132,6 @@
                 @click="editLoginMode = 'add_secondary_email'"
               >
                 添加次要邮箱
-              </v-btn>
-              <v-btn
-                v-show="!editLoginMode && !phoneNumber"
-                depressed
-                small
-                @click="editLoginMode = 'cellphone'"
-              >
-                添加手机号
               </v-btn>
               <v-btn v-show="editLoginMode" depressed small @click="editLoginMode = null">
                 取消
@@ -228,7 +199,6 @@ import { Component } from 'vue-property-decorator';
 import {
   IAuditLog,
   IUserProfileUpdate,
-  IUserUpdateLoginPhoneNumber,
   IUserUpdatePrimaryEmail,
   IUserUpdateSecondaryEmails,
   IVerificationCodeRequest,
@@ -259,12 +229,11 @@ import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 export default class Security extends CVue {
   private password: string | null = null;
   private confirmation: string | null = null;
-  private phoneNumber: string | null = null;
   private newEmail: string | null = null;
   private showCodeInput = false;
   private verificationCodeDisabled = false;
   private showSecurityLogsDialog = false;
-  private editLoginMode: 'cellphone' | 'email' | 'add_secondary_email' | null = null;
+  private editLoginMode: 'email' | 'add_secondary_email' | null = null;
   private intermediate = false;
   private verificationCode: string = '';
   private readonly auditLogHeaders = [
@@ -276,13 +245,6 @@ export default class Security extends CVue {
 
   private async sendVerificationCode() {
     if (!this.editLoginMode) {
-      return;
-    }
-    if (this.editLoginMode === 'cellphone' && !this.phoneNumber) {
-      commitAddNotification(this.$store, {
-        content: '电话号码为空',
-        color: 'error',
-      });
       return;
     }
     if (
@@ -300,9 +262,6 @@ export default class Security extends CVue {
 
     return await dispatchCaptureApiError(this.$store, async () => {
       const payload: IVerificationCodeRequest = {};
-      if (this.editLoginMode === 'cellphone') {
-        payload.phone_number = this.phoneNumber!;
-      }
       if (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') {
         payload.email = this.newEmail!;
       }
@@ -320,13 +279,7 @@ export default class Security extends CVue {
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;
       let response;
-      if (this.editLoginMode === 'cellphone') {
-        const payload: IUserUpdateLoginPhoneNumber = {
-          verification_code: this.verificationCode,
-          phone_number: this.phoneNumber!,
-        };
-        response = await apiMe.updatePhoneNumber(this.token, payload);
-      } else if (this.editLoginMode === 'email') {
+      if (this.editLoginMode === 'email') {
         const payload: IUserUpdatePrimaryEmail = {
           email: this.newEmail!,
           verification_code: this.verificationCode,
@@ -393,9 +346,6 @@ export default class Security extends CVue {
       await this.$router.push('/');
       return;
     }
-    if (this.userProfile && this.userProfile.phone_number) {
-      this.phoneNumber = this.userProfile.phone_number;
-    }
   }
 
   private async submit() {
@@ -404,9 +354,6 @@ export default class Security extends CVue {
       const updatedProfile: IUserProfileUpdate = {};
       if (this.password) {
         updatedProfile.password = this.password;
-      }
-      if (this.phoneNumber) {
-        updatedProfile.phone_number = this.phoneNumber;
       }
       await dispatchUpdateUserProfile(this.$store, updatedProfile);
       this.resetAll();

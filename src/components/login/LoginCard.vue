@@ -210,9 +210,8 @@ import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
 import { appName, enableCaptcha, hCaptchaSiteKey } from '@/env';
 import { readLoginError } from '@/store/main/getters';
-import { dispatchCaptureApiError, dispatchLogIn } from '@/store/main/actions';
+import { dispatchLogIn } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
-import { api } from '@/api';
 import { captureException } from '@sentry/vue';
 import AccountCircleOutlineIcon from '@/components/icons/AccountCircleOutlineIcon.vue';
 import LockOutline from '@/components/icons/LockOutlineIcon.vue';
@@ -245,10 +244,8 @@ import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 export default class LoginCard extends CVue {
   @Prop({ default: true }) public readonly showTopBar!: boolean;
   private email: string = '';
-  private phoneNumber: string = '';
   private password: string = '';
   private appName = appName;
-  private loginMethod: 'email' | 'cellphone' = 'email';
   private submitIntermediate = false;
   private verificationCode: string | null = null;
   private captchaVerified = false;
@@ -267,49 +264,18 @@ export default class LoginCard extends CVue {
     return readLoginError(this.$store);
   }
 
-  private async sendVerificationCode() {
-    if (!this.phoneNumber) {
-      commitAddNotification(this.$store, {
-        content: '电话号码为空',
-        color: 'error',
-      });
-      return false;
-    }
-    return dispatchCaptureApiError(this.$store, async () => {
-      const response = await api.sendVerificationCode({
-        phone_number: this.phoneNumber!,
-      });
-      if (response) {
-        this.expectOkAndCommitMsg(response.data, '验证码发送成功');
-        return true;
-      }
-      return false;
-    });
-  }
-
   private async submit() {
     this.submitIntermediate = true;
     try {
-      if (this.loginMethod === 'email') {
-        if (this.enableCaptcha && !this.captchaToken) {
-          this.submitIntermediate = false;
-          return;
-        }
-        await dispatchLogIn(this.$store, {
-          type: this.loginMethod,
-          username: this.email,
-          password: this.password,
-          hcaptcha_token: this.enableCaptcha && this.captchaToken ? this.captchaToken : undefined,
-        });
-      } else {
-        if (this.verificationCode) {
-          await dispatchLogIn(this.$store, {
-            type: this.loginMethod,
-            phoneNumber: this.phoneNumber,
-            code: this.verificationCode,
-          });
-        }
+      if (this.enableCaptcha && !this.captchaToken) {
+        this.submitIntermediate = false;
+        return;
       }
+      await dispatchLogIn(this.$store, {
+        username: this.email,
+        password: this.password,
+        hcaptcha_token: this.enableCaptcha && this.captchaToken ? this.captchaToken : undefined,
+      });
     } catch (err) {
       if (err.toString() === 'Error: Incorrect email or password') {
         commitAddNotification(this.$store, {
@@ -322,10 +288,6 @@ export default class LoginCard extends CVue {
     } finally {
       this.submitIntermediate = false;
     }
-  }
-
-  private async switchLoginMethod() {
-    this.loginMethod = this.loginMethod === 'email' ? 'cellphone' : 'email';
   }
 
   private verifiedCaptchaToken(token: string) {
