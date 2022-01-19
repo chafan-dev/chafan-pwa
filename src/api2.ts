@@ -2,7 +2,6 @@ import axios from 'axios';
 import { apiUrl, lambdaUrlBase } from '@/env';
 import {
   ICoinPayment,
-  IComment,
   IDynoState,
   IFeedback,
   IGenericResponse,
@@ -31,12 +30,6 @@ export const api2 = {
       `${apiUrl}/upload/images/`,
       payload,
       authHeadersFormData(token)
-    );
-  },
-  async getChildComments(token: string, commentId: string) {
-    return axios.get<IComment[]>(
-      `${apiUrl}/comments/${commentId}/child-comments/`,
-      authHeaders(token)
     );
   },
   async getWsToken(token: string) {

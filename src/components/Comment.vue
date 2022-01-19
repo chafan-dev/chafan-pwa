@@ -98,8 +98,9 @@
             style="cursor: pointer"
             @click="childCommentsExpanded = !childCommentsExpanded"
           >
+            <DebugSpan>{{ childCommentsExpanded }}</DebugSpan>
             <CommentsIcon :color="childCommentsExpanded ? undefined : 'primary'" />
-            <span class="ml-1 text-caption">{{ childComments.length }}</span>
+            <span class="ml-1 text-caption">{{ recursiveCommentsCount(childComments) }}</span>
           </div>
         </template>
         <span>查看回复</span>
@@ -207,17 +208,18 @@ import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import { IComment, ICommentUpvotes } from '@/interfaces';
-import { api2 } from '@/api2';
 import { apiComment } from '@/api/comment';
 import { rankComments } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import UpvotedIcon from '@/components/icons/UpvotedIcon.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 import { CVue } from '@/common';
+import DebugSpan from '@/components/base/DebugSpan.vue';
 
 @Component({
   name: 'Comment',
   components: {
+    DebugSpan,
     UpvoteStat,
     UpvotedIcon,
     UserLink,
@@ -241,7 +243,7 @@ export default class Comment extends CVue {
   private showUpdateEditor: boolean = false;
   private childComments: IComment[] | null = null;
   private sharedToTimeline = false;
-  private childCommentsExpanded = false;
+  private childCommentsExpanded = true;
   private submitIntermediate = false;
   private showDeleteConfirm = false;
   private upvotes: ICommentUpvotes | null = null;
@@ -292,20 +294,12 @@ export default class Comment extends CVue {
   }
 
   async mounted() {
-    // FIX: make this more precise
-    this.childCommentsExpanded =
-      this.answerCommentId !== null ||
-      this.articleCommentId !== null ||
-      this.submissionCommentId !== null ||
-      this.questionCommentId !== null ||
-      this.depth >= 1;
-    const comments = (await api2.getChildComments(this.token, this.comment.uuid)).data;
     this.upvotes = {
       comment_uuid: this.comment.uuid,
       count: this.comment.upvotes_count,
       upvoted: this.comment.upvoted,
     };
-    this.childComments = rankComments(this.$dayjs, comments);
+    this.childComments = rankComments(this.$dayjs, this.comment.child_comments);
     this.sharedToTimeline = this.comment.shared_to_timeline;
   }
 

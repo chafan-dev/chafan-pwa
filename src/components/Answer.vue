@@ -70,7 +70,7 @@
                     class="mr-1"
                   />
                   <CommentBtn
-                    :count="answer.comments.length"
+                    :count="recursiveCommentsCount(answer.comments)"
                     class="mr-1"
                     @click="toggleShowComments"
                   />

@@ -155,7 +155,9 @@
                     <Viewer v-if="submission.desc" :content="submission.desc" />
                     <p>
                       <CommentsIcon class="mr-1" small />
-                      <span class="text-caption"> {{ submission.comments.length }}条评论 </span>
+                      <span class="text-caption">
+                        {{ recursiveCommentsCount(submission.comments) }}条评论
+                      </span>
                     </p>
                   </div>
                   <v-spacer />

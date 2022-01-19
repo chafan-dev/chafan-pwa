@@ -78,6 +78,7 @@ export interface IComment {
   is_deleted: boolean;
   upvotes_count: number;
   upvoted: boolean;
+  child_comments: IComment[];
 }
 
 export interface IAnswer {

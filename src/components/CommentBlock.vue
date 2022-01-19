@@ -1,7 +1,9 @@
 <template>
   <div v-if="comments.length > 0 || loggedIn" class="mt-3">
     <v-divider v-if="comments.length" />
-    <span v-if="showTitle" class="pt-1 pl-1 grey--text">共{{ comments.length }}条评论</span>
+    <span v-if="showTitle" class="pt-1 pl-1 grey--text"
+      >共{{ recursiveCommentsCount(comments) }}条评论</span
+    >
     <v-list-item v-for="comment in comments" :key="comment.uuid" class="comment-item">
       <v-list-item-content>
         <Comment :comment="comment" :siteId="siteId" :writable="writable" />
@@ -36,19 +38,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
+import { Component, Emit, Prop } from 'vue-property-decorator';
 import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import Comment from '@/components/Comment.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { IComment } from '@/interfaces';
-import { readIsLoggedIn } from '@/store/main/getters';
 import { rankComments } from '@/utils';
+import { CVue } from '@/common';
 
 @Component({
   components: { UserLink, Comment, SimpleEditor },
 })
-export default class CommentBlock extends Vue {
+export default class CommentBlock extends CVue {
   @Prop() public readonly comments!: IComment[];
   @Prop() public readonly writable!: boolean;
   @Prop() public readonly siteId: number | undefined;
@@ -58,10 +60,6 @@ export default class CommentBlock extends Vue {
 
   private mentioned: string[] = [];
   private rankedComments: IComment[] = [];
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
 
   mounted() {
     this.rankedComments = rankComments(this.$dayjs, this.comments);
