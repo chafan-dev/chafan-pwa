@@ -88,10 +88,10 @@
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
-                  <ValidationProvider v-slot="{ errors }" name="handle" rules="required">
+                  <ValidationProvider v-slot="{ errors }" name="用户ID" rules="required|id">
                     <v-text-field
                       v-model="handle"
-                      label="唯一用户名"
+                      label="用户ID"
                       name="handle"
                       required
                       type="text"
