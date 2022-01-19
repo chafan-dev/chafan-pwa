@@ -1,7 +1,7 @@
 import { apiQuestion } from '@/api/question';
 import { adminUUID, apiUrl, appName } from '@/env';
 import { api } from '@/api';
-import { IGenericResponse, ThemeType } from '@/interfaces';
+import { IComment, IGenericResponse, ThemeType } from '@/interfaces';
 import { Vue } from 'vue-property-decorator';
 import {
   readIsLoggedIn,
@@ -592,6 +592,16 @@ export class CVue extends Vue {
       color: 'info',
     });
     await this.$router.push(`/channels/${channelId}`);
+  }
+
+  recursiveCommentsCount(comments: IComment[]): number {
+    return (
+      comments.length +
+      comments.reduce(
+        (sum, comment) => sum + this.recursiveCommentsCount(comment.child_comments),
+        0
+      )
+    );
   }
 }
 

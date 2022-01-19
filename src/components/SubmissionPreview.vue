@@ -25,7 +25,7 @@
           class="d-flex align-center black--text text-caption text-decoration-none"
         >
           <CommentsIcon class="mr-1 mt-1" small />
-          {{ submission.comments.length }}
+          {{ recursiveCommentsCount(submission.comments) }}
         </router-link>
       </div>
       <v-spacer />

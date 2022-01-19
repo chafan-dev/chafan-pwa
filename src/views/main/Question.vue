@@ -104,7 +104,11 @@
             <span v-else>该圈子仅会员可以写回答</span>
           </v-tooltip>
 
-          <CommentBtn :count="question.comments.length" class="mr-1" @click="toggleShowComments" />
+          <CommentBtn
+            :count="recursiveCommentsCount(question.comments)"
+            class="mr-1"
+            @click="toggleShowComments"
+          />
 
           <QuestionUpvotes
             :disabled="!userProfile || userProfile.uuid === question.author.uuid"

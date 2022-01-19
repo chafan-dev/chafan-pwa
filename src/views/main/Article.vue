@@ -173,7 +173,7 @@
               :commentSubmitIntermediate="commentSubmitIntermediate"
               :comments="article.comments"
               :show-title="true"
-              :writable="token"
+              :writable="loggedIn"
               class="mt-6"
               commentLabel="评论文章"
               @submit-new-comment="submitNewArticleCommentBody"
