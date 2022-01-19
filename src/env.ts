@@ -27,6 +27,8 @@ export const hCaptchaSiteKey = process.env.VUE_APP_HCAPTCHA_SITEKEY;
 export const enableCaptcha = process.env.VUE_APP_ENABLE_CAPTCHA === 'true';
 export const lambdaUrlBase = process.env.VUE_APP_LAMBDA;
 
+export const defaultSiteUuid = '377cjuUDLMMdpH7dWutU';
+
 /**
  * Information about this build.
  */
