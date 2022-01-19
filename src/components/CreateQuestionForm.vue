@@ -2,11 +2,7 @@
   <v-card outlined>
     <v-card-title v-if="showTitle" class="primary--text headline"> 提问 </v-card-title>
     <v-card-text>
-      <SiteSearch
-        v-if="site === undefined"
-        v-model="selectedSite"
-        label="圈子 (加入后在此处可见, 「大广场」不限话题)"
-      />
+      <SiteSearch v-if="site === undefined" v-model="selectedSite" label="圈子（默认：大广场）" />
       <v-textarea
         class="mt-4"
         v-model="newQuestionTitle"
@@ -41,6 +37,7 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiQuestion } from '@/api/question';
 import { CVue } from '@/common';
 import SiteSearch from '@/components/SiteSearch.vue';
+import { defaultSiteUuid } from '@/env';
 
 @Component({
   components: { SiteSearch, UserLink, Invite },
@@ -64,11 +61,7 @@ export default class CreateQuestionForm extends CVue {
     } else if (this.selectedSite) {
       siteUUID = this.selectedSite.uuid;
     } else {
-      commitAddNotification(this.$store, {
-        content: '所选圈子不能为空',
-        color: 'error',
-      });
-      return;
+      siteUUID = defaultSiteUuid;
     }
     if (this.newQuestionTitle.length < 5) {
       commitAddNotification(this.$store, {
