@@ -125,16 +125,6 @@
                     </v-btn>
                   </v-sheet>
                 </div>
-
-                <div class="my-8">
-                  <div class="d-flex align-center">
-                    <v-sheet color="grey lighten-2" height=".5" width="100%" />
-
-                    <div class="mx-2">Or</div>
-
-                    <v-sheet color="grey lighten-2" height=".5" width="100%" />
-                  </div>
-                </div>
               </ValidationObserver>
             </v-col>
           </v-row>
