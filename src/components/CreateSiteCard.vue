@@ -11,7 +11,7 @@
               <v-text-field v-model="siteCreate.name" label="显示名*" />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" name="唯一域名" rules="required|subdomain">
+            <ValidationProvider v-slot="{ errors }" name="唯一域名" rules="required|id">
               <v-text-field v-model="siteCreate.subdomain" label="唯一域名*" required />
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>

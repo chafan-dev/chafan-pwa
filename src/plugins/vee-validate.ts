@@ -34,11 +34,11 @@ extend('phone_number_e164', {
   message: '无效格式，有效格式的例子：+1222333444, +8611122223333',
 });
 
-extend('subdomain', {
+extend('id', {
   validate(value: string) {
     return value.match(/^[\w-]+$/g) !== null;
   },
-  message: '圈子域名中仅允许使用字母数字、下划线和"-"',
+  message: 'id 中仅允许使用字母数字、下划线和"-"，区分大小写',
 });
 
 // No message specified.
