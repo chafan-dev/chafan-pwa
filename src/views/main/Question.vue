@@ -387,7 +387,7 @@ import {
   commitSetWorkingDraft,
 } from '@/store/main/mutations';
 
-import { readNarrowUI, readUserMode } from '@/store/main/getters';
+import { readNarrowUI } from '@/store/main/getters';
 import {
   IAnswer,
   IQuestionArchive,
@@ -467,10 +467,6 @@ export default class Question extends CVue {
   private savedLocalEdit: LocalEdit | null = null;
   private answers: IAnswer[] = [];
   private answeredBefore: boolean = false;
-
-  get isUserMode() {
-    return readUserMode(this.$store);
-  }
 
   get isNarrowFeedUI() {
     return readNarrowUI(this.$store);

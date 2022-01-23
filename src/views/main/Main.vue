@@ -56,10 +56,6 @@
           </v-list-item>
         </v-list>
 
-        <div v-if="isModerator" class="ma-2">
-          <v-switch v-model="userMode" label="普通用户模式" @change="switchUseMode" />
-        </div>
-
         <v-spacer />
         <v-list>
           <v-list-item @click="logout">
@@ -263,15 +259,12 @@ import {
   readDashboardMiniDrawer,
   readDashboardShowDrawer,
   readHasModeratedSites,
-  readModeratedSites,
-  readUserMode,
 } from '@/store/main/getters';
 import {
   commitAddNotification,
   commitSetDashboardMiniDrawer,
   commitSetDashboardShowDrawer,
   commitSetShowLoginPrompt,
-  commitSetUserMode,
 } from '@/store/main/mutations';
 import { dispatchUserLogOut } from '@/store/main/actions';
 
@@ -367,15 +360,6 @@ export default class Main extends CVue {
     commitSetDashboardShowDrawer(this.$store, value);
   }
 
-  get isModerator() {
-    const sites = readModeratedSites(this.$store);
-    return sites !== null && sites.length > 0;
-  }
-
-  get userMode() {
-    return readUserMode(this.$store);
-  }
-
   private get hasModeratedSites() {
     return readHasModeratedSites(this.$store);
   }
@@ -404,10 +388,6 @@ export default class Main extends CVue {
     this.showDrawer = false;
     await dispatchUserLogOut(this.$store);
     this.$router.go(0);
-  }
-
-  private switchUseMode() {
-    commitSetUserMode(this.$store, this.userMode);
   }
 
   private prepareFeedbackFormIntermediate = false;

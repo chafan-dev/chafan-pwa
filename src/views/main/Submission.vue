@@ -488,7 +488,7 @@ import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { api } from '@/api';
-import { readNarrowUI, readUserMode } from '@/store/main/getters';
+import { readNarrowUI } from '@/store/main/getters';
 import {
   IComment,
   IRichText,
@@ -584,10 +584,6 @@ export default class Submission extends CVue {
 
   get suggestionEditable() {
     return !this.editable && this.userProfile;
-  }
-
-  get isUserMode() {
-    return readUserMode(this.$store);
   }
 
   get id() {
