@@ -168,22 +168,21 @@
               </v-btn>
             </template>
             <v-list dense>
-              <v-list-item
-                v-if="
-                  questionPage.question_subscription &&
-                  questionPage.question_subscription.subscribed_by_me
-                "
-                :disabled="cancelSubscriptionIntermediate"
-                dense
-                @click="cancelSubscription"
-              >
-                <ToBookmarkIcon class="mr-1" />
-                关注
-              </v-list-item>
-              <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
-                <BookmarkedIcon class="mr-1" />
-                取消关注
-              </v-list-item>
+              <template v-if="questionPage.question_subscription">
+                <v-list-item
+                  v-if="questionPage.question_subscription.subscribed_by_me"
+                  :disabled="cancelSubscriptionIntermediate"
+                  dense
+                  @click="cancelSubscription"
+                >
+                  <BookmarkedIcon class="mr-1" />
+                  取消关注
+                </v-list-item>
+                <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
+                  <ToBookmarkIcon class="mr-1" />
+                  关注
+                </v-list-item>
+              </template>
               <v-list-item dense @click="showHistoryDialog">
                 <HistoryIcon class="mr-1" />
                 问题历史
