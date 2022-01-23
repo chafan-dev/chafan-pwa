@@ -14,7 +14,7 @@
     </div>
     <EmptyPlaceholder v-if="emptyItems" />
     <div v-if="!noMore" class="my-4 text-center">
-      <v-progress-circular color="primary" indeterminate size="20" v-intersect:once="tryLoadMore" />
+      <v-progress-circular color="primary" indeterminate size="20" v-intersect="tryLoadMore" />
     </div>
   </div>
 </template>
@@ -37,6 +37,7 @@ export default class DynamicItemList<T> extends CVue {
   private currentPage = 0;
   private noMore = false;
   private emptyItems = false;
+  private loading = false;
 
   private async mounted() {
     window.onscroll = () => {
@@ -49,6 +50,10 @@ export default class DynamicItemList<T> extends CVue {
     if (this.noMore) {
       return;
     }
+    if (this.loading) {
+      return;
+    }
+    this.loading = true;
     const bottomOfWindow =
       Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
         window.innerHeight +
@@ -74,6 +79,7 @@ export default class DynamicItemList<T> extends CVue {
         }
       }
     }
+    this.loading = false;
   }
 }
 </script>
