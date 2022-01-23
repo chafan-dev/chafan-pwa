@@ -283,16 +283,16 @@ export const actions = {
   async apiErrorCapturedWithErrorHandler(
     context: MainContext,
     fns: {
+      // perform action and capture exception thrown from within
       action: () => Promise<void>;
+      // if set and returns true depending on the error, do nothing
       errorFilter: (err: AxiosError) => boolean;
     }
   ) {
     try {
       await fns.action();
     } catch (err) {
-      if (fns.errorFilter && fns.errorFilter(err)) {
-        // Do nothing
-      } else {
+      if (!(fns.errorFilter && fns.errorFilter(err))) {
         await dispatchCheckApiError(context, err);
       }
     }
