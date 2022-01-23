@@ -187,19 +187,21 @@
                   查看编辑历史
                 </v-list-item>
 
-                <v-list-item
-                  v-if="submissionSubscription && submissionSubscription.subscribed_by_me"
-                  :disabled="cancelSubscriptionIntermediate"
-                  dense
-                  @click="cancelSubscription"
-                >
-                  <ToBookmarkIcon class="mr-1" />
-                  收藏
-                </v-list-item>
-                <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
-                  <BookmarkedIcon class="mr-1" />
-                  取消收藏
-                </v-list-item>
+                <template v-if="submissionSubscription">
+                  <v-list-item
+                    v-if="submissionSubscription.subscribed_by_me"
+                    :disabled="cancelSubscriptionIntermediate"
+                    dense
+                    @click="cancelSubscription"
+                  >
+                    <BookmarkedIcon class="mr-1" />
+                    取消收藏
+                  </v-list-item>
+                  <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
+                    <ToBookmarkIcon class="mr-1" />
+                    收藏
+                  </v-list-item>
+                </template>
 
                 <v-list-item
                   v-if="editable && canHide"
