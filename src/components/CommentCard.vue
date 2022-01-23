@@ -2,7 +2,8 @@
   <div class="pa-2">
     <!-- Comment -->
     <div class="d-flex mb-2">
-      <Viewer :content="comment.content" />
+      <Viewer v-if="!comment.is_deleted" :content="comment.content" />
+      <div v-else class="grey--text">已删除</div>
       <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
         <OpenInNewIcon small />
       </router-link>

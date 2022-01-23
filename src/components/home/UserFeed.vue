@@ -36,6 +36,7 @@
         :key="activity.id"
         :class="theme.feed.activityCard.classes"
       >
+        <DebugSpan>id={{ activity.id }}</DebugSpan>
         <!-- Row for top info -->
         <v-row justify="space-between" no-gutters>
           <!-- Column for subject and verb -->
@@ -217,9 +218,11 @@ import { apiActivity } from '@/api/activity';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import SiteName from '@/components/SiteName.vue';
 import { commitAddNotification } from '@/store/main/mutations';
+import DebugSpan from '@/components/base/DebugSpan.vue';
 
 @Component({
   components: {
+    DebugSpan,
     SiteName,
     DotsIcon,
     EmptyPlaceholder,
