@@ -12,7 +12,6 @@ const defaultState: MainState = {
   dashboardShowDrawer: false,
   notifications: [],
   moderated_sites: null,
-  userMode: true,
   workingDraft: null,
   topBanner: null,
   showLoginPrompt: false,

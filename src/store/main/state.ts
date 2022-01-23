@@ -10,7 +10,6 @@ export interface MainState {
   token: string;
   isLoggedIn: boolean | null;
   logInError: boolean;
-  userMode: boolean;
   userProfile: IUserProfile | null;
   dashboardMiniDrawer: boolean;
   dashboardShowDrawer: boolean;
