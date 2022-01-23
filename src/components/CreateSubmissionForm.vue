@@ -14,7 +14,7 @@
           hide-details
         />
         <ValidationProvider v-slot="{ errors }" name="URL" rules="url">
-          <v-text-field v-model="newSubmissionURL" label="URL（可选）" hide-details />
+          <v-text-field v-model="newSubmissionURL" label="URL（可选）" hide-details clearable />
           <span class="error--text">{{ errors[0] }}</span>
         </ValidationProvider>
       </v-card-text>
@@ -42,10 +42,14 @@ import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mu
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Invite from '@/components/Invite.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import {
+  dispatchCaptureApiError,
+  dispatchCaptureApiErrorWithErrorHandler,
+} from '@/store/main/actions';
 import { CVue } from '@/common';
 import SiteSearch from '@/components/SiteSearch.vue';
 import { defaultSiteUuid } from '@/env';
+import { AxiosError } from 'axios';
 
 @Component({
   components: { SiteSearch, UserLink, Invite },
@@ -79,20 +83,26 @@ export default class CreateSubmissionForm extends CVue {
       });
       return;
     }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.postNewSubmissionIntermediate = true;
-      const response = await apiSubmission.postSubmission(this.token, {
-        site_uuid: siteUUID,
-        title: this.newSubmissionTitle,
-        url: this.newSubmissionURL ? this.newSubmissionURL : undefined,
-      });
-      this.postNewSubmissionIntermediate = false;
-      if (response) {
-        try {
-          localStorage.setItem('new-submission', 'true');
-        } catch (e) {}
-        await this.$router.push(`/submissions/${response.data.uuid}`);
-      }
+    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
+      action: async () => {
+        this.postNewSubmissionIntermediate = true;
+        const response = await apiSubmission.postSubmission(this.token, {
+          site_uuid: siteUUID,
+          title: this.newSubmissionTitle,
+          url: this.newSubmissionURL ? this.newSubmissionURL : undefined,
+        });
+        this.postNewSubmissionIntermediate = false;
+        if (response) {
+          try {
+            localStorage.setItem('new-submission', 'true');
+          } catch (e) {}
+          await this.$router.push(`/submissions/${response.data.uuid}`);
+        }
+      },
+      errorFilter: (err: AxiosError) => {
+        this.postNewSubmissionIntermediate = false;
+        return false;
+      },
     });
   }
 }
