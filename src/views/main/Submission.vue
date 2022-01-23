@@ -202,14 +202,6 @@
                     收藏
                   </v-list-item>
                 </template>
-
-                <v-list-item
-                  v-if="editable && canHide"
-                  @click="showConfirmHideSubmissionDialog = true"
-                >
-                  <DeleteIcon class="mr-1" />
-                  隐藏分享
-                </v-list-item>
               </v-list>
             </v-menu>
 
@@ -561,11 +553,10 @@ export default class Submission extends CVue {
   private hintTopicNames: string[] = []; // TODO
   private commentWritable = false;
   private editable = false;
-  private canHide = false;
   private showConfirmHideSubmissionDialog = false;
   private loadingProgress = 0;
   private loading = true;
-  private isModerator = false;
+
   private commitSubmissionEditIntermediate = false;
   private cancelSubscriptionIntermediate = false;
   private subscribeIntermediate = false;
@@ -610,8 +601,6 @@ export default class Submission extends CVue {
       this.showSubmissionEditor = false;
       this.commentWritable = false;
       this.editable = false;
-      this.canHide = false;
-      this.isModerator = false;
       this.upvotes = null;
       this.archives = [];
       this.comments = [];
@@ -673,14 +662,6 @@ export default class Submission extends CVue {
         if (this.userProfile) {
           if (this.userProfile.uuid === this.submission.author.uuid) {
             this.editable = true;
-            this.canHide = true;
-          }
-          const mod = this.submission.site.moderator;
-          if (mod) {
-            this.isModerator = this.userProfile.uuid === mod.uuid;
-          }
-          if (this.isModerator) {
-            this.canHide = true;
           }
           await dispatchCaptureApiError(this.$store, async () => {
             const submissionSite = this.submission!.site;

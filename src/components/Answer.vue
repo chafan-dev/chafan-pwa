@@ -412,36 +412,6 @@
         </div>
       </template>
     </div>
-    <div v-if="isModerator && !isUserMode">
-      <v-row justify="end">
-        <v-col md="auto">
-          管理：
-          <!-- Moderator -->
-          <v-btn
-            v-if="isHiddenByMod"
-            :disabled="toggleHideAnswerIntermediate"
-            class="slim-btn ma-1"
-            color="warning"
-            depressed
-            small
-            @click="toggleHideAnswer"
-          >
-            取消隐藏
-          </v-btn>
-          <v-btn
-            v-else
-            :disabled="toggleHideAnswerIntermediate"
-            class="slim-btn ma-1"
-            color="warning"
-            depressed
-            small
-            @click="toggleHideAnswer"
-          >
-            隐藏
-          </v-btn>
-        </v-col>
-      </v-row>
-    </div>
   </div>
   <div v-else-if="answer && showEditor">
     <AnswerEditor
@@ -547,7 +517,6 @@ export default class Answer extends CVue {
   private upvotes: IAnswerUpvotes | null = null;
   private showComments: boolean = false;
   private isHiddenByMod: boolean = false;
-  private isModerator = false;
   private commentWritable = false;
   private userBookmark: IUserAnswerBookmark | null = null;
   private showEditor: boolean = false;
@@ -578,12 +547,6 @@ export default class Answer extends CVue {
     }
 
     this.isHiddenByMod = this.answerPreview.is_hidden_by_moderator;
-    if (this.userProfile) {
-      const mod = this.answerPreview.question.site.moderator;
-      if (mod) {
-        this.isModerator = this.userProfile.uuid === mod.uuid;
-      }
-    }
 
     if (!loadFull) {
       this.loading = false;
