@@ -14,7 +14,7 @@
         </h2>
         <div v-if="!showColumnEditor" class="d-flex align-center">
           <template v-if="currentUserId === articleColumn.owner.uuid && !compactMode">
-            <span class="grey--text mr-2 text-caption"
+            <span class="grey--text mr-2 text-caption" v-if="subscription"
               >{{ subscription.subscription_count }}人已关注</span
             >
             <v-btn class="slim-btn mr-2" depressed small @click="showColumnEditor = true">
