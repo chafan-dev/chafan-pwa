@@ -4,6 +4,7 @@
       <v-layout align-center justify-center>
         <v-flex md6 sm8 xs12>
           <ValidationObserver v-slot="{ handleSubmit, valid }">
+            <DebugSpan>valid: {{ valid }}</DebugSpan>
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} 注册</v-toolbar-title>
@@ -60,6 +61,7 @@
                     label="验证码"
                     name="verification-code"
                     type="text"
+                    :disabled="!email || !isEmail(email)"
                   >
                     <template v-slot:prepend>
                       <VerifyCodeIcon />
@@ -67,7 +69,7 @@
                     <template v-slot:append-outer>
                       <VerificationCodeBtn
                         :send-verification-code-handler="sendVerificationCode"
-                        :disabled-prop="!email"
+                        :disabled-prop="!email || !isEmail(email)"
                       />
                     </template>
                   </v-text-field>
@@ -80,6 +82,7 @@
                       name="new-password"
                       required
                       type="password"
+                      :disabled="!verificationCode"
                     >
                       <template v-slot:prepend>
                         <PasswordIcon />
@@ -95,6 +98,7 @@
                       name="handle"
                       required
                       type="text"
+                      :disabled="!verificationCode"
                     >
                       <template v-slot:prepend>
                         <HandleIcon />
@@ -136,10 +140,13 @@ import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
+import DebugSpan from '@/components/base/DebugSpan.vue';
+import { email } from 'vee-validate/dist/rules';
 
 // TODO: share a parent component with Login.vue
 @Component({
   components: {
+    DebugSpan,
     VerificationCodeBtn,
     AccountIcon,
     PasswordIcon,
@@ -198,6 +205,10 @@ export default class Signup extends Vue {
       }
       this.intermediate = false;
     });
+  }
+
+  isEmail(s: string) {
+    return email.validate(s);
   }
 }
 </script>

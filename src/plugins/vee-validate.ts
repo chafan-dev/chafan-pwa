@@ -17,7 +17,7 @@ extend('password', {
   validate(value: string) {
     return value.match(PasswordRegex) !== null;
   },
-  message: '密码必须长于8位',
+  message: '密码必须至少8位，由数字、字母或者特殊符号组成',
 });
 
 extend('url', {
