@@ -60,7 +60,7 @@
         <HelpIcon @click="showTips = true" />
         <v-spacer />
         <v-btn
-          :disabled="sendMsgIntermediate"
+          :disabled="sendMsgIntermediate || !messageCreate.body"
           color="primary"
           depressed
           small
@@ -96,7 +96,10 @@ import { IChannel, IMessage, IMessageCreate, IRichText } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
 import ChannelIcon from '@/components/icons/ChannelIcon.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import {
+  dispatchCaptureApiError,
+  dispatchCaptureApiErrorWithErrorHandler,
+} from '@/store/main/actions';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { CVue } from '@/common';
 import Feedback from '@/views/main/dashboard/Feedback.vue';
@@ -143,12 +146,18 @@ export default class ChatWindow extends CVue {
   }
 
   private async commitNewMessage() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.sendMsgIntermediate = true;
-      const response = await api.createMessage(this.token, this.messageCreate);
-      this.messages.push(response.data);
-      this.messageCreate.body = '';
-      this.sendMsgIntermediate = false;
+    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
+      action: async () => {
+        this.sendMsgIntermediate = true;
+        const response = await api.createMessage(this.token, this.messageCreate);
+        this.messages.push(response.data);
+        this.messageCreate.body = '';
+        this.sendMsgIntermediate = false;
+      },
+      errorFilter: () => {
+        this.sendMsgIntermediate = false;
+        return false;
+      },
     });
   }
 }
