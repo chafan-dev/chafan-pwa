@@ -130,24 +130,20 @@ export default class ArticleColumnCard extends CVue {
 
   private async subscribe() {
     this.subscribeIntermediate = true;
-    if (this.articleColumn !== null) {
-      this.subscription = (
-        await apiArticle.subscribeArticleColumn(this.token, this.articleColumn.uuid)
-      ).data;
-      this.subscribeIntermediate = false;
-    }
+    this.subscription = (
+      await apiArticle.subscribeArticleColumn(this.token, this.articleColumn.uuid)
+    ).data;
+    this.subscribeIntermediate = false;
   }
 
   private async cancelSubscribe() {
-    if (this.articleColumn !== null) {
-      this.cancelSubscribeIntermediate = true;
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.subscription = (
-          await apiArticle.unsubscribeArticleColumn(this.token, this.articleColumn.uuid)
-        ).data;
-        this.cancelSubscribeIntermediate = false;
-      });
-    }
+    this.cancelSubscribeIntermediate = true;
+    await dispatchCaptureApiError(this.$store, async () => {
+      this.subscription = (
+        await apiArticle.unsubscribeArticleColumn(this.token, this.articleColumn.uuid)
+      ).data;
+      this.cancelSubscribeIntermediate = false;
+    });
   }
 
   private async updateArticleColumn() {
