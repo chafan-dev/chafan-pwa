@@ -3,7 +3,7 @@ import { extend, localize, ValidationObserver, ValidationProvider } from 'vee-va
 import { email, min, required } from 'vee-validate/dist/rules';
 import en from 'vee-validate/dist/locale/en.json';
 import zh_CN from 'vee-validate/dist/locale/zh_CN.json';
-import { URLRegex } from '@/common';
+import { URLRegex, PasswordRegex, PhoneNumberRegex } from '@/common';
 
 extend('password1', {
   params: ['target'],
@@ -15,7 +15,7 @@ extend('password1', {
 
 extend('password', {
   validate(value: string) {
-    return value.length >= 8;
+    return value.match(PasswordRegex) !== null;
   },
   message: '密码必须长于8位',
 });
@@ -29,7 +29,7 @@ extend('url', {
 
 extend('phone_number_e164', {
   validate(value: string) {
-    return value.match(/^\+[1-9]\d{1,14}$/g) !== null;
+    return value.match(PhoneNumberRegex) !== null;
   },
   message: '无效格式，有效格式的例子：+1222333444, +8611122223333',
 });

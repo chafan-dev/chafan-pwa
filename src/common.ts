@@ -9,6 +9,8 @@ import { AxiosError } from 'axios';
 import { isDev, isProdDev } from '@/utils';
 
 export const URLRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)/gi;
+export const PasswordRegex = /^[\w\-\+@$!%*?&]{8,}$/;
+export const PhoneNumberRegex = /^\+[1-9]\d{1,14}$/;
 
 export const NARROW_FEED_UI_KEY = 'narrowFeedUI';
 export const LABS_TIPTAP_EDITOR_OPTION = 'labs.tiptap-editor-option';
