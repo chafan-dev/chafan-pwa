@@ -32,7 +32,6 @@
             <v-chip v-if="currentUserIsAuthor" color="info" label small class="mr-1"
               >我的回答</v-chip
             >
-            <v-chip small color="yellow lighten-4" label v-if="answer.featured_at">精选</v-chip>
           </div>
 
           <!-- Answer Content Block -->
