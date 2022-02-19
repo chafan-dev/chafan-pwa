@@ -65,7 +65,7 @@ export default class NewInviteLinkBtn extends CVue {
     const payload: IInvitationLinkCreate = {};
     if (this.site !== undefined) {
       payload.invited_to_site_uuid = this.site.uuid;
-    } else if (this.invitedSite !== null) {
+    } else if (this.invitedSite) {
       payload.invited_to_site_uuid = this.invitedSite.uuid;
     }
     const invitationLink = (await api.createInvitationLink(this.token, payload)).data;
