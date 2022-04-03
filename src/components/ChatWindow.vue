@@ -123,7 +123,7 @@ export default class ChatWindow extends CVue {
   @Prop() public readonly channel!: IChannel;
   private messages: IMessage[] = [];
   private messageCreate: IMessageCreate = {
-    channel_id: this.channel.id,
+    channel_id: -1,
     body: '',
   };
   private loading = true;
@@ -139,6 +139,7 @@ export default class ChatWindow extends CVue {
   }
 
   private async mounted() {
+    this.messageCreate.channel_id = this.channel.id;
     await dispatchCaptureApiError(this.$store, async () => {
       this.messages = (await api.getChannelMessages(this.token, this.channel.id)).data;
       this.loading = false;
