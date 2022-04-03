@@ -80,7 +80,7 @@ module.exports = {
     },
   },
   devServer: {
-    disableHostCheck: true,
+    allowedHosts: 'all',
     https:
       process.env.NODE_ENV === 'production'
         ? {
@@ -92,7 +92,7 @@ module.exports = {
               : undefined,
           }
         : undefined,
-    public: process.env.NODE_ENV === 'production' ? 'https://dev.cha.fan:8080/' : undefined,
+    proxy: process.env.NODE_ENV === 'production' ? 'https://dev.cha.fan:8080/' : undefined,
   },
 };
 

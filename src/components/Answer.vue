@@ -306,7 +306,7 @@
                         suggestion.accepted_diff_base.source !== suggestion.body_rich_text.source
                       "
                     >
-                      <Diff
+                      <DiffView
                         :s1="suggestion.accepted_diff_base.rendered_text"
                         :s2="suggestion.body_rich_text.rendered_text"
                       />
@@ -315,7 +315,7 @@
                   </template>
                   <template v-else-if="suggestion.status !== 'accepted'">
                     <div v-if="answer.content.source !== suggestion.body_rich_text.source">
-                      <Diff
+                      <DiffView
                         :s1="answer.content.rendered_text"
                         :s2="suggestion.body_rich_text.rendered_text"
                       />
@@ -472,7 +472,7 @@ import Upvote from '@/components/Upvote.vue';
 import { CVue } from '@/common';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
-import Diff from '@/components/widgets/Diff.vue';
+import DiffView from '@/components/widgets/DiffView.vue';
 import FlagIcon from '@/components/icons/FlagIcon.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 
@@ -480,7 +480,7 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
   components: {
     CloseIcon,
     FlagIcon,
-    Diff,
+    DiffView,
     EditIcon,
     DotsIcon,
     Upvote,

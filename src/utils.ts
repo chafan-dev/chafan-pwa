@@ -161,7 +161,7 @@ export const newAnswerHandler = async (
       }
       return newAnswer;
     }
-  } catch (err) {
+  } catch (err: any) {
     if (!isDev) {
       captureException(err);
       await dispatchCheckApiError(vueInstance.$store, err);
@@ -214,7 +214,7 @@ export const newArticleHandler = async (
       await vueInstance.$router.push(`/articles/${articleId}`);
     }
     return newArticle;
-  } catch (err) {
+  } catch (err: any) {
     if (!isDev) {
       captureException(err);
       await dispatchCheckApiError(vueInstance.$store, err);
