@@ -10,35 +10,47 @@
                 <v-spacer />
               </v-toolbar>
               <v-card-text>
-                <p class="subheading">在下方输入你的新密码</p>
-                <v-form
-                  ref="form"
-                  v-model="valid"
-                  lazy-validation
-                  @keyup.enter="handleSubmit(submit)"
-                  @submit.prevent=""
-                >
-                  <ValidationProvider
-                    v-slot="{ errors }"
-                    name="password"
-                    rules="required|min:3|password|password1:@confirm"
+                <DebugSpan>tokenIsValid: {{ tokenIsValid }}</DebugSpan>
+                <template v-if="tokenIsValid">
+                  <p class="subheading">在下方输入你的新密码</p>
+                  <v-form
+                    ref="form"
+                    v-model="valid"
+                    lazy-validation
+                    @keyup.enter="handleSubmit(submit)"
+                    @submit.prevent=""
                   >
-                    <v-text-field v-model="password" label="密码" required type="password" />
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                    <ValidationProvider
+                      v-slot="{ errors }"
+                      name="password"
+                      rules="required|min:3|password|password1:@confirm"
+                    >
+                      <v-text-field v-model="password" label="密码" required type="password" />
+                      <span class="error--text">{{ errors[0] }}</span>
+                    </ValidationProvider>
 
-                  <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
-                    <v-text-field
-                      v-model="confirmation"
-                      label="确认密码"
-                      required
-                      type="password"
-                    />
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
-                </v-form>
+                    <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
+                      <v-text-field
+                        v-model="confirmation"
+                        label="确认密码"
+                        required
+                        type="password"
+                      />
+                      <span class="error--text">{{ errors[0] }}</span>
+                    </ValidationProvider>
+                  </v-form>
+                </template>
+                <p v-else>
+                  <b
+                    >无效的密码重置链接，可能已过期，<a
+                      href="/recover-password"
+                      style="text-decoration: none"
+                      >请重试。</a
+                    ></b
+                  >
+                </p>
               </v-card-text>
-              <v-card-actions>
+              <v-card-actions v-if="tokenIsValid">
                 <v-spacer />
                 <v-btn depressed small @click="cancel">取消</v-btn>
                 <v-btn depressed small @click="resetAll(reset)">重置</v-btn>
@@ -65,11 +77,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import { appName } from '@/env';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchResetPassword } from '@/store/main/actions';
-
-@Component
+import { api } from '@/api';
+import DebugSpan from '@/components/base/DebugSpan.vue';
+@Component({
+  components: { DebugSpan },
+})
 export default class UserProfileEdit extends Vue {
   public appName = appName;
-  public valid = true;
+  public valid = false;
+  private tokenIsValid = true;
   public password = '';
   public confirmation = '';
 
@@ -86,29 +102,27 @@ export default class UserProfileEdit extends Vue {
     this.$router.push('/');
   }
 
-  public checkToken() {
+  public async checkToken() {
     const token = this.$route.query.token as string;
-    if (!token) {
-      commitAddNotification(this.$store, {
-        content: '无效的密码重置链接',
-        color: 'error',
-      });
-      this.$router.push('/recover-password');
+    let isTokenValid = false;
+    if (token) {
+      const r = await api.checkTokenValidity(token);
+      isTokenValid = r.data.success;
+    }
+    if (!token || !isTokenValid) {
+      this.tokenIsValid = false;
     } else {
       return token;
     }
   }
 
   public async submit() {
-    const token = this.checkToken();
+    const token = await this.checkToken();
     if (token) {
       await dispatchResetPassword(this.$store, {
         token,
         password: this.password,
       });
-      if (this.$route.path !== '/login') {
-        await this.$router.push('/login');
-      }
     }
   }
 }
