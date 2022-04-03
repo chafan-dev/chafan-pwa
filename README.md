@@ -106,3 +106,5 @@ yarn upgrade <package-name>
 [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Upgrade katex
+
+- `public/index.html`

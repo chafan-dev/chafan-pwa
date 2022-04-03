@@ -185,7 +185,10 @@ export const actions = {
         message = translateErrorMsgCN(payload.response.data.detail);
       }
       commitAddNotification(context, { content: message, color: 'error' });
-      if (payload.response && payload.response.status === 401) {
+      if (
+        payload.response &&
+        (payload.response.status === 401 || payload.response.status === 403)
+      ) {
         await dispatchLogOut(context);
       } else if (!isDev) {
         captureException(payload);
