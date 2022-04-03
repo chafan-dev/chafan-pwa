@@ -265,3 +265,11 @@
 .avatar-col {
   max-width: 180px !important;
 }
+
+// KaTeX stuff
+
+span {
+  .mord.overline {
+    all: inherit !important;
+  }
+}
