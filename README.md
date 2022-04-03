@@ -104,3 +104,5 @@ yarn upgrade <package-name>
 ## Contributing
 
 [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Upgrade katex
