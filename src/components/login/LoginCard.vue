@@ -211,7 +211,7 @@ export default class LoginCard extends CVue {
         password: this.password,
         hcaptcha_token: this.enableCaptcha && this.captchaToken ? this.captchaToken : undefined,
       });
-    } catch (err) {
+    } catch (err: any) {
       if (err.toString() === 'Error: Incorrect email or password') {
         commitAddNotification(this.$store, {
           content: '邮箱地址或密码不正确',

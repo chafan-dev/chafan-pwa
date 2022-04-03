@@ -286,7 +286,7 @@
                     "
                   >
                     <span class="font-weight-bold">标题改动：</span>
-                    <Diff :s1="suggestion.accepted_diff_base.title" :s2="suggestion.title" />
+                    <DiffView :s1="suggestion.accepted_diff_base.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
@@ -296,7 +296,7 @@
                     "
                   >
                     <span class="font-weight-bold">描述改动：</span>
-                    <Diff
+                    <DiffView
                       :s1="
                         suggestion.accepted_diff_base.desc
                           ? suggestion.accepted_diff_base.desc.rendered_text
@@ -309,7 +309,7 @@
                 <template v-else-if="suggestion.status !== 'accepted'">
                   <div v-if="submission.title !== suggestion.title && suggestion.title">
                     <span class="font-weight-bold">标题改动：</span>
-                    <Diff :s1="submission.title" :s2="suggestion.title" />
+                    <DiffView :s1="submission.title" :s2="suggestion.title" />
                   </div>
                   <div
                     v-if="
@@ -318,7 +318,7 @@
                     "
                   >
                     <span class="font-weight-bold">描述改动：</span>
-                    <Diff
+                    <DiffView
                       :s1="submission.desc ? submission.desc.rendered_text : ''"
                       :s2="suggestion.desc.rendered_text"
                     />
@@ -326,7 +326,7 @@
                   <div v-if="suggestion.topics">
                     <!-- FIXME: the topics of stored accepted diff base is not processed properly -->
                     <span class="font-weight-bold">话题改动：</span>
-                    <Diff
+                    <DiffView
                       v-if="suggestion.topics"
                       :s1="topicNames(submission.topics)"
                       :s2="topicNames(suggestion.topics)"
@@ -510,13 +510,13 @@ import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import Upvote from '@/components/Upvote.vue';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import Diff from '@/components/widgets/Diff.vue';
+import DiffView from '@/components/widgets/DiffView.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
 
 @Component({
   components: {
     TopicChip,
-    Diff,
+    DiffView,
     DeleteIcon,
     DotsIcon,
     Upvote,

@@ -536,7 +536,7 @@ export default class Moderation extends Vue {
         } else {
           throw new Error('Invalid sharing link');
         }
-      } catch (e) {
+      } catch (e: any) {
         commitAddNotification(this.$store, { color: 'error', content: e });
         return;
       }

@@ -61,7 +61,7 @@ export const actions = {
       } else {
         await dispatchLogOut(context);
       }
-    } catch (err) {
+    } catch (err: any) {
       await dispatchCheckApiError(context, err);
     }
   },
@@ -71,7 +71,7 @@ export const actions = {
       if (response.data) {
         commitSetUserProfile(context, response.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       await dispatchCheckApiError(context, error);
     }
   },
@@ -79,7 +79,7 @@ export const actions = {
     try {
       const sites = (await apiMe.getModeratedSites(context.state.token)).data;
       commitSetModeratedSites(context, sites);
-    } catch (error) {
+    } catch (error: any) {
       await dispatchCheckApiError(context, error);
     }
   },
@@ -99,7 +99,7 @@ export const actions = {
         content: '设置成功更新',
         color: 'success',
       });
-    } catch (error) {
+    } catch (error: any) {
       await dispatchCheckApiError(context, error);
     }
   },
@@ -155,7 +155,7 @@ export const actions = {
               commitSetModeratedSites(context, r.data);
             });
           }
-        } catch (error) {
+        } catch (error: any) {
           await dispatchCheckApiError(context, error);
         }
       } else {
@@ -269,7 +269,7 @@ export const actions = {
   ): Promise<T | undefined> {
     try {
       return await action();
-    } catch (err) {
+    } catch (err: any) {
       await dispatchCheckApiError(context, err);
     }
   },
@@ -291,7 +291,7 @@ export const actions = {
   ) {
     try {
       await fns.action();
-    } catch (err) {
+    } catch (err: any) {
       if (!(fns.errorFilter && fns.errorFilter(err))) {
         await dispatchCheckApiError(context, err);
       }
