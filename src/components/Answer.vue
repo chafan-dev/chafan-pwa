@@ -13,7 +13,9 @@
           <span v-show="!inAnswerQuestionFeedCard">
             <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
           </span>
-          {{ answerPreviewBody }}
+          <template v-if="answerPreview">
+            {{ answerPreview.body }}
+          </template>
           <span :class="theme.answer.expand.text.classes">展开全文</span>
         </div>
         <div v-if="answer" v-show="!preview">
@@ -130,7 +132,9 @@
                                 />
                                 <span class="text-caption">查看原文</span>
                               </div>
-                              <p style="overflow-wrap: anywhere">{{ answerPreviewBody }}</p>
+                              <p style="overflow-wrap: anywhere" v-if="answerPreview">
+                                {{ answerPreview.body }}
+                              </p>
                             </div>
                             <div>
                               <UserLink :showAvatar="true" :userPreview="answer.author" />
@@ -526,7 +530,6 @@ export default class Answer extends CVue {
   private bookmarkIntermediate = false;
   private unbookmarkIntermediate = false;
   private toggleHideAnswerIntermediate = false;
-  private answerPreviewBody: string = this.answerPreview.body;
   private currentUserIsAuthor = false;
   private expandClicked = false;
   private answerSuggestEditComment: string | null = null;
