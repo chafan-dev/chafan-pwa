@@ -3,7 +3,6 @@ import Router, { RouteConfig } from 'vue-router';
 
 import RouterComponent from './components/RouterComponent.vue';
 import { constants } from '@/common';
-import { isDev } from '@/utils';
 
 Vue.use(Router);
 
@@ -211,12 +210,10 @@ const routes: RouteConfig[] = [
   },
 ];
 
-if (isDev) {
-  routes.push({
-    path: '/showcase',
-    component: () => import(/* webpackChunkName: "Showcase" */ './views/Showcase.vue'),
-  });
-}
+routes.push({
+  path: '/showcase',
+  component: () => import(/* webpackChunkName: "Showcase" */ './views/Showcase.vue'),
+});
 
 routes.push(
   {
