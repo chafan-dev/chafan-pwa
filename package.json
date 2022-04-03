@@ -38,7 +38,7 @@
     "vue-jest": "^3.0.7",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.5.1",
-    "vuetify": "^2.5.x",
+    "vuetify": "^2.6.x",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
