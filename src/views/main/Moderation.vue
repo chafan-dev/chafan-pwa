@@ -379,12 +379,6 @@ export default class Moderation extends Vue {
   private loading = true;
   private moderatedSites: ISite[] | null = null;
   private categoryTopics: ITopic[] | null = null;
-  private webhookEventTypeItems = [
-    {
-      value: 'site_event',
-      text: '圈子事件',
-    },
-  ];
   private webhookCreate: IWebhookCreate = deepCopy(defaultWebhookCreate);
   /*
 {

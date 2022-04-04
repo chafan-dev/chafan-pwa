@@ -1,5 +1,6 @@
 <template>
   <div class="mb-3">
+    <DebugSpan>questionIdProp: {{ questionIdProp }}</DebugSpan>
     <template v-if="contentLoaded">
       <ChafanTiptap
         v-show="topLevelEditor === 'tiptap'"
@@ -268,14 +269,7 @@ export default class AnswerEditor extends CVue {
   private contentLoaded: boolean = false;
   private initialContent: string = '';
   private contentEditor: editor_T = 'wysiwyg';
-  private answerEditHandler: AnswerEditHandler = new AnswerEditHandler(
-    this,
-    this.answerId,
-    this.questionIdProp,
-    this.updatedAnswerCallback,
-    undefined,
-    this.invalidAnswerCallback
-  );
+  private answerEditHandler: AnswerEditHandler | null = null;
   private answerSuggestEditComment: string | null = null;
 
   private invalidAnswerCallback() {
@@ -314,6 +308,14 @@ export default class AnswerEditor extends CVue {
   }
 
   private mounted() {
+    this.answerEditHandler = new AnswerEditHandler(
+      this,
+      this.answerId,
+      this.questionIdProp,
+      this.updatedAnswerCallback,
+      undefined,
+      this.invalidAnswerCallback
+    );
     this.answerId = this.answerIdProp ? this.answerIdProp : null;
     const workingDraft = readWorkingDraft(this.$store);
     if (workingDraft && workingDraft.body) {
@@ -407,6 +409,9 @@ export default class AnswerEditor extends CVue {
   }
 
   private autoSaveEdit() {
+    if (!this.answerEditHandler) {
+      return;
+    }
     this.answerEditHandler.newEditHandler(
       {
         isAutosaved: true,
@@ -437,6 +442,9 @@ export default class AnswerEditor extends CVue {
 
   private submitEdit(isPublished: boolean) {
     this.savingIntermediate = true;
+    if (!this.answerEditHandler) {
+      return;
+    }
     this.answerEditHandler.newEditHandler(
       {
         isAutosaved: false,
