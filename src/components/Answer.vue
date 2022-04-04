@@ -911,13 +911,11 @@ export default class Answer extends CVue {
 
   private async submitReport() {
     this.submitReportIntermediate = true;
-    const r = (
-      await api.createReport(this.token, {
-        answer_uuid: this.answerPreview.uuid,
-        reason: this.reportReason,
-        reason_comment: this.reportReasonComment || undefined,
-      })
-    ).data;
+    await api.createReport(this.token, {
+      answer_uuid: this.answerPreview.uuid,
+      reason: this.reportReason,
+      reason_comment: this.reportReasonComment || undefined,
+    });
     commitAddNotification(this.$store, {
       color: 'success',
       content: '举报提交成功',
