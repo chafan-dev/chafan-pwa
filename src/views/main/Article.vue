@@ -216,7 +216,7 @@ import Viewer from '@/components/Viewer.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
-import { getArticleDraft, IArticleDraft } from '@/utils';
+import { getArticleDraft } from '@/utils';
 import Upvote from '@/components/Upvote.vue';
 import { AxiosError } from 'axios';
 
@@ -241,7 +241,6 @@ import { AxiosError } from 'axios';
 })
 export default class Article extends CVue {
   private article: IArticle | null = null;
-  private draft: IArticleDraft | null = null;
   private upvotes: IArticleUpvotes | null = null;
   private userBookmark: IUserArticleBookmark | null = null;
   private confirmDeleteDialog = false;
@@ -275,9 +274,6 @@ export default class Article extends CVue {
   private async load() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        await getArticleDraft(this.$dayjs, this.token, this.id).then((draft) => {
-          this.draft = draft;
-        });
         this.article = (await apiArticle.getArticle(this.token, this.id)).data;
         this.updateStateWithLoadedArticle(this.article);
         this.loading = false;
@@ -370,12 +366,14 @@ export default class Article extends CVue {
     }
     this.currentUserIsAuthor = this.userProfile?.uuid === article.author.uuid;
     if (this.currentUserIsAuthor) {
-      if (this.draft && this.article) {
-        // Override article title -> this is a server-side behavior
-        this.article.title = this.draft.title || '';
-        this.editButtonText = '编辑草稿';
-        this.showHasDraftBadge = true;
-      }
+      getArticleDraft(this.$dayjs, this.token, this.id).then((draft) => {
+        if (draft && this.article) {
+          // Override article title -> this is a server-side behavior
+          this.article.title = draft.title || '';
+          this.editButtonText = '编辑草稿';
+          this.showHasDraftBadge = true;
+        }
+      });
     }
 
     this.upvotes = {
