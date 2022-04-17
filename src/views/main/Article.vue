@@ -25,7 +25,7 @@
           </span>
           <span v-if="isDesktop" class="text-caption grey--text">
             发表于
-            {{ $dayjs.utc(article.updated_at).local().fromNow() }}
+            {{ fromNow(article.updated_at) }}
           </span>
         </div>
 
@@ -34,7 +34,7 @@
         </div>
         <div class="my-3">
           <v-chip v-if="article && !article.is_published" class="mb-1" color="warning" small
-            >此为初稿仅自己可见
+            >初稿预览
           </v-chip>
           <v-chip v-else-if="showHasDraftBadge" class="mb-1" color="info" small
             >编辑器中有未发表的草稿
@@ -216,7 +216,7 @@ import Viewer from '@/components/Viewer.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
-import { getArticleDraft } from '@/utils';
+import { getArticleDraft, IArticleDraft } from '@/utils';
 import Upvote from '@/components/Upvote.vue';
 import { AxiosError } from 'axios';
 
@@ -241,6 +241,7 @@ import { AxiosError } from 'axios';
 })
 export default class Article extends CVue {
   private article: IArticle | null = null;
+  private draft: IArticleDraft | null = null;
   private upvotes: IArticleUpvotes | null = null;
   private userBookmark: IUserArticleBookmark | null = null;
   private confirmDeleteDialog = false;
@@ -274,6 +275,9 @@ export default class Article extends CVue {
   private async load() {
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
+        await getArticleDraft(this.$dayjs, this.token, this.id).then((draft) => {
+          this.draft = draft;
+        });
         this.article = (await apiArticle.getArticle(this.token, this.id)).data;
         this.updateStateWithLoadedArticle(this.article);
         this.loading = false;
@@ -366,12 +370,12 @@ export default class Article extends CVue {
     }
     this.currentUserIsAuthor = this.userProfile?.uuid === article.author.uuid;
     if (this.currentUserIsAuthor) {
-      getArticleDraft(this.$dayjs, this.token, article.uuid).then((draft) => {
-        if (draft) {
-          this.editButtonText = '编辑草稿';
-          this.showHasDraftBadge = true;
-        }
-      });
+      if (this.draft && this.article) {
+        // Override article title -> this is a server-side behavior
+        this.article.title = this.draft.title || '';
+        this.editButtonText = '编辑草稿';
+        this.showHasDraftBadge = true;
+      }
     }
 
     this.upvotes = {

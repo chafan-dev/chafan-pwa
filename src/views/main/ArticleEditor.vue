@@ -6,6 +6,14 @@
           <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />
           </v-overlay>
+          <div class="d-flex justify-end">
+            <v-btn class="mr-2" depressed small :href="`/article-columns/${this.articleColumnId}`">
+              返回专栏
+            </v-btn>
+            <v-btn class="mr-2" depressed small :href="`/articles/${this.articleId}`">
+              返回文章
+            </v-btn>
+          </div>
           <!-- Editor of title -->
           <v-textarea
             v-model="articleTitle"
@@ -61,7 +69,6 @@
                 保存草稿
               </v-btn>
             </span>
-            <v-btn class="ml-2" depressed small @click="cancelHandler">取消</v-btn>
             <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
             <v-progress-circular
               v-if="savingIntermediate"
@@ -277,6 +284,7 @@ export default class ArticleEditor extends CVue {
       this.archivesCount = article.archives_count;
       const articleDraft = await getArticleDraft(this.$dayjs, this.token, article.uuid);
       if (articleDraft) {
+        logDebug('载入最近的草稿');
         commitAddNotification(this.$store, {
           content: '载入最近的草稿',
           color: 'success',
@@ -394,7 +402,7 @@ export default class ArticleEditor extends CVue {
         const articleId = this.articleId ? this.articleId : payload.articleId;
         if (articleId) {
           this.newArticleId = articleId;
-          const response = await apiArticle.updateArticle(this.$store.state.main.token, articleId, {
+          const response = await apiArticle.updateArticle(this.token, articleId, {
             updated_title: payload.edit.title,
             visibility: payload.edit.visibility,
             is_draft: payload.edit.is_draft,
@@ -411,12 +419,12 @@ export default class ArticleEditor extends CVue {
               content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
               color: 'success',
             });
-            await this.$router.push(`/articles/${articleId}`);
           }
         }
       }
       this.handlingNewEdit = false;
     });
+    this.savingIntermediate = false;
   }
 
   private getEditorMode(): editor_T {
@@ -585,14 +593,6 @@ export default class ArticleEditor extends CVue {
     });
   }
 
-  private cancelHandler() {
-    if (this.articleId) {
-      this.$router.push(`/articles/${this.articleId}`);
-    } else {
-      this.$router.push(`/article-columns/${this.articleColumnId}`);
-    }
-  }
-
   private async deleteDraft() {
     this.showDeleteDraftDialog = false;
     if (this.articleId) {
@@ -602,7 +602,7 @@ export default class ArticleEditor extends CVue {
         content: '草稿已删除',
         color: 'success',
       });
-      this.cancelHandler();
+      await this.$router.push(`/articles/${this.articleId}`);
     } else {
       commitAddNotification(this.$store, {
         content: '无法删除草稿',
