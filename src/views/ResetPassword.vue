@@ -75,7 +75,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { appName } from '@/env';
-import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchResetPassword } from '@/store/main/actions';
 import { api } from '@/api';
 import DebugSpan from '@/components/base/DebugSpan.vue';
