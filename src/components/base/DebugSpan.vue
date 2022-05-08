@@ -1,6 +1,6 @@
 <template>
   <span style="background: #ffffa2">
-    <template v-if="isDev">
+    <template v-if="isDev || $route.query.debug_mode">
       <slot />
     </template>
   </span>

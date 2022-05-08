@@ -110,6 +110,7 @@ export default class UserProfileEdit extends Vue {
     }
     if (!token || !isTokenValid) {
       this.tokenIsValid = false;
+      return null;
     } else {
       return token;
     }
@@ -118,10 +119,13 @@ export default class UserProfileEdit extends Vue {
   public async submit() {
     const token = await this.checkToken();
     if (token) {
-      await dispatchResetPassword(this.$store, {
+      const resetOk = await dispatchResetPassword(this.$store, {
         token,
         password: this.password,
       });
+      if (resetOk) {
+        await this.$router.push('/login');
+      }
     }
   }
 }

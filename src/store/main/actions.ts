@@ -258,6 +258,7 @@ export const actions = {
         color: 'success',
       });
       await dispatchLogOut(context);
+      return true;
     } catch (error) {
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, {
@@ -265,6 +266,7 @@ export const actions = {
         content: '密码重置失败',
       });
     }
+    return false;
   },
   async apiErrorCaptured<T>(
     context: MainContext,
