@@ -235,7 +235,7 @@ export const api = {
     return axios.post<IReport>(`${apiUrl}/reports/`, payload, authHeaders(token));
   },
   async checkTokenValidity(token: string) {
-    return axios.post<IGenericResponse>(`${apiUrl}/check-token-validity`, {
+    return axios.post<IGenericResponse>(`${apiUrl}/check-token-validity/`, {
       token,
     });
   },
