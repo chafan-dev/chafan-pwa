@@ -73,12 +73,12 @@ export default class ExploreSitesGrid extends Vue {
       }
       if (this.blocks2Weight >= this.blocks1Weight) {
         this.blocks1.push({
-          topicName: '其他',
+          topicName: '未分类',
           sites: siteMaps.sites_without_topics,
         });
       } else {
         this.blocks2.push({
-          topicName: '其他',
+          topicName: '未分类',
           sites: siteMaps.sites_without_topics,
         });
       }
