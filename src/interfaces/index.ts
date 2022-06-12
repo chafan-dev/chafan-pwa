@@ -11,6 +11,13 @@ export interface IRichText {
   editor: editor_T;
 }
 
+export interface INewCommentInternal {
+  body: string;
+  body_text?: string;
+  editor: editor_T;
+  mentioned: string[];
+}
+
 export interface IUserProfile {
   id: number;
   uuid: string;
