@@ -43,7 +43,7 @@ import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import Comment from '@/components/Comment.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
-import { IComment } from '@/interfaces';
+import { IComment, INewCommentInternal } from '@/interfaces';
 import { rankComments } from '@/utils';
 import { CVue } from '@/common';
 
@@ -66,7 +66,7 @@ export default class CommentBlock extends CVue {
   }
 
   @Emit('submit-new-comment')
-  public submitNewComment() {
+  public submitNewComment(): INewCommentInternal | undefined {
     const editor = this.$refs.simpleEditor as SimpleEditor;
     const content = editor.getContent();
     if (!content || content.length === 0) {

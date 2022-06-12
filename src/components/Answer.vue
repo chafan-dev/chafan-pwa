@@ -440,6 +440,7 @@ import {
   IAnswerPreview,
   IAnswerSuggestEdit,
   IAnswerUpvotes,
+  INewCommentInternal,
   IRichEditorState,
   IRichText,
   ISevereReportReason,
@@ -611,7 +612,19 @@ export default class Answer extends CVue {
     });
   }
 
-  private async submitNewAnswerCommentBody({ body, body_text, editor, mentioned }) {
+  private async submitNewAnswerCommentBody(c: INewCommentInternal | undefined) {
+    if (!c) {
+      return;
+    }
+    await this.submitNewAnswerCommentBodyInternal(c);
+  }
+
+  private async submitNewAnswerCommentBodyInternal({
+    body,
+    body_text,
+    editor,
+    mentioned,
+  }: INewCommentInternal) {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.answer) {
         this.commentSubmitIntermediate = true;
