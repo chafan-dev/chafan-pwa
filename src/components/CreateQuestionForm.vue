@@ -2,7 +2,14 @@
   <v-card outlined>
     <v-card-title v-if="showTitle" class="primary--text headline"> 提问 </v-card-title>
     <v-card-text>
-      <SiteSearch v-if="site === undefined" v-model="selectedSite" label="圈子（默认：大广场）" />
+      <debug-span>SiteSearch loading: {{ siteSearchLoading }}</debug-span>
+      <SiteSearch
+        v-if="site === undefined"
+        v-model="selectedSite"
+        :on-start="onSearchStart"
+        :on-complete="onSearchComplete"
+        label="圈子（默认：大广场）"
+      />
       <v-textarea
         class="mt-4"
         v-model="newQuestionTitle"
@@ -19,9 +26,15 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn :disabled="intermediate" color="primary" depressed small @click="postNewQuestion">
+      <v-btn
+        :disabled="intermediate || siteSearchLoading"
+        color="primary"
+        depressed
+        small
+        @click="postNewQuestion"
+      >
         提交新问题
-        <v-progress-circular v-if="intermediate" indeterminate size="20" />
+        <v-progress-circular v-if="intermediate || siteSearchLoading" indeterminate size="20" />
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -38,9 +51,10 @@ import { apiQuestion } from '@/api/question';
 import { CVue } from '@/common';
 import SiteSearch from '@/components/SiteSearch.vue';
 import { defaultSiteUuid } from '@/env';
+import DebugSpan from '@/components/base/DebugSpan.vue';
 
 @Component({
-  components: { SiteSearch, UserLink, Invite },
+  components: { DebugSpan, SiteSearch, UserLink, Invite },
 })
 export default class CreateQuestionForm extends CVue {
   @Prop() private readonly site: ISite | undefined;
@@ -49,6 +63,14 @@ export default class CreateQuestionForm extends CVue {
   private newQuestionTitle: string = '';
   private intermediate = false;
   private selectedSite: ISite | null = null;
+  private siteSearchLoading = false;
+
+  private onSearchStart() {
+    this.siteSearchLoading = true;
+  }
+  private onSearchComplete() {
+    this.siteSearchLoading = false;
+  }
 
   private async postNewQuestion() {
     if (!this.token) {
