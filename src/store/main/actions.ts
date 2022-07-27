@@ -172,28 +172,37 @@ export const actions = {
     await dispatchLogOut(context);
     commitAddNotification(context, { content: '已登出', color: 'success' });
   },
-  async actionCheckApiError(context: MainContext, payload: AxiosError) {
-    if (payload.toString() === 'Error: Network Error') {
-      captureMessage(`actionCheckApiError: ${payload}`);
+  async actionCheckApiError(context: MainContext, axiosError: AxiosError) {
+    if (axiosError.toString() === 'Error: Network Error') {
+      captureMessage(
+        `actionCheckApiError: ${axiosError.toJSON()}\nRequest:\n${
+          axiosError.request
+        }\nResponse.data:${axiosError.response?.data}`
+      );
       commitAddNotification(context, {
         color: 'warning',
         content: '无法连接到服务器',
       });
     } else {
-      let message = payload.message;
-      if (payload.response && payload.response.data && payload.response.data.detail) {
-        message = translateErrorMsgCN(payload.response.data.detail);
+      let message = axiosError.message;
+      if (axiosError.response && axiosError.response.data && axiosError.response.data.detail) {
+        message = translateErrorMsgCN(axiosError.response.data.detail);
       }
       commitAddNotification(context, { content: message, color: 'error' });
       if (
-        payload.response &&
-        (payload.response.status === 401 || payload.response.status === 403)
+        axiosError.response &&
+        (axiosError.response.status === 401 || axiosError.response.status === 403)
       ) {
         await dispatchLogOut(context);
       } else if (!isDev) {
-        captureException(payload);
+        captureMessage(
+          `actionCheckApiError: ${axiosError.toJSON()}\nRequest:\n${
+            axiosError.request
+          }\nResponse.data:${axiosError.response?.data}`
+        );
+        captureException(axiosError);
       } else {
-        throw payload;
+        throw axiosError;
       }
     }
   },
