@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@hcaptcha/vue-hcaptcha": "^0.3.0",
-    "@sentry/tracing": "^6.17.9",
-    "@sentry/vue": "^6.17.9",
+    "@sentry/tracing": "^7.8.0",
+    "@sentry/vue": "^7.8.0",
     "axios": "^0.21.2",
     "chafan-vue-editors": "^0.9.4",
     "core-js": "^3.8.3",
