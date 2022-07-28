@@ -184,7 +184,6 @@ export const actions = {
   },
   async actionCheckApiError(context: MainContext, axiosError: AxiosError) {
     if (axiosError.toString() === 'Error: Network Error') {
-      captureMessage(axiosErrorString('actionCheckApiError: Network Error', axiosError));
       commitAddNotification(context, {
         color: 'warning',
         content: '无法连接到服务器',
