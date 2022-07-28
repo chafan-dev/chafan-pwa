@@ -30,6 +30,16 @@ export interface ILoginPayload {
   hcaptcha_token?: string;
 }
 
+function axiosErrorString(errorId: string, axiosError: AxiosError) {
+  let s = `errorId:${errorId}\n${axiosError}`;
+  const response = axiosError.response;
+  if (response) {
+    s += `\nresponse.config${JSON.stringify(response.config)}`;
+    s += `\nresponse.data: ${JSON.stringify(response.data)}`;
+  }
+  return s;
+}
+
 export const actions = {
   async actionLogIn(context: MainContext, payload: ILoginPayload) {
     try {
@@ -174,11 +184,7 @@ export const actions = {
   },
   async actionCheckApiError(context: MainContext, axiosError: AxiosError) {
     if (axiosError.toString() === 'Error: Network Error') {
-      captureMessage(
-        `actionCheckApiError: ${axiosError.toJSON()}\nRequest:\n${
-          axiosError.request
-        }\nResponse.data:${axiosError.response?.data}`
-      );
+      captureMessage(axiosErrorString('actionCheckApiError: Network Error', axiosError));
       commitAddNotification(context, {
         color: 'warning',
         content: '无法连接到服务器',
@@ -193,15 +199,17 @@ export const actions = {
         axiosError.response &&
         (axiosError.response.status === 401 || axiosError.response.status === 403)
       ) {
+        if (isDev) {
+          console.log(
+            axiosErrorString('actionCheckApiError: Unauthorized, dispatchLogOut', axiosError)
+          );
+        }
         await dispatchLogOut(context);
       } else if (!isDev) {
-        captureMessage(
-          `actionCheckApiError: ${axiosError.toJSON()}\nRequest:\n${
-            axiosError.request
-          }\nResponse.data:${axiosError.response?.data}`
-        );
+        captureMessage(axiosErrorString('actionCheckApiError: Other error', axiosError));
         captureException(axiosError);
       } else {
+        console.log(axiosErrorString('actionCheckApiError: Other error', axiosError));
         throw axiosError;
       }
     }
