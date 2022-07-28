@@ -39,6 +39,12 @@ export const apiMe = {
     data.zhihu_url = addSchemeToUrl(data.zhihu_url);
     data.homepage_url = addSchemeToUrl(data.homepage_url);
     data.linkedin_url = addSchemeToUrl(data.linkedin_url);
+    // Empty string should not be sent as part of update data
+    for (const key in data) {
+      if (data[key] === '') {
+        delete data[key];
+      }
+    }
     return axios.put<IUserProfile>(`${apiUrl}/me`, data, authHeaders(token));
   },
   async updatePrimaryEmail(token: string, data: IUserUpdatePrimaryEmail) {
