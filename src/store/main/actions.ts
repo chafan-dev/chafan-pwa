@@ -196,7 +196,7 @@ export const actions = {
       commitAddNotification(context, { content: message, color: 'error' });
       if (
         axiosError.response &&
-        (axiosError.response.status === 401 || axiosError.response.status === 403)
+        (axiosError.response.status === 401 || axiosError.response.status === 403) // If unauthorized or forbidden
       ) {
         if (isDev) {
           console.log(

@@ -97,6 +97,7 @@ if (sentryDSN) {
     tracingOptions: {
       trackComponents: true,
     },
+    maxValueLength: 2500,
   });
 }
 
