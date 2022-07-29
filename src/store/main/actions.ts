@@ -34,8 +34,8 @@ function axiosErrorString(errorId: string, axiosError: AxiosError) {
   let s = `errorId:${errorId}\n${axiosError}`;
   const response = axiosError.response;
   if (response) {
-    s += `\nresponse.config${JSON.stringify(response.config)}`;
     s += `\nresponse.data: ${JSON.stringify(response.data)}`;
+    s += `\nresponse.config${JSON.stringify(response.config)}`;
   }
   return s;
 }
