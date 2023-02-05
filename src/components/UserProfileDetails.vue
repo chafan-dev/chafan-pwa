@@ -182,7 +182,13 @@
 </template>
 
 <script lang="ts">
-import { ISite, IUserEducationExperience, IUserPublic, IUserWorkExperience } from '@/interfaces';
+import {
+  ISite,
+  IUserEducationExperience,
+  IUserPublic,
+  IUserWorkExperience,
+  IUserSiteProfile,
+} from '@/interfaces';
 import { Component, Prop } from 'vue-property-decorator';
 import SiteBtn from '@/components/SiteBtn.vue';
 import TwitterIcon from '@/components/icons/TwitterIcon.vue';
@@ -225,7 +231,9 @@ export default class UserProfileDetails extends CVue {
       this.workExps = this.userPublic.work_exps
         ? this.userPublic.work_exps
         : (await apiPeople.getUserWorkExperiences(this.token, this.userPublic.uuid)).data;
-      this.sites = await Promise.all(this.userPublic.profiles.map((p) => p.site));
+      let userSiteProfiles = (await apiPeople.getUserSiteProfiles(this.token, this.userPublic.uuid))
+        .data;
+      this.sites = await Promise.all(userSiteProfiles.map((p) => p.site));
     }
   }
 

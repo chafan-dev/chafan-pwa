@@ -58,7 +58,4 @@ export const api2 = {
   async getFeedbacks(token: string) {
     return axios.get<IFeedback[]>(`${apiUrl}/feedbacks/`, authHeadersFormData(token));
   },
-  async getDevDynoState() {
-    return axios.get<IDynoState>(`${lambdaUrlBase}/chafan-dyno-check`);
-  },
 };
