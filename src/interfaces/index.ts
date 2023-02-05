@@ -584,7 +584,6 @@ export interface IUserTopicSubscription {
 export interface IUserPublic extends IUserPreview {
   gif_avatar_url?: string;
   about_content?: IRichText;
-  profiles: IUserSiteProfile[];
   profile_view_times: number;
   subscribed_topics: ITopic[];
   github_username?: string;

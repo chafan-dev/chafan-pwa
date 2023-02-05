@@ -8,6 +8,7 @@ import {
   IUserEducationExperience,
   IUserPreview,
   IUserPublic,
+  IUserSiteProfile,
   IUserWorkExperience,
 } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
@@ -15,6 +16,13 @@ import { authHeaders, authHeadersWithParams } from '@/utils';
 export const apiPeople = {
   async getUserPublic(token: string, handle: string) {
     return axios.get<IUserPublic>(`${apiUrl}/people/${handle}`, authHeaders(token));
+  },
+  async getUserSiteProfiles(token: string, userUUID: string) {
+    const params = new URLSearchParams();
+    return axios.get<IUserSiteProfile[]>(
+      `${apiUrl}/people/${userUUID}/site-profiles/`,
+      authHeadersWithParams(token, params)
+    );
   },
   async getUserFollowers(token: string, userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
