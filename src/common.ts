@@ -111,8 +111,7 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement | 
 
 export const getVditorUploadConfig = (token: string) => {
   return {
-    max: 5 * 1024 * 1024,
-    // TODO: token for CORS validation
+    max: 1024 * 1024,
     accept: 'image/png, image/jpeg, image/bmp, image/gif',
     fieldName: 'files',
     url: `${apiUrl}/upload/vditor/`,
