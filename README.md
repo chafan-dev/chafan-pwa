@@ -44,7 +44,7 @@ npm install -g serve
 Build and serve：
 
 ```bash
-VUE_APP_ENV=test yarn run build
+bash .build_local_dev.sh
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
 ```
 
