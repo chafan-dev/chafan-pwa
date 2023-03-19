@@ -75,7 +75,7 @@ module.exports = {
   pwa: {
     workboxPluginMode: 'GenerateSW',
     workboxOptions: {
-      exclude: [/\.map$/, /_redirects/],
+      exclude: [/\.map$/, /_redirects/, /_headers/],
       skipWaiting: true,
     },
   },
