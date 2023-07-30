@@ -399,16 +399,13 @@ export default class Moderation extends Vue {
   private async mounted() {
     this.moderatedSites = (await apiMe.getModeratedSites(this.token)).data;
     if (this.moderatedSites) {
-      const siteApps = await Promise.all(
-        this.moderatedSites.map(async (site: ISite) => {
-          return {
-            site,
-            applications: (await api.getPendingApplications(this.token, site.uuid)).data,
-          };
-        })
-      );
-      for (const siteAppsEntry of siteApps) {
-        this.allApplications.set(siteAppsEntry.site.uuid, siteAppsEntry.applications);
+      const allApplications = (await api.getPendingApplications(this.token)).data;
+      for (const application of allApplications) {
+        const siteId = application.applied_site.uuid;
+        if (!this.allApplications.has(siteId)) {
+          this.allApplications.set(siteId, []);
+        }
+        this.allApplications.get(siteId)!.push(application);
       }
     }
     if (this.$route.query.siteUUID) {
