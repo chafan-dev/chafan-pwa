@@ -187,11 +187,8 @@ export const api = {
   async getArticleDrafts(token: string) {
     return axios.get<IArticlePreview[]>(`${apiUrl}/drafts/articles/`, authHeaders(token));
   },
-  async getPendingApplications(token: string, siteUUID: string) {
-    return axios.get<IApplication[]>(
-      `${apiUrl}/applications/pending/${siteUUID}/`,
-      authHeaders(token)
-    );
+  async getPendingApplications(token: string) {
+    return axios.get<IApplication[]>(`${apiUrl}/applications/pending/`, authHeaders(token));
   },
   async approveApplication(token: string, applicationId: number) {
     return axios.put<IApplication>(
