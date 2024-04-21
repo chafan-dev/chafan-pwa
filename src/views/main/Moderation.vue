@@ -554,11 +554,13 @@ export default class Moderation extends Vue {
   }
 
   private async disableWebhook(webhook: IWebhook) {
-    webhook.enabled = ((
-      await apiWebhook.update(this.token, webhook.id, {
-        enabled: false,
-      })
-    ).data as IWebhook).enabled;
+    webhook.enabled = (
+      (
+        await apiWebhook.update(this.token, webhook.id, {
+          enabled: false,
+        })
+      ).data as IWebhook
+    ).enabled;
   }
 
   private resetNewWebhook() {
