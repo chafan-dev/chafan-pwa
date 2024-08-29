@@ -84,7 +84,7 @@
     "vue-cli-plugin-vuetify": "~2.4.8",
     "vue-template-compiler": "^2.5.22",
     "vuetify-loader": "^1.7.2",
-    "webpack": "^4.46.0"
+    "webpack": "^5.94.0"
   },
   "postcss": {
     "plugins": {
