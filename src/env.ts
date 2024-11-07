@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 
 export const env = process.env.VUE_APP_ENV;
 
+/** TODO: Fix this logic in future. During dev we can also use https. 2024-Oct */
 let envApi = '';
 let envWs = '';
 
