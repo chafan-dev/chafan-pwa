@@ -4,6 +4,7 @@ node_modules
 /dist
 
 # local env files
+.local_env
 .env.local
 .env.*.local
 .start_local_*
