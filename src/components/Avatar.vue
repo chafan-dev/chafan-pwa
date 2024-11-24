@@ -20,7 +20,7 @@ export default class Avatar extends CVue {
 
   get url() {
     if (this.isDev && !this.isProdDev) {
-      return 'https://assets.cha.fan/fc1ea5eef9dd0519b5076094deae5d3e7968bea2c9009d116f1ca51cf0cc94a1';
+      return 'https://cdn.jsdelivr.net/npm/programming-languages-logos/src/c/c.png';
     } else if (this.userPreview) {
       return this.userPreview.avatar_url ? this.userPreview.avatar_url : DEFAULT_URL;
     } else if (this.avatarUrl) {

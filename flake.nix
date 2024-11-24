@@ -15,6 +15,7 @@
             buildInputs = [
             pkgs.python312
             pkgs.yarn
+            pkgs.nodejs_20
             pkgs.python312Packages.distutils
 
 
