@@ -5,13 +5,13 @@
       >，
       <span><b>唯一域名</b>：{{ site_creation.subdomain }}</span>
     </div>
-    <div v-if="topic"><b>类别</b>：<TopicChip :topic="topic" /></div>
     <div>
       <b>圈子类型</b>：
       <span v-if="site_creation.permission_type === 'public'">公开</span>
       <span v-if="site_creation.permission_type === 'private'">私密</span>
     </div>
-    <div v-if="site_creation.description"><b>描述</b>：{{ site_creation.description }}</div>
+    <!-- I should set this to necessary manually -->
+    <div v-if="site_creation.description"><b>描述*</b>：{{ site_creation.description }}</div>
     <div v-if="userProfile.is_superuser && !existingSite && !intermediate" class="mt-1">
       <v-btn depressed small @click="createSite">
         创建圈子

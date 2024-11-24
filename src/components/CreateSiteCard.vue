@@ -16,13 +16,6 @@
               <span class="error--text">{{ errors[0] }}</span>
             </ValidationProvider>
             <v-select
-              v-model="siteCreate.category_topic_uuid"
-              :items="categoryTopics"
-              item-text="name"
-              item-value="uuid"
-              label="类别*"
-            />
-            <v-select
               v-model="siteCreate.permission_type"
               :items="permissionTypeItems"
               item-text="text"
@@ -30,15 +23,17 @@
               label="圈子类型*"
             />
             <div v-if="siteCreate.permission_type === 'public'" class="text-caption grey--text">
-              提示：「公开」类型一般适合话题型的圈子，内容对所有人可见，注册用户可以参与讨论，但是不能做公共编辑等操作。申请加入可以附加条件。
+              提示：内容对所有人可见
             </div>
             <div
               v-else-if="siteCreate.permission_type === 'private'"
               class="text-caption grey--text"
             >
-              提示：「私密」类型一般适合有确定的人群范围的圈子，内容仅对成员可见。申请加入可以附加条件。
+              提示：Deprecated
             </div>
-            <v-textarea v-model="siteCreate.description" hide-details label="描述" />
+
+                <!-- TODO add rule to set it -->
+            <v-textarea v-model="siteCreate.description" hide-details label="描述*" />
           </v-form>
           <v-skeleton-loader type="list-item-three-line" v-else />
         </template>
