@@ -24,8 +24,8 @@ export const wsUrl = envWs + apiVersionSuffix;
 export const appName = process.env.VUE_APP_NAME;
 export const sentryDSN = process.env.VUE_APP_SENTRY_DSN;
 export const adminUUID = process.env.VUE_APP_ADMIN_UUID;
-export const hCaptchaSiteKey = process.env.VUE_APP_HCAPTCHA_SITEKEY;
-export const enableCaptcha = process.env.VUE_APP_ENABLE_CAPTCHA === 'true';
+//export const enableCaptcha = process.env.VUE_APP_ENABLE_CAPTCHA === 'true';
+export const enableCaptcha = false; // Turn off front end rate control - 2024 Dec 06
 export const lambdaUrlBase = process.env.VUE_APP_LAMBDA;
 
 export const defaultSiteUuid = '377cjuUDLMMdpH7dWutU';

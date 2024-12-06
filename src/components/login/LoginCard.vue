@@ -60,10 +60,6 @@
                     <span class="error--text">{{ errors[0] }}</span>
                   </ValidationProvider>
 
-                  <div v-if="enableCaptcha" class="text-center">
-                    <vue-hcaptcha :sitekey="hCaptchaSiteKey" @verify="verifiedCaptchaToken" />
-                  </div>
-
                   <v-sheet class="mb-2">
                     <div v-if="loginError">
                       <v-alert :value="loginError" transition="fade-transition" type="error">
@@ -143,7 +139,7 @@ import EmailIcon from '@/components/icons/EmailIcon.vue';
 import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
 import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
-import { appName, enableCaptcha, hCaptchaSiteKey } from '@/env';
+import { appName, enableCaptcha } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchLogIn } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
@@ -153,7 +149,6 @@ import LockOutline from '@/components/icons/LockOutlineIcon.vue';
 import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
 import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
-import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
 import { CVue } from '@/common';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
@@ -173,7 +168,6 @@ import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
     JoinChafanIcon,
     EmailIcon,
     CellphoneIcon,
-    VueHcaptcha,
   },
 })
 export default class LoginCard extends CVue {
@@ -188,10 +182,6 @@ export default class LoginCard extends CVue {
 
   get enableCaptcha() {
     return enableCaptcha;
-  }
-
-  get hCaptchaSiteKey() {
-    return hCaptchaSiteKey;
   }
 
   private get loginError() {
@@ -209,7 +199,7 @@ export default class LoginCard extends CVue {
       await dispatchLogIn(this.$store, {
         username: this.email,
         password: this.password,
-        hcaptcha_token: this.enableCaptcha && this.captchaToken ? this.captchaToken : undefined,
+        hcaptcha_token: undefined,
       });
     } catch (err: any) {
       if (err.toString() === 'Error: Incorrect email or password') {

@@ -10,7 +10,6 @@
     "build:dev": "vue-cli-service build --mode development"
   },
   "dependencies": {
-    "@hcaptcha/vue-hcaptcha": "^0.3.0",
     "@sentry/tracing": "^7.8.0",
     "@sentry/vue": "^7.8.0",
     "axios": "^0.21.2",
