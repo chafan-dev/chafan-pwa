@@ -28,3 +28,6 @@ pagekite.py
 
 # ESLint cache file
 .eslintcache
+
+yarn.lock
+

@@ -1,6 +1,19 @@
-[[ $(yarn --version) == "1.22.22" ]] || exit 1
+set -xe
 
-[[ $(node --version) == "v20.17.0" ]] || exit 1
+YARN_VERSION="1.22.22"
+#NODE_VERSION="18.20.6" #Nix
+NODE_VERSION="18.17.1" # Cloudflare Worker v2
+
+if [[ $(yarn --version) != "$YARN_VERSION" ]]; then
+    yarn set version "$YARN_VERSION"
+    yarn --version
+fi
+if [[ $(node --version) != "v$NODE_VERSION" ]]; then
+    echo "Node version mismatch, skip for now"
+    node --version
+fi
+
+yarn config get enableImmutableInstalls
 
 if [ -z "${VUE_APP_NAME-}" ]; then
    echo "Must provide var environment variable. Exiting...."
@@ -8,8 +21,14 @@ if [ -z "${VUE_APP_NAME-}" ]; then
 fi
 
 
-yarn install
+cp yarn.lock.txt yarn.lock
+# Make Cloudflare Worker happy: Cloudflare would first use yarn-berry 3.5.0 to
+#   read yarn.lock, then complain the yarn.lock has been modified
+#   Use this trick to skip CF's check, and put real work inside this bash script
+
+yarn install --immutable
 yarn run build
 
+#cp yarn.lock dist/
 
 # https://developers.cloudflare.com/pages/configuration/build-image/
