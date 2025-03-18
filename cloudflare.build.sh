@@ -13,20 +13,33 @@ if [[ $(node --version) != "v$NODE_VERSION" ]]; then
     node --version
 fi
 
-yarn config get enableImmutableInstalls
+
+export VUE_APP_CDN_DOMAIN=cdn.jsdelivr.net
+export VUE_APP_HOST=cha.fan
 
 if [ -z "${VUE_APP_NAME-}" ]; then
    echo "Must provide var environment variable. Exiting...."
    exit 1
 fi
+if [ -z "${VUE_APP_API-}" ]; then
+   echo "Must provide var environment variable. Exiting...."
+   exit 1
+fi
+if [ -z "${VUE_APP_ENV-}" ]; then
+   echo "Must provide var environment variable. Exiting...."
+   exit 1
+fi
 
 
+rm -f yarn.lock
 cp yarn.lock.txt yarn.lock
 # Make Cloudflare Worker happy: Cloudflare would first use yarn-berry 3.5.0 to
 #   read yarn.lock, then complain the yarn.lock has been modified
 #   Use this trick to skip CF's check, and put real work inside this bash script
 
-yarn install --immutable
+yarn config get enableImmutableInstalls
+#yarn install --immutable
+yarn install --frozen-lockfile
 yarn run build
 
 #cp yarn.lock dist/

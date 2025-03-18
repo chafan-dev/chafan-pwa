@@ -88,12 +88,6 @@
           >Discord 闲聊群</a
         >
       </div>
-      <div>
-        <a class="text-decoration-none"
-           href="javascript:window.open('https://web.archive.org/web/*/' + window.location.href);void(0);"
-          >页面历史 (Web Archive)</a
-        >
-      </div>
       <div v-if="buildInfo" class="caption grey--text">
         <pre style="cursor: pointer" @click="expandDebugInfo = !expandDebugInfo">
 v{{ buildInfo.commitHashShort }}</pre

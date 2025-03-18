@@ -187,6 +187,10 @@
                             收藏（{{ userBookmark.bookmarkers_count }}）
                           </v-list-item>
                         </template>
+                        <v-list-item dense @click="webArchiveRequest">
+                          <BookshelfIcon class="mr-1" />
+                          Web Archive
+                        </v-list-item>
                         <v-list-item dense @click="reportDialog = true">
                           <FlagIcon class="mr-1" />
                           举报
@@ -480,11 +484,13 @@ import EditIcon from '@/components/icons/EditIcon.vue';
 import DiffView from '@/components/widgets/DiffView.vue';
 import FlagIcon from '@/components/icons/FlagIcon.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import BookshelfIcon from '@/components/icons/BookshelfIcon.vue';
 
 @Component({
   components: {
     CloseIcon,
     FlagIcon,
+    BookshelfIcon,
     DiffView,
     EditIcon,
     DotsIcon,
@@ -590,6 +596,10 @@ export default class Answer extends CVue {
         this.upvotes = (await apiAnswer.cancelUpvoteAnswer(this.token, this.answer.uuid)).data;
       }
     });
+  }
+
+  private async webArchiveRequest() {
+    window.open('https://web.archive.org/web/*/' + window.location.href);
   }
 
   private async bookmark() {
