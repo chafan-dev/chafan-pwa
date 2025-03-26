@@ -11,7 +11,6 @@
         />
         <v-skeleton-loader v-else type="card" />
 
-        <div v-if="loggedIn">
           <v-tabs v-model="currentTabItem" :fixed-tabs="isDesktop" show-arrows>
             <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
               {{ item.text }}
@@ -31,7 +30,6 @@
 
             <v-tab-item class="pt-2" value="answers">
               <DynamicItemList
-                v-if="userPublic"
                 v-slot="{ item }"
                 :loadItems="loadAnswers"
                 emptyItemsText="暂无"
@@ -43,7 +41,6 @@
 
             <v-tab-item class="pt-2" value="questions">
               <DynamicItemList
-                v-if="userPublic"
                 v-slot="{ item }"
                 :loadItems="loadQuestions"
                 emptyItemsText="暂无"
@@ -55,7 +52,6 @@
 
             <v-tab-item class="pt-2" value="articles">
               <DynamicItemList
-                v-if="userPublic"
                 v-slot="{ item }"
                 :loadItems="loadArticles"
                 emptyItemsText="暂无"
@@ -67,7 +63,6 @@
 
             <v-tab-item class="pt-2" value="submissions">
               <DynamicItemList
-                v-if="userPublic"
                 v-slot="{ item }"
                 :loadItems="loadSubmissions"
                 emptyItemsText="暂无"
@@ -77,13 +72,6 @@
               </DynamicItemList>
             </v-tab-item>
           </v-tabs>
-        </div>
-        <div v-else class="ml-7 mr-7">
-          <div class="text-center">
-            <RegisteredUserOnlyIcon class="mr-2" />
-            <span>登录后查看更多</span>
-          </div>
-        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -92,6 +80,8 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 import { apiPeople } from '@/api/people';
+import  { info }  from '@/logging'
+
 
 import {
   IAnswerPreview,
@@ -206,26 +196,36 @@ export default class User extends CVue {
     });
   }
 
+  private async getUserUuid() {
+    while (true) {
+        if (this.userPublic !== null) {
+            return this.userPublic.uuid;
+        }
+        if (this.userPublicForVisitor !== null) {
+            return this.userPublicForVisitor.uuid;
+        }
+        await this.load();
+    }
+    return "should_not_reach_this_branch";
+  }
   private async loadAnswers(skip: number, limit: number) {
     let items: IAnswerPreview[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.userPublic !== null) {
-        items = (await apiPeople.getAnswersByAuthor(this.token, this.userPublic.uuid, skip, limit))
+    let uuid = await this.getUserUuid();
+    if (uuid !== null) {
+        items = (await apiPeople.getAnswersByAuthor(this.token, uuid, skip, limit))
           .data;
-      }
-    });
+    }
     return items;
   }
 
   private async loadQuestions(skip: number, limit: number) {
     let items: IQuestionPreview[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.userPublic !== null) {
-        items = (
-          await apiPeople.getQuestionsByAuthor(this.token, this.userPublic.uuid, skip, limit)
-        ).data;
-      }
-    });
+    let uuid = await this.getUserUuid();
+    if (uuid !== null) {
+        info("load questions, uuid = " + uuid + " skip = " + skip.toString());
+        items = (await apiPeople.getQuestionsByAuthor(this.token, uuid, skip, limit))
+          .data;
+    }
     return items;
   }
 
@@ -242,13 +242,14 @@ export default class User extends CVue {
   }
 
   private async loadArticles(skip: number, limit: number) {
+    info("load articles info called");
     let items: IArticlePreview[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.userPublic !== null) {
-        items = (await apiPeople.getArticlesByAuthor(this.token, this.userPublic.uuid, skip, limit))
+    let uuid = await this.getUserUuid();
+    if (uuid !== null) {
+        info("load articles, uuid = " + uuid + " skip = " + skip.toString());
+        items = (await apiPeople.getArticlesByAuthor(this.token, uuid, skip, limit))
           .data;
-      }
-    });
+    }
     return items;
   }
 }

@@ -17,3 +17,10 @@ export default {
     }
   },
 };
+
+export const info = (message: string) => {
+    if (env !== 'production') {
+      console.log(message);
+    }
+};
+

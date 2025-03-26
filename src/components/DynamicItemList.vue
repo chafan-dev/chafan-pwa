@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DebugSpan>noMore={{ noMore }}, emptyItems={{ emptyItems }}</DebugSpan>
+    <DebugSpan>noMore={{ noMore }}, emptyItems={{ emptyItems }}, loading={{ loading }}</DebugSpan>
     <div v-if="items !== null && items.length > 0">
       <div v-for="item in items" :key="item.uuid" class="ma-3">
         <slot :item="item" class="my-4"></slot>
@@ -24,6 +24,7 @@ import { Component, Prop } from 'vue-property-decorator';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { CVue } from '@/common';
 import DebugSpan from '@/components/base/DebugSpan.vue';
+import  { info }  from '@/logging'
 
 @Component({
   components: { DebugSpan, EmptyPlaceholder },
@@ -63,6 +64,7 @@ export default class DynamicItemList<T> extends CVue {
       return;
     }
 
+    info("try loading, currentPage = " + this.currentPage.toString());
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
     if (newItems) {
