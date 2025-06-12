@@ -51,8 +51,9 @@ export default class ExploreSitesGrid extends Vue {
   }
 
   private async mounted() {
+  // TODO I need to simplify this file 2025-06-09
     await dispatchCaptureApiError(this.$store, async () => {
-      const siteMaps = (await api.getSiteMaps(readToken(this.$store))).data;
+      const siteMaps = (await api.getSiteMaps()).data;
 
       for (const rootSiteMap of siteMaps.site_maps) {
         if (this.blocks2Weight >= this.blocks1Weight) {

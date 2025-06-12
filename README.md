@@ -4,57 +4,46 @@
 
 **Step 1: Install dependencies**
 
-First, install NodeJS, npm and yarn on your OS. Then:
-
 ```
-yarn install
+nix develop
 ```
 
-Build for development and run hot-reload website:
+**Step 2: Set environment**
 
 ```
-yarn run serve
+export VUE_APP_HOST=cha.fan
+export VUE_APP_API=api_dev.$VUE_APP_HOST
+export VUE_APP_NAME=ChaFan
+export VUE_APP_ENV=staging
 ```
 
-The default server connected in this setting is hosted at https://chafan-test.herokuapp.com with free dyno.
-Thus, **it might be slow when you open it since the dyno will be suspended when unused for a long time and will
-take a minute to restart**.
+**Step 3: Yarn Build**
+```
+./cloudflare.build.sh
+```
 
-![Screen Shot 2021-11-20 at 13 07 28](https://user-images.githubusercontent.com/7168454/142740916-c72bb60f-e1ce-4fe9-84d3-72cea9a1d7cf.png)
+**Step 4: Generate Cert**
 
-Open the "Network" URL in your browser.
-
-## Showcase
-
-When developing locally, you can see `/showcase` for individual static components, for exploration and design purpose. For example:
-
-![](./example-showcase.png)
-
-## Build production and serve locally through https
-
-Prepare the dependencies:
-
-```bash
-brew install mkcert
-mkcert -install
+```
 mkcert localhost
-npm install -g serve
 ```
 
-Build and serve：
 
-```bash
-bash .build_local_dev.sh
+**Step 5: Serve locally
+
+```
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
 ```
 
-## CI-built `master` previews
+## CI-built and deploy (Cloudflare Workers Pages)
 
-`master` will be deployed to https://chafan-test.netlify.app from time to time.
+`master` will be deployed to cha.fan, using api.cha.fan
+`preview` will be deployed to preview.cha.fan, using api.cha.fan
+`dev` will be deployed to dev.cha.fan, using `api_dev.cha.fan`
 
-Please contact @izgzhen to get a invitation link to the test site. Notice that you can fill in any random verification code during registration.
 
-If you opened a PR against `master` branch, Netlify will build a preview website too.
+
+## Below is not reviewed in chafan 2.0
 
 ## Analyze production build
 

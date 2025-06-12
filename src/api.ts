@@ -74,8 +74,8 @@ export const api = {
       token,
     });
   },
-  async getSiteMaps(token: string) {
-    return axios.get<ISiteMaps>(`${apiUrl}/sitemaps/`, authHeaders(token));
+  async getSiteMaps() {
+    return axios.get<ISiteMaps>(`${apiUrl}/sitemaps/`);
   },
   async getUserSiteProfile(token: string, siteUUID: string, userUUID: string) {
     return axios.get<IUserSiteProfile>(
