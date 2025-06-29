@@ -17,13 +17,12 @@ export const apiSite = {
   async getSite(subdomain: string) {
     return axios.get<ISite>(`${apiUrl}/sites/${subdomain}`);
   },
-  async getSiteQuestions(token: string, siteUUID: string, skip: number, limit: number) {
+  async getSiteQuestions(_token: string, siteUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/sites/${siteUUID}/questions/`,
-      authHeadersWithParams(token, params)
+      `${apiUrl}/sites/${siteUUID}/questions/?skip=${skip}&limit=${limit}`
     );
   },
   async updateSiteConfig(token: string, siteUUID: string, payload: ISiteUpdate) {

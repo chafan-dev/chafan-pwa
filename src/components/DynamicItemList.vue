@@ -7,8 +7,7 @@
       </div>
       <div class="text-center">
         <span v-if="noMore">
-          <template v-if="loggedIn">没有更多了</template>
-          <template v-else>登录后查看更多</template>
+              没有更多了
         </span>
       </div>
     </div>

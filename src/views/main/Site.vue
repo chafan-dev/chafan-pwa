@@ -57,8 +57,6 @@
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
-            <div v-else-if="userProfile" class="my-4 text-center">仅圈子成员可以查看该内容</div>
-            <div v-else class="my-4 text-center">登录后查看更多</div>
           </v-tab-item>
 
           <v-tab-item value="submissions">
@@ -70,8 +68,6 @@
             >
               <SubmissionPreview :submission="item" />
             </DynamicItemList>
-            <div v-else-if="loggedIn" class="my-4 text-center">仅圈子成员可以查看该内容</div>
-            <div v-else class="my-4 text-center">登录后查看更多</div>
           </v-tab-item>
 
           <v-tab-item value="members">
