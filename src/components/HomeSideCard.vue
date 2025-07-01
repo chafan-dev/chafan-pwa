@@ -71,6 +71,11 @@
         <a class="text-decoration-none" href="https://about.cha.fan" target="_blank">关于茶饭</a>
       </div>
       <div>
+        <a class="text-decoration-none" href="https://status.cha.fan/" target="_blank"
+          >茶饭开发日志</a
+        >
+      </div>
+      <div>
         <a
           class="text-decoration-none"
           href="https://about.cha.fan/docs/code-of-conduct"
@@ -83,8 +88,8 @@
           >如何举报不符合规范的内容</a
         >
       </div>
-      <div v-if="loggedIn">
-        <a class="text-decoration-none" href="https://discord.gg/yFt5QP3zU7" target="_blank"
+      <div>
+        <a class="text-decoration-none" href="https://discord.gg/WaKAZ8dEr9" target="_blank"
           >Discord 闲聊群</a
         >
       </div>
