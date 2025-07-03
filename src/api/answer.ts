@@ -15,11 +15,11 @@ import {
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiAnswer = {
-  async getAnswerUpvotes(token: string, answerUUID: string) {
-    return axios.get<IAnswerUpvotes>(
-      `${apiUrl}/answers/${answerUUID}/upvotes/`,
-      authHeaders(token)
-    );
+  async getAnswer(_token: string, answerUUID: string) {
+    return axios.get<IAnswer>(`${apiUrl}/answers/${answerUUID}`);
+  },
+  async getAnswerUpvotes(_token: string, answerUUID: string) {
+    return axios.get<IAnswerUpvotes>(`${apiUrl}/answers/${answerUUID}/upvotes/`);
   },
   async upvoteAnswer(token: string, answerUUID: string) {
     return axios.post<IAnswerUpvotes>(
@@ -42,9 +42,6 @@ export const apiAnswer = {
   },
   async deleteAnswer(token: string, answerUUID: string) {
     return axios.delete<IGenericResponse>(`${apiUrl}/answers/${answerUUID}`, authHeaders(token));
-  },
-  async getAnswer(token: string, answerUUID: string) {
-    return axios.get<IAnswer>(`${apiUrl}/answers/${answerUUID}`, authHeaders(token));
   },
   async bumpViewsCounter(token: string, answerUUID: string) {
     return axios.post<IGenericResponse>(

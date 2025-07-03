@@ -36,13 +36,12 @@ export const api2 = {
     return axios.post<IWsAuthResponse>(`${apiUrl}/ws/token`, null, authHeaders(token));
   },
   async getReactions(
-    token: string,
+    _token: string,
     objectId: string,
     objectType: 'question' | 'answer' | 'comment' | 'article'
   ) {
     return axios.get<IReactions>(
-      `${apiUrl}/reactions/${objectType}/${objectId}`,
-      authHeaders(token)
+      `${apiUrl}/reactions/${objectType}/${objectId}`
     );
   },
   async updateReaction(token: string, payload: IReaction) {

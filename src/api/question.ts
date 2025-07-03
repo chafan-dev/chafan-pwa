@@ -12,6 +12,12 @@ import {
 import { authHeaders } from '@/utils';
 
 export const apiQuestion = {
+  async getQuestion(_token: string, questionUUID: string) {
+    return axios.get<IQuestion>(`${apiUrl}/questions/${questionUUID}`);
+  },
+  async getQuestionPage(_token: string, questionUUID: string) {
+    return axios.get<IQuestionPage>(`${apiUrl}/questions/${questionUUID}/page`);
+  },
   async upvoteQuestion(token: string, questionUUID: string) {
     return axios.post<IQuestionUpvotes>(
       `${apiUrl}/questions/${questionUUID}/upvotes/`,
@@ -50,12 +56,6 @@ export const apiQuestion = {
       null,
       authHeaders(token)
     );
-  },
-  async getQuestion(token: string, questionUUID: string) {
-    return axios.get<IQuestion>(`${apiUrl}/questions/${questionUUID}`, authHeaders(token));
-  },
-  async getQuestionPage(token: string, questionUUID: string) {
-    return axios.get<IQuestionPage>(`${apiUrl}/questions/${questionUUID}/page`, authHeaders(token));
   },
   async postQuestion(token: string, data: IQuestionCreate) {
     return axios.post<IQuestion>(`${apiUrl}/questions/`, data, authHeaders(token));
