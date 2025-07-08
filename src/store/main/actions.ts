@@ -190,8 +190,8 @@ export const actions = {
       });
     } else {
       let message = axiosError.message;
-      if (axiosError.response && axiosError.response.data && axiosError.response.data.detail) {
-        message = translateErrorMsgCN(axiosError.response.data.detail);
+      if (axiosError.response && axiosError.response.data) {
+        message = axiosError.message;
       }
       commitAddNotification(context, { content: message, color: 'error' });
       if (

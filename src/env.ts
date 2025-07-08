@@ -2,20 +2,8 @@ import dayjs from 'dayjs';
 
 export const env = process.env.VUE_APP_ENV;
 
-/** TODO: Fix this logic in future. During dev we can also use https. 2024-Oct */
-let envApi = '';
-let envWs = '';
-
-if (env === 'production') {
-  envApi = `https://${process.env.VUE_APP_API}`;
-  envWs = `wss://${process.env.VUE_APP_API}`;
-} else if (env === 'staging') {
-  envApi = `https://${process.env.VUE_APP_API}`;
-  envWs = `wss://${process.env.VUE_APP_API}`;
-} else {
-  envApi = `http://${process.env.VUE_APP_API}`;
-  envWs = `ws://${process.env.VUE_APP_API}`;
-}
+const envApi = `https://${process.env.VUE_APP_API}`;
+const envWs = `wss://${process.env.VUE_APP_API}`;
 
 const apiVersionSuffix = '/api/v1';
 
@@ -23,8 +11,6 @@ export const apiUrl = envApi + apiVersionSuffix;
 export const wsUrl = envWs + apiVersionSuffix;
 export const appName = process.env.VUE_APP_NAME;
 export const sentryDSN = process.env.VUE_APP_SENTRY_DSN;
-export const adminUUID = process.env.VUE_APP_ADMIN_UUID;
-//export const enableCaptcha = process.env.VUE_APP_ENABLE_CAPTCHA === 'true';
 export const enableCaptcha = false; // Turn off front end rate control - 2024 Dec 06
 export const lambdaUrlBase = process.env.VUE_APP_LAMBDA;
 

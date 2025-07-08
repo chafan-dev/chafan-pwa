@@ -33,27 +33,11 @@ module.exports = {
           new RegExp(`^./(${['javascript', 'python', 'bash'].join('|')})$`)
         )
       );
-      if (process.env.SENTRY_AUTH_TOKEN) {
-        config.plugins.push(
-          new SentryWebpackPlugin({
-            // sentry-cli configuration - can also be done directly through sentry-cli
-            // see https://docs.sentry.io/product/cli/configuration/ for details
-            authToken: process.env.SENTRY_AUTH_TOKEN,
-            org: 'nomad-research',
-            project: 'chafan-prod',
-            release: getGitCommitHash(),
-
-            // other SentryWebpackPlugin configuration
-            include: './dist',
-            ignore: ['node_modules', 'webpack.config.js'],
-          })
-        );
-      }
-      config.performance = {
+    }
+    config.performance = {
         maxEntrypointSize: 512000,
         maxAssetSize: 512000,
-      };
-    }
+    };
     config.devtool = 'source-map';
   },
   chainWebpack: (config) => {

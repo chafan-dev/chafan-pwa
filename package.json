@@ -12,7 +12,7 @@
   "dependencies": {
     "@sentry/tracing": "^7.8.0",
     "@sentry/vue": "^7.8.0",
-    "axios": "^0.21.2",
+    "axios": "^1.10.0",
     "chafan-vue-editors": "^0.9.4",
     "core-js": "^3.40.0",
     "dayjs": "^1.10.4",

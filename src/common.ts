@@ -1,5 +1,5 @@
 import { apiQuestion } from '@/api/question';
-import { adminUUID, apiUrl, appName } from '@/env';
+import { apiUrl, appName } from '@/env';
 import { api } from '@/api';
 import { IComment, IGenericResponse, ThemeType } from '@/interfaces';
 import { Vue } from 'vue-property-decorator';
@@ -7,6 +7,8 @@ import { readIsLoggedIn, readTheme, readToken, readUserProfile } from '@/store/m
 import { commitAddNotification } from '@/store/main/mutations';
 import { AxiosError } from 'axios';
 import { isDev, isProdDev } from '@/utils';
+import { warn } from '@/logging';
+
 
 export const URLRegex =
   /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}(\.[a-zA-Z0-9()]{1,6})?\b([-a-zA-Z0-9()@:,%_\+.~#?&//=]*)$/;
@@ -492,7 +494,7 @@ const errorMsgCN = {
   'Invalid password': '无效的密码',
   'Delete answer failed': '删除答案失败',
 };
-
+// TODO remove this function.
 export const translateErrorMsgCN = (s: string) => {
   if (s in errorMsgCN) {
     return errorMsgCN[s];
@@ -558,21 +560,21 @@ export class CVue extends Vue {
   }
 
   commitErrMsg(err: AxiosError) {
-    if (err.response && err.response.data && err.response.data.detail) {
-      const translated = translateErrorMsgCN(err.response.data.detail);
+    if (err.response && err.message) {
       commitAddNotification(this.$store, {
-        content: translated,
+        content: err.message,
         color: 'warning',
       });
-      return translated;
+      return err.message;
     }
     return null;
   }
 
   async sendToAdmin(msg: string) {
-    const r0 = await api.createChannel(this.token, {
-      private_with_user_uuid: adminUUID!,
-    });
+      warn("TODO sendToAdmin turned off for now");
+      warn(msg);
+      /*
+    const r0 = await api.createChannel(this.token});
     const channelId = r0.data.id;
     await api.createMessage(this.token, {
       channel_id: channelId,
@@ -583,6 +585,7 @@ export class CVue extends Vue {
       color: 'info',
     });
     await this.$router.push(`/channels/${channelId}`);
+    */
   }
 
   recursiveCommentsCount(comments: IComment[]): number {

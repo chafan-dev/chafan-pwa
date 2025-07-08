@@ -31,17 +31,23 @@ if [ -z "${VUE_APP_ENV-}" ]; then
 fi
 
 
-rm -f yarn.lock
-cp yarn.lock.txt yarn.lock
-# Make Cloudflare Worker happy: Cloudflare would first use yarn-berry 3.5.0 to
-#   read yarn.lock, then complain the yarn.lock has been modified
-#   Use this trick to skip CF's check, and put real work inside this bash script
 
-yarn config get enableImmutableInstalls
-#yarn install --immutable
-yarn install --frozen-lockfile
-yarn run build
 
-#cp yarn.lock dist/
+if [[ "$1" == "--loose" ]]; then
+    yarn install
+    yarn run build
+else
+    # Make Cloudflare Worker happy: Cloudflare would first use yarn-berry 3.5.0 to
+    #   read yarn.lock, then complain the yarn.lock has been modified
+    #   Use this trick to skip CF's check, and put real work inside this bash script
+
+    rm -f yarn.lock
+    cp yarn.lock.txt yarn.lock
+
+    yarn config get enableImmutableInstalls
+    #yarn install --immutable
+    yarn install --frozen-lockfile
+    yarn run build
+fi
 
 # https://developers.cloudflare.com/pages/configuration/build-image/

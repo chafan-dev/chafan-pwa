@@ -379,6 +379,7 @@ import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
+import { warn } from '@/logging';
 
 import {
   commitAddNotification,
@@ -780,10 +781,9 @@ export default class Question extends CVue {
   private transferQuestionDialog: boolean = false;
   private async transferQuestion() {
     if (this.transferToSite) {
-      await this.sendToAdmin(
-        `申请转移问题「${this.question?.title}」（UUID：${this.question?.uuid}）到圈子 /${this.transferToSite.subdomain}`
-      );
+        warn("This function is turned off during dev. TODO");
     }
+    return null;
   }
 
   get question() {
