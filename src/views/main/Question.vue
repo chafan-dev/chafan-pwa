@@ -419,6 +419,7 @@ import TransferIcon from '@/components/icons/TransferIcon.vue';
 import SiteSearch from '@/components/SiteSearch.vue';
 import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
+import  { warn, info }  from '@/logging'
 
 @Component({
   components: {
@@ -529,9 +530,16 @@ export default class Question extends CVue {
   }
 
   private async loadQuestion() {
+    let token: string = "";
+    if (this.loggedIn) {
+        info("logged in. Send token when get question page");
+        token = this.token;
+    } else {
+        info("loading question when not logged in");
+    }
     await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
       action: async () => {
-        const response = await apiQuestion.getQuestionPage(this.token, this.id);
+        const response = await apiQuestion.getQuestionPage(token, this.id);
         this.questionPage = response.data;
       },
       errorFilter: (err: AxiosError) => {

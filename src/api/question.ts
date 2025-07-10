@@ -10,13 +10,24 @@ import {
   IQuestionUpvotes,
 } from '@/interfaces';
 import { authHeaders } from '@/utils';
+import  { info }  from '@/logging'
 
 export const apiQuestion = {
-  async getQuestion(_token: string, questionUUID: string) {
-    return axios.get<IQuestion>(`${apiUrl}/questions/${questionUUID}`);
+  async getQuestion(token: string, questionUUID: string) {
+      if (token) {
+          //info("get question with token: " + token);
+          return axios.get<IQuestion>(`${apiUrl}/questions/${questionUUID}`, authHeaders(token));
+      } else {
+          //info("get question without token");
+          return axios.get<IQuestion>(`${apiUrl}/questions/${questionUUID}`);
+      }
   },
-  async getQuestionPage(_token: string, questionUUID: string) {
-    return axios.get<IQuestionPage>(`${apiUrl}/questions/${questionUUID}/page`);
+  async getQuestionPage(token: string, questionUUID: string) {
+      if (token) {
+          return axios.get<IQuestionPage>(`${apiUrl}/questions/${questionUUID}/page`, authHeaders(token));
+      } else {
+          return axios.get<IQuestionPage>(`${apiUrl}/questions/${questionUUID}/page`);
+      }
   },
   async upvoteQuestion(token: string, questionUUID: string) {
     return axios.post<IQuestionUpvotes>(
