@@ -379,7 +379,6 @@ import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
-import { warn } from '@/logging';
 
 import {
   commitAddNotification,
