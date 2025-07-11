@@ -163,10 +163,6 @@
             </v-col>
           </v-row>
 
-          <div class="d-flex justify-end mt-1">
-            <ReactionBlock :objectId="article.uuid" class="ml-1" objectType="article" />
-          </div>
-
           <!-- Comments -->
           <div>
             <CommentBlock
@@ -189,7 +185,6 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator';
 import { IArticle, IArticleUpvotes, IUserArticleBookmark } from '@/interfaces';
-import ReactionBlock from '@/components/ReactionBlock.vue';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
@@ -231,7 +226,6 @@ import { AxiosError } from 'axios';
     QuestionLink,
     CommentBlock,
     SiteBtn,
-    ReactionBlock,
     BookmarkedIcon,
     ToBookmarkIcon,
     DeleteIcon,

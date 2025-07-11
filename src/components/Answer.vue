@@ -268,10 +268,6 @@
               </div>
             </div>
 
-            <!-- Reactions block -->
-            <div class="d-flex justify-end">
-              <ReactionBlock :objectId="answer.uuid" class="ml-1" objectType="answer" />
-            </div>
 
             <!-- Suggested edits -->
             <v-expansion-panels
@@ -450,7 +446,6 @@ import {
   ISevereReportReason,
   IUserAnswerBookmark,
 } from '@/interfaces';
-import ReactionBlock from '@/components/ReactionBlock.vue';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
@@ -505,7 +500,6 @@ import BookshelfIcon from '@/components/icons/BookshelfIcon.vue';
     QuestionLink,
     CommentBlock,
     SiteBtn,
-    ReactionBlock,
     BookmarkedIcon,
     ToBookmarkIcon,
     DeleteIcon,

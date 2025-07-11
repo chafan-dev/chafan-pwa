@@ -770,18 +770,6 @@ export interface IAnswerArchive {
   content: IRichText;
 }
 
-export interface IReactions {
-  counters: Map<string, number>;
-  my_reactions: string[];
-}
-
-export interface IReaction {
-  object_uuid: string;
-  object_type: 'question' | 'answer' | 'comment' | 'article';
-  reaction: '👍' | '👎' | '👀' | '❤️' | '😂' | '🙏';
-  action: 'add' | 'cancel';
-}
-
 export interface IQuestionArchive {
   id: number;
   title?: string;

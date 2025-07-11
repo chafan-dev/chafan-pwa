@@ -286,10 +286,6 @@
           <v-spacer />
         </div>
 
-        <div class="d-flex justify-end mb-2">
-          <ReactionBlock :objectId="question.uuid" objectType="question" />
-        </div>
-
         <!-- Comments -->
         <v-expand-transition>
           <CommentBlock
@@ -369,7 +365,6 @@ import { Component } from 'vue-property-decorator';
 import Answer from '@/components/Answer.vue';
 import QuestionInfo from '@/components/question/QuestionInfo.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
-import ReactionBlock from '@/components/ReactionBlock.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import UserLink from '@/components/UserLink.vue';
 
@@ -437,7 +432,6 @@ import  { warn, info }  from '@/logging'
     UserLink,
     EditIcon,
     SiteBtn,
-    ReactionBlock,
     BookmarkedIcon,
     ToBookmarkIcon,
     HistoryIcon,

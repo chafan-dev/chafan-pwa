@@ -116,7 +116,6 @@
           <ReplyIcon /> 回复
         </span>
         <v-spacer />
-        <ReactionBlock :objectId="comment.uuid" objectType="comment" />
       </template>
 
       <!-- Part II -->
@@ -200,7 +199,6 @@ import { commitAddNotification } from '@/store/main/mutations';
 import UserLink from '@/components/UserLink.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import Viewer from '@/components/Viewer.vue';
-import ReactionBlock from '@/components/ReactionBlock.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import BroadcastIcon from '@/components/icons/BroadcastIcon.vue';
 import ReplyIcon from '@/components/icons/ReplyIcon.vue';
@@ -223,7 +221,6 @@ import DebugSpan from '@/components/base/DebugSpan.vue';
     UpvoteStat,
     UpvotedIcon,
     UserLink,
-    ReactionBlock,
     EditIcon,
     CommentsIcon,
     SimpleEditor,

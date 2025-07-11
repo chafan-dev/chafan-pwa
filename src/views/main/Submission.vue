@@ -235,9 +235,6 @@
             <v-btn class="mr-1" depressed small @click="cancelSubmissionUpdate">取消</v-btn>
             <v-spacer />
           </div>
-          <div class="d-flex justify-end">
-            <ReactionBlock :objectId="submission.uuid" objectType="submission" />
-          </div>
 
           <!-- Comments -->
           <CommentBlock
@@ -467,7 +464,6 @@ import { Component } from 'vue-property-decorator';
 import Answer from '@/components/Answer.vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
-import ReactionBlock from '@/components/ReactionBlock.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import UserLink from '@/components/UserLink.vue';
 
@@ -533,7 +529,6 @@ import TopicChip from '@/components/widgets/TopicChip.vue';
     UpvoteIcon,
     LinkIcon,
     SiteBtn,
-    ReactionBlock,
     BookmarkedIcon,
     ToBookmarkIcon,
     HistoryIcon,
