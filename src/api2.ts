@@ -1,13 +1,10 @@
 import axios from 'axios';
-import { apiUrl, lambdaUrlBase } from '@/env';
+import { apiUrl } from '@/env';
 import {
   ICoinPayment,
-  IDynoState,
   IFeedback,
   IGenericResponse,
   INotification,
-  IReaction,
-  IReactions,
   IUploadedImage,
   IUserInvite,
   IWsAuthResponse,
@@ -34,18 +31,6 @@ export const api2 = {
   },
   async getWsToken(token: string) {
     return axios.post<IWsAuthResponse>(`${apiUrl}/ws/token`, null, authHeaders(token));
-  },
-  async getReactions(
-    _token: string,
-    objectId: string,
-    objectType: 'question' | 'answer' | 'comment' | 'article'
-  ) {
-    return axios.get<IReactions>(
-      `${apiUrl}/reactions/${objectType}/${objectId}`
-    );
-  },
-  async updateReaction(token: string, payload: IReaction) {
-    return axios.put<IReactions>(`${apiUrl}/reactions/`, payload, authHeaders(token));
   },
   async uploadFeedback(token: string, payload: FormData) {
     return axios.post<IGenericResponse>(

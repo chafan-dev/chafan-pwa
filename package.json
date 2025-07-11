@@ -21,7 +21,6 @@
     "highlightjs": "^9.16.2",
     "html2canvas": "^1.0.0-rc.7",
     "intersection-observer": "^0.12.0",
-    "jsdiff": "^1.1.1",
     "lodash": "^4.17.21",
     "piexifjs": "^1.0.6",
     "qrious": "^4.0.2",

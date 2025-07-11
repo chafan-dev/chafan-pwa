@@ -34,11 +34,18 @@ mkcert localhost
 ```
 
 
-**Step 5: Serve locally
+**Step 5: Serve locally**
 
 ```
 serve -l 8080 -s dist --ssl-cert ./localhost.pem --ssl-key ./localhost-key.pem
 ```
+
+**Step 6: Test in browser**
+```
+https://127.0.0.1:8080
+```
+
+这个域名在 CORS 白名单内
 
 ## Maintainer only section : CI-built and deploy (Cloudflare Workers Pages)
 
