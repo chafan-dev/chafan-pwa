@@ -547,6 +547,8 @@ export default class Question extends CVue {
     await dispatchCaptureApiError(this.$store, async () => {
       if (this.questionPage) {
         const question = this.questionPage.question;
+        const _response = await apiQuestion.bumpViewsCounter(this.token, question.uuid);
+        // TODO put it in another place, don't block the whole function 2025-07-03
         if (this.questionCommentId !== null) {
           this.showComments = true;
         }
