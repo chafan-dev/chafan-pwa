@@ -16,77 +16,37 @@
 
                   <h3>快捷提交</h3>
 
-                  <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
-                    <v-text-field v-model="email" label="邮箱地址" name="login" type="text">
-                      <template v-slot:prepend>
-                        <AccountIcon />
-                      </template>
-                    </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
-
                   <v-text-field
-                    v-model="verificationCode"
-                    label="验证码"
-                    name="verification-code"
+                    label="文章标题"
+                    name="title"
                     type="text"
-                    :disabled="!email || !isEmail(email)"
                   >
-                    <template v-slot:prepend>
-                      <VerifyCodeIcon />
-                    </template>
-                    <template v-slot:append-outer>
-                      <VerificationCodeBtn
-                        :send-verification-code-handler="sendVerificationCode"
-                        :disabled-prop="!email || !isEmail(email)"
-                      />
-                    </template>
                   </v-text-field>
 
-                  <ValidationProvider v-slot="{ errors }" name="password" rules="required|password">
-                    <v-text-field
-                      v-model="password"
-                      label="密码"
-                      autocomplete="new-password"
-                      name="new-password"
-                      required
-                      type="password"
-                      :disabled="!verificationCode"
-                    >
-                      <template v-slot:prepend>
-                        <PasswordIcon />
-                      </template>
-                    </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  <v-text-field
+                    label="专栏 UUID"
+                    name="column_uuid"
+                    type="text"
+                  >
+                  </v-text-field>
 
-                  <ValidationProvider v-slot="{ errors }" name="用户ID" rules="required|id">
-                    <v-text-field
-                      v-model="handle"
-                      label="用户ID"
-                      name="handle"
-                      required
-                      type="text"
-                      :disabled="!verificationCode"
-                    >
-                      <template v-slot:prepend>
-                        <HandleIcon />
-                      </template>
-                    </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  <v-textarea
+                    label="body"
+                    v-model="textInput"
+                    auto-grow
+                  ></v-textarea>
+
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
                 <v-btn
-                  :disabled="intermediate || !valid"
                   color="primary"
                   depressed
                   small
-                  @click="handleSubmit(openAccount)"
+                  @click="handleSubmit(submitArticle)"
                 >
-                  验证并注册
+                  提交专栏文章
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -95,18 +55,6 @@
       </v-layout>
     </v-container>
   </v-main>
-    <form>
-    <label for="title">Title:</label><br>
-    <input type="text" id="title" name="title"><br><br>
-
-    <label for="name">Full Name:</label><br>
-    <input type="text" id="name" name="name"><br><br>
-
-    <label for="body">Body:</label><br>
-    <textarea id="body" name="body" rows="5" cols="40"></textarea><br><br>
-
-    <button type="button" onclick="submitArticle()">Submit this article</button>
-  </form>
 </template>
 
 <script lang="ts">
@@ -152,21 +100,11 @@ export default class Signup extends Vue {
     }
   }
 
-  private async sendVerificationCode() {
-    return dispatchCaptureApiError(this.$store, async () => {
-      const response = await api.sendVerificationCode({ email: this.email });
-      if (response) {
-        const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
-        commitAddNotification(this.$store, {
-          content: msg,
-          color: 'success',
-        });
-        return true;
-      }
-      return false;
-    });
-  }
 
+    private async submitArticle() {
+        console.log("submit");
+//        console.log(JSON.stringify(this));
+    }
   private async openAccount() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;
