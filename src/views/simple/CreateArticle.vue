@@ -2,19 +2,19 @@
   <v-main>
     <v-container fill-height fluid>
       <v-layout align-center justify-center>
-        <v-flex md6 sm8 xs12>
+        <v-flex >
+
           <ValidationObserver v-slot="{ handleSubmit, valid }">
+
             <DebugSpan>valid: {{ valid }}</DebugSpan>
-            <v-card class="elevation-12">
-              <v-toolbar color="primary" dark>
-                <v-toolbar-title>{{ appName }} 注册</v-toolbar-title>
-              </v-toolbar>
+
+            <v-card>
+
               <v-card-text>
                 <v-form autocomplete="off">
 
-                  <v-divider class="mt-2 mb-4" />
 
-                  <h3>注册信息</h3>
+                  <h3>快捷提交</h3>
 
                   <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
                     <v-text-field v-model="email" label="邮箱地址" name="login" type="text">
