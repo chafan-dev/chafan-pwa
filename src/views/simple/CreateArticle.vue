@@ -16,6 +16,17 @@
 
                   <h3>快捷提交</h3>
 
+              <v-card-actions>
+                <v-spacer />
+                <v-btn
+                  color="primary"
+                  depressed
+                  @click="handleSubmit(submitArticle)"
+                >
+                  提交专栏文章
+                </v-btn>
+              </v-card-actions>
+
                   <v-text-field
                     label="文章标题"
                     name="title"
@@ -38,17 +49,6 @@
 
                 </v-form>
               </v-card-text>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn
-                  color="primary"
-                  depressed
-                  small
-                  @click="handleSubmit(submitArticle)"
-                >
-                  提交专栏文章
-                </v-btn>
-              </v-card-actions>
             </v-card>
           </ValidationObserver>
         </v-flex>
@@ -62,15 +62,18 @@ import { Component, Vue } from 'vue-property-decorator';
 import { api } from '@/api';
 import { appName } from '@/env';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
-import AccountIcon from '@/components/icons/AccountIcon.vue';
-import PasswordIcon from '@/components/icons/PasswordIcon.vue';
-import HandleIcon from '@/components/icons/HandleIcon.vue';
-import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { email } from 'vee-validate/dist/rules';
+
+import AccountIcon from '@/components/icons/AccountIcon.vue';
+import PasswordIcon from '@/components/icons/PasswordIcon.vue';
+import HandleIcon from '@/components/icons/HandleIcon.vue';
+import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
+import { CVue } from '@/common';
+import  { info }  from '@/logging'
 
 // TODO: share a parent component with Login.vue
 @Component({
@@ -83,7 +86,7 @@ import { email } from 'vee-validate/dist/rules';
     VerifyCodeIcon,
   },
 })
-export default class Signup extends Vue {
+export default class SimpleSubmitArticle extends CVue {
   private email: string = '';
   private password: string = '';
   private handle: string = '';
@@ -93,12 +96,9 @@ export default class Signup extends Vue {
 
   private intermediate = false;
 
-  private mounted() {
-    commitSetShowLoginPrompt(this.$store, false);
-    if (this.$route.query.invitation_link_uuid) {
-      this.invitationToken = this.$route.query.invitation_link_uuid.toString();
+    private mounted() {
+        info("mounted");
     }
-  }
 
 
     private async submitArticle() {
