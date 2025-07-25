@@ -13,9 +13,6 @@
               <v-card-text>
                 <v-form autocomplete="off">
 
-
-                  <h3>快捷提交</h3>
-
               <v-card-actions>
                 <v-spacer />
                 <v-btn
@@ -29,7 +26,7 @@
 
                   <v-text-field
                     label="文章标题"
-                    name="title"
+                    name="article_title"
                     type="text"
                   >
                   </v-text-field>
@@ -42,7 +39,7 @@
                   </v-text-field>
 
                   <v-textarea
-                    label="body"
+                    label="article_content"
                     v-model="textInput"
                     auto-grow
                   ></v-textarea>
@@ -58,20 +55,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
 import { api } from '@/api';
 import { appName } from '@/env';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-import { email } from 'vee-validate/dist/rules';
 
-import AccountIcon from '@/components/icons/AccountIcon.vue';
-import PasswordIcon from '@/components/icons/PasswordIcon.vue';
-import HandleIcon from '@/components/icons/HandleIcon.vue';
-import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 import { CVue } from '@/common';
 import  { info }  from '@/logging'
 
@@ -79,25 +70,45 @@ import  { info }  from '@/logging'
 @Component({
   components: {
     DebugSpan,
-    VerificationCodeBtn,
-    AccountIcon,
-    PasswordIcon,
-    HandleIcon,
-    VerifyCodeIcon,
   },
 })
 export default class SimpleSubmitArticle extends CVue {
-  private email: string = '';
-  private password: string = '';
-  private handle: string = '';
-  private appName = appName;
-  private verificationCode: string = '';
-  private invitationToken: string = '';
 
-  private intermediate = false;
-
+    private parseQueryParams() : Map<string,string> {
+        const params = new URLSearchParams(window.location.search);
+        const queryMap = new Map<string, string>();
+        for (const [key, value] of params.entries()) {
+            queryMap.set(key, value);
+        }
+        return queryMap;
+    }
+    private getDOMElements() : Map<string,Node> {
+        const title = document.getElementsByName("article_title")[0];
+        const col_uuid = document.getElementsByName("column_uuid")[0];
+        const content = document.getElementsByName("article_content")[0];
+        const ret = new Map<string, Node>([
+            ["article_title", title],
+            ["column_uuid", col_uuid],
+            ["article_content", content]
+        ]);
+        return ret;
+    }
     private mounted() {
         info("mounted");
+        if (!this.loggedIn) {
+            info("not logged");
+        } else {
+            info("logged in");
+        }
+        info(window.location.search);
+        const params = this.parseQueryParams();
+        const doms = this.getDOMElements();
+        params.forEach((value, key) => {
+          console.log(`Key: ${key}, Value: ${value}`);
+        });
+        doms.forEach((value, key) => {
+          console.log(`Key: ${key}, Value: ${value}`);
+        });
     }
 
 
@@ -105,6 +116,7 @@ export default class SimpleSubmitArticle extends CVue {
         console.log("submit");
 //        console.log(JSON.stringify(this));
     }
+    /*
   private async openAccount() {
     await dispatchCaptureApiError(this.$store, async () => {
       this.intermediate = true;
@@ -125,9 +137,7 @@ export default class SimpleSubmitArticle extends CVue {
       this.intermediate = false;
     });
   }
+  */
 
-  isEmail(s: string) {
-    return email.validate(s);
-  }
 }
 </script>
