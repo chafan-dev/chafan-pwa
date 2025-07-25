@@ -10,38 +10,7 @@
                 <v-toolbar-title>{{ appName }} 注册</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <div class="black--text mb-4">
-                  注册前请仔细阅读<a
-                    class="text-decoration-none"
-                    href="https://about.cha.fan/docs"
-                    target="_blank"
-                    >本网站相关文档</a
-                  >。 如果你继续注册使用本网站，将视为同意<a
-                    class="text-decoration-none"
-                    href="https://about.cha.fan/docs/user-agreement/"
-                    target="_blank"
-                    >「网站用户协议」</a
-                  >
-                  并了解<a
-                    class="text-decoration-none"
-                    href="https://about.cha.fan/docs/code-of-conduct/"
-                    target="_blank"
-                    >「社区行为守则」</a
-                  >的内容。
-                  <a
-                    href="https://about.cha.fan/signup"
-                    class="text-decoration-none"
-                    target="_blank"
-                  >
-                    了解如何获取邀请码 </a
-                  >。
-                </div>
                 <v-form autocomplete="off">
-                  <h3>请先填入邀请码（20位）</h3>
-                  <ValidationProvider v-slot="{ errors }" name="邀请码" rules="required">
-                    <v-text-field v-model="invitationToken" name="邀请码" required type="text" />
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
 
                   <v-divider class="mt-2 mb-4" />
 
@@ -126,6 +95,18 @@
       </v-layout>
     </v-container>
   </v-main>
+    <form>
+    <label for="title">Title:</label><br>
+    <input type="text" id="title" name="title"><br><br>
+
+    <label for="name">Full Name:</label><br>
+    <input type="text" id="name" name="name"><br><br>
+
+    <label for="body">Body:</label><br>
+    <textarea id="body" name="body" rows="5" cols="40"></textarea><br><br>
+
+    <button type="button" onclick="submitArticle()">Submit this article</button>
+  </form>
 </template>
 
 <script lang="ts">
