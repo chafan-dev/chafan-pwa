@@ -91,6 +91,7 @@ export default class SimpleSubmitArticle extends CVue {
         return ret;
     }
     */
+    /*
     data() {
         return {
             article_title: "sm title",
@@ -98,7 +99,11 @@ export default class SimpleSubmitArticle extends CVue {
             article_content: ""
         };
     },
-    mounted() {
+    */
+    private article_title: string = "title";
+    private column_uuid:string = "uuid";
+    private article_content:string = "body";
+    private mounted() {
         info("mounted");
         if (!this.loggedIn) {
             info("not logged");
@@ -111,9 +116,9 @@ export default class SimpleSubmitArticle extends CVue {
             console.log(`Key: ${key}, Value: ${value}`);
         });
         setTimeout(() => {
-            this.article_title = params.get("article_title");
-            this.column_uuid   = params.get("column_uuid");
-            this.article_content = params.get("article_content");
+            this.article_title = params.get("article_title")!;
+            this.column_uuid   = params.get("column_uuid")!;
+            this.article_content = params.get("article_content")!;
         },50);
     }
 
