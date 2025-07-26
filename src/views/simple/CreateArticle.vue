@@ -61,7 +61,6 @@
 import { Component } from 'vue-property-decorator';
 import { api } from '@/api';
 import { appName } from '@/env';
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import DebugSpan from '@/components/base/DebugSpan.vue';
@@ -77,29 +76,6 @@ import  { info }  from '@/logging'
 })
 export default class SimpleSubmitArticle extends CVue {
 
-    /*
-    private getDOMElements() :
-            Map<string,any> { //HTMLTextAreaElement|HTMLInputElement> {
-        const title = document.getElementsByName("article_title")[0];
-        const col_uuid = document.getElementsByName("column_uuid")[0];
-        const content = document.getElementsByName("article_content")[0];
-        const ret = new Map<string,any> ([
-            ["article_title", title],
-            ["column_uuid", col_uuid],
-            ["article_content", content]
-        ]);
-        return ret;
-    }
-    */
-    /*
-    data() {
-        return {
-            article_title: "sm title",
-            column_uuid: "stub uuid",
-            article_content: ""
-        };
-    },
-    */
     private article_title: string = "title";
     private column_uuid:string = "uuid";
     private article_content:string = "body";
@@ -129,38 +105,35 @@ export default class SimpleSubmitArticle extends CVue {
             ["article_content", ""]
         ]);
         const params = new URLSearchParams(window.location.search);
-        for (const [key, value] of params.entries()) {
+        for (const [key, value_raw] of params.entries()) {
+            const value = decodeURIComponent(value_raw);
             queryMap.set(key, value);
         }
         return queryMap;
     }
 
     private async submitArticle() {
-        console.log("submit");
-//        console.log(JSON.stringify(this));
+        info("submitArticle");
+        console.log(this.article_title);
+        console.log(this.column_uuid);
+        console.log(this.article_content);
+        console.log(this.token);
+
+/*
+      await apiArticle.postArticle(vueInstance.$store.state.main.token, {
+        title: edit.title,
+        content: {
+          source: edit.body,
+          rendered_text: edit.rendered_body_text || '',
+          editor: edit.editor,
+        },
+        visibility: edit.visibility,
+        is_published: !edit.is_draft,
+        writing_session_uuid: writingSessionUUID,
+        article_column_uuid: articleColumnId,
+      })
+      */
     }
-    /*
-  private async openAccount() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      const response = await api.openAccount(
-        this.email,
-        this.handle,
-        this.verificationCode,
-        this.password,
-        this.invitationToken
-      );
-      if (response) {
-        commitAddNotification(this.$store, {
-          content: '账号创建成功，返回登陆界面',
-          color: 'success',
-        });
-        await this.$router.push('/login');
-      }
-      this.intermediate = false;
-    });
-  }
-  */
 
 }
 </script>
