@@ -25,22 +25,25 @@
               </v-card-actions>
 
                   <v-text-field
-                    label="文章标题"
+                    label="article_title 标题"
                     name="article_title"
+                    v-model="article_title"
                     type="text"
                   >
                   </v-text-field>
 
                   <v-text-field
-                    label="专栏 UUID"
+                    label="column_uuid 专栏 UUID"
                     name="column_uuid"
+                    v-model="column_uuid"
                     type="text"
                   >
                   </v-text-field>
 
                   <v-textarea
-                    label="article_content"
-                    v-model="textInput"
+                    label="article_content 正文"
+                    name="article_content"
+                    v-model="article_content"
                     auto-grow
                   ></v-textarea>
 
@@ -74,26 +77,28 @@ import  { info }  from '@/logging'
 })
 export default class SimpleSubmitArticle extends CVue {
 
-    private parseQueryParams() : Map<string,string> {
-        const params = new URLSearchParams(window.location.search);
-        const queryMap = new Map<string, string>();
-        for (const [key, value] of params.entries()) {
-            queryMap.set(key, value);
-        }
-        return queryMap;
-    }
-    private getDOMElements() : Map<string,Node> {
+    /*
+    private getDOMElements() :
+            Map<string,any> { //HTMLTextAreaElement|HTMLInputElement> {
         const title = document.getElementsByName("article_title")[0];
         const col_uuid = document.getElementsByName("column_uuid")[0];
         const content = document.getElementsByName("article_content")[0];
-        const ret = new Map<string, Node>([
+        const ret = new Map<string,any> ([
             ["article_title", title],
             ["column_uuid", col_uuid],
             ["article_content", content]
         ]);
         return ret;
     }
-    private mounted() {
+    */
+    data() {
+        return {
+            article_title: "sm title",
+            column_uuid: "stub uuid",
+            article_content: ""
+        };
+    },
+    mounted() {
         info("mounted");
         if (!this.loggedIn) {
             info("not logged");
@@ -102,15 +107,28 @@ export default class SimpleSubmitArticle extends CVue {
         }
         info(window.location.search);
         const params = this.parseQueryParams();
-        const doms = this.getDOMElements();
         params.forEach((value, key) => {
-          console.log(`Key: ${key}, Value: ${value}`);
+            console.log(`Key: ${key}, Value: ${value}`);
         });
-        doms.forEach((value, key) => {
-          console.log(`Key: ${key}, Value: ${value}`);
-        });
+        setTimeout(() => {
+            this.article_title = params.get("article_title");
+            this.column_uuid   = params.get("column_uuid");
+            this.article_content = params.get("article_content");
+        },50);
     }
 
+    private parseQueryParams() : Map<string,string> {
+        const queryMap = new Map<string,any> ([
+            ["article_title", ""],
+            ["column_uuid", ""],
+            ["article_content", ""]
+        ]);
+        const params = new URLSearchParams(window.location.search);
+        for (const [key, value] of params.entries()) {
+            queryMap.set(key, value);
+        }
+        return queryMap;
+    }
 
     private async submitArticle() {
         console.log("submit");
