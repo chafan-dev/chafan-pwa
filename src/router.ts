@@ -16,6 +16,13 @@ const routes: RouteConfig[] = [
         component: () => import(/* webpackChunkName: "main-home" */ './views/main/Home.vue'),
       },
       {
+        path: '/simple/create_article',
+        meta: {
+          title: 'Create Article',
+        },
+        component: () => import('./views/simple/CreateArticle.vue'),
+      },
+      {
         path: 'explore/',
         meta: {
           title: constants.explore,
@@ -167,7 +174,7 @@ const routes: RouteConfig[] = [
         component: () =>
           import(/* webpackChunkName: "main-moderation" */ './views/main/Moderation.vue'),
       },
-    ],
+    ] /* children of main */,
   },
   {
     path: '/login',
