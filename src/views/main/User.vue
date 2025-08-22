@@ -32,7 +32,7 @@
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadAnswers"
-                emptyItemsText="暂无"
+                emptyItemsText="暂无回答"
                 nullItemsText=""
               >
                 <Answer :answerPreview="item" />
@@ -43,7 +43,7 @@
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadQuestions"
-                emptyItemsText="暂无"
+                emptyItemsText="暂无问题"
                 nullItemsText=""
               >
                 <QuestionPreview :questionPreview="item" />
@@ -212,8 +212,10 @@ export default class User extends CVue {
     let items: IAnswerPreview[] | null = null;
     let uuid = await this.getUserUuid();
     if (uuid !== null) {
+        info("load answers, uuid = " + uuid + " skip = " + skip.toString());
         items = (await apiPeople.getAnswersByAuthor(this.token, uuid, skip, limit))
           .data;
+        info("loadAnswers items length = " + items.length.toString());
     }
     return items;
   }

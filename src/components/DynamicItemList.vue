@@ -63,7 +63,7 @@ export default class DynamicItemList<T> extends CVue {
       return;
     }
 
-    info("try loading, currentPage = " + this.currentPage.toString());
+    info("tryLoadMore, currentPage = " + this.currentPage.toString());
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
     if (newItems) {
