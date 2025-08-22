@@ -45,40 +45,40 @@ export const apiPeople = {
   async getRelatedUsers(token: string, userUUID: string) {
     return axios.get<IUserPreview[]>(`${apiUrl}/people/${userUUID}/related/`, authHeaders(token));
   },
-  async getQuestionsByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+  async getQuestionsByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/people/${userUUID}/questions/`,
-      authHeadersWithParams(token, params)
+      { params: params }
     );
   },
-  async getSubmissionsByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+  async getSubmissionsByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<ISubmission[]>(
       `${apiUrl}/people/${userUUID}/submissions/`,
-      authHeadersWithParams(token, params)
+      { params: params }
     );
   },
-  async getArticlesByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+  async getArticlesByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IArticlePreview[]>(
       `${apiUrl}/people/${userUUID}/articles/`,
-      authHeadersWithParams(token, params)
+      { params: params }
     );
   },
-  async getAnswersByAuthor(token: string, userUUID: string, skip: number, limit: number) {
+  async getAnswersByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IAnswerPreview[]>(
       `${apiUrl}/people/${userUUID}/answers/`,
-      authHeadersWithParams(token, params)
+      { params: params }
     );
   },
   async getUserEducationExperiences(token: string, userUUID: string) {
