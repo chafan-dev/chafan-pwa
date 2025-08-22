@@ -94,6 +94,8 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement | 
             continue;
           }
         }
+        // 2025-Aug-22 turn it off for a while
+        /*
         if (linkPreviewHosts.has(url.host)) {
           const props = (await api.generateLinkPreview(a.href)).data;
           const card = getOpenGraphCard(a.href, props);
@@ -102,6 +104,7 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement | 
             continue;
           }
         }
+        */
       }
       // Open in new window
       if (url.origin !== window.origin) {

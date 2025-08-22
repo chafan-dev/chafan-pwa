@@ -51,19 +51,12 @@ export default class DynamicItemList<T> extends CVue {
       return;
     }
     if (this.loading) {
+      info("tryLoadMore waiting for a current loading task");
       return;
     }
     this.loading = true;
-    const bottomOfWindow =
-      Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
-        window.innerHeight +
-        300 >=
-      document.documentElement.offsetHeight;
-    if (!ignoreScroll && !bottomOfWindow) {
-      return;
-    }
 
-    info("try loading, currentPage = " + this.currentPage.toString());
+    info("tryLoadMore, currentPage = " + this.currentPage.toString());
     this.currentPage += 1;
     const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
     if (newItems) {
@@ -73,8 +66,10 @@ export default class DynamicItemList<T> extends CVue {
       } else {
         this.items.push(...newNotNullItems);
       }
+      info("tryLoadMore, get netItems " + newItems.length.toString());
       if (newItems.length < this.pageLimit) {
         this.noMore = true;
+        info("tryLoadMore got no new items. List in total " + this.items.length.toString());
         if (!this.items) {
           this.emptyItems = true;
         }
