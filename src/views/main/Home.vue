@@ -36,7 +36,7 @@
             <v-tab-item eager value="feed">
               <UserFeed ref="userFeed" :user-profile="userProfile" />
             </v-tab-item>
-            <v-tab-item eager value="submissions">
+            <v-tab-item value="submissions">
               <UserSubmissionsRankedFeed />
             </v-tab-item>
           </v-tabs>
