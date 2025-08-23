@@ -17,7 +17,7 @@
     "core-js": "^3.40.0",
     "dayjs": "^1.10.4",
     "diff": "^5.0.0",
-    "dompurify": "^2.5.8",
+    "dompurify": "^3.2.6",
     "highlightjs": "^9.16.2",
     "html2canvas": "^1.0.0-rc.7",
     "intersection-observer": "^0.12.0",
