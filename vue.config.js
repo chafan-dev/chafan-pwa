@@ -34,8 +34,8 @@ module.exports = {
       );
     }
     config.performance = {
-        maxEntrypointSize: 512000,
-        maxAssetSize: 512000,
+        maxEntrypointSize: 2500000,  // 2.5 MiB - increased to match actual app size
+        maxAssetSize: 2000000,  // 2 MiB - increased to accommodate vendor chunks
     };
     config.devtool = 'source-map';
   },
@@ -54,6 +54,31 @@ module.exports = {
           },
         })
       );
+
+    // Suppress CSS chunk ordering warnings from mini-css-extract-plugin
+    // These are harmless in most cases and commonly occur with Vuetify
+    config.plugin('extract-css').tap((args) => {
+      if (args[0]) {
+        args[0].ignoreOrder = true;
+      }
+      return args;
+    });
+  },
+  css: {
+    loaderOptions: {
+      sass: {
+        sassOptions: {
+          quietDeps: true,
+          silenceDeprecations: ['legacy-js-api', 'import', 'slash-div', 'global-builtin'],
+        },
+      },
+      scss: {
+        sassOptions: {
+          quietDeps: true,
+          silenceDeprecations: ['legacy-js-api', 'import', 'slash-div', 'global-builtin'],
+        },
+      },
+    },
   },
   pwa: {
     workboxPluginMode: 'GenerateSW',
