@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-standard-scss",
+    "stylelint-config-recommended-vue"
+  ],
+  "rules": {
+    "no-descending-specificity": null,
+    "no-empty-source": null,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["deep", "global"]
+      }
+    ],
+    "declaration-no-important": [
+      true,
+      {
+        "severity": "warning"
+      }
+    ]
+  }
+}
+

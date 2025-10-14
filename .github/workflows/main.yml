@@ -36,3 +36,5 @@ jobs:
         run: |
           yarn --version
           #yarn run test:unit
+      - name: CSS Lint
+        run: npm run lint:css || true
