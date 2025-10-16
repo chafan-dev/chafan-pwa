@@ -108,5 +108,6 @@
       "jest-serializer-vue"
     ],
     "testURL": "http://localhost/"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }

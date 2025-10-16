@@ -1,8 +1,8 @@
 set -xe
 
-YARN_VERSION="1.22.22"
+YARN_VERSION="4.9.1"
 #NODE_VERSION="18.20.6" #Nix
-NODE_VERSION="18.17.1" # Cloudflare Worker v2
+NODE_VERSION="22.16.0" # Cloudflare Worker v2
 
 if [[ $(yarn --version) != "$YARN_VERSION" ]]; then
     yarn set version "$YARN_VERSION"

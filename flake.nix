@@ -1,8 +1,7 @@
 {
   inputs = {
     #nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
-    #nixpkgs-23.url = "github:nixos/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     #flake-utils.url = "github:numtide/flake-utils";
   };
   outputs = { self, nixpkgs }: {
@@ -14,10 +13,9 @@
             LOCALE_ARCHIVE = if pkgs.stdenv.isLinux then "${pkgs.glibcLocales}/lib/locale/locale-archive" else "";
             buildInputs = [
                 pkgs.python312
-                #pkgs.yarn-berry
+                pkgs.yarn-berry
                     # berry 4.5.0 had trouble installing sentry/cli 2025-Feb-20
-                pkgs.yarn
-                pkgs.nodejs_18
+                pkgs.nodejs_22
                 pkgs.python312Packages.distutils
 
 
