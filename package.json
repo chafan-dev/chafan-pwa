@@ -31,7 +31,7 @@
     "typesafe-vuex": "^3.1.1",
     "uuid": "^11.0.3",
     "vee-validate": "^3.4.15",
-    "vue": "^2.7.16",
+    "vue": "^3.0.0",
     "vue-class-component": "^7.2.6",
     "vue-i18n": "^8.28.2",
     "vue-jest": "^3.0.7",
