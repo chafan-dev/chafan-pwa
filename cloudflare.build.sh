@@ -41,9 +41,6 @@ else
     #   read yarn.lock, then complain the yarn.lock has been modified
     #   Use this trick to skip CF's check, and put real work inside this bash script
 
-    rm -f yarn.lock
-    cp yarn.lock.txt yarn.lock
-
     yarn config get enableImmutableInstalls
     #yarn install --immutable
     yarn install --frozen-lockfile
