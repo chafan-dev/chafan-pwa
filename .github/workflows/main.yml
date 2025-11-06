@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: 22.16.0
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Build
         run: |
           source example.env
