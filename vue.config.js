@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const fs = require('fs');
 const { spawnSync } = require('child_process');
-const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 setGitInfo();
 

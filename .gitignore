@@ -1,3 +1,6 @@
+.yarn
+.pnp.*
+
 .DS_Store
 paper
 node_modules
