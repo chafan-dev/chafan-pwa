@@ -1,5 +1,5 @@
 .yarn
-.yarnrc.yml
+.pnp.*
 
 .DS_Store
 paper
