@@ -3,40 +3,39 @@
 
 // General
 .bottom-btn {
-  box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
+  box-shadow: $shadow-bottom-btn;
   position: fixed;
   bottom: 0;
-  width: 120%;
+  width: $width-bottom-btn;
   text-align: center;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  background-color: white;
+  padding-top: $space-1;
+  padding-bottom: $space-1;
+  background-color: $color-white;
 }
 
-.compact-row {
-  margin-top: 0;
+.v-row.compact-row {
+  margin-top: $space-0;
 }
 
-.compact-col {
-  padding-top: 0;
+.v-col.compact-col {
+  padding-top: $space-0;
 }
 
-.compact-col2 {
-  padding-top: 0;
-  padding-bottom: 0;
+.v-col.compact-col2 {
+  padding-top: $space-0;
+  padding-bottom: $space-0;
 }
 
 .vh-100 {
-  height: 100vh;
+  height: $height-viewport;
 }
 
-.slim-btn {
-  padding: 0 5px;
+.v-btn.slim-btn {
+  padding: $space-0 $space-1-5;
 }
 
 %c-card-base {
-  box-shadow: 0 0 10px -10px rgba(85, 85, 85, 0.08), 0 0 20px 0 rgba(85, 85, 85, 0.06),
-    0 0 30px 0 rgba(85, 85, 85, 0.03);
+  box-shadow: $shadow-card-default;
 }
 
 .c-card {
@@ -45,12 +44,11 @@
 
 .shadow-card {
   @extend %c-card-base;
-  padding: 8px;
+  padding: $space-3;
 }
 
 %c-card-blue-base {
-  box-shadow: 0 1px 1px -1px rgba(85, 85, 85, 0.08), 0 1px 5px 0 rgba(85, 85, 85, 0.06),
-    0 1px 5px 0 rgba(85, 85, 85, 0.03);
+  box-shadow: $shadow-card-blue;
 }
 
 .c-card-blue {
@@ -59,35 +57,35 @@
 
 .shadow-card-blue {
   @extend %c-card-base;
-  padding: 8px;
-  background: #fff;
+  padding: $space-3;
+  background: $color-white;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: $breakpoint-xs) {
     box-shadow: none;
   }
 }
 
-.less-top-padding {
-  padding-top: 0;
+.v-col.less-top-padding {
+  padding-top: $space-0;
 }
 
-.less-left-right-padding {
-  padding-left: 6px;
-  padding-right: 6px;
+.v-col.less-left-right-padding {
+  padding-left: $space-2;
+  padding-right: $space-2;
 }
 
-.fixed-narrow-col {
-  max-width: 800px;
+.v-col.fixed-narrow-col {
+  max-width: $max-width-content;
 }
 
-.fixed-narrow-sidecol {
-  max-width: 400px;
+.v-col.fixed-narrow-sidecol {
+  max-width: $max-width-sidebar;
 }
 
 // Editor/Preview
 .vditor-preview {
   .vditor-reset {
-    padding: 2px 2px;
+    padding: $space-0-5 $space-0-5;
   }
 }
 
@@ -123,16 +121,16 @@
   font-family: $body-font-family;
   font-size: $font-size-root;
   color: $rich-text-color;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: $space-4;
+  margin-bottom: $space-4;
 }
 
 .simple-editor img {
-  max-height: 100px;
+  max-height: $max-height-simple-image;
 }
 
 .simple-editor p {
-  margin-bottom: 10px;
+  margin-bottom: $space-4;
 }
 
 .vditor-reset a {
@@ -144,12 +142,12 @@
 }
 
 .simple-viewer img {
-  max-height: 100px;
-  max-width: 100%;
+  max-height: $max-height-simple-image;
+  max-width: $width-full;
 }
 
-.title {
-  font-weight: 400;
+.v-application .title {
+  font-weight: $font-weight-normal;
 }
 
 .simple-viewer {
@@ -165,26 +163,26 @@
   font-family: $body-font-family;
   font-size: $font-size-root;
   color: $rich-text-color;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: $space-4;
+  margin-bottom: $space-4;
 }
 
 .simple-viewer p {
-  margin-bottom: 10px;
+  margin-bottom: $space-4;
 }
 
 .viewer .ProseMirror {
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: $space-0;
+  padding-right: $space-0;
   line-height: $rich-text-line-height;
 }
 
 .viewer-desktop img {
-  max-height: 500px;
+  max-height: $max-height-viewer-image;
 }
 
 .viewer img {
-  max-width: 100%;
+  max-width: $width-full;
 }
 
 .viewer {
@@ -194,18 +192,18 @@
 }
 
 .og-card {
-  border: 1px lightgrey solid;
-  border-radius: 5px;
-  padding: 5px;
+  border: $border-width-thin $color-border-light solid;
+  border-radius: $border-radius-small;
+  padding: $space-1-5;
   width: fit-content;
 }
 
 .og-card img {
-  max-width: 500px;
+  max-width: $max-width-og-card-image;
 }
 
 .og-card-desc {
-  padding-top: 5px;
+  padding-top: $space-1-5;
 }
 
 //// For ChafanTiptap
@@ -214,29 +212,28 @@
 }
 
 .vditor {
-  --textarea-background-color: white;
+  --textarea-background-color: $color-white;
 }
 
 .vditor-sv {
-  font-family: mononoki, Consolas, Liberation Mono, Menlo, Courier, monospace, Apple Color Emoji,
-    Segoe UI Emoji, Noto Color Emoji, Segoe UI Symbol, Android Emoji, EmojiSymbols;
+  font-family: $code-font-family;
 }
 
 // Comment
-.comment-item {
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
+.v-list-item.comment-item {
+  margin-left: $space-0;
+  margin-right: $space-0;
+  padding-left: $space-0;
+  padding-right: $space-0;
 }
 
 .comment-reply {
-  border-left: 2px solid lightgrey;
-  border-radius: 0 0 0 10px;
+  border-left: $border-width-medium solid $color-border-light;
+  border-radius: 0 0 0 $border-radius-medium;
 }
 
 .reply-item {
-  padding-right: 0;
+  padding-right: $space-0;
   word-break: break-all;
 }
 
@@ -245,7 +242,7 @@
 }
 
 .quote-card {
-  border-left: 2px solid lightgrey;
+  border-left: $border-width-medium solid $color-border-light;
 }
 
 // Event
@@ -254,39 +251,37 @@
 }
 
 .search-item-card {
-  border: 1px solid lightgrey;
-  border-radius: 5px;
+  border: $border-width-thin solid $color-border-light;
+  border-radius: $border-radius-small;
 }
 
 // Main
 .search-box {
-  min-width: 20%;
-  max-width: 40%;
+  min-width: $width-search-box-min;
+  max-width: $width-search-box-max;
 }
 
 .app-bar-inner {
-  width: 100%;
+  width: $width-full;
 }
 
 .opacity-none:before {
-  opacity: 0;
+  opacity: $opacity-transparent;
 }
 
 .v-list-item__action:first-child,
 .v-list-item__icon:first-child {
-  margin-right: 14px;
+  margin-right: $space-5;
 }
 
 // User profile edit
 
-.avatar-col {
-  max-width: 180px;
+.v-col.avatar-col {
+  max-width: $max-width-avatar;
 }
 
 // KaTeX stuff
 
-span {
-  .mord.overline {
-    all: inherit;
-  }
+span .mord.overline {
+  all: inherit;
 }

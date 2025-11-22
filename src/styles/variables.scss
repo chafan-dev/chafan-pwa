@@ -1,4 +1,130 @@
+// ============================================
+// Design Tokens - Chafan PWA
+// ============================================
+
+// ============================================
+// Colors
+// ============================================
+
+// Base colors
+$color-white: #fff;
+$color-black: rgb(0, 0, 0);
+$color-black-transparent-20: rgb(0 0 0 / 20%);
+
+// Border and divider colors
+$color-border-light: lightgrey;
+
+// Text colors
+$rich-text-color: rgb(18, 18, 18);
+
+// Shadow colors (for card shadows)
+$shadow-color-light: rgba(85, 85, 85, 0.08);
+$shadow-color-medium: rgba(85, 85, 85, 0.06);
+$shadow-color-faint: rgba(85, 85, 85, 0.03);
+
+// ============================================
+// Typography
+// ============================================
+
+// Font families
 $body-font-family: '-apple-system', 'Roboto', 'BlinkMacSystemFont', 'Helvetica Neue', 'PingFang SC',
   sans-serif, 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei';
+
+$code-font-family: mononoki, Consolas, Liberation Mono, Menlo, Courier, monospace, Apple Color Emoji,
+  Segoe UI Emoji, Noto Color Emoji, Segoe UI Symbol, Android Emoji, EmojiSymbols;
+
+// Line heights
 $rich-text-line-height: 1.7;
-$rich-text-color: rgb(18, 18, 18);
+
+// Font weights
+$font-weight-normal: 400;
+
+// ============================================
+// Spacing Scale (8px base grid)
+// ============================================
+
+$space-0: 0;
+$space-0-5: 2px;   // 0.25 units
+$space-1: 3px;     // ~0.375 units (legacy value)
+$space-1-5: 5px;   // ~0.625 units (legacy value)
+$space-2: 6px;     // 0.75 units (legacy value)
+$space-3: 8px;     // 1 unit (base)
+$space-4: 10px;    // 1.25 units (legacy value)
+$space-5: 14px;    // 1.75 units (legacy value)
+$space-6: 20px;    // 2.5 units
+
+// ============================================
+// Layout
+// ============================================
+
+// Max widths
+$max-width-content: 800px;
+$max-width-sidebar: 400px;
+$max-width-avatar: 180px;
+$max-width-og-card-image: 500px;
+
+// Percentages
+$width-full: 100%;
+$width-search-box-min: 20%;
+$width-search-box-max: 40%;
+$width-bottom-btn: 120%;
+
+// Heights
+$height-viewport: 100vh;
+$max-height-simple-image: 100px;
+$max-height-viewer-image: 500px;
+
+// ============================================
+// Border
+// ============================================
+
+$border-width-thin: 1px;
+$border-width-medium: 2px;
+
+$border-radius-small: 5px;
+$border-radius-medium: 10px;
+
+// ============================================
+// Shadows
+// ============================================
+
+// Bottom button shadow
+$shadow-bottom-btn: 0 0 20px 2px $color-black-transparent-20;
+
+// Card shadows (default theme)
+$shadow-card-default: 0 0 10px -10px $shadow-color-light,
+                      0 0 20px 0 $shadow-color-medium,
+                      0 0 30px 0 $shadow-color-faint;
+
+// Card shadows (blue theme)
+$shadow-card-blue: 0 1px 1px -1px $shadow-color-light,
+                   0 1px 5px 0 $shadow-color-medium,
+                   0 1px 5px 0 $shadow-color-faint;
+
+// ============================================
+// Breakpoints (align with Vuetify)
+// ============================================
+
+$breakpoint-xs: 600px;
+$breakpoint-sm: 960px;
+$breakpoint-md: 1264px;
+$breakpoint-lg: 1904px;
+
+// ============================================
+// Z-index layers
+// ============================================
+
+$z-index-base: 1;
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-tooltip: 1070;
+
+// ============================================
+// Opacity
+// ============================================
+
+$opacity-transparent: 0;
+$opacity-full: 1;
