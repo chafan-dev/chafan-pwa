@@ -4360,6 +4360,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-core@npm:^7.0.0-bridge.0":
+  version: 7.0.0-bridge.0
+  resolution: "babel-core@npm:7.0.0-bridge.0"
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 10c0/f57576e30267be4607d163b7288031d332cf9200ea35efe9fb33c97f834e304376774c28c1f9d6928d6733fcde7041e4010f1248a0519e7730c590d4b07b9608
+  languageName: node
+  linkType: hard
+
 "babel-jest@npm:^27.1.0, babel-jest@npm:^27.5.1":
   version: 27.5.1
   resolution: "babel-jest@npm:27.5.1"
@@ -4973,6 +4982,7 @@ __metadata:
     "@vue/test-utils": "npm:^1.3.6"
     autoprefixer: "npm:^10.4.20"
     axios: "npm:^1.12.2"
+    babel-core: "npm:^7.0.0-bridge.0"
     body-parser: "npm:^1.20.3"
     chafan-vue-editors: "npm:^0.9.4"
     command-line-args: "npm:^6.0.0"
@@ -4991,6 +5001,8 @@ __metadata:
     lint-staged: "npm:^15.2.10"
     lodash: "npm:^4.17.21"
     piexifjs: "npm:^1.0.6"
+    postcss: "npm:^8.5.6"
+    postcss-html: "npm:^1.8.0"
     prettier: "npm:^3.3.3"
     qrious: "npm:^4.0.2"
     register-service-worker: "npm:^1.7.2"
@@ -9349,6 +9361,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-tokens@npm:^9.0.0":
+  version: 9.0.1
+  resolution: "js-tokens@npm:9.0.1"
+  checksum: 10c0/68dcab8f233dde211a6b5fd98079783cbcd04b53617c1250e3553ee16ab3e6134f5e65478e41d82f6d351a052a63d71024553933808570f04dbf828d7921e80e
+  languageName: node
+  linkType: hard
+
 "js-yaml@npm:^3.13.1":
   version: 3.14.2
   resolution: "js-yaml@npm:3.14.2"
@@ -11100,6 +11119,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-html@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "postcss-html@npm:1.8.0"
+  dependencies:
+    htmlparser2: "npm:^8.0.0"
+    js-tokens: "npm:^9.0.0"
+    postcss: "npm:^8.5.0"
+    postcss-safe-parser: "npm:^6.0.0"
+  checksum: 10c0/b018e2bc498019439a84952aae714b8730e1aed3fdb5ca100f8a1695ed4f7b26b178eac7d7e6df278e7fdb855894266308e292a235d020f85de40ac13a3796f8
+  languageName: node
+  linkType: hard
+
 "postcss-loader@npm:^6.1.1":
   version: 6.2.1
   resolution: "postcss-loader@npm:6.2.1"
@@ -11380,6 +11411,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-safe-parser@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "postcss-safe-parser@npm:6.0.0"
+  peerDependencies:
+    postcss: ^8.3.3
+  checksum: 10c0/5b0997b63de6ab4afb4b718a52dd7902e465c21d1f2e516762bcb59047787459b4dc5713132f6a19c9c8c483043b20b8a380a55fb61152ee66cbffcddf3b57f0
+  languageName: node
+  linkType: hard
+
 "postcss-safe-parser@npm:^7.0.1":
   version: 7.0.1
   resolution: "postcss-safe-parser@npm:7.0.1"
@@ -11458,7 +11498,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.2.6, postcss@npm:^8.3.11, postcss@npm:^8.3.5, postcss@npm:^8.4.14, postcss@npm:^8.4.33, postcss@npm:^8.5.6":
+"postcss@npm:^8.2.6, postcss@npm:^8.3.11, postcss@npm:^8.3.5, postcss@npm:^8.4.14, postcss@npm:^8.4.33, postcss@npm:^8.5.0, postcss@npm:^8.5.6":
   version: 8.5.6
   resolution: "postcss@npm:8.5.6"
   dependencies:

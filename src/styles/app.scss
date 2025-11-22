@@ -14,29 +14,29 @@
 }
 
 .compact-row {
-  margin-top: 0 !important;
+  margin-top: 0;
 }
 
 .compact-col {
-  padding-top: 0 !important;
+  padding-top: 0;
 }
 
 .compact-col2 {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .vh-100 {
-  height: 100vh !important;
+  height: 100vh;
 }
 
 .slim-btn {
-  padding: 0 5px !important;
+  padding: 0 5px;
 }
 
 %c-card-base {
   box-shadow: 0 0 10px -10px rgba(85, 85, 85, 0.08), 0 0 20px 0 rgba(85, 85, 85, 0.06),
-    0 0 30px 0 rgba(85, 85, 85, 0.03) !important;
+    0 0 30px 0 rgba(85, 85, 85, 0.03);
 }
 
 .c-card {
@@ -50,7 +50,7 @@
 
 %c-card-blue-base {
   box-shadow: 0 1px 1px -1px rgba(85, 85, 85, 0.08), 0 1px 5px 0 rgba(85, 85, 85, 0.06),
-    0 1px 5px 0 rgba(85, 85, 85, 0.03) !important;
+    0 1px 5px 0 rgba(85, 85, 85, 0.03);
 }
 
 .c-card-blue {
@@ -63,25 +63,25 @@
   background: #fff;
 
   @media screen and (max-width: 600px) {
-    box-shadow: none !important;
+    box-shadow: none;
   }
 }
 
 .less-top-padding {
-  padding-top: 0 !important;
+  padding-top: 0;
 }
 
 .less-left-right-padding {
-  padding-left: 6px !important;
-  padding-right: 6px !important;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 .fixed-narrow-col {
-  max-width: 800px !important;
+  max-width: 800px;
 }
 
 .fixed-narrow-sidecol {
-  max-width: 400px !important;
+  max-width: 400px;
 }
 
 // Editor/Preview
@@ -119,7 +119,7 @@
 .simple-editor h1,
 .simple-editor h2,
 .simple-editor h3 {
-  border-bottom: none !important;
+  border-bottom: none;
   font-family: $body-font-family;
   font-size: $font-size-root;
   color: $rich-text-color;
@@ -136,11 +136,11 @@
 }
 
 .vditor-reset a {
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 .viewer a {
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 .simple-viewer img {
@@ -149,7 +149,7 @@
 }
 
 .title {
-  font-weight: 400 !important;
+  font-weight: 400;
 }
 
 .simple-viewer {
@@ -161,7 +161,7 @@
 .simple-viewer h1,
 .simple-viewer h2,
 .simple-viewer h3 {
-  border-bottom: none !important;
+  border-bottom: none;
   font-family: $body-font-family;
   font-size: $font-size-root;
   color: $rich-text-color;
@@ -210,7 +210,7 @@
 
 //// For ChafanTiptap
 .v-application code {
-  background: none !important;
+  background: none;
 }
 
 .vditor {
@@ -224,10 +224,10 @@
 
 // Comment
 .comment-item {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .comment-reply {
@@ -269,24 +269,24 @@
 }
 
 .opacity-none:before {
-  opacity: 0 !important;
+  opacity: 0;
 }
 
 .v-list-item__action:first-child,
 .v-list-item__icon:first-child {
-  margin-right: 14px !important;
+  margin-right: 14px;
 }
 
 // User profile edit
 
 .avatar-col {
-  max-width: 180px !important;
+  max-width: 180px;
 }
 
 // KaTeX stuff
 
 span {
   .mord.overline {
-    all: inherit !important;
+    all: inherit;
   }
 }

@@ -121,14 +121,14 @@ export default class ContribGraph extends Vue {
 
 .contrib-days {
   font-size: 10px;
-  line-height: 10px !important;
-  padding-left: 0 !important;
+  line-height: 10px;
+  padding-left: 0;
 }
 
 .contrib-months {
   font-size: 10px;
-  line-height: 10px !important;
-  padding-left: 0 !important;
+  line-height: 10px;
+  padding-left: 0;
 }
 
 .contrib-days li:nth-child(odd) {
@@ -144,7 +144,7 @@ export default class ContribGraph extends Vue {
 }
 
 .contrib-squares {
-  padding-left: 0 !important;
+  padding-left: 0;
 }
 
 .contrib-squares li {

@@ -76,6 +76,6 @@ export default class Upvote extends CVue {
 <style>
 /*- Must be here to override properly */
 .theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
-  background-color: rgba(0, 0, 0, 0.02) !important;
+  background-color: rgba(0, 0, 0, 0.02);
 }
 </style>
