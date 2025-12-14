@@ -7,6 +7,8 @@ node_modules
 /dist
 
 # local env files
+.env
+pwa.env
 .local_env
 .env.local
 .env.*.local

@@ -1,3 +1,25 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useTheme } from '@/composables';
+
+const props = withDefaults(defineProps<{
+  flat?: boolean;
+  divider?: boolean;
+  noGutter?: boolean;
+}>(), {
+  flat: false,
+  divider: false,
+  noGutter: false,
+});
+
+const { theme } = useTheme();
+
+const classes = computed(() => ({
+  [theme.value.baseCard.classKey]: !props.flat,
+  'pa-2': !props.noGutter,
+}));
+</script>
+
 <template>
   <v-sheet>
     <v-card v-bind="$attrs" :class="classes" :flat="flat">
@@ -7,21 +29,3 @@
     <v-divider v-if="divider" class="mt-3" />
   </v-sheet>
 </template>
-
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { CVue } from '@/common';
-
-@Component({
-  name: 'BaseCard',
-})
-export default class BaseCard extends CVue {
-  @Prop({ default: false }) private readonly flat!: boolean;
-  @Prop({ default: false }) private readonly divider!: boolean;
-  @Prop({ default: false }) private readonly noGutter!: boolean;
-
-  get classes() {
-    return { [this.theme.baseCard.classKey]: !this.flat, 'pa-2': !this.noGutter };
-  }
-}
-</script>

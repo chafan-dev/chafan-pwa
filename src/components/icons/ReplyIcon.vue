@@ -1,13 +1,9 @@
 <template>
-  <v-icon v-bind="$attrs" v-on="$listeners">{{ svgPath }}</v-icon>
+  <v-icon v-bind="$attrs">{{ svgPath }}</v-icon>
 </template>
 
-<script>
+<script setup lang="ts">
 import { mdiReply } from '@mdi/js';
 
-export default {
-  data: () => ({
-    svgPath: mdiReply,
-  }),
-};
+const svgPath = mdiReply;
 </script>

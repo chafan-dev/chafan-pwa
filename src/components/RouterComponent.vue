@@ -2,9 +2,6 @@
   <router-view></router-view>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-
-@Component
-export default class RouterComponent extends Vue {}
+<script setup lang="ts">
+// No props or logic needed
 </script>
