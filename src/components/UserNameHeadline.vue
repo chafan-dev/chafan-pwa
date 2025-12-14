@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { IUserPreview } from '@/interfaces';
+
+defineProps<{
+  userPreview: IUserPreview;
+}>();
+</script>
+
 <template>
   <div class="pt-6">
     <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none headline">
@@ -16,13 +24,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { IUserPreview } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
-@Component
-export default class userNameHeadline extends Vue {
-  @Prop() public readonly userPreview!: IUserPreview;
-}
-</script>

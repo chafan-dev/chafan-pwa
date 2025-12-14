@@ -1,13 +1,9 @@
 <template>
-  <v-icon v-bind="$attrs" v-on="$listeners" small>{{ svgPath }}</v-icon>
+  <v-icon v-bind="$attrs" small>{{ svgPath }}</v-icon>
 </template>
 
-<script>
+<script setup lang="ts">
 import { mdiEarth } from '@mdi/js';
 
-export default {
-  data: () => ({
-    svgPath: mdiEarth,
-  }),
-};
+const svgPath = mdiEarth;
 </script>

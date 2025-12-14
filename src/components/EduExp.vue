@@ -1,3 +1,16 @@
+<script setup lang="ts">
+withDefaults(defineProps<{
+  schoolName: string;
+  levelName: string;
+  major?: string;
+  enrollYear?: string;
+  graduateYear?: string;
+  compact?: boolean;
+}>(), {
+  compact: false,
+});
+</script>
+
 <template>
   <div>
     <template v-if="compact">
@@ -25,17 +38,3 @@
     </template>
   </div>
 </template>
-
-<script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-
-@Component
-export default class EduExp extends Vue {
-  @Prop() readonly schoolName!: string;
-  @Prop() readonly levelName!: string;
-  @Prop() readonly major: string | undefined;
-  @Prop() readonly enrollYear: string | undefined;
-  @Prop() readonly graduateYear: string | undefined;
-  @Prop({ default: false }) readonly compact!: boolean;
-}
-</script>

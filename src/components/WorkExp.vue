@@ -1,3 +1,13 @@
+<script setup lang="ts">
+withDefaults(defineProps<{
+  companyName: string;
+  positionName: string;
+  compact?: boolean;
+}>(), {
+  compact: false,
+});
+</script>
+
 <template>
   <div>
     <template v-if="compact"> {{ companyName }} · {{ positionName }} </template>
@@ -7,14 +17,3 @@
     </template>
   </div>
 </template>
-
-<script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-
-@Component
-export default class WorkExp extends Vue {
-  @Prop() readonly companyName!: string;
-  @Prop() readonly positionName!: string;
-  @Prop({ default: false }) readonly compact!: boolean;
-}
-</script>

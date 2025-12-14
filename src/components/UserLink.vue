@@ -2,7 +2,7 @@
   <v-menu
     v-if="clickable"
     :disabled="!enablePopup"
-    :open-on-hover="!$vuetify.breakpoint.mobile"
+    :open-on-hover="!breakpoint.mobile"
     bottom
     offset-y
     open-delay="400"
@@ -27,28 +27,31 @@
   <span v-else> <Avatar v-if="showAvatar" :userPreview="userPreview" /> {{ name }} </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { IUserPreview } from '@/interfaces';
-import { Component, Prop } from 'vue-property-decorator';
 import Avatar from '@/components/Avatar.vue';
 import UserCard from '@/components/UserCard.vue';
-import { CVue } from '@/common';
+import { useTheme, useResponsive } from '@/composables';
 
-@Component({
-  name: 'UserLink',
-  components: { Avatar, UserCard },
-})
-export default class UserLink extends CVue {
-  @Prop() public readonly userPreview!: IUserPreview;
-  @Prop({ default: false }) public readonly showAvatar!: boolean;
-  @Prop({ default: true }) public readonly clickable!: boolean;
-  @Prop({ default: true }) public readonly enablePopup!: boolean;
+const props = withDefaults(defineProps<{
+  userPreview: IUserPreview;
+  showAvatar?: boolean;
+  clickable?: boolean;
+  enablePopup?: boolean;
+}>(), {
+  showAvatar: false,
+  clickable: true,
+  enablePopup: true,
+});
 
-  get name() {
-    if (this.userPreview.full_name) {
-      return this.userPreview.full_name;
-    }
-    return `@${this.userPreview.handle}`;
+const { theme } = useTheme();
+const { breakpoint } = useResponsive();
+
+const name = computed(() => {
+  if (props.userPreview.full_name) {
+    return props.userPreview.full_name;
   }
-}
+  return `@${props.userPreview.handle}`;
+});
 </script>
