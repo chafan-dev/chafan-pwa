@@ -20,9 +20,8 @@
     "dayjs": "^1.11.13",
     "diff": "^5.2.0",
     "dompurify": "^3.2.6",
-    "highlightjs": "^9.16.2",
+    "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
-    "intersection-observer": "^0.12.2",
     "lodash": "^4.17.21",
     "piexifjs": "^1.0.6",
     "qrious": "^4.0.2",
@@ -80,7 +79,10 @@
   },
   "resolutions": {
     "node-forge": "^1.3.3",
-    "glob": "^10.5.0"
+    "glob": "^10.5.0",
+    "js-yaml": "^4.1.1",
+    "postcss": "^8.4.31",
+    "webpack-dev-server": "^5.2.1"
   },
   "postcss": {
     "plugins": {

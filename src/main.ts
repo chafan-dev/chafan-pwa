@@ -4,7 +4,6 @@ import 'core-js/stable';
 // Import Component hooks before component definitions
 import './component-hooks';
 import Vue from 'vue';
-import 'intersection-observer';
 
 // styles
 import './styles/app.scss';
