@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
         <ValidationObserver v-slot="{ handleSubmit, reset }">
           <v-card class="ma-3 pa-3" outlined>
             <v-card-title primary-title>

@@ -5,7 +5,6 @@
         'col-8': isDesktop,
         'fixed-narrow-col': isNarrowFeedUI,
       }"
-      fluid
     >
       <div v-if="article" class="my-4 px-2">
         <div class="d-flex align-center">

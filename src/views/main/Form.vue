@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row v-if="!loading" class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
         <div v-if="!showResponse">
           <h2 class="ml-2">{{ form.title }}</h2>
           <div>

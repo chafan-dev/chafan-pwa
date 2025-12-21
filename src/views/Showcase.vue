@@ -2,7 +2,7 @@
   <v-main>
     <v-container fill-height fluid>
       <v-row justify="center">
-        <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }" fluid>
+        <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
           <v-card>
             <v-card-text>
               <ContribGraphs />

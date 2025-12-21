@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': isDesktop }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }">
         <ArticleColumnCard v-if="articleColumn" :articleColumn="articleColumn" />
         <v-skeleton-loader v-else type="card" />
         <v-divider class="my-1 mx-2" />

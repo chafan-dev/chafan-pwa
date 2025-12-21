@@ -9,7 +9,6 @@
           'less-left-right-padding': !isDesktop,
         }"
         class="mb-12"
-        fluid
       >
         <!-- Question info/editor -->
         <div>
