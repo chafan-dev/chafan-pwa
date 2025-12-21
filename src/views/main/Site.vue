@@ -9,7 +9,6 @@
           'less-left-right-padding': !isDesktop,
         }"
         class="mb-12 mx-4"
-        fluid
       >
         <div class="d-flex mb-2" v-if="site">
           <div v-if="enableQuestionEditor">

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-col :class="{ 'col-8': isDesktop }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }">
         <ValidationObserver v-slot="{ handleSubmit, reset }">
           <div v-if="userProfile">
             <v-card-title primary-title>

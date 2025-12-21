@@ -4,7 +4,7 @@
 
     <v-row class="pt-3 pb-10" justify="center">
       <!-- Feed column -->
-      <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }" fluid>
+      <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }">
         <template v-if="userProfile">
           <div class="d-flex justify-space-between mb-3 mx-4">
             <NewContentActionBar />

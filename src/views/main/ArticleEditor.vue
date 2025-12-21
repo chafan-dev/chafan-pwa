@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': isDesktop }" fluid>
+      <v-col :class="{ 'col-8': isDesktop }">
         <div>
           <v-overlay v-model="overlay" opacity="0.5" z-index="10">
             <v-progress-circular indeterminate />

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-col :class="{ 'col-10': $vuetify.breakpoint.mdAndUp }" fluid>
+      <v-col :class="{ 'col-10': $vuetify.breakpoint.mdAndUp }">
         <div class="ma-3 d-flex">
           <span class="headline primary--text">用户中心</span>
           <v-spacer />
