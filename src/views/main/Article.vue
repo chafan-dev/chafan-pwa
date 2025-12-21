@@ -2,7 +2,7 @@
   <v-row :loading="loading" justify="center">
     <v-col
       :class="{
-        'col-8': isDesktop,
+        'col-8': isDesktop && !isNarrowFeedUI,
         'fixed-narrow-col': isNarrowFeedUI,
       }"
     >

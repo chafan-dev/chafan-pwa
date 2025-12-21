@@ -4,11 +4,11 @@
     <v-row class="pt-3 pb-10" justify="center" v-else>
       <v-col
         :class="{
-          'col-8': isDesktop,
+          'col-8': isDesktop && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !isDesktop,
         }"
-        class="mb-12 mx-4"
+        class="mb-12"
       >
         <div class="d-flex mb-2" v-if="site">
           <div v-if="enableQuestionEditor">
