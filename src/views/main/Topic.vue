@@ -8,11 +8,10 @@
     <v-row v-else class="mb-12" justify="center">
       <v-col
         :class="{
-          'col-8': $vuetify.breakpoint.mdAndUp,
+          'col-8': $vuetify.breakpoint.mdAndUp && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !$vuetify.breakpoint.mdAndUp,
         }"
-        fluid
       >
         <v-tabs>
           <v-tab>问题</v-tab>

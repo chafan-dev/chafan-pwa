@@ -4,7 +4,7 @@
     <v-row v-else class="px-2" justify="center">
       <v-col
         :class="{
-          'col-8': isDesktop,
+          'col-8': isDesktop && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !isDesktop,
         }"
