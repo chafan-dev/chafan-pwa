@@ -21,44 +21,39 @@
   </span>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
-
 import QRious from 'qrious';
-import { commitAddNotification } from '@/store/main/mutations';
-import { CVue } from '@/common';
+import { useResponsive, useNotification } from '@/composables';
 
-@Component({
-  components: { ShareIcon },
-})
-export default class ShareCardButton extends CVue {
-  @Prop() private readonly link!: string;
-  @Prop() private readonly linkText!: string;
-  @Prop() private readonly onClickShare!: (() => void) | undefined;
+const props = defineProps<{
+  link: string;
+  linkText?: string;
+  onClickShare?: () => void;
+}>();
 
-  private showSharingCard = false;
-  private shareQrCodeUrl = '';
+const { isDesktop } = useResponsive();
+const { notifySuccess } = useNotification();
 
-  private showSharingCardDialog() {
-    if (this.onClickShare) {
-      this.onClickShare();
-    }
-    this.showSharingCard = true;
-    const qr = new QRious({
-      value: window.location.origin + this.link,
-    });
-    this.shareQrCodeUrl = qr.toDataURL();
+const showSharingCard = ref(false);
+const shareQrCodeUrl = ref('');
+
+function showSharingCardDialog() {
+  if (props.onClickShare) {
+    props.onClickShare();
   }
+  showSharingCard.value = true;
+  const qr = new QRious({
+    value: window.location.origin + props.link,
+  });
+  shareQrCodeUrl.value = qr.toDataURL();
+}
 
-  private async onClickCopy() {
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText('https://cha.fan' + this.link);
-      await commitAddNotification(this.$store, {
-        color: 'success',
-        content: '已复制到剪贴板',
-      });
-    }
+async function onClickCopy() {
+  if (navigator.clipboard) {
+    await navigator.clipboard.writeText('https://cha.fan' + props.link);
+    notifySuccess('已复制到剪贴板');
   }
 }
 </script>

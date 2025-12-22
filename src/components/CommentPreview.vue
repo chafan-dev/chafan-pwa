@@ -13,24 +13,20 @@
   </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { IComment } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import Avatar from '@/components/Avatar.vue';
 
-@Component({
-  components: { Avatar },
-})
-export default class CommentPreview extends Vue {
-  @Prop() public readonly comment!: IComment;
+const props = defineProps<{
+  comment: IComment;
+}>();
 
-  get shortComment() {
-    if (!this.comment.content.rendered_text) {
-      return null;
-    }
-    return this.comment.content.rendered_text.length > 20
-      ? this.comment.content.rendered_text.substring(0, 20) + '...'
-      : this.comment.content.rendered_text;
+const shortComment = computed(() => {
+  if (!props.comment.content.rendered_text) {
+    return null;
   }
-}
+  return props.comment.content.rendered_text.length > 20
+    ? props.comment.content.rendered_text.substring(0, 20) + '...'
+    : props.comment.content.rendered_text;
+});
 </script>
