@@ -38,6 +38,6 @@ jobs:
       - name: Unit tests
         run: |
           yarn --version
-          #yarn run test:unit
+          yarn run test:unit
       - name: CSS Lint
         run: npm run lint:css || true
