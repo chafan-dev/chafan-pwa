@@ -19,81 +19,88 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { LiteVditorCF } from 'chafan-vue-editors';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { editor_T } from '@/interfaces';
 import { getVditorUploadConfig } from '@/common';
-import { readToken } from '@/store/main/getters';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { ChafanTiptap, LiteVditorCF },
-})
-export default class SimpleEditor extends Vue {
-  @Prop() public readonly initialValue: string | undefined;
-  @Prop() public readonly placeholder: string | undefined;
-  @Prop() public readonly editorProp: editor_T | undefined;
-  @Prop({ default: false }) public readonly showMenu!: boolean;
-  @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
-
-  get simpleVditor() {
-    return this.$refs.simpleVditor as any;
+const props = withDefaults(
+  defineProps<{
+    initialValue?: string;
+    placeholder?: string;
+    editorProp?: editor_T;
+    showMenu?: boolean;
+    onMentionedHandles?: (handles: string[]) => void;
+  }>(),
+  {
+    showMenu: false,
   }
+);
 
-  get editor() {
-    if (this.editorProp) {
-      return this.editorProp;
+const { token } = useAuth();
+
+const tiptap = ref<InstanceType<typeof ChafanTiptap> | null>(null);
+const simpleVditor = ref<any>(null);
+
+const editor = computed(() => {
+  if (props.editorProp) {
+    return props.editorProp;
+  }
+  return 'tiptap';
+});
+
+const vditorUploadConfig = computed(() => {
+  return getVditorUploadConfig(token.value);
+});
+
+function getContent(): string | null {
+  if (editor.value === 'tiptap') {
+    return tiptap.value?.getContent() ?? null;
+  } else {
+    return simpleVditor.value?.content ?? null;
+  }
+}
+
+function setContent(value: string | null) {
+  if (value) {
+    if (editor.value === 'tiptap') {
+      tiptap.value?.setContent(value);
+    } else if (simpleVditor.value) {
+      simpleVditor.value.content = value;
     }
-    return 'tiptap';
-  }
-
-  get tiptap() {
-    return this.$refs.tiptap as ChafanTiptap;
-  }
-
-  public getContent(): string | null {
-    if (this.editor === 'tiptap') {
-      return this.tiptap.getContent();
+  } else {
+    if (editor.value === 'tiptap') {
+      tiptap.value?.reset();
     } else {
-      return this.simpleVditor.content;
-    }
-  }
-
-  public setContent(value: string | null) {
-    if (value) {
-      if (this.editor === 'tiptap') {
-        this.tiptap.setContent(value);
-      } else {
-        this.simpleVditor.content = value;
-      }
-    } else {
-      if (this.editor === 'tiptap') {
-        this.tiptap.reset();
-      } else {
-        this.simpleVditor.reset();
-      }
-    }
-  }
-
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
-  }
-
-  public getTextContent() {
-    if (this.editor === 'tiptap') {
-      return this.tiptap.getText();
-    } else {
-      return this.simpleVditor.getText();
-    }
-  }
-
-  public reset() {
-    if (this.editor === 'tiptap') {
-      this.tiptap.reset();
-    } else {
-      this.simpleVditor.initVditor();
+      simpleVditor.value?.reset();
     }
   }
 }
+
+function getTextContent(): string | null {
+  if (editor.value === 'tiptap') {
+    return tiptap.value?.getText() ?? null;
+  } else {
+    return simpleVditor.value?.getText() ?? null;
+  }
+}
+
+function reset() {
+  if (editor.value === 'tiptap') {
+    tiptap.value?.reset();
+  } else {
+    simpleVditor.value?.initVditor();
+  }
+}
+
+defineExpose({
+  getContent,
+  setContent,
+  getTextContent,
+  reset,
+  editor,
+});
 </script>

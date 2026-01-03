@@ -27,51 +27,45 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
 import { api2 } from '@/api2';
-import { Component, Prop } from 'vue-property-decorator';
-import { commitAddNotification } from '@/store/main/mutations';
 import UserSearch from '@/components/UserSearch.vue';
-import AccountIcon from '@/components/icons/AccountIcon.vue';
-import SiteIcon from '@/components/icons/SiteIcon.vue';
-import ShieldCheckIcon from '@/components/icons/ShieldCheckIcon.vue';
 import { ISite } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { CVue } from '@/common';
+import { useAuth, useNotification } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { UserSearch, AccountIcon, ShieldCheckIcon, SiteIcon },
-})
-export default class Invite extends CVue {
-  @Prop() public readonly site!: ISite;
+const props = defineProps<{
+  site: ISite;
+}>();
 
-  private friendId: string | null = null;
-  private showDialog = false;
-  private intermediate = false;
+const { token } = useAuth();
+const { notifyError, expectOkAndCommitMsg } = useNotification();
 
-  private async submitInviteFriends() {
-    this.intermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (!this.friendId) {
-        commitAddNotification(this.$store, {
-          content: '用户不能为空',
-          color: 'error',
-        });
-        return;
-      }
-      const response = await api2.inviteUser(this.token, {
-        site_uuid: this.site.uuid,
-        user_uuid: this.friendId,
-      });
-      if (response) {
-        this.expectOkAndCommitMsg(response.data, '已邀请');
-        this.intermediate = false;
-        this.showDialog = false;
-        setTimeout(() => {
-          this.friendId = null;
-        }, 100);
-      }
+const friendId = ref<string | null>(null);
+const showDialog = ref(false);
+const intermediate = ref(false);
+
+async function submitInviteFriends() {
+  intermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (!friendId.value) {
+      notifyError('用户不能为空');
+      return;
+    }
+    const response = await api2.inviteUser(token.value, {
+      site_uuid: props.site.uuid,
+      user_uuid: friendId.value,
     });
-  }
+    if (response) {
+      expectOkAndCommitMsg(response.data, '已邀请');
+      intermediate.value = false;
+      showDialog.value = false;
+      setTimeout(() => {
+        friendId.value = null;
+      }, 100);
+    }
+  });
 }
 </script>

@@ -282,7 +282,7 @@ export default class Article extends CVue {
   }
 
   private onClickShare() {
-    this.articlePreviewBody = (this.$refs.viewer as Viewer).textContent || '';
+    this.articlePreviewBody = (this.$refs.viewer as any).textContent || '';
     if (this.articlePreviewBody.length > 40) {
       this.articlePreviewBody = this.articlePreviewBody.substring(0, 40) + '...';
     }

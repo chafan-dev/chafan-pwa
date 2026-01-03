@@ -13,31 +13,36 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Emit, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
 import { VditorViewerCF } from 'chafan-vue-editors';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
-import { CVue, postProcessViewerDOM } from '@/common';
+import { postProcessViewerDOM } from '@/common';
 import { IRichText } from '@/interfaces';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { ChafanTiptap, LightboxGroup, VditorViewerCF },
-  data: function () {
-    return {
-      contentElem: null,
-    };
-  },
-})
-export default class Viewer extends CVue {
-  public textContent: string | null = null;
-  @Prop() private readonly content!: IRichText;
+const props = defineProps<{
+  content: IRichText;
+}>();
 
-  @Emit('viewer-ready')
-  private onViewerReady(contentElem: HTMLElement) {
-    this.$data.contentElem = contentElem;
-    postProcessViewerDOM(this.token, contentElem);
-    this.textContent = contentElem.innerText;
-  }
+const emit = defineEmits<{
+  (e: 'viewer-ready', contentElem: HTMLElement): void;
+}>();
+
+const { token } = useAuth();
+
+const contentElem = ref<HTMLElement | null>(null);
+const textContent = ref<string | null>(null);
+
+function onViewerReady(elem: HTMLElement) {
+  contentElem.value = elem;
+  postProcessViewerDOM(token.value, elem);
+  textContent.value = elem.innerText;
+  emit('viewer-ready', elem);
 }
+
+defineExpose({
+  textContent,
+});
 </script>

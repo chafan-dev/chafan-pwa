@@ -14,38 +14,38 @@
   ></v-autocomplete>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch } from 'vue';
 import { apiSearch } from '@/api/search';
+import { ITopic } from '@/interfaces';
 
-export default {
-  props: ['token'],
-  data() {
-    return {
-      loading: false,
-      topics: [],
-      search: null,
-      selectedTopicId: null,
-      states: [],
-    };
-  },
-  watch: {
-    search(val) {
-      if (val && val !== this.selectedTopicId) {
-        this.querySelections(val);
-      }
-    },
-  },
-  methods: {
-    querySelections(v) {
-      this.loading = true;
-      apiSearch.searchTopics(this.token, v).then((response) => {
-        this.topics = response.data;
-        this.loading = false;
-      });
-    },
-    getItemText(item) {
-      return item.name;
-    },
-  },
-};
+const props = defineProps<{
+  token: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'input', value: string | null): void;
+}>();
+
+const loading = ref(false);
+const topics = ref<ITopic[]>([]);
+const search = ref<string | null>(null);
+const selectedTopicId = ref<string | null>(null);
+
+watch(search, (val) => {
+  if (val && val !== selectedTopicId.value) {
+    querySelections(val);
+  }
+});
+
+async function querySelections(v: string) {
+  loading.value = true;
+  const response = await apiSearch.searchTopics(props.token, v);
+  topics.value = response.data;
+  loading.value = false;
+}
+
+function getItemText(item: ITopic) {
+  return item.name;
+}
 </script>

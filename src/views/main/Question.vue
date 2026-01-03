@@ -646,7 +646,7 @@ export default class Question extends CVue {
   private async commitQuestionEdit() {
     this.commitQuestionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      const descEditor = this.$refs.descEditor as SimpleEditor;
+      const descEditor = this.$refs.descEditor as any;
       if (this.questionPage && (this.newQuestionTitle || descEditor.getContent())) {
         const responses = await Promise.all(
           this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
