@@ -39,64 +39,67 @@
   </div>
 </template>
 
-<script lang="ts">
-import { ISubmission, ISubmissionUpvotes } from '@/interfaces';
+<script setup lang="ts">
+import { computed } from 'vue';
+import { ISubmission, ISubmissionUpvotes, IComment } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
-import { Component, Prop } from 'vue-property-decorator';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
-import { CVue } from '@/common';
 import SubmissionUpvotes from '@/components/submission/SubmissionUpvotes.vue';
+import { useAuth, useTheme, useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    SubmissionUpvotes,
-    UpvoteStat,
-    BaseCard,
-    SiteBtn,
-    LinkIcon,
-    UpvoteIcon,
-    CommentsIcon,
-  },
-})
-export default class SubmissionPreview extends CVue {
-  @Prop() private readonly submission!: ISubmission;
-  @Prop() public readonly upvotesPlaceholder: ISubmissionUpvotes | undefined;
-  @Prop() public readonly disabledPlaceholder: boolean | undefined;
+const props = defineProps<{
+  submission: ISubmission;
+  upvotesPlaceholder?: ISubmissionUpvotes;
+  disabledPlaceholder?: boolean;
+}>();
 
-  get shortDesc() {
-    if (!this.submission.desc || !this.submission.desc.rendered_text) {
-      return null;
-    }
-    const d = this.submission.desc.rendered_text.trim();
-    if (d.length > 60) {
-      return d.substring(0, 60) + '..';
+const { userProfile } = useAuth();
+const { theme } = useTheme();
+const { isDesktop } = useResponsive();
+
+const shortDesc = computed(() => {
+  if (!props.submission.desc || !props.submission.desc.rendered_text) {
+    return null;
+  }
+  const d = props.submission.desc.rendered_text.trim();
+  if (d.length > 60) {
+    return d.substring(0, 60) + '..';
+  } else {
+    return d;
+  }
+});
+
+const disabled = computed(() => {
+  if (props.disabledPlaceholder !== undefined) {
+    return props.disabledPlaceholder;
+  }
+  return !userProfile.value || userProfile.value.uuid === props.submission.author.uuid;
+});
+
+function shortUrl(d: string) {
+  if (isDesktop.value) {
+    if (d.length > 40) {
+      return d.substring(0, 40) + '..';
     } else {
       return d;
     }
+  } else {
+    const url = new URL(d);
+    return url.protocol + '//' + url.host;
   }
+}
 
-  get disabled() {
-    if (this.disabledPlaceholder !== undefined) {
-      return this.disabledPlaceholder;
-    }
-    return !this.userProfile || this.userProfile.uuid === this.submission.author.uuid;
-  }
-
-  private shortUrl(d: string) {
-    if (this.$vuetify.breakpoint.mdAndUp) {
-      if (d.length > 40) {
-        return d.substring(0, 40) + '..';
-      } else {
-        return d;
-      }
-    } else {
-      const url = new URL(d);
-      return url.protocol + '//' + url.host;
-    }
-  }
+function recursiveCommentsCount(comments: IComment[]): number {
+  return (
+    comments.length +
+    comments.reduce(
+      (sum, comment) => sum + recursiveCommentsCount(comment.child_comments),
+      0
+    )
+  );
 }
 </script>

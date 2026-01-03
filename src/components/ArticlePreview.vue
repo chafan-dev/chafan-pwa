@@ -26,25 +26,26 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { IArticlePreview } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import BaseCard from '@/components/base/BaseCard.vue';
 
-@Component({
-  components: { BaseCard },
-})
-export default class ArticlePreview extends Vue {
-  @Prop() public readonly articlePreview!: IArticlePreview;
-  @Prop({ default: true }) public readonly showColumnName!: boolean;
-
-  get shortBodyText() {
-    const d = this.articlePreview.body_text!;
-    if (d.length > 40) {
-      return d.substring(0, 40) + '..';
-    } else {
-      return d;
-    }
+const props = withDefaults(
+  defineProps<{
+    articlePreview: IArticlePreview;
+    showColumnName?: boolean;
+  }>(),
+  {
+    showColumnName: true,
   }
-}
+);
+
+const shortBodyText = computed(() => {
+  const d = props.articlePreview.body_text!;
+  if (d.length > 40) {
+    return d.substring(0, 40) + '..';
+  } else {
+    return d;
+  }
+});
 </script>

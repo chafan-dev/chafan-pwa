@@ -38,38 +38,38 @@
     />
   </span>
 </template>
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+
+<script setup lang="ts">
+import { ref } from 'vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
-import { CVue } from '@/common';
+import { useTheme } from '@/composables';
 
-@Component({
-  components: { UpvoteBtn, UpvotedBtn },
-})
-export default class Upvote extends CVue {
-  @Prop() public readonly upvotesCount!: number;
-  @Prop() public readonly upvoted!: boolean;
-  @Prop() public readonly disabled!: boolean;
-  @Prop() public readonly onVote!: () => void;
-  @Prop() public readonly onCancelVote!: () => void;
+const props = defineProps<{
+  upvotesCount: number;
+  upvoted: boolean;
+  disabled: boolean;
+  onVote: () => void | Promise<void>;
+  onCancelVote: () => void | Promise<void>;
+}>();
 
-  private cancelUpvoteIntermediate = false;
-  private upvoteIntermediate = false;
-  private showCancelUpvoteDialog: boolean = false;
+const { theme } = useTheme();
 
-  private async _onUpvoteClick() {
-    this.upvoteIntermediate = true;
-    await this.onVote();
-    this.upvoteIntermediate = false;
-  }
+const cancelUpvoteIntermediate = ref(false);
+const upvoteIntermediate = ref(false);
+const showCancelUpvoteDialog = ref(false);
 
-  private async onConfirmCancel() {
-    this.cancelUpvoteIntermediate = true;
-    await this.onCancelVote();
-    this.showCancelUpvoteDialog = false;
-    this.cancelUpvoteIntermediate = false;
-  }
+async function _onUpvoteClick() {
+  upvoteIntermediate.value = true;
+  await props.onVote();
+  upvoteIntermediate.value = false;
+}
+
+async function onConfirmCancel() {
+  cancelUpvoteIntermediate.value = true;
+  await props.onCancelVote();
+  showCancelUpvoteDialog.value = false;
+  cancelUpvoteIntermediate.value = false;
 }
 </script>
 

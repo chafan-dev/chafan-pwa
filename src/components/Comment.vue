@@ -193,9 +193,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { commitAddNotification } from '@/store/main/mutations';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router/composables';
 import UserLink from '@/components/UserLink.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import Viewer from '@/components/Viewer.vue';
@@ -211,213 +211,193 @@ import { rankComments } from '@/utils';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import UpvotedIcon from '@/components/icons/UpvotedIcon.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
-import { CVue } from '@/common';
 import DebugSpan from '@/components/base/DebugSpan.vue';
+import { useAuth, useDayjs, useNotification } from '@/composables';
+import store from '@/store';
 
-@Component({
+defineOptions({
   name: 'Comment',
-  components: {
-    DebugSpan,
-    UpvoteStat,
-    UpvotedIcon,
-    UserLink,
-    EditIcon,
-    CommentsIcon,
-    SimpleEditor,
-    ReplyIcon,
-    BroadcastIcon,
-    DeleteIcon,
-    UpvoteIcon,
-    Viewer,
-  },
-})
-export default class Comment extends CVue {
-  @Prop() private readonly comment!: IComment;
-  @Prop() private readonly writable!: boolean;
-  @Prop({ default: 0 }) private readonly depth!: number;
-  @Prop() private readonly siteId: string | undefined;
-  private showEditor: boolean = false;
-  private showUpdateEditor: boolean = false;
-  private childComments: IComment[] | null = null;
-  private sharedToTimeline = false;
-  private childCommentsExpanded = true;
-  private submitIntermediate = false;
-  private showDeleteConfirm = false;
-  private upvotes: ICommentUpvotes | null = null;
-  private upvoteIntermediate: boolean = false;
-  private cancelUpvoteIntermediate: boolean = false;
-  private showCancelUpvoteDialog: boolean = false;
+});
 
-  private mentioned: string[] = [];
+const props = withDefaults(
+  defineProps<{
+    comment: IComment;
+    writable: boolean;
+    depth?: number;
+    siteId?: string;
+  }>(),
+  {
+    depth: 0,
+  }
+);
 
-  get answerCommentId() {
-    const acid = this.$route.params.acid;
-    if (acid) {
-      return acid;
+const route = useRoute();
+const { token, userProfile, loggedIn } = useAuth();
+const { dayjs, fromNow } = useDayjs();
+const { notifyError, notifySuccess, notifyInfo } = useNotification();
+
+const showEditor = ref(false);
+const showUpdateEditor = ref(false);
+const childComments = ref<IComment[] | null>(null);
+const sharedToTimeline = ref(false);
+const childCommentsExpanded = ref(true);
+const submitIntermediate = ref(false);
+const showDeleteConfirm = ref(false);
+const upvotes = ref<ICommentUpvotes | null>(null);
+const upvoteIntermediate = ref(false);
+const cancelUpvoteIntermediate = ref(false);
+const showCancelUpvoteDialog = ref(false);
+const mentioned = ref<string[]>([]);
+
+const commentReplyEditor = ref<InstanceType<typeof SimpleEditor> | null>(null);
+const commentUpdateEditor = ref<InstanceType<typeof SimpleEditor> | null>(null);
+
+const answerCommentId = computed(() => {
+  const acid = route.params.acid;
+  return acid || null;
+});
+
+const articleCommentId = computed(() => {
+  const acid = route.params.article_comment_id;
+  return acid || null;
+});
+
+const submissionCommentId = computed(() => {
+  const scid = route.params.submission_comment_id;
+  return scid || null;
+});
+
+const questionCommentId = computed(() => {
+  const qcid = route.params.qcid;
+  return qcid || null;
+});
+
+const currentUserIsAuthor = computed(() => {
+  return userProfile.value?.uuid === props.comment.author.uuid;
+});
+
+onMounted(() => {
+  upvotes.value = {
+    comment_uuid: props.comment.uuid,
+    count: props.comment.upvotes_count,
+    upvoted: props.comment.upvoted,
+  };
+  childComments.value = rankComments(dayjs, props.comment.child_comments);
+  sharedToTimeline.value = props.comment.shared_to_timeline;
+});
+
+function recursiveCommentsCount(comments: IComment[]): number {
+  return (
+    comments.length +
+    comments.reduce(
+      (sum, comment) => sum + recursiveCommentsCount(comment.child_comments),
+      0
+    )
+  );
+}
+
+async function submitNewReplyBody() {
+  const editor = commentReplyEditor.value;
+  if (!editor?.getContent()) {
+    notifyError('评论内容不能为空');
+    return;
+  }
+  await dispatchCaptureApiError(store, async () => {
+    submitIntermediate.value = true;
+    const response = await apiComment.postComment(token.value, {
+      site_uuid: props.siteId,
+      parent_comment_uuid: props.comment.uuid,
+      content: {
+        source: editor!.getContent()!,
+        rendered_text: editor!.getTextContent() || '',
+        editor: editor!.editor,
+      },
+      mentioned: mentioned.value,
+    });
+    const comment = response.data;
+    if (childComments.value === null) {
+      childComments.value = [];
+    }
+    childComments.value.unshift(comment);
+    editor!.reset();
+    childCommentsExpanded.value = true;
+    showEditor.value = false;
+    submitIntermediate.value = false;
+  });
+}
+
+async function submitUpdateCommentBody() {
+  const editor = commentUpdateEditor.value;
+  if (!editor?.getContent()) {
+    notifyError('评论内容不能为空');
+    return;
+  }
+  await dispatchCaptureApiError(store, async () => {
+    submitIntermediate.value = true;
+    await apiComment.updateComment(token.value, props.comment.uuid, {
+      content: {
+        source: editor!.getContent()!,
+        rendered_text: editor!.getTextContent() || '',
+        editor: editor!.editor,
+      },
+      mentioned: mentioned.value,
+    });
+    notifySuccess('评论更新成功');
+    showUpdateEditor.value = false;
+    props.comment.content.source = editor!.getContent()!;
+    submitIntermediate.value = false;
+  });
+}
+
+async function broadcastComment() {
+  if (props.comment.shared_to_timeline) {
+    notifyInfo('已经转发过了');
+    return;
+  }
+  sharedToTimeline.value = (
+    await apiComment.updateComment(token.value, props.comment.uuid, {
+      shared_to_timeline: true,
+    })
+  ).data.shared_to_timeline;
+}
+
+async function deleteComment() {
+  await apiComment.deleteComment(token.value, props.comment.uuid);
+  notifyInfo('已删除');
+  showDeleteConfirm.value = false;
+  props.comment.is_deleted = true;
+}
+
+async function upvote() {
+  upvoteIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    upvotes.value = (await apiComment.upvote(token.value, props.comment.uuid)).data;
+    upvoteIntermediate.value = false;
+  });
+}
+
+async function cancelUpvote() {
+  cancelUpvoteIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (props.comment) {
+      upvotes.value = (await apiComment.cancelUpvote(token.value, props.comment.uuid)).data;
+      cancelUpvoteIntermediate.value = false;
+      showCancelUpvoteDialog.value = false;
+    }
+  });
+}
+
+function onMentionedHandles(handles: string[]) {
+  console.log(handles);
+  mentioned.value = handles;
+}
+
+async function toggleUpvote() {
+  if (upvotes.value) {
+    if (upvotes.value.upvoted) {
+      await cancelUpvote();
     } else {
-      return null;
-    }
-  }
-
-  get articleCommentId() {
-    const acid = this.$route.params.article_comment_id;
-    if (acid) {
-      return acid;
-    } else {
-      return null;
-    }
-  }
-
-  get submissionCommentId() {
-    const scid = this.$route.params.submission_comment_id;
-    if (scid) {
-      return scid;
-    } else {
-      return null;
-    }
-  }
-
-  get questionCommentId() {
-    const qcid = this.$route.params.qcid;
-    if (qcid) {
-      return qcid;
-    } else {
-      return null;
-    }
-  }
-
-  get currentUserIsAuthor() {
-    return this.userProfile?.uuid === this.comment.author.uuid;
-  }
-
-  async mounted() {
-    this.upvotes = {
-      comment_uuid: this.comment.uuid,
-      count: this.comment.upvotes_count,
-      upvoted: this.comment.upvoted,
-    };
-    this.childComments = rankComments(this.$dayjs, this.comment.child_comments);
-    this.sharedToTimeline = this.comment.shared_to_timeline;
-  }
-
-  private async submitNewReplyBody() {
-    const editor = this.$refs.commentReplyEditor as SimpleEditor;
-    if (!editor.getContent()) {
-      commitAddNotification(this.$store, {
-        content: '评论内容不能为空',
-        color: 'error',
-      });
-      return;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.submitIntermediate = true;
-      const response = await apiComment.postComment(this.token, {
-        site_uuid: this.siteId,
-        parent_comment_uuid: this.comment.uuid,
-        content: {
-          source: editor.getContent()!,
-          rendered_text: editor.getTextContent() || '',
-          editor: editor.editor,
-        },
-        mentioned: this.mentioned,
-      });
-      const comment = response.data;
-      if (this.childComments === null) {
-        this.childComments = [];
-      }
-      this.childComments.unshift(comment);
-      editor.reset();
-      this.childCommentsExpanded = true;
-      this.showEditor = false;
-      this.submitIntermediate = false;
-    });
-  }
-
-  private async submitUpdateCommentBody() {
-    const editor = this.$refs.commentUpdateEditor as SimpleEditor;
-    if (!editor.getContent()) {
-      commitAddNotification(this.$store, {
-        content: '评论内容不能为空',
-        color: 'error',
-      });
-      return;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.submitIntermediate = true;
-      await apiComment.updateComment(this.token, this.comment.uuid, {
-        content: {
-          source: editor.getContent()!,
-          rendered_text: editor.getTextContent() || '',
-          editor: editor.editor,
-        },
-        mentioned: this.mentioned,
-      });
-      commitAddNotification(this.$store, {
-        content: '评论更新成功',
-        color: 'success',
-      });
-      this.showUpdateEditor = false;
-      this.comment.content.source = editor.getContent()!;
-      this.submitIntermediate = false;
-    });
-  }
-
-  private async broadcastComment() {
-    if (this.comment.shared_to_timeline) {
-      commitAddNotification(this.$store, {
-        content: '已经转发过了',
-        color: 'info',
-      });
-      return;
-    }
-    this.sharedToTimeline = (
-      await apiComment.updateComment(this.token, this.comment.uuid, {
-        shared_to_timeline: true,
-      })
-    ).data.shared_to_timeline;
-  }
-
-  private async deleteComment() {
-    await apiComment.deleteComment(this.token, this.comment.uuid);
-    commitAddNotification(this.$store, {
-      content: '已删除',
-      color: 'info',
-    });
-    this.showDeleteConfirm = false;
-    this.comment.is_deleted = true;
-  }
-
-  private async upvote() {
-    this.upvoteIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.upvotes = (await apiComment.upvote(this.token, this.comment.uuid)).data;
-      this.upvoteIntermediate = false;
-    });
-  }
-
-  private async cancelUpvote() {
-    this.cancelUpvoteIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.comment) {
-        this.upvotes = (await apiComment.cancelUpvote(this.token, this.comment.uuid)).data;
-        this.cancelUpvoteIntermediate = false;
-        this.showCancelUpvoteDialog = false;
-      }
-    });
-  }
-
-  private onMentionedHandles(handles: string[]) {
-    console.log(handles);
-    this.mentioned = handles;
-  }
-
-  private async toggleUpvote() {
-    if (this.upvotes) {
-      if (this.upvotes.upvoted) {
-        await this.cancelUpvote();
-      } else {
-        await this.upvote();
-      }
+      await upvote();
     }
   }
 }

@@ -51,85 +51,81 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch } from 'vue';
 import { apiSearch } from '@/api/search';
-import { readToken, readUserProfile } from '@/store/main/getters';
-import SettingsIcon from '@/components/icons/SettingsIcon';
+import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { getLocalValue, setLocalValue } from '@/utils';
-import SearchIcon from '@/components/icons/SearchIcon';
+import SearchIcon from '@/components/icons/SearchIcon.vue';
+import { IUserPreview } from '@/interfaces';
+import { useAuth } from '@/composables';
 
 const ENABLE_USER_SEARCH_AUTO_COMPLETE_KEY = 'chafan.enable-user-search-auto-complete';
 
-export default {
-  components: { SearchIcon, SettingsIcon },
-  props: {
-    returnSelf: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  data() {
-    const enable = getLocalValue(ENABLE_USER_SEARCH_AUTO_COMPLETE_KEY, 'true') === 'true';
-    return {
-      loading: false,
-      query: '',
-      search: null,
-      userPreviews: [],
-      selectedUserUUID: null,
-      enableAutoComplete: enable,
-      showInputSelections: false,
-    };
-  },
-  watch: {
-    search(val) {
-      this.doSearch(val);
-    },
-  },
-  computed: {
-    token() {
-      return readToken(this.$store);
-    },
-    userProfile() {
-      return readUserProfile(this.$store);
-    },
-  },
-  methods: {
-    doSearch(val) {
-      if (val && val.startsWith('@')) {
-        val = val.substring(1);
-      }
-      if (val && val !== this.selectedUserUUID) {
-        this.querySelections(val);
-      }
-    },
-    querySelections(v) {
-      this.loading = true;
-      apiSearch.searchUsers(this.token, v).then((response) => {
-        let userPreviews = response.data;
-        if (!this.returnSelf) {
-          userPreviews = userPreviews.filter(
-            (userPreview) => userPreview.uuid !== this.userProfile?.uuid
-          );
-        }
-        this.userPreviews = userPreviews;
-        this.loading = false;
-      });
-    },
-    getItemText(item) {
-      let name = `@${item.handle}`;
-      if (item.full_name) {
-        name = `${item.full_name} (@${item.handle})`;
-      }
-      return name;
-    },
-    setEnableAutoComplete(flag) {
-      setLocalValue(ENABLE_USER_SEARCH_AUTO_COMPLETE_KEY, flag.toString());
-      this.enableAutoComplete = flag;
-    },
-    doManualSearch() {
-      this.doSearch(this.query);
-      this.showInputSelections = true;
-    },
-  },
-};
+const props = withDefaults(
+  defineProps<{
+    returnSelf?: boolean;
+  }>(),
+  {
+    returnSelf: true,
+  }
+);
+
+const emit = defineEmits<{
+  (e: 'input', value: string | null): void;
+}>();
+
+const { token, userProfile } = useAuth();
+
+const loading = ref(false);
+const query = ref('');
+const search = ref<string | null>(null);
+const userPreviews = ref<IUserPreview[]>([]);
+const selectedUserUUID = ref<string | null>(null);
+const enableAutoComplete = ref(getLocalValue(ENABLE_USER_SEARCH_AUTO_COMPLETE_KEY, 'true') === 'true');
+const showInputSelections = ref(false);
+
+watch(search, (val) => {
+  doSearch(val);
+});
+
+function doSearch(val: string | null) {
+  if (val && val.startsWith('@')) {
+    val = val.substring(1);
+  }
+  if (val && val !== selectedUserUUID.value) {
+    querySelections(val);
+  }
+}
+
+async function querySelections(v: string) {
+  loading.value = true;
+  const response = await apiSearch.searchUsers(token.value, v);
+  let previews = response.data;
+  if (!props.returnSelf) {
+    previews = previews.filter(
+      (userPreview: IUserPreview) => userPreview.uuid !== userProfile.value?.uuid
+    );
+  }
+  userPreviews.value = previews;
+  loading.value = false;
+}
+
+function getItemText(item: IUserPreview) {
+  let name = `@${item.handle}`;
+  if (item.full_name) {
+    name = `${item.full_name} (@${item.handle})`;
+  }
+  return name;
+}
+
+function setEnableAutoComplete(flag: boolean) {
+  setLocalValue(ENABLE_USER_SEARCH_AUTO_COMPLETE_KEY, flag.toString());
+  enableAutoComplete.value = flag;
+}
+
+function doManualSearch() {
+  doSearch(query.value);
+  showInputSelections.value = true;
+}
 </script>

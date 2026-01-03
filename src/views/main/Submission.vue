@@ -716,7 +716,7 @@ export default class Submission extends CVue {
   private async commitSubmissionEdit() {
     this.commitSubmissionEditIntermediate = true;
     await dispatchCaptureApiError(this.$store, async () => {
-      const descEditor = this.$refs.descEditor as SimpleEditor;
+      const descEditor = this.$refs.descEditor as any;
       if ((descEditor.getContent() || this.newSubmissionTitle) && this.submission) {
         const responses = await Promise.all(
           this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))

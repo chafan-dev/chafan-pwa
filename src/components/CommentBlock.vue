@@ -37,58 +37,79 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Emit, Prop } from 'vue-property-decorator';
-import { commitAddNotification } from '@/store/main/mutations';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import UserLink from '@/components/UserLink.vue';
 import Comment from '@/components/Comment.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { IComment, INewCommentInternal } from '@/interfaces';
 import { rankComments } from '@/utils';
-import { CVue } from '@/common';
+import { useAuth, useDayjs, useNotification } from '@/composables';
 
-@Component({
-  components: { UserLink, Comment, SimpleEditor },
-})
-export default class CommentBlock extends CVue {
-  @Prop() public readonly comments!: IComment[];
-  @Prop() public readonly writable!: boolean;
-  @Prop() public readonly siteId: number | undefined;
-  @Prop() public readonly commentLabel!: string;
-  @Prop({ default: false }) public readonly showTitle!: boolean;
-  @Prop({ default: false }) public commentSubmitIntermediate!: boolean;
-
-  private mentioned: string[] = [];
-  private rankedComments: IComment[] = [];
-
-  mounted() {
-    this.rankedComments = rankComments(this.$dayjs, this.comments);
+const props = withDefaults(
+  defineProps<{
+    comments: IComment[];
+    writable: boolean;
+    siteId?: number;
+    commentLabel: string;
+    showTitle?: boolean;
+    commentSubmitIntermediate?: boolean;
+  }>(),
+  {
+    showTitle: false,
+    commentSubmitIntermediate: false,
   }
+);
 
-  @Emit('submit-new-comment')
-  public submitNewComment(): INewCommentInternal | undefined {
-    const editor = this.$refs.simpleEditor as SimpleEditor;
-    const content = editor.getContent();
-    if (!content || content.length === 0) {
-      commitAddNotification(this.$store, {
-        content: '评论不能为空',
-        color: 'error',
-      });
-      return;
-    }
-    const commentCopy = `${content}`;
-    const commentText = editor.getTextContent();
-    editor.reset();
-    return {
-      body: commentCopy,
-      body_text: commentText,
-      editor: editor.editor,
-      mentioned: this.mentioned,
-    };
-  }
+const emit = defineEmits<{
+  (e: 'submit-new-comment', payload: INewCommentInternal | undefined): void;
+}>();
 
-  private onMentionedHandles(handles: string[]) {
-    this.mentioned = handles;
+const { loggedIn } = useAuth();
+const { dayjs } = useDayjs();
+const { notifyError } = useNotification();
+
+const mentioned = ref<string[]>([]);
+const rankedComments = ref<IComment[]>([]);
+const simpleEditor = ref<InstanceType<typeof SimpleEditor> | null>(null);
+
+onMounted(() => {
+  rankedComments.value = rankComments(dayjs, props.comments);
+});
+
+function recursiveCommentsCount(comments: IComment[]): number {
+  return (
+    comments.length +
+    comments.reduce(
+      (sum, comment) => sum + recursiveCommentsCount(comment.child_comments),
+      0
+    )
+  );
+}
+
+function submitNewComment(): INewCommentInternal | undefined {
+  const editor = simpleEditor.value;
+  if (!editor) return;
+
+  const content = editor.getContent();
+  if (!content || content.length === 0) {
+    notifyError('评论不能为空');
+    return;
   }
+  const commentCopy = `${content}`;
+  const commentText = editor.getTextContent();
+  editor.reset();
+  const result = {
+    body: commentCopy,
+    body_text: commentText,
+    editor: editor.editor,
+    mentioned: mentioned.value,
+  };
+  emit('submit-new-comment', result);
+  return result;
+}
+
+function onMentionedHandles(handles: string[]) {
+  mentioned.value = handles;
 }
 </script>

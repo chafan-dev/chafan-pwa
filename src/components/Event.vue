@@ -127,30 +127,31 @@
   </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { IEvent } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
 import UserLink from '@/components/UserLink.vue';
 import CommentPreview from '@/components/CommentPreview.vue';
-import Viewer from '@/components/Viewer.vue';
-import { readUserProfile } from '@/store/main/getters';
+import { useAuth } from '@/composables';
+import { useDayjs } from '@/composables';
 
-@Component({
-  components: { UserLink, CommentPreview, Viewer },
-})
-export default class Event extends Vue {
-  @Prop() public readonly event!: IEvent;
-  @Prop() public readonly onClickHandler: (() => void) | undefined;
-  @Prop({ default: true }) public readonly enableUserLinkPopup!: boolean;
-
-  get currentUserId() {
-    return readUserProfile(this.$store)?.uuid;
+const props = withDefaults(
+  defineProps<{
+    event: IEvent;
+    onClickHandler?: () => void;
+    enableUserLinkPopup?: boolean;
+  }>(),
+  {
+    enableUserLinkPopup: true,
   }
+);
 
-  private onClick() {
-    if (this.onClickHandler) {
-      this.onClickHandler();
-    }
+const { currentUserId } = useAuth();
+const $dayjs = useDayjs();
+
+function onClick() {
+  if (props.onClickHandler) {
+    props.onClickHandler();
   }
 }
 </script>
