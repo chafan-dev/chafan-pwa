@@ -20,8 +20,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
 import {
   IAnswerPreview,
   IArticlePreview,
@@ -36,26 +35,13 @@ import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
 import Viewer from '@/components/Viewer.vue';
 import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
-import BaseCard from '@/components/base/BaseCard.vue';
 
-@Component({
-  name: 'CommentCard',
-  components: {
-    BaseCard,
-    QuestionPreview,
-    ArticlePreview,
-    Answer,
-    OpenInNewIcon,
-    SubmissionPreview,
-    Viewer,
-  },
-})
-export default class CommentCard extends Vue {
-  @Prop() public readonly comment!: IComment;
-  @Prop() public readonly submission: ISubmission | undefined;
-  @Prop() public readonly questionPreview: IQuestionPreview | undefined;
-  @Prop() public readonly articlePreview: IArticlePreview | undefined;
-  @Prop() public readonly answerPreview: IAnswerPreview | undefined;
-  @Prop() public readonly parentComment: IComment | undefined;
-}
+defineProps<{
+  comment: IComment;
+  submission?: ISubmission;
+  questionPreview?: IQuestionPreview;
+  articlePreview?: IArticlePreview;
+  answerPreview?: IAnswerPreview;
+  parentComment?: IComment;
+}>();
 </script>

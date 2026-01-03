@@ -7,18 +7,18 @@
   </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { ISite } from '@/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
 import { apiSite } from '@/api/site';
 
-@Component
-export default class SiteName extends Vue {
-  @Prop() public readonly subdomain!: string;
-  private site: ISite | null = null;
+const props = defineProps<{
+  subdomain: string;
+}>();
 
-  public async mounted() {
-    this.site = (await apiSite.getSite(this.subdomain)).data;
-  }
-}
+const site = ref<ISite | null>(null);
+
+onMounted(async () => {
+  site.value = (await apiSite.getSite(props.subdomain)).data;
+});
 </script>

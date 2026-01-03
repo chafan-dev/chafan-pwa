@@ -23,31 +23,29 @@
   </span>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { IActivity, IUserPreview } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import UserGrid from '@/components/UserGrid.vue';
 
-@Component({
-  components: { UserGrid, UserLink },
-})
-export default class EtcPeople extends Vue {
-  @Prop() public readonly activity!: IActivity;
-  private usersDialog = false;
+const props = defineProps<{
+  activity: IActivity;
+}>();
 
-  get uniqueSubjects(): IUserPreview[] {
-    const uuids = new Set();
-    const uniqueUsers: IUserPreview[] = [];
-    if ('subjects' in this.activity.event.content && this.activity.event.content.subjects) {
-      for (const u of this.activity.event.content.subjects) {
-        if (!uuids.has(u.uuid)) {
-          uniqueUsers.push(u);
-          uuids.add(u.uuid);
-        }
+const usersDialog = ref(false);
+
+const uniqueSubjects = computed((): IUserPreview[] => {
+  const uuids = new Set();
+  const uniqueUsers: IUserPreview[] = [];
+  if ('subjects' in props.activity.event.content && props.activity.event.content.subjects) {
+    for (const u of props.activity.event.content.subjects) {
+      if (!uuids.has(u.uuid)) {
+        uniqueUsers.push(u);
+        uuids.add(u.uuid);
       }
     }
-    return uniqueUsers;
   }
-}
+  return uniqueUsers;
+});
 </script>

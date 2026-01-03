@@ -85,83 +85,87 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { IArticleColumn, IUserArticleColumnSubscription } from '@/interfaces';
-import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import BaseCard from '@/components/base/BaseCard.vue';
 import UserLink from '@/components/UserLink.vue';
-import { CVue } from '@/common';
+import { useAuth } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { UserLink, BaseCard, EditIcon },
-})
-export default class ArticleColumnCard extends CVue {
-  @Prop() public readonly articleColumn!: IArticleColumn;
-  @Prop({ default: false }) public readonly compactMode!: boolean;
-  @Prop({ default: false }) public readonly showOwner!: boolean;
+const props = withDefaults(
+  defineProps<{
+    articleColumn: IArticleColumn;
+    compactMode?: boolean;
+    showOwner?: boolean;
+  }>(),
+  {
+    compactMode: false,
+    showOwner: false,
+  }
+);
 
-  private loading = true;
-  private subscription: IUserArticleColumnSubscription | null = null;
-  private subscribeIntermediate = false;
-  private cancelSubscribeIntermediate = false;
-  private showColumnEditor = false;
-  private name = '';
-  private desc = '';
+const { token, currentUserId } = useAuth();
 
-  private async mounted() {
-    this.name = this.articleColumn.name;
-    this.desc = this.articleColumn.description;
-    if (this.currentUserId) {
-      if (this.articleColumn.subscription) {
-        this.subscription = this.articleColumn.subscription;
-      } else {
-        await dispatchCaptureApiError(this.$store, async () => {
-          this.subscription = (
-            await apiArticle.getArticleColumnSubscription(this.token, this.articleColumn.uuid)
-          ).data;
-        });
-      }
+const loading = ref(true);
+const subscription = ref<IUserArticleColumnSubscription | null>(null);
+const subscribeIntermediate = ref(false);
+const cancelSubscribeIntermediate = ref(false);
+const showColumnEditor = ref(false);
+const name = ref('');
+const desc = ref('');
+
+onMounted(async () => {
+  name.value = props.articleColumn.name;
+  desc.value = props.articleColumn.description;
+  if (currentUserId.value) {
+    if (props.articleColumn.subscription) {
+      subscription.value = props.articleColumn.subscription;
+    } else {
+      await dispatchCaptureApiError(store, async () => {
+        subscription.value = (
+          await apiArticle.getArticleColumnSubscription(token.value, props.articleColumn.uuid)
+        ).data;
+      });
     }
-    this.loading = false;
   }
+  loading.value = false;
+});
 
-  private async subscribe() {
-    this.subscribeIntermediate = true;
-    this.subscription = (
-      await apiArticle.subscribeArticleColumn(this.token, this.articleColumn.uuid)
+async function subscribe() {
+  subscribeIntermediate.value = true;
+  subscription.value = (
+    await apiArticle.subscribeArticleColumn(token.value, props.articleColumn.uuid)
+  ).data;
+  subscribeIntermediate.value = false;
+}
+
+async function cancelSubscribe() {
+  cancelSubscribeIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    subscription.value = (
+      await apiArticle.unsubscribeArticleColumn(token.value, props.articleColumn.uuid)
     ).data;
-    this.subscribeIntermediate = false;
-  }
+    cancelSubscribeIntermediate.value = false;
+  });
+}
 
-  private async cancelSubscribe() {
-    this.cancelSubscribeIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.subscription = (
-        await apiArticle.unsubscribeArticleColumn(this.token, this.articleColumn.uuid)
-      ).data;
-      this.cancelSubscribeIntermediate = false;
-    });
-  }
+async function updateArticleColumn() {
+  const newArticleColumn = (
+    await apiArticle.updateArticleColumn(token.value, props.articleColumn.uuid, {
+      name: name.value,
+      description: desc.value,
+    })
+  ).data;
+  name.value = newArticleColumn.name;
+  desc.value = newArticleColumn.description;
+  showColumnEditor.value = false;
+}
 
-  private async updateArticleColumn() {
-    const newArticleColumn = (
-      await apiArticle.updateArticleColumn(this.token, this.articleColumn.uuid, {
-        name: this.name,
-        description: this.desc,
-      })
-    ).data;
-    this.name = newArticleColumn.name;
-    this.desc = newArticleColumn.description;
-    this.showColumnEditor = false;
-  }
-
-  private cancelUpdateArticleColumn() {
-    this.showColumnEditor = false;
-    this.desc = this.articleColumn.description;
-    this.name = this.articleColumn.name;
-  }
+function cancelUpdateArticleColumn() {
+  showColumnEditor.value = false;
+  desc.value = props.articleColumn.description;
+  name.value = props.articleColumn.name;
 }
 </script>

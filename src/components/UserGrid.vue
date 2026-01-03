@@ -6,15 +6,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
 import UserCard from '@/components/UserCard.vue';
 import { IUserPreview } from '@/interfaces';
 
-@Component({
-  components: { UserCard },
-})
-export default class UserGrid extends Vue {
-  @Prop() private readonly users!: IUserPreview[];
-}
+defineProps<{
+  users: IUserPreview[];
+}>();
 </script>

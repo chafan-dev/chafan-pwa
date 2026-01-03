@@ -73,41 +73,43 @@
   </v-card>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router/composables';
 import { api } from '@/api';
 import { IClaimWelcomeTestScoreMsg, IFormResponse } from '@/interfaces';
-import { Component, Prop } from 'vue-property-decorator';
-import { CVue } from '@/common';
+import { useAuth, useEnv } from '@/composables';
 
-@Component
-export default class FormResponseCard extends CVue {
-  @Prop() public readonly formResponse!: IFormResponse;
-  private welcomeTestFormUUID = '';
-  private showWelcomeTestResultDialog = false;
-  private claimWelcomeTestScoreMsg: IClaimWelcomeTestScoreMsg | null = null;
+const props = defineProps<{
+  formResponse: IFormResponse;
+}>();
 
-  private async mounted() {
-    if (this.currentUserId === this.formResponse.response_author.uuid) {
-      if (this.isDev) {
-        this.welcomeTestFormUUID = '48i9bNDXk2NXwp9fELCE';
-      } else {
-        this.welcomeTestFormUUID = '4CGv4iReMxuWjs3T2PEY';
-      }
+const router = useRouter();
+const { token, currentUserId } = useAuth();
+const { isDev } = useEnv();
+
+const welcomeTestFormUUID = ref('');
+const showWelcomeTestResultDialog = ref(false);
+const claimWelcomeTestScoreMsg = ref<IClaimWelcomeTestScoreMsg | null>(null);
+
+onMounted(() => {
+  if (currentUserId.value === props.formResponse.response_author.uuid) {
+    if (isDev) {
+      welcomeTestFormUUID.value = '48i9bNDXk2NXwp9fELCE';
+    } else {
+      welcomeTestFormUUID.value = '4CGv4iReMxuWjs3T2PEY';
     }
   }
+});
 
-  private async checkWelcomeTestScoreAndClaimRewards() {
-    this.claimWelcomeTestScoreMsg = (
-      await api.checkWelcomeTestScoreAndClaimRewards(
-        this.$store.state.main.token,
-        this.formResponse.id
-      )
-    ).data;
-    this.showWelcomeTestResultDialog = true;
-  }
+async function checkWelcomeTestScoreAndClaimRewards() {
+  claimWelcomeTestScoreMsg.value = (
+    await api.checkWelcomeTestScoreAndClaimRewards(token.value, props.formResponse.id)
+  ).data;
+  showWelcomeTestResultDialog.value = true;
+}
 
-  private async retryWelcomeTest() {
-    this.$router.go(0);
-  }
+function retryWelcomeTest() {
+  router.go(0);
 }
 </script>

@@ -107,56 +107,49 @@ v{{ buildInfo.commitHashShort }}</pre
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { IQuestionPreview, IUserSiteProfile } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSiteCard from '@/components/CreateSiteCard.vue';
-import { Component } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiDiscovery } from '@/api/discovery';
 import { apiMe } from '@/api/me';
-
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { buildInfo } from '@/env';
-import { CVue } from '@/common';
+import { useAuth, useResponsive } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { SiteBtn, QuestionLink, CreateSiteCard, MoreIcon },
-})
-export default class HomeSideCard extends CVue {
-  private siteProfiles: IUserSiteProfile[] = [];
-  private visibleSiteProfiles: IUserSiteProfile[] = [];
-  private showAllSiteProfilesDialog = false;
-  private showAllSiteProfilesDialogButton = false;
-  private loadingPinnedQuestions = true;
-  private questions: IQuestionPreview[] | null = null;
-  private loadingSites = true;
-  private expandDebugInfo = false;
+const { token } = useAuth();
+const { isDesktop } = useResponsive();
 
-  private showCreateSiteDialog = false;
+const siteProfiles = ref<IUserSiteProfile[]>([]);
+const visibleSiteProfiles = ref<IUserSiteProfile[]>([]);
+const showAllSiteProfilesDialog = ref(false);
+const showAllSiteProfilesDialogButton = ref(false);
+const loadingPinnedQuestions = ref(true);
+const questions = ref<IQuestionPreview[] | null>(null);
+const loadingSites = ref(true);
+const expandDebugInfo = ref(false);
+const showCreateSiteDialog = ref(false);
 
-  get buildInfo() {
-    return buildInfo;
-  }
-
-  public async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.questions = (await apiDiscovery.getPinnedQuestions()).data;
-      this.loadingPinnedQuestions = false;
-      if (this.token) {
-        this.siteProfiles = (await apiMe.getUserSiteProfiles(this.token)).data;
-        if (!this.$vuetify.breakpoint.mdAndUp) {
-          this.visibleSiteProfiles = this.siteProfiles.slice(0, 9);
-          if (this.visibleSiteProfiles.length < this.siteProfiles.length) {
-            this.showAllSiteProfilesDialogButton = true;
-          }
-        } else {
-          this.visibleSiteProfiles = this.siteProfiles;
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    questions.value = (await apiDiscovery.getPinnedQuestions()).data;
+    loadingPinnedQuestions.value = false;
+    if (token.value) {
+      siteProfiles.value = (await apiMe.getUserSiteProfiles(token.value)).data;
+      if (!isDesktop.value) {
+        visibleSiteProfiles.value = siteProfiles.value.slice(0, 9);
+        if (visibleSiteProfiles.value.length < siteProfiles.value.length) {
+          showAllSiteProfilesDialogButton.value = true;
         }
+      } else {
+        visibleSiteProfiles.value = siteProfiles.value;
       }
-      this.loadingSites = false;
-    });
-  }
-}
+    }
+    loadingSites.value = false;
+  });
+});
 </script>

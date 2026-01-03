@@ -59,64 +59,63 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { IQuestion, IQuestionPreview, IUserQuestionSubscription } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
-import { Component, Prop } from 'vue-property-decorator';
 import { api } from '@/api';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSearch } from '@/api/search';
 import QuestionLink from '@/components/question/QuestionLink.vue';
-import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import RotationList from '@/components/base/RotationList.vue';
-import { CVue } from '@/common';
+import { useAuth, useNotification } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { RotationList, RefreshIcon, QuestionLink, UserLink, UserSearch },
-})
-export default class QuestionInfo extends CVue {
-  @Prop() public readonly question!: IQuestion;
-  @Prop() public readonly questionSubscription!: IUserQuestionSubscription;
+const props = defineProps<{
+  question: IQuestion;
+  questionSubscription: IUserQuestionSubscription;
+}>();
 
-  private showInviteToAnswerDialog = false;
-  private inviteToAnswerRewardCoinAmount = 0;
+const { token, userProfile } = useAuth();
+const { expectOkAndCommitMsg } = useNotification();
 
-  private invitedUserId: string | null = null;
-  private relatedQuestions: IQuestionPreview[] | null = null;
+const showInviteToAnswerDialog = ref(false);
+const inviteToAnswerRewardCoinAmount = ref(0);
+const invitedUserId = ref<string | null>(null);
+const relatedQuestions = ref<IQuestionPreview[] | null>(null);
 
-  public async mounted() {
-    if (this.userProfile) {
-      const query = this.question.keywords ? this.question.keywords.join(' ') : this.question.title;
-      const qs = (await apiSearch.searchQuestions(this.token, query)).data;
-      this.relatedQuestions = qs.filter((q) => {
-        return q.uuid !== this.question.uuid;
-      });
-    }
-  }
-
-  public async inviteAnswer() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.invitedUserId !== null) {
-        const response = await api.inviteAnswer(this.token, this.question.uuid, this.invitedUserId);
-        if (this.inviteToAnswerRewardCoinAmount > 0) {
-          await api.createReward(this.token, {
-            expired_after_days: 7,
-            receiver_uuid: this.invitedUserId,
-            coin_amount: this.inviteToAnswerRewardCoinAmount,
-            note_to_receiver: '',
-            condition: {
-              content: {
-                condition_type: 'answered_question',
-                question_uuid: this.question.uuid,
-              },
-            },
-          });
-        }
-        this.expectOkAndCommitMsg(response.data, '已邀请');
-        this.showInviteToAnswerDialog = false;
-      }
+onMounted(async () => {
+  if (userProfile.value) {
+    const query = props.question.keywords ? props.question.keywords.join(' ') : props.question.title;
+    const qs = (await apiSearch.searchQuestions(token.value, query)).data;
+    relatedQuestions.value = qs.filter((q) => {
+      return q.uuid !== props.question.uuid;
     });
   }
+});
+
+async function inviteAnswer() {
+  await dispatchCaptureApiError(store, async () => {
+    if (invitedUserId.value !== null) {
+      const response = await api.inviteAnswer(token.value, props.question.uuid, invitedUserId.value);
+      if (inviteToAnswerRewardCoinAmount.value > 0) {
+        await api.createReward(token.value, {
+          expired_after_days: 7,
+          receiver_uuid: invitedUserId.value,
+          coin_amount: inviteToAnswerRewardCoinAmount.value,
+          note_to_receiver: '',
+          condition: {
+            content: {
+              condition_type: 'answered_question',
+              question_uuid: props.question.uuid,
+            },
+          },
+        });
+      }
+      expectOkAndCommitMsg(response.data, '已邀请');
+      showInviteToAnswerDialog.value = false;
+    }
+  });
 }
 </script>
