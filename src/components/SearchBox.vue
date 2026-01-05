@@ -1,6 +1,5 @@
-]
 <template>
-  <div>
+  <div ref="rootEl">
     <v-menu
       v-model="showSearchResults"
       :close-on-content-click="false"
@@ -42,69 +41,74 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router/composables';
 import SearchIcon from '@/components/icons/SearchIcon.vue';
-import { Component, Vue } from 'vue-property-decorator';
 import SearchResults from '@/components/SearchResults.vue';
 
-@Component({
-  components: { SearchResults, SearchIcon },
-})
-export default class SearchBox extends Vue {
-  public loading: boolean = false;
-  private timerId: any = null;
-  private searchInput: string | null = null;
-  private showSearchResults = false;
-  private menuX = 0;
-  private menuY = 0;
-  private currentQuery: string | null = null;
+const router = useRouter();
 
-  private mounted() {
-    for (const e of this.$el.getElementsByTagName('input')) {
+const loading = ref(false);
+const timerId = ref<any>(null);
+const searchInput = ref<string | null>(null);
+const showSearchResults = ref(false);
+const menuX = ref(0);
+const menuY = ref(0);
+const currentQuery = ref<string | null>(null);
+
+const rootEl = ref<HTMLElement | null>(null);
+const searchResults = ref<InstanceType<typeof SearchResults> | null>(null);
+
+onMounted(() => {
+  if (rootEl.value) {
+    for (const e of rootEl.value.getElementsByTagName('input')) {
       const inputElem = e as HTMLInputElement;
       inputElem.autocomplete = 'off';
     }
   }
+});
 
-  private searchDebounced() {
-    if (this.timerId !== null) {
-      clearTimeout(this.timerId);
-    }
-    this.timerId = setTimeout(this.search, 1000);
+function searchDebounced() {
+  if (timerId.value !== null) {
+    clearTimeout(timerId.value);
   }
+  timerId.value = setTimeout(search, 1000);
+}
 
-  private search() {
-    if (this.searchInput === this.currentQuery) {
-      return;
-    }
-    let val = this.searchInput;
-    if (val && val.startsWith('@')) {
-      val = val.substring(1);
-    }
-    if (val) {
-      this.querySelections(val);
-    }
+function search() {
+  if (searchInput.value === currentQuery.value) {
+    return;
   }
+  let val = searchInput.value;
+  if (val && val.startsWith('@')) {
+    val = val.substring(1);
+  }
+  if (val) {
+    querySelections(val);
+  }
+}
 
-  private onReady() {
-    this.loading = false;
-  }
+function onReady() {
+  loading.value = false;
+}
 
-  private async querySelections(v: string) {
-    this.loading = true;
-    if (this.showSearchResults) {
-      await (this.$refs.searchResults as SearchResults)?.doSearch(v);
-    } else {
-      this.currentQuery = v;
-    }
-    this.menuY = this.$el.getBoundingClientRect().bottom;
-    this.menuX = this.$el.getBoundingClientRect().left;
-    this.showSearchResults = true;
+async function querySelections(v: string) {
+  loading.value = true;
+  if (showSearchResults.value) {
+    await searchResults.value?.doSearch(v);
+  } else {
+    currentQuery.value = v;
   }
+  if (rootEl.value) {
+    menuY.value = rootEl.value.getBoundingClientRect().bottom;
+    menuX.value = rootEl.value.getBoundingClientRect().left;
+  }
+  showSearchResults.value = true;
+}
 
-  private openInNew() {
-    this.showSearchResults = false;
-    this.$router.push({ path: '/search', query: { q: this.currentQuery } });
-  }
+function openInNew() {
+  showSearchResults.value = false;
+  router.push({ path: '/search', query: { q: currentQuery.value || undefined } });
 }
 </script>

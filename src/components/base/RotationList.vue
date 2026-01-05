@@ -14,31 +14,29 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 
-@Component({
-  components: { RefreshIcon },
-})
-export default class RotationList<T> extends Vue {
-  @Prop() public readonly title!: string;
-  @Prop() public readonly items!: T[];
-  private itemsSubset: T[] = [];
-  private subsetIndex = 0;
-  private readonly PAGE_SIZE = 5;
+const props = defineProps<{
+  title: string;
+  items: any[];
+}>();
 
-  private mounted() {
-    this.itemsSubset = this.items.slice(0, this.PAGE_SIZE);
-  }
+const PAGE_SIZE = 5;
+const itemsSubset = ref<any[]>([]);
+const subsetIndex = ref(0);
 
-  private rotate() {
-    const pages = Math.ceil(this.items.length / this.PAGE_SIZE);
-    this.subsetIndex = (this.subsetIndex + 1) % pages;
-    this.itemsSubset = this.items.slice(
-      this.subsetIndex * this.PAGE_SIZE,
-      (this.subsetIndex + 1) * this.PAGE_SIZE
-    );
-  }
+onMounted(() => {
+  itemsSubset.value = props.items.slice(0, PAGE_SIZE);
+});
+
+function rotate() {
+  const pages = Math.ceil(props.items.length / PAGE_SIZE);
+  subsetIndex.value = (subsetIndex.value + 1) % pages;
+  itemsSubset.value = props.items.slice(
+    subsetIndex.value * PAGE_SIZE,
+    (subsetIndex.value + 1) * PAGE_SIZE
+  );
 }
 </script>

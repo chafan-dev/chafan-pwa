@@ -40,72 +40,75 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router/composables';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { ISite } from '@/interfaces';
-import UserLink from '@/components/UserLink.vue';
-import Invite from '@/components/Invite.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiQuestion } from '@/api/question';
-import { CVue } from '@/common';
 import SiteSearch from '@/components/SiteSearch.vue';
-import { defaultSiteUuid } from '@/env';
 import DebugSpan from '@/components/base/DebugSpan.vue';
+import { defaultSiteUuid } from '@/env';
+import { useAuth } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { DebugSpan, SiteSearch, UserLink, Invite },
-})
-export default class CreateQuestionForm extends CVue {
-  @Prop() private readonly site: ISite | undefined;
-  @Prop({ default: false }) private readonly showTitle!: boolean;
+const props = withDefaults(defineProps<{
+  site?: ISite;
+  showTitle?: boolean;
+}>(), {
+  showTitle: false,
+});
 
-  private newQuestionTitle: string = '';
-  private intermediate = false;
-  private selectedSite: ISite | null = null;
-  private siteSearchLoading = false;
+const router = useRouter();
+const { token } = useAuth();
 
-  private onSearchStart() {
-    this.siteSearchLoading = true;
+const newQuestionTitle = ref('');
+const intermediate = ref(false);
+const selectedSite = ref<ISite | null>(null);
+const siteSearchLoading = ref(false);
+
+function onSearchStart() {
+  siteSearchLoading.value = true;
+}
+
+function onSearchComplete() {
+  siteSearchLoading.value = false;
+}
+
+async function postNewQuestion() {
+  if (!token.value) {
+    commitSetShowLoginPrompt(store, true);
+    return;
   }
-  private onSearchComplete() {
-    this.siteSearchLoading = false;
+  let siteUUID;
+  if (props.site) {
+    siteUUID = props.site.uuid;
+  } else if (selectedSite.value) {
+    siteUUID = selectedSite.value.uuid;
+  } else {
+    siteUUID = defaultSiteUuid;
   }
-
-  private async postNewQuestion() {
-    if (!this.token) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
-    }
-    let siteUUID;
-    if (this.site) {
-      siteUUID = this.site.uuid;
-    } else if (this.selectedSite) {
-      siteUUID = this.selectedSite.uuid;
-    } else {
-      siteUUID = defaultSiteUuid;
-    }
-    if (this.newQuestionTitle.length < 5) {
-      commitAddNotification(this.$store, {
-        content: '标题太短了',
-        color: 'error',
-      });
-      return;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      const response = await apiQuestion.postQuestion(this.token, {
-        site_uuid: siteUUID,
-        title: this.newQuestionTitle,
-      });
-      this.intermediate = false;
-      if (response) {
-        try {
-          localStorage.setItem('new-question', 'true');
-        } catch (e) {}
-        await this.$router.push(`/questions/${response.data.uuid}`);
-      }
+  if (newQuestionTitle.value.length < 5) {
+    commitAddNotification(store, {
+      content: '标题太短了',
+      color: 'error',
     });
+    return;
   }
+  await dispatchCaptureApiError(store, async () => {
+    intermediate.value = true;
+    const response = await apiQuestion.postQuestion(token.value!, {
+      site_uuid: siteUUID,
+      title: newQuestionTitle.value,
+    });
+    intermediate.value = false;
+    if (response) {
+      try {
+        localStorage.setItem('new-question', 'true');
+      } catch (e) {}
+      await router.push(`/questions/${response.data.uuid}`);
+    }
+  });
 }
 </script>

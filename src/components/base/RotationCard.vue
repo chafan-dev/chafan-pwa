@@ -18,22 +18,18 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
-import LeftIcon from '@/components/icons/LeftIcon.vue';
-import RightIcon from '@/components/icons/RightIcon.vue';
 
-@Component({
-  components: { RightIcon, LeftIcon, RefreshIcon },
-})
-export default class RotationCard<T> extends Vue {
-  @Prop() public readonly title!: string;
-  @Prop() public readonly items!: T[];
-  private currentItem = 0;
+const props = defineProps<{
+  title: string;
+  items: any[];
+}>();
 
-  rotate() {
-    this.currentItem = (this.currentItem + 1) % this.items.length;
-  }
+const currentItem = ref(0);
+
+function rotate() {
+  currentItem.value = (currentItem.value + 1) % props.items.length;
 }
 </script>
