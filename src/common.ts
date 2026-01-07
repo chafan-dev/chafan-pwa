@@ -1,13 +1,7 @@
 import { apiQuestion } from '@/api/question';
 import { apiUrl, appName } from '@/env';
-import { api } from '@/api';
-import { IComment, IGenericResponse, ThemeType } from '@/interfaces';
-import { Vue } from 'vue-property-decorator';
-import { readIsLoggedIn, readTheme, readToken, readUserProfile } from '@/store/main/getters';
-import { commitAddNotification } from '@/store/main/mutations';
-import { AxiosError } from 'axios';
-import { isDev, isProdDev } from '@/utils';
-import { warn } from '@/logging';
+import { ThemeType } from '@/interfaces';
+import { readTheme } from '@/store/main/getters';
 
 
 export const URLRegex =
@@ -510,97 +504,6 @@ export const translateErrorMsgCN = (s: string) => {
   }
   return s;
 };
-
-export class CVue extends Vue {
-  get currentUserId() {
-    return readUserProfile(this.$store)?.uuid;
-  }
-
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
-  }
-
-  get theme() {
-    return themeDefs[readTheme(this.$store)];
-  }
-
-  get token() {
-    return readToken(this.$store);
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  get isDesktop() {
-    return this.$vuetify.breakpoint.mdAndUp;
-  }
-
-  get isDev() {
-    return isDev;
-  }
-
-  get isProdDev() {
-    return isProdDev;
-  }
-
-  fromNow(datetime: string) {
-    return this.$dayjs.utc(datetime).local().fromNow();
-  }
-
-  protected expectOkAndCommitMsg(response: IGenericResponse, msg: string) {
-    if (response.success) {
-      commitAddNotification(this.$store, {
-        content: msg,
-        color: 'success',
-      });
-    } else {
-      commitAddNotification(this.$store, {
-        content: '服务器错误',
-        color: 'error',
-      });
-    }
-  }
-
-  commitErrMsg(err: AxiosError) {
-    if (err.response && err.message) {
-      commitAddNotification(this.$store, {
-        content: err.message,
-        color: 'warning',
-      });
-      return err.message;
-    }
-    return null;
-  }
-
-  async sendToAdmin(msg: string) {
-      warn("TODO sendToAdmin turned off for now");
-      warn(msg);
-      /*
-    const r0 = await api.createChannel(this.token});
-    const channelId = r0.data.id;
-    await api.createMessage(this.token, {
-      channel_id: channelId,
-      body: msg,
-    });
-    commitAddNotification(this.$store, {
-      content: '已通知管理员',
-      color: 'info',
-    });
-    await this.$router.push(`/channels/${channelId}`);
-    */
-  }
-
-  recursiveCommentsCount(comments: IComment[]): number {
-    return (
-      comments.length +
-      comments.reduce(
-        (sum, comment) => sum + this.recursiveCommentsCount(comment.child_comments),
-        0
-      )
-    );
-  }
-}
 
 export const themeLocalStorageKey = 'chafan.theme';
 

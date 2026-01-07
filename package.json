@@ -31,9 +31,7 @@
     "uuid": "^11.0.3",
     "vee-validate": "^3.4.15",
     "vue": "^2.7.16",
-    "vue-class-component": "^7.2.6",
     "vue-i18n": "^8.28.2",
-    "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.6.5",
     "vuetify": "^2.7.2",
     "vuex": "^3.6.2"
