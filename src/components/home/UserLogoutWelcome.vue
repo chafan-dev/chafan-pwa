@@ -5,12 +5,6 @@
     <ExploreSitesGrid />
   </v-sheet>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
-
-@Component({
-  components: { ExploreSitesGrid },
-})
-export default class UserLogoutWelcome extends Vue {}
 </script>

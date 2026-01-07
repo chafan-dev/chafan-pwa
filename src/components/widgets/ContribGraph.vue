@@ -24,36 +24,37 @@
         <li>Fri</li>
         <li>Sat</li>
       </ul>
-      <ul class="contrib-squares">
+      <ul ref="squaresRef" class="contrib-squares">
         <!-- added via javascript -->
       </ul>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 
-@Component
-export default class ContribGraph extends Vue {
-  // length: 364, elem: 0, 1, 2, 3
-  @Prop() readonly data: number[] | undefined;
+const props = defineProps<{
+  data?: number[];
+}>();
 
-  mounted() {
-    let data: number[] = [];
-    if (this.data) {
-      data = this.data;
-    } else {
-      for (let i = 1; i < 365; i++) {
-        data.push(Math.floor(Math.random() * 3));
-      }
-    }
-    const squares = this.$el.querySelector('.contrib-squares')!;
-    for (let x of data) {
-      squares.insertAdjacentHTML('beforeend', `<li data-level="${x}"></li>`);
+const squaresRef = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  let data: number[] = [];
+  if (props.data) {
+    data = props.data;
+  } else {
+    for (let i = 1; i < 365; i++) {
+      data.push(Math.floor(Math.random() * 3));
     }
   }
-}
+  if (squaresRef.value) {
+    for (const x of data) {
+      squaresRef.value.insertAdjacentHTML('beforeend', `<li data-level="${x}"></li>`);
+    }
+  }
+});
 </script>
 
 <style>

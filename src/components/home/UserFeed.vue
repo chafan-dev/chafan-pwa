@@ -43,7 +43,7 @@
           <div>
             <ActivitySubject :activity="activity" />
             <span :class="theme.feed.activityCard.verb.classes">
-              {{ activity.verb | activityVerbCN }}
+              {{ activityVerbCN(activity.verb) }}
             </span>
           </div>
           <div>
@@ -91,7 +91,7 @@
               />
               <a
                 class="text-decoration-none"
-                @click="showUsersDialog(activity.event.content.users)"
+                @click="showUsersDialogFn(activity.event.content.users)"
               >
                 等{{ activity.event.content.users.length }}人
               </a>
@@ -183,35 +183,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { CombinedActivities } from '@/CombinedActivities';
 import { IActivity, IOrigin, IUserPreview } from '@/interfaces';
-import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
 import UserWelcome from '@/components/home/UserWelcome.vue';
-import UserAgreement from '@/components/home/UserAgreement.vue';
-import BaseCard from '@/components/base/BaseCard.vue';
-import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
-import UIStyleControllers from '@/components/UIStyleControllers.vue';
-import UserLink from '@/components/UserLink.vue';
 import Answer from '@/components/Answer.vue';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
-import SiteBtn from '@/components/SiteBtn.vue';
-import HomeSideCard from '@/components/HomeSideCard.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
-import QuestionLink from '@/components/question/QuestionLink.vue';
-import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';
 import UserCard from '@/components/UserCard.vue';
-import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import CommentCard from '@/components/CommentCard.vue';
-import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
-import FeedIcon from '@/components/icons/FeedIcon.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { CVue, EXPLORE_SITES } from '@/common';
+import { EXPLORE_SITES } from '@/common';
 import ActivitySubject from '@/components/ActivitySubject.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { apiActivity } from '@/api/activity';
@@ -219,214 +208,201 @@ import DotsIcon from '@/components/icons/DotsIcon.vue';
 import SiteName from '@/components/SiteName.vue';
 import { commitAddNotification } from '@/store/main/mutations';
 import DebugSpan from '@/components/base/DebugSpan.vue';
+import { useAuth, useTheme, useDayjs } from '@/composables';
 
-@Component({
-  components: {
-    DebugSpan,
-    SiteName,
-    DotsIcon,
-    EmptyPlaceholder,
-    ActivitySubject,
-    UserFeed,
-    UserLogoutWelcome,
-    UserWelcome,
-    UserAgreement,
-    BaseCard,
-    CreateQuestionForm,
-    UIStyleControllers,
-    UserLink,
-    Answer,
-    QuestionPreview,
-    SiteBtn,
-    HomeSideCard,
-    ArticlePreview,
-    QuestionLink,
-    HomeFabIcon,
-    UserCard,
-    ExploreIcon,
-    ArticleColumnCard,
-    CommentCard,
-    NewContentActionBar,
-    SubmissionPreview,
-    FeedIcon,
-    UserGrid,
-    CloseIcon,
-  },
-  filters: {
-    activityVerbCN(value) {
-      switch (value) {
-        case 'follow_user':
-          return '关注了用户';
-        case 'upvote_answer':
-          return '赞了回答';
-        case 'upvote_question':
-          return '赞了问题';
-        case 'upvote_submission':
-          return '赞了分享';
-        case 'upvote_article':
-          return '赞了文章';
-        case 'follow_article_column':
-          return '关注了专栏';
-        case 'comment_question':
-          return '评论了问题';
-        case 'comment_submission':
-          return '评论了分享';
-        case 'comment_article':
-          return '评论了文章';
-        case 'comment_answer':
-          return '评论了回答';
-        case 'reply_comment':
-          return '回复了评论';
-        case 'create_article':
-          return '发表了文章';
-        case 'answer_question':
-          return '回答了问题';
-        case 'create_question':
-          return '提了一个问题';
-        case 'create_submission':
-          return '添加了分享';
-        default:
-          return value;
-      }
-    },
-  },
-})
-export default class UserFeed extends CVue {
-  @Prop({ default: true }) public readonly enableShowExploreSites!: boolean;
-  @Prop() public readonly subjectUserUuid: number | undefined;
-
-  private combinedActivities: CombinedActivities = new CombinedActivities();
-  private loadingActivities = true;
-  private readonly loadingLimit = 12;
-  private noMoreNewActivities = false;
-  private preloadMoreActivitiesIntermediate = false;
-  private showExploreSites = false;
-  private showEmptyPlaceholder = false;
-  private usersDialog = false;
-  private usersInDialog: IUserPreview[] = [];
-  private isRandomActivities = false;
-
-  public async loadNewActivities() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.loadingActivities = true;
-      let before_activity_id: number | undefined = undefined;
-      const newActivities: IActivity[] = [];
-      let fetching = true;
-      while (fetching) {
-        const response = await apiActivity.getFeedSequence(this.token, {
-          limit: this.loadingLimit,
-          before_activity_id: before_activity_id,
-          random: this.isRandomActivities,
-        });
-        this.isRandomActivities = response.data.random;
-        const activities: IActivity[] = response.data.activities;
-        if (activities.length === 0) {
-          break;
-        }
-        for (const activity of activities) {
-          if (
-            this.combinedActivities.maxActivityId &&
-            activity.id <= this.combinedActivities.maxActivityId
-          ) {
-            fetching = false;
-            break;
-          }
-          newActivities.push(activity);
-        }
-        before_activity_id = activities[activities.length - 1]!.id;
-      }
-      for (const activity of newActivities) {
-        this.combinedActivities.add(activity, 'head');
-      }
-      this.loadingActivities = false;
-    });
+const props = withDefaults(
+  defineProps<{
+    enableShowExploreSites?: boolean;
+    subjectUserUuid?: number;
+  }>(),
+  {
+    enableShowExploreSites: true,
   }
+);
 
-  private async loadActivities() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const response = await apiActivity.getFeedSequence(this.token, {
-        limit: this.loadingLimit,
-        subjectUserUUID: this.subjectUserUuid,
-      });
-      this.isRandomActivities = response.data.random;
-      for (const activity of response.data.activities) {
-        this.combinedActivities.add(activity, 'tail');
-      }
-      if (this.enableShowExploreSites) {
-        if (this.userProfile!.flag_list.includes(EXPLORE_SITES)) {
-          this.showExploreSites = false;
-        } else if (this.combinedActivities.items.length === 0 || this.isRandomActivities) {
-          this.showExploreSites = true;
-        }
-      }
-      if (!this.showExploreSites && this.combinedActivities.items.length === 0) {
-        this.showEmptyPlaceholder = true;
-      }
-      this.loadingActivities = false;
-    });
+const store = useStore();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { theme } = useTheme();
+const dayjs = useDayjs();
 
-    this.preloadMoreActivities();
-    window.onscroll = () => {
-      this.preloadMoreActivities();
-    };
-  }
+function fromNow(date: string) {
+  return dayjs(date).fromNow();
+}
 
-  private async mounted() {
-    await this.loadActivities();
-  }
-
-  private async onCloseExploreSites() {
-    this.showExploreSites = false;
-    await dispatchAddFlag(this.$store, EXPLORE_SITES);
-  }
-
-  private async preloadMoreActivities() {
-    if (this.preloadMoreActivitiesIntermediate) {
-      return;
-    }
-    this.preloadMoreActivitiesIntermediate = true;
-    const bottomOfWindow =
-      Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
-        window.innerHeight >=
-      document.documentElement.offsetHeight;
-    if (!bottomOfWindow || this.noMoreNewActivities) {
-      this.preloadMoreActivitiesIntermediate = false;
-      return;
-    }
-    const minActivityId = this.combinedActivities.minActivityId;
-    if (minActivityId !== null) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        const response = await apiActivity.getFeedSequence(this.token, {
-          random: this.isRandomActivities,
-          limit: this.loadingLimit,
-          before_activity_id: minActivityId,
-          subjectUserUUID: this.subjectUserUuid,
-        });
-        const activities = response.data.activities;
-        if (activities.length === 0) {
-          this.noMoreNewActivities = true;
-        } else {
-          for (const activity of activities) {
-            this.combinedActivities.add(activity, 'tail');
-          }
-        }
-      });
-    }
-    this.preloadMoreActivitiesIntermediate = false;
-  }
-
-  private showUsersDialog(users: IUserPreview[]) {
-    this.usersInDialog = users;
-    this.usersDialog = true;
-  }
-
-  private async blockOrigin(origin: IOrigin) {
-    await apiActivity.updateOrigins(this.token, { action: 'add', origin });
-    await commitAddNotification(this.$store, {
-      color: 'info',
-      content: '过滤规则更新成功，稍后自动生效',
-    });
-    await this.$router.go(0);
+// Filter converted to function (Vue 3 removes filters)
+function activityVerbCN(value: string): string {
+  switch (value) {
+    case 'follow_user':
+      return '关注了用户';
+    case 'upvote_answer':
+      return '赞了回答';
+    case 'upvote_question':
+      return '赞了问题';
+    case 'upvote_submission':
+      return '赞了分享';
+    case 'upvote_article':
+      return '赞了文章';
+    case 'follow_article_column':
+      return '关注了专栏';
+    case 'comment_question':
+      return '评论了问题';
+    case 'comment_submission':
+      return '评论了分享';
+    case 'comment_article':
+      return '评论了文章';
+    case 'comment_answer':
+      return '评论了回答';
+    case 'reply_comment':
+      return '回复了评论';
+    case 'create_article':
+      return '发表了文章';
+    case 'answer_question':
+      return '回答了问题';
+    case 'create_question':
+      return '提了一个问题';
+    case 'create_submission':
+      return '添加了分享';
+    default:
+      return value;
   }
 }
+
+const combinedActivities = reactive(new CombinedActivities());
+const loadingActivities = ref(true);
+const loadingLimit = 12;
+const noMoreNewActivities = ref(false);
+const preloadMoreActivitiesIntermediate = ref(false);
+const showExploreSites = ref(false);
+const showEmptyPlaceholder = ref(false);
+const usersDialog = ref(false);
+const usersInDialog = ref<IUserPreview[]>([]);
+const isRandomActivities = ref(false);
+
+async function loadNewActivities() {
+  await dispatchCaptureApiError(store, async () => {
+    loadingActivities.value = true;
+    let before_activity_id: number | undefined = undefined;
+    const newActivities: IActivity[] = [];
+    let fetching = true;
+    while (fetching) {
+      const response = await apiActivity.getFeedSequence(token.value, {
+        limit: loadingLimit,
+        before_activity_id: before_activity_id,
+        random: isRandomActivities.value,
+      });
+      isRandomActivities.value = response.data.random;
+      const activities: IActivity[] = response.data.activities;
+      if (activities.length === 0) {
+        break;
+      }
+      for (const activity of activities) {
+        if (
+          combinedActivities.maxActivityId &&
+          activity.id <= combinedActivities.maxActivityId
+        ) {
+          fetching = false;
+          break;
+        }
+        newActivities.push(activity);
+      }
+      before_activity_id = activities[activities.length - 1]!.id;
+    }
+    for (const activity of newActivities) {
+      combinedActivities.add(activity, 'head');
+    }
+    loadingActivities.value = false;
+  });
+}
+
+async function loadActivities() {
+  await dispatchCaptureApiError(store, async () => {
+    const response = await apiActivity.getFeedSequence(token.value, {
+      limit: loadingLimit,
+      subjectUserUUID: props.subjectUserUuid,
+    });
+    isRandomActivities.value = response.data.random;
+    for (const activity of response.data.activities) {
+      combinedActivities.add(activity, 'tail');
+    }
+    if (props.enableShowExploreSites) {
+      if (userProfile.value!.flag_list.includes(EXPLORE_SITES)) {
+        showExploreSites.value = false;
+      } else if (combinedActivities.items.length === 0 || isRandomActivities.value) {
+        showExploreSites.value = true;
+      }
+    }
+    if (!showExploreSites.value && combinedActivities.items.length === 0) {
+      showEmptyPlaceholder.value = true;
+    }
+    loadingActivities.value = false;
+  });
+
+  preloadMoreActivities();
+  window.onscroll = () => {
+    preloadMoreActivities();
+  };
+}
+
+onMounted(async () => {
+  await loadActivities();
+});
+
+async function onCloseExploreSites() {
+  showExploreSites.value = false;
+  await dispatchAddFlag(store, EXPLORE_SITES);
+}
+
+async function preloadMoreActivities() {
+  if (preloadMoreActivitiesIntermediate.value) {
+    return;
+  }
+  preloadMoreActivitiesIntermediate.value = true;
+  const bottomOfWindow =
+    Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) +
+      window.innerHeight >=
+    document.documentElement.offsetHeight;
+  if (!bottomOfWindow || noMoreNewActivities.value) {
+    preloadMoreActivitiesIntermediate.value = false;
+    return;
+  }
+  const minActivityId = combinedActivities.minActivityId;
+  if (minActivityId !== null) {
+    await dispatchCaptureApiError(store, async () => {
+      const response = await apiActivity.getFeedSequence(token.value, {
+        random: isRandomActivities.value,
+        limit: loadingLimit,
+        before_activity_id: minActivityId,
+        subjectUserUUID: props.subjectUserUuid,
+      });
+      const activities = response.data.activities;
+      if (activities.length === 0) {
+        noMoreNewActivities.value = true;
+      } else {
+        for (const activity of activities) {
+          combinedActivities.add(activity, 'tail');
+        }
+      }
+    });
+  }
+  preloadMoreActivitiesIntermediate.value = false;
+}
+
+function showUsersDialogFn(users: IUserPreview[]) {
+  usersInDialog.value = users;
+  usersDialog.value = true;
+}
+
+async function blockOrigin(origin: IOrigin) {
+  await apiActivity.updateOrigins(token.value, { action: 'add', origin });
+  await commitAddNotification(store, {
+    color: 'info',
+    content: '过滤规则更新成功，稍后自动生效',
+  });
+  await router.go(0);
+}
+
+defineExpose({
+  loadNewActivities,
+});
 </script>

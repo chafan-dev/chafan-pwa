@@ -6,48 +6,56 @@
   </v-btn>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { CVue } from '@/common';
+<script setup lang="ts">
+import { ref } from 'vue';
 
-@Component
-export default class VerificationCodeBtn extends CVue {
-  @Prop() public readonly sendVerificationCodeHandler!: () => Promise<boolean>;
-  @Prop({ default: false }) readonly disabledProp!: boolean;
-
-  private seconds: number | null = null;
-  private disabled = false;
-  private intermediate = false;
-
-  private async onClick() {
-    this.intermediate = true;
-    try {
-      const ok = await this.sendVerificationCodeHandler();
-      if (ok) {
-        this.onSent();
-      }
-    } finally {
-      this.intermediate = false;
-    }
+const props = withDefaults(
+  defineProps<{
+    sendVerificationCodeHandler: () => Promise<boolean>;
+    disabledProp?: boolean;
+  }>(),
+  {
+    disabledProp: false,
   }
+);
 
-  public updateSecondsSinceLastVerificationCode() {
-    if (this.seconds === null) {
-      return;
-    }
-    this.seconds += 1;
-    if (this.seconds > 60) {
-      this.disabled = false;
-      this.seconds = null;
-    } else {
-      setTimeout(this.updateSecondsSinceLastVerificationCode, 1000);
-    }
+const seconds = ref<number | null>(null);
+const disabled = ref(false);
+const intermediate = ref(false);
+
+function updateSecondsSinceLastVerificationCode() {
+  if (seconds.value === null) {
+    return;
   }
-
-  public onSent() {
-    this.disabled = true;
-    this.seconds = 0;
-    setTimeout(this.updateSecondsSinceLastVerificationCode, 1000);
+  seconds.value += 1;
+  if (seconds.value > 60) {
+    disabled.value = false;
+    seconds.value = null;
+  } else {
+    setTimeout(updateSecondsSinceLastVerificationCode, 1000);
   }
 }
+
+function onSent() {
+  disabled.value = true;
+  seconds.value = 0;
+  setTimeout(updateSecondsSinceLastVerificationCode, 1000);
+}
+
+async function onClick() {
+  intermediate.value = true;
+  try {
+    const ok = await props.sendVerificationCodeHandler();
+    if (ok) {
+      onSent();
+    }
+  } finally {
+    intermediate.value = false;
+  }
+}
+
+defineExpose({
+  updateSecondsSinceLastVerificationCode,
+  onSent,
+});
 </script>

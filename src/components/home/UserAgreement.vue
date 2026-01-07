@@ -15,34 +15,34 @@
   </v-overlay>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { dispatchAddFlag } from '@/store/main/actions';
 import { YES_FLAG } from '@/common';
 import { IUserProfile } from '@/interfaces';
 
-@Component({
-  components: { BaseCard },
-})
-export default class UserAgreement extends Vue {
-  @Prop() public readonly userProfile!: IUserProfile;
-  public overlay = false;
-  private showUserAgreement = false;
+const props = defineProps<{
+  userProfile: IUserProfile;
+}>();
 
-  mounted() {
-    if (this.userProfile.flag_list.includes(YES_FLAG)) {
-      this.showUserAgreement = false;
-    } else {
-      this.showUserAgreement = true;
-      this.overlay = true;
-    }
-  }
+const store = useStore();
+const overlay = ref(false);
+const showUserAgreement = ref(false);
 
-  private async continueUserAgreement() {
-    this.showUserAgreement = false;
-    await dispatchAddFlag(this.$store, YES_FLAG);
-    this.overlay = false;
+onMounted(() => {
+  if (props.userProfile.flag_list.includes(YES_FLAG)) {
+    showUserAgreement.value = false;
+  } else {
+    showUserAgreement.value = true;
+    overlay.value = true;
   }
+});
+
+async function continueUserAgreement() {
+  showUserAgreement.value = false;
+  await dispatchAddFlag(store, YES_FLAG);
+  overlay.value = false;
 }
 </script>

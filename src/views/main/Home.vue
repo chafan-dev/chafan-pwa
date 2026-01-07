@@ -119,7 +119,8 @@ export default class Home extends CVue {
   }
 
   private refreshFeed() {
-    (this.$refs.userFeed as UserFeed).loadNewActivities();
+    // UserFeed uses script setup with defineExpose - cast to any for method access
+    (this.$refs.userFeed as any).loadNewActivities();
   }
 }
 </script>

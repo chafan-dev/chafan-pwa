@@ -16,29 +16,30 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import ContribGraph from '@/components/widgets/ContribGraph.vue';
 
-const defaultGraphs = [
-  {
-    year: 2021,
-    data: undefined,
-  },
-  {
-    year: 2020,
-    data: undefined,
-  },
-];
-
-@Component({
-  components: { ContribGraph },
-})
-export default class ContribGraphs extends Vue {
-  @Prop({ default: defaultGraphs }) readonly data!: { year: number; data: number[] | undefined }[];
-  private year: number | null = null;
-  mounted() {
-    this.year = this.data ? this.data[0].year : null;
-  }
+interface GraphData {
+  year: number;
+  data: number[] | undefined;
 }
+
+const props = withDefaults(
+  defineProps<{
+    data?: GraphData[];
+  }>(),
+  {
+    data: () => [
+      { year: 2021, data: undefined },
+      { year: 2020, data: undefined },
+    ],
+  }
+);
+
+const year = ref<number | null>(null);
+
+onMounted(() => {
+  year.value = props.data ? props.data[0].year : null;
+});
 </script>
