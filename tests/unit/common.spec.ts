@@ -1,4 +1,9 @@
 // Mock dependencies before imports to avoid Vue file parsing
+jest.mock('@/env', () => ({
+  apiUrl: 'https://api.test.cha.fan/api/v1',
+  wsUrl: 'wss://api.test.cha.fan/api/v1',
+  env: 'test',
+}));
 jest.mock('@/api/question', () => ({}));
 jest.mock('@/api/article', () => ({}));
 jest.mock('@/api/answer', () => ({}));

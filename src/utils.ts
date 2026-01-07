@@ -259,13 +259,8 @@ export const authHeadersWithParams = (token: string, params: URLSearchParams) =>
   };
 };
 
-export const uuidv4 = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
+// Re-export cryptographically secure UUID from uuid package
+export { v4 as uuidv4 } from 'uuid';
 
 export const rankComments = (dayjs: typeof import('dayjs'), comments: IComment[]) => {
   return comments.sort((a, b) => {

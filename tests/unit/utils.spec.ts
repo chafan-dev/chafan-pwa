@@ -1,4 +1,9 @@
 // Mock dependencies before imports
+jest.mock('@/env', () => ({
+  apiUrl: 'https://api.test.cha.fan/api/v1',
+  wsUrl: 'wss://api.test.cha.fan/api/v1',
+  env: 'test',
+}));
 jest.mock('@/store/main/actions', () => ({}));
 jest.mock('@/store/main/mutations', () => ({ commitAddNotification: jest.fn() }));
 jest.mock('@/api/article', () => ({}));
