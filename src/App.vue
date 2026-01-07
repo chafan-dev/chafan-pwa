@@ -15,92 +15,81 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, getCurrentInstance } from 'vue';
+import { useStore } from 'vuex';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
-import { readIsLoggedIn, readShowLoginPrompt } from '@/store/main/getters';
+import { readShowLoginPrompt } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { getLocalValue, setAppLocale } from '@/utils';
 import {
-  commitAddNotification,
   commitSetNarrowUI,
   commitSetShowLoginPrompt,
   commitSetTheme,
 } from './store/main/mutations';
-import { CVue, getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
+import { getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
 import { ThemeType } from '@/interfaces';
-import { api2 } from '@/api2';
-import { apiUrl } from '@/env';
+import { useTheme } from '@/composables';
 
-@Component({
-  data: function () {
-    return {
-      loading: true,
-    };
+const store = useStore();
+const { theme } = useTheme();
+
+const registration = ref<ServiceWorkerRegistration | null>(null);
+const updateExists = ref(false);
+const refreshing = ref(false);
+const loading = ref(true);
+
+const showLoginPrompt = computed({
+  get() {
+    return readShowLoginPrompt(store);
   },
-  components: {
-    NotificationsManager,
-    LoginCard,
+  set(value: boolean) {
+    commitSetShowLoginPrompt(store, value);
   },
-})
-export default class App extends CVue {
-  private registration: ServiceWorkerRegistration | null = null;
-  private updateExists = false;
-  private refreshing = false;
-  private loading = true;
+});
 
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
+const pwaWaiting = computed(() => {
+  return registration.value && registration.value.waiting;
+});
+
+onMounted(async () => {
+  document.addEventListener(
+    'swUpdated',
+    (event) => {
+      registration.value = (event as any).detail;
+      updateExists.value = true;
+    },
+    { once: true }
+  );
+
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing.value) {
+        return;
+      }
+      refreshing.value = true;
+      window.location.reload();
+    });
   }
-
-  get showLoginPrompt() {
-    return readShowLoginPrompt(this.$store);
+  await dispatchCheckLoggedIn(store);
+  loading.value = false;
+  const instance = getCurrentInstance();
+  if (instance) {
+    setAppLocale(instance.proxy);
   }
-
-  set showLoginPrompt(value: boolean) {
-    commitSetShowLoginPrompt(this.$store, value);
+  commitSetNarrowUI(store, getDefaultNarrowFeedUI());
+  const savedTheme = getLocalValue(themeLocalStorageKey) as ThemeType;
+  if (savedTheme) {
+    commitSetTheme(store, savedTheme);
   }
+});
 
-  get pwaWaiting() {
-    return this.registration && this.registration.waiting;
+function refreshApp() {
+  updateExists.value = false;
+  if (!pwaWaiting.value) {
+    return;
   }
-
-  public async mounted() {
-    document.addEventListener(
-      'swUpdated',
-      (event) => {
-        this.registration = (event as any).detail;
-        this.updateExists = true;
-      },
-      { once: true }
-    );
-
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (this.refreshing) {
-          return;
-        }
-        this.refreshing = true;
-        window.location.reload();
-      });
-    }
-    await dispatchCheckLoggedIn(this.$store);
-    this.$data.loading = false;
-    setAppLocale(this);
-    commitSetNarrowUI(this.$store, getDefaultNarrowFeedUI());
-    const theme = getLocalValue(themeLocalStorageKey) as ThemeType;
-    if (theme) {
-      commitSetTheme(this.$store, theme);
-    }
-  }
-
-  private refreshApp() {
-    this.updateExists = false;
-    if (!this.pwaWaiting) {
-      return;
-    }
-    this.registration?.waiting?.postMessage({ type: 'SKIP_WAITING ' });
-  }
+  registration.value?.waiting?.postMessage({ type: 'SKIP_WAITING ' });
 }
 </script>

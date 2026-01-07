@@ -62,7 +62,9 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router/composables';
 import { api } from '@/api';
 import { apiDiscovery } from '@/api/discovery';
 import { IArticleColumn, IQuestionPreview } from '@/interfaces';
@@ -71,51 +73,40 @@ import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
-import { Component } from 'vue-property-decorator';
 import RotationList from '@/components/base/RotationList.vue';
-import { CVue } from '@/common';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { useAuth } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: {
-    CloseIcon,
-    CreateArticleColumn,
-    RotationList,
-    QuestionLink,
-    CreateSubmissionForm,
-    CreateQuestionForm,
-  },
-})
-export default class NewContentActionBar extends CVue {
-  private questionsToAnswer: IQuestionPreview[] = [];
+const router = useRouter();
+const { token } = useAuth();
 
-  private showAskActionDialog = false;
-  private showArticleActionDialog = false;
-  private showAnswerActionDialog = false;
-  private showSubmissionActionDialog = false;
+const questionsToAnswer = ref<IQuestionPreview[]>([]);
+const showAskActionDialog = ref(false);
+const showArticleActionDialog = ref(false);
+const showAnswerActionDialog = ref(false);
+const showSubmissionActionDialog = ref(false);
+const myArticleColumns = ref<IArticleColumn[]>([]);
+const newArticleColumnUUID = ref<string | null>(null);
 
-  private myArticleColumns: IArticleColumn[] = [];
-  private newArticleColumnUUID: string | null = null;
-
-  public async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.token) {
-        this.myArticleColumns = (await api.getMyArticleColumns(this.token)).data;
-        this.questionsToAnswer = (await apiDiscovery.getPendingQuestions(this.token)).data;
-      }
-    });
-  }
-
-  private async postNewArticle() {
-    if (this.newArticleColumnUUID) {
-      await this.$router.push(`/article-editor?articleColumnId=${this.newArticleColumnUUID}`);
-    } else {
-      commitAddNotification(this.$store, {
-        content: '请选择一个专栏发布文章，在「用户中心」中可以创建专栏',
-        color: 'info',
-      });
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    if (token.value) {
+      myArticleColumns.value = (await api.getMyArticleColumns(token.value)).data;
+      questionsToAnswer.value = (await apiDiscovery.getPendingQuestions(token.value)).data;
     }
+  });
+});
+
+async function postNewArticle() {
+  if (newArticleColumnUUID.value) {
+    await router.push(`/article-editor?articleColumnId=${newArticleColumnUUID.value}`);
+  } else {
+    commitAddNotification(store, {
+      content: '请选择一个专栏发布文章，在「用户中心」中可以创建专栏',
+      color: 'info',
+    });
   }
 }
 </script>

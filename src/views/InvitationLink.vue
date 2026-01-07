@@ -75,46 +75,46 @@
   </v-main>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import { api } from '@/api';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { CVue, translateErrorMsgCN } from '@/common';
+import { translateErrorMsgCN } from '@/common';
 import { commitAddNotification } from '@/store/main/mutations';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { UserLink },
-})
-export default class InvitationLink extends CVue {
-  private appName = appName;
-  private invitationLink: IInvitationLink | null = null;
-  private errorMsg: string | null = null;
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, loggedIn } = useAuth();
 
-  get uuid() {
-    return this.$route.params.uuid;
-  }
+const invitationLink = ref<IInvitationLink | null>(null);
+const errorMsg = ref<string | null>(null);
 
-  private async mounted() {
-    await api.getInvitationLink(this, this.uuid, (link) => {
-      this.invitationLink = link;
-      if (!this.invitationLink?.valid) {
-        commitAddNotification(this.$store, {
-          content: translateErrorMsgCN('Invalid invitation link'),
-          color: 'error',
-        });
-      }
-    });
-  }
+const uuid = computed(() => route.params.uuid as string);
 
-  private async joinSite() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      await api.joinSiteWithInvitationLink(this.token, this.invitationLink!.uuid);
-      const siteDomain = this.invitationLink!.invited_to_site!.subdomain;
-      await this.$router.push(`/sites/${siteDomain}`);
-    });
-  }
+onMounted(async () => {
+  await api.getInvitationLink({ $store: store }, uuid.value, (link) => {
+    invitationLink.value = link;
+    if (!invitationLink.value?.valid) {
+      commitAddNotification(store, {
+        content: translateErrorMsgCN('Invalid invitation link'),
+        color: 'error',
+      });
+    }
+  });
+});
+
+async function joinSite() {
+  await dispatchCaptureApiError(store, async () => {
+    await api.joinSiteWithInvitationLink(token.value, invitationLink.value!.uuid);
+    const siteDomain = invitationLink.value!.invited_to_site!.subdomain;
+    await router.push(`/sites/${siteDomain}`);
+  });
 }
 </script>

@@ -55,16 +55,11 @@
     </base-card>
   </v-sheet>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 
-@Component({
-  components: { InfoIcon, CloseIcon, BaseCard },
-})
-export default class UserWelcome extends Vue {
-  private stepperValue = 1;
-}
+const stepperValue = ref(1);
 </script>

@@ -53,27 +53,25 @@
   </v-main>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import { appName } from '@/env';
 import { dispatchPasswordRecovery } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 
-// TODO: share a parent component with Login.vue
-@Component({
-  components: { AccountIcon },
-})
-export default class Login extends Vue {
-  public valid = true;
-  public email: string = '';
-  public appName = appName;
+const store = useStore();
+const router = useRouter();
 
-  public cancel() {
-    this.$router.back();
-  }
+const valid = ref(true);
+const email = ref('');
 
-  public submit() {
-    dispatchPasswordRecovery(this.$store, { email: this.email });
-  }
+function cancel() {
+  router.back();
+}
+
+function submit() {
+  dispatchPasswordRecovery(store, { email: email.value });
 }
 </script>

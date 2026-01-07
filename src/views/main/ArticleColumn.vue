@@ -25,48 +25,46 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from '@/router';
 import { apiArticle } from '@/api/article';
 import { IArticleColumn, IArticlePreview } from '@/interfaces';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, isEqual } from '@/common';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
+import { useAuth, useResponsive } from '@/composables';
 
-@Component({
-  components: { ArticlePreview, EmptyPlaceholder, ArticleColumnCard },
-})
-export default class ArticleColumn extends CVue {
-  private articleColumn: IArticleColumn | null = null;
-  private articles: IArticlePreview[] | null = null;
-  private loading: boolean = true;
+const store = useStore();
+const route = useRoute();
+const { token, loggedIn } = useAuth();
+const { isDesktop } = useResponsive();
 
-  get id() {
-    return this.$route.params.id;
-  }
+const articleColumn = ref<IArticleColumn | null>(null);
+const articles = ref<IArticlePreview[] | null>(null);
+const loading = ref(true);
 
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'article-column');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.load();
-    }
-  }
+const id = computed(() => route.params.id as string);
 
-  private async load() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.articleColumn = (await apiArticle.getArticleColumn(this.token, this.id)).data;
-      this.articles = (await apiArticle.getArticlesOfColumn(this.token, this.id)).data;
-      this.loading = false;
-    });
-  }
-
-  private async mounted() {
-    await this.load();
-  }
+async function load() {
+  await dispatchCaptureApiError(store, async () => {
+    articleColumn.value = (await apiArticle.getArticleColumn(token.value, id.value)).data;
+    articles.value = (await apiArticle.getArticlesOfColumn(token.value, id.value)).data;
+    loading.value = false;
+  });
 }
+
+// Watch for route param changes (replaces beforeRouteUpdate)
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId && route.name === 'article-column') {
+    loading.value = true;
+    load();
+  }
+});
+
+onMounted(async () => {
+  await load();
+});
 </script>

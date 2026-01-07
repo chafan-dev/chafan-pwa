@@ -12,43 +12,41 @@
   </span>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import Upvote from '@/components/Upvote.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiQuestion } from '@/api/question';
-import { readToken } from '@/store/main/getters';
 import { IQuestionUpvotes } from '@/interfaces';
-import { CVue } from '@/common';
+import { useAuth } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { Upvote },
-})
-export default class QuestionUpvotes extends CVue {
-  @Prop() public readonly uuid!: string;
-  @Prop() public readonly disabled!: boolean;
-  @Prop() public readonly upvotesPlaceholder: IQuestionUpvotes | undefined;
+const props = defineProps<{
+  uuid: string;
+  disabled: boolean;
+  upvotesPlaceholder?: IQuestionUpvotes;
+}>();
 
-  private upvotes: IQuestionUpvotes | null = null;
+const { token } = useAuth();
+const upvotes = ref<IQuestionUpvotes | null>(null);
 
-  async mounted() {
-    if (this.upvotesPlaceholder) {
-      this.upvotes = this.upvotesPlaceholder;
-    } else {
-      this.upvotes = (await apiQuestion.getUpvotes(readToken(this.$store), this.uuid)).data;
-    }
+onMounted(async () => {
+  if (props.upvotesPlaceholder) {
+    upvotes.value = props.upvotesPlaceholder;
+  } else {
+    upvotes.value = (await apiQuestion.getUpvotes(token.value, props.uuid)).data;
   }
+});
 
-  private async upvote() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.upvotes = (await apiQuestion.upvoteQuestion(this.token, this.uuid)).data;
-    });
-  }
+async function upvote() {
+  await dispatchCaptureApiError(store, async () => {
+    upvotes.value = (await apiQuestion.upvoteQuestion(token.value, props.uuid)).data;
+  });
+}
 
-  private async cancelUpvote() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.upvotes = (await apiQuestion.cancelUpvoteQuestion(this.token, this.uuid)).data;
-    });
-  }
+async function cancelUpvote() {
+  await dispatchCaptureApiError(store, async () => {
+    upvotes.value = (await apiQuestion.cancelUpvoteQuestion(token.value, props.uuid)).data;
+  });
 }
 </script>

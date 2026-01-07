@@ -418,7 +418,7 @@
   </div>
   <div v-else-if="answer && showEditor">
     <AnswerEditor
-      ref="editor"
+      ref="editorRef"
       :answerIdProp="answer.uuid"
       :archivesCount="answer.archives_count"
       :inPrivateSite="!answer.site.public_readable"
@@ -432,14 +432,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router/composables';
 import {
   IAnswer,
   IAnswerDraft,
   IAnswerPreview,
   IAnswerSuggestEdit,
   IAnswerUpvotes,
+  IComment,
   INewCommentInternal,
   IRichEditorState,
   IRichText,
@@ -454,11 +456,9 @@ import ShareCardButton from '@/components/ShareCardButton.vue';
 import { api } from '@/api';
 import { apiAnswer } from '@/api/answer';
 import UserLink from '@/components/UserLink.vue';
-import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-
 import {
   commitAddNotification,
   commitSetShowLoginPrompt,
@@ -467,478 +467,463 @@ import {
 import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
 import { clearLocalEdit, delay, loadLocalEdit, LocalEdit } from '@/utils';
-import BaseCard from '@/components/base/BaseCard.vue';
 import AnswerEditor from '@/components/AnswerEditor.vue';
-import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
-import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import Upvote from '@/components/Upvote.vue';
-import { CVue } from '@/common';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import DiffView from '@/components/widgets/DiffView.vue';
 import FlagIcon from '@/components/icons/FlagIcon.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import BookshelfIcon from '@/components/icons/BookshelfIcon.vue';
+import Viewer from '@/components/Viewer.vue';
+import { useAuth, useTheme, useResponsive, useDayjs } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: {
-    CloseIcon,
-    FlagIcon,
-    BookshelfIcon,
-    DiffView,
-    EditIcon,
-    DotsIcon,
-    Upvote,
-    CommentBtn,
-    UpvotedBtn,
-    UpvoteBtn,
-    ShareCardButton,
-    AnswerEditor,
-    BaseCard,
-    UserLink,
-    QuestionLink,
-    CommentBlock,
-    SiteBtn,
-    BookmarkedIcon,
-    ToBookmarkIcon,
-    DeleteIcon,
-    CollapseUpIcon,
-  },
-})
-export default class Answer extends CVue {
-  @Prop() private readonly answerPreview!: IAnswerPreview;
-  @Prop() private readonly answerProp: IAnswer | undefined;
-  @Prop() private readonly answerPropDelayMilliSecondsForTest: number | undefined;
-  @Prop() private readonly answerUpvotesProp: IAnswerUpvotes | undefined;
-  @Prop({ default: false }) private readonly loadFull!: boolean;
-  @Prop({ default: false }) private readonly inAnswerQuestionFeedCard!: boolean;
-  @Prop({ default: false }) private readonly draftMode!: boolean;
-  @Prop() private readonly showCommentId: string | undefined;
-  @Prop() private readonly showSuggestionUuid: string | undefined;
-  @Prop({ default: true }) private readonly showQuestionInCard!: boolean;
-  private answer: IAnswer | null = null;
-  private upvotes: IAnswerUpvotes | null = null;
-  private showComments: boolean = false;
-  private isHiddenByMod: boolean = false;
-  private commentWritable = false;
-  private userBookmark: IUserAnswerBookmark | null = null;
-  private showEditor: boolean = false;
-  private confirmDeleteDialog = false;
-  private loading = true;
-  private preview = true;
-  private deleteAnswerIntermediate = false;
-  private bookmarkIntermediate = false;
-  private unbookmarkIntermediate = false;
-  private toggleHideAnswerIntermediate = false;
-  private currentUserIsAuthor = false;
-  private expandClicked = false;
-  private answerSuggestEditComment: string | null = null;
+const props = withDefaults(defineProps<{
+  answerPreview: IAnswerPreview;
+  answerProp?: IAnswer;
+  answerPropDelayMilliSecondsForTest?: number;
+  answerUpvotesProp?: IAnswerUpvotes;
+  loadFull?: boolean;
+  inAnswerQuestionFeedCard?: boolean;
+  draftMode?: boolean;
+  showCommentId?: string;
+  showSuggestionUuid?: string;
+  showQuestionInCard?: boolean;
+}>(), {
+  loadFull: false,
+  inAnswerQuestionFeedCard: false,
+  draftMode: false,
+  showQuestionInCard: true,
+});
 
-  private editButtonText = '编辑';
-  private showHasDraftBadge = false;
-  private bodyDraftFromLocalSavedEdit: LocalEdit | null = null;
-  private draftPromise: Promise<IAnswerDraft> | null = null;
-  private commentSubmitIntermediate = false;
-  private draftContent: IRichText | null = null;
-  private openedSuggestionIdx: number | null = null;
+const emit = defineEmits<{
+  (e: 'load'): void;
+  (e: 'delete-answer', uuid: string): void;
+  (e: 'delete-answer-draft', uuid: string): void;
+}>();
 
-  private async mounted() {
-    const loadFull = this.loadFull || this.answerPreview.body_is_truncated === false;
-    if (this.showCommentId) {
-      this.showComments = true;
+const router = useRouter();
+const { token, userProfile, loggedIn } = useAuth();
+const { theme } = useTheme();
+const { isDesktop } = useResponsive();
+const { dayjs, fromNow } = useDayjs();
+
+// Template ref
+const editorRef = ref<InstanceType<typeof AnswerEditor> | null>(null);
+
+// State
+const answer = ref<IAnswer | null>(null);
+const upvotes = ref<IAnswerUpvotes | null>(null);
+const showComments = ref(false);
+const isHiddenByMod = ref(false);
+const commentWritable = ref(false);
+const userBookmark = ref<IUserAnswerBookmark | null>(null);
+const showEditor = ref(false);
+const confirmDeleteDialog = ref(false);
+const loading = ref(true);
+const preview = ref(true);
+const deleteAnswerIntermediate = ref(false);
+const bookmarkIntermediate = ref(false);
+const unbookmarkIntermediate = ref(false);
+const toggleHideAnswerIntermediate = ref(false);
+const currentUserIsAuthor = ref(false);
+const expandClicked = ref(false);
+const answerSuggestEditComment = ref<string | null>(null);
+
+const editButtonText = ref('编辑');
+const showHasDraftBadge = ref(false);
+const bodyDraftFromLocalSavedEdit = ref<LocalEdit | null>(null);
+const draftPromise = ref<Promise<IAnswerDraft> | null>(null);
+const commentSubmitIntermediate = ref(false);
+const draftContent = ref<IRichText | null>(null);
+const openedSuggestionIdx = ref<number | null>(null);
+const suggestedEdits = ref<IAnswerSuggestEdit[]>([]);
+
+const previewedSuggestion = ref<IAnswerSuggestEdit | null>(null);
+const showSuggestionPreviewDialog = ref(false);
+
+const reportDialog = ref(false);
+const reportReasonItems = [
+  { value: 'SPAM', text: '垃圾信息' },
+  { value: 'OFF_TOPIC', text: '和主题范围无关' },
+  { value: 'RUDE_OR_ABUSIVE', text: '恶意、极端、偏激类言论' },
+  { value: 'RIGHT_INFRINGEMENT', text: '抄袭或者侵犯他人隐私' },
+  { value: 'NEED_MODERATOR_INTERVENTION', text: '需要管理员人工判断' },
+];
+const reportReason = ref<ISevereReportReason>('NEED_MODERATOR_INTERVENTION');
+const reportReasonComment = ref<string | null>(null);
+const submitReportIntermediate = ref(false);
+
+function recursiveCommentsCount(comments: IComment[]): number {
+  return (
+    comments.length +
+    comments.reduce((sum, comment) => sum + recursiveCommentsCount(comment.child_comments), 0)
+  );
+}
+
+onMounted(async () => {
+  const loadFullAnswer = props.loadFull || props.answerPreview.body_is_truncated === false;
+  if (props.showCommentId) {
+    showComments.value = true;
+  }
+
+  isHiddenByMod.value = props.answerPreview.is_hidden_by_moderator;
+
+  if (!loadFullAnswer) {
+    loading.value = false;
+  }
+
+  if (props.answerProp) {
+    if (props.answerPropDelayMilliSecondsForTest) {
+      await delay(props.answerPropDelayMilliSecondsForTest);
     }
+    await updateStateWithLoadedAnswer(props.answerProp);
+  } else if (props.answerPreview.full_answer) {
+    await updateStateWithLoadedAnswer(props.answerPreview.full_answer);
+  } else {
+    const response = await apiAnswer.getAnswer(token.value, props.answerPreview.uuid);
+    await updateStateWithLoadedAnswer(response.data);
+  }
 
-    this.isHiddenByMod = this.answerPreview.is_hidden_by_moderator;
+  if (loadFullAnswer) {
+    preview.value = false;
+  }
+});
 
-    if (!loadFull) {
-      this.loading = false;
+async function upvote() {
+  if (!userProfile.value) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  await dispatchCaptureApiError(store, async () => {
+    if (answer.value) {
+      upvotes.value = (await apiAnswer.upvoteAnswer(token.value, answer.value.uuid)).data;
     }
+  });
+}
 
-    if (this.answerProp) {
-      if (this.answerPropDelayMilliSecondsForTest) {
-        await delay(this.answerPropDelayMilliSecondsForTest);
-      }
-      await this.updateStateWithLoadedAnswer(this.answerProp);
-    } else if (this.answerPreview.full_answer) {
-      await this.updateStateWithLoadedAnswer(this.answerPreview.full_answer);
-    } else {
-      const response = await apiAnswer.getAnswer(this.token, this.answerPreview.uuid);
-      await this.updateStateWithLoadedAnswer(response.data);
+async function cancelUpvote() {
+  await dispatchCaptureApiError(store, async () => {
+    if (answer.value) {
+      upvotes.value = (await apiAnswer.cancelUpvoteAnswer(token.value, answer.value.uuid)).data;
     }
+  });
+}
 
-    if (loadFull) {
-      this.preview = false;
+function webArchiveRequest() {
+  window.open('https://web.archive.org/web/*/' + window.location.href);
+}
+
+async function bookmark() {
+  await dispatchCaptureApiError(store, async () => {
+    if (answer.value) {
+      bookmarkIntermediate.value = true;
+      userBookmark.value = (await apiMe.bookmarkAnswer(token.value, answer.value.uuid)).data;
+      bookmarkIntermediate.value = false;
     }
-  }
+  });
+}
 
-  private async upvote() {
-    if (!this.userProfile) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
+async function unbookmark() {
+  unbookmarkIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (answer.value) {
+      userBookmark.value = (await apiMe.unbookmarkAnswer(token.value, answer.value.uuid)).data;
+      unbookmarkIntermediate.value = false;
     }
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answer) {
-        this.upvotes = (await apiAnswer.upvoteAnswer(this.token, this.answer.uuid)).data;
-      }
-    });
-  }
+  });
+}
 
-  private async cancelUpvote() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answer) {
-        this.upvotes = (await apiAnswer.cancelUpvoteAnswer(this.token, this.answer.uuid)).data;
-      }
-    });
+async function submitNewAnswerCommentBody(c: INewCommentInternal | undefined) {
+  if (!c) {
+    return;
   }
+  await submitNewAnswerCommentBodyInternal(c);
+}
 
-  private async webArchiveRequest() {
-    window.open('https://web.archive.org/web/*/' + window.location.href);
-  }
-
-  private async bookmark() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answer) {
-        this.bookmarkIntermediate = true;
-        this.userBookmark = (await apiMe.bookmarkAnswer(this.token, this.answer.uuid)).data;
-        this.bookmarkIntermediate = false;
-      }
-    });
-  }
-
-  private async unbookmark() {
-    this.unbookmarkIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answer) {
-        this.userBookmark = (await apiMe.unbookmarkAnswer(this.token, this.answer.uuid)).data;
-        this.unbookmarkIntermediate = false;
-      }
-    });
-  }
-
-  private async submitNewAnswerCommentBody(c: INewCommentInternal | undefined) {
-    if (!c) {
-      return;
-    }
-    await this.submitNewAnswerCommentBodyInternal(c);
-  }
-
-  private async submitNewAnswerCommentBodyInternal({
-    body,
-    body_text,
-    editor,
-    mentioned,
-  }: INewCommentInternal) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answer) {
-        this.commentSubmitIntermediate = true;
-        const response = await apiComment.postComment(this.token, {
-          site_uuid: this.answer.site.uuid,
-          answer_uuid: this.answer.uuid,
-          content: {
-            source: body,
-            rendered_text: body_text,
-            editor,
-          },
-          mentioned,
-        });
-        const comment = response.data;
-        this.answer.comments.push(comment);
-        this.commentSubmitIntermediate = false;
-      }
-    });
-  }
-
-  private async toggleHideAnswer() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.answerPreview) {
-        this.toggleHideAnswerIntermediate = true;
-        await api.updateAnswerByMod(this.token, this.answerPreview.uuid, {
-          is_hidden_by_moderator: !this.isHiddenByMod,
-        });
-        this.toggleHideAnswerIntermediate = false;
-        this.isHiddenByMod = !this.isHiddenByMod;
-      }
-    });
-  }
-
-  private async updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
-    if (!event.isAutoSaved) {
-      this.showHasDraftBadge = false;
-      this.showEditor = false;
-      await this.updateStateWithLoadedAnswer(event.answer);
-    }
-  }
-
-  private async updateStateWithLoadedAnswer(answer: IAnswer) {
-    this.$emit('load');
-    this.answer = answer;
-    if (this.userProfile) {
-      this.currentUserIsAuthor = this.userProfile.uuid === this.answer.author.uuid;
-      if (this.currentUserIsAuthor) {
-        const localSavedEdit = loadLocalEdit('answer', answer.uuid);
-        this.draftPromise = apiAnswer.getAnswerDraft(this.token, answer.uuid).then((response) => {
-          const draft = response.data;
-          if (
-            draft.content_draft &&
-            (localSavedEdit === null ||
-              this.$dayjs.utc(draft.draft_saved_at).isAfter(this.$dayjs(localSavedEdit.createdAt)))
-          ) {
-            this.editButtonText = '编辑草稿';
-            this.draftContent = draft.content_draft;
-            this.showHasDraftBadge = true;
-          } else if (localSavedEdit) {
-            this.editButtonText = '编辑草稿';
-            this.draftContent = {
-              source: (localSavedEdit.edit as IRichEditorState).body || '',
-              editor: (localSavedEdit.edit as IRichEditorState).editor,
-            };
-            this.bodyDraftFromLocalSavedEdit = localSavedEdit;
-            this.showHasDraftBadge = true;
-          }
-          return draft;
-        });
-      }
-    }
-    if (this.answerUpvotesProp) {
-      this.upvotes = this.answerUpvotesProp;
-    } else if (this.answer.upvotes) {
-      this.upvotes = this.answer.upvotes;
-    } else {
-      this.upvotes = (await apiAnswer.getAnswerUpvotes(this.token, this.answer.uuid)).data;
-    }
-    this.commentWritable = this.answer.comment_writable;
-    this.userBookmark = {
-      answer_uuid: this.answer.uuid,
-      bookmarkers_count: this.answer.bookmark_count,
-      bookmarked_by_me: this.answer.bookmarked,
-    };
-    if (this.token) {
-      this.suggestedEdits = (await apiAnswer.getSuggestions(this.token, this.answer.uuid)).data;
-      if (this.showSuggestionUuid) {
-        this.openedSuggestionIdx = this.suggestedEdits.findIndex(
-          (v) => v.uuid === this.showSuggestionUuid
-        );
-      }
-    }
-    this.loading = false;
-  }
-
-  private expandDown() {
-    this.expandClicked = true;
-    if (!this.answer) {
-      this.loading = true;
-    }
-    this.preview = false;
-  }
-
-  private onReadFullAnswer() {
-    if (this.token) {
-      apiAnswer.bumpViewsCounter(this.token, this.answerPreview.uuid);
-    }
-  }
-
-  private async loadEditor() {
-    if (this.answer) {
-      // load editor for author user
-      if (this.currentUserIsAuthor && this.draftPromise) {
-        const draft = await this.draftPromise;
-        if (this.bodyDraftFromLocalSavedEdit) {
-          commitAddNotification(this.$store, {
-            content: '载入最近的草稿',
-            color: 'success',
-          });
-          commitSetWorkingDraft(
-            this.$store,
-            this.bodyDraftFromLocalSavedEdit.edit as IRichEditorState
-          );
-        } else if (draft && draft.content_draft) {
-          commitAddNotification(this.$store, {
-            content: '载入最近的草稿',
-            color: 'success',
-          });
-          commitSetWorkingDraft(this.$store, {
-            body: draft.content_draft?.source || '',
-            rendered_body_text: null,
-            is_draft: true,
-            editor: draft.content_draft?.editor || 'wysiwyg',
-            visibility: this.answer.visibility,
-          });
-        } else {
-          commitSetWorkingDraft(this.$store, {
-            body: this.answer.content.source,
-            rendered_body_text: null,
-            visibility: this.answer.visibility,
-            editor: this.answer.content.editor,
-            is_draft: false,
-          });
-        }
-        this.showEditor = true;
-      }
-      // Load editor for non-author user for suggest
-      if (!this.currentUserIsAuthor && this.answer.suggest_editable) {
-        commitSetWorkingDraft(this.$store, {
-          body: this.answer.content.source,
-          rendered_body_text: null,
-          visibility: this.answer.visibility,
-          editor: this.answer.content.editor,
-          is_draft: false,
-        });
-        this.showEditor = true;
-      }
-    }
-  }
-
-  private async deleteAnswer() {
-    if (this.draftMode) {
-      const editor = this.$refs.editor as AnswerEditor;
-      if (editor) {
-        await (this.$refs.editor as AnswerEditor).deleteDraft();
-      }
-      clearLocalEdit('answer', this.answerPreview.uuid);
-      await apiAnswer.deleteAnswerDraft(this.token, this.answerPreview.uuid);
-      commitAddNotification(this.$store, {
-        content: '草稿已删除',
-        color: 'success',
+async function submitNewAnswerCommentBodyInternal({
+  body,
+  body_text,
+  editor,
+  mentioned,
+}: INewCommentInternal) {
+  await dispatchCaptureApiError(store, async () => {
+    if (answer.value) {
+      commentSubmitIntermediate.value = true;
+      const response = await apiComment.postComment(token.value, {
+        site_uuid: answer.value.site.uuid,
+        answer_uuid: answer.value.uuid,
+        content: {
+          source: body,
+          rendered_text: body_text,
+          editor,
+        },
+        mentioned,
       });
-      this.$emit('delete-answer-draft', this.answerPreview.uuid);
-    } else {
-      await dispatchCaptureApiError(this.$store, async () => {
-        await apiAnswer.deleteAnswer(this.token, this.answerPreview.uuid);
-        commitAddNotification(this.$store, {
-          content: '答案已永久删除',
+      const comment = response.data;
+      answer.value.comments.push(comment);
+      commentSubmitIntermediate.value = false;
+    }
+  });
+}
+
+async function toggleHideAnswer() {
+  await dispatchCaptureApiError(store, async () => {
+    if (props.answerPreview) {
+      toggleHideAnswerIntermediate.value = true;
+      await api.updateAnswerByMod(token.value, props.answerPreview.uuid, {
+        is_hidden_by_moderator: !isHiddenByMod.value,
+      });
+      toggleHideAnswerIntermediate.value = false;
+      isHiddenByMod.value = !isHiddenByMod.value;
+    }
+  });
+}
+
+async function updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
+  if (!event.isAutoSaved) {
+    showHasDraftBadge.value = false;
+    showEditor.value = false;
+    await updateStateWithLoadedAnswer(event.answer);
+  }
+}
+
+async function updateStateWithLoadedAnswer(loadedAnswer: IAnswer) {
+  emit('load');
+  answer.value = loadedAnswer;
+  if (userProfile.value) {
+    currentUserIsAuthor.value = userProfile.value.uuid === loadedAnswer.author.uuid;
+    if (currentUserIsAuthor.value) {
+      const localSavedEdit = loadLocalEdit('answer', loadedAnswer.uuid);
+      draftPromise.value = apiAnswer.getAnswerDraft(token.value, loadedAnswer.uuid).then((response) => {
+        const draft = response.data;
+        if (
+          draft.content_draft &&
+          (localSavedEdit === null ||
+            dayjs.utc(draft.draft_saved_at).isAfter(dayjs(localSavedEdit.createdAt)))
+        ) {
+          editButtonText.value = '编辑草稿';
+          draftContent.value = draft.content_draft;
+          showHasDraftBadge.value = true;
+        } else if (localSavedEdit) {
+          editButtonText.value = '编辑草稿';
+          draftContent.value = {
+            source: (localSavedEdit.edit as IRichEditorState).body || '',
+            editor: (localSavedEdit.edit as IRichEditorState).editor,
+          };
+          bodyDraftFromLocalSavedEdit.value = localSavedEdit;
+          showHasDraftBadge.value = true;
+        }
+        return draft;
+      });
+    }
+  }
+  if (props.answerUpvotesProp) {
+    upvotes.value = props.answerUpvotesProp;
+  } else if (loadedAnswer.upvotes) {
+    upvotes.value = loadedAnswer.upvotes;
+  } else {
+    upvotes.value = (await apiAnswer.getAnswerUpvotes(token.value, loadedAnswer.uuid)).data;
+  }
+  commentWritable.value = loadedAnswer.comment_writable;
+  userBookmark.value = {
+    answer_uuid: loadedAnswer.uuid,
+    bookmarkers_count: loadedAnswer.bookmark_count,
+    bookmarked_by_me: loadedAnswer.bookmarked,
+  };
+  if (token.value) {
+    suggestedEdits.value = (await apiAnswer.getSuggestions(token.value, loadedAnswer.uuid)).data;
+    if (props.showSuggestionUuid) {
+      openedSuggestionIdx.value = suggestedEdits.value.findIndex(
+        (v) => v.uuid === props.showSuggestionUuid
+      );
+    }
+  }
+  loading.value = false;
+}
+
+function expandDown() {
+  expandClicked.value = true;
+  if (!answer.value) {
+    loading.value = true;
+  }
+  preview.value = false;
+}
+
+function onReadFullAnswer() {
+  if (token.value) {
+    apiAnswer.bumpViewsCounter(token.value, props.answerPreview.uuid);
+  }
+}
+
+async function loadEditor() {
+  if (answer.value) {
+    // load editor for author user
+    if (currentUserIsAuthor.value && draftPromise.value) {
+      const draft = await draftPromise.value;
+      if (bodyDraftFromLocalSavedEdit.value) {
+        commitAddNotification(store, {
+          content: '载入最近的草稿',
           color: 'success',
         });
-        this.confirmDeleteDialog = false;
-      });
-    }
-    this.$emit('delete-answer', this.answerPreview.uuid);
-  }
-
-  private toggleShowComments() {
-    if (!this.userProfile && this.answer!.comments.length === 0) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
-    }
-    this.showComments = !this.showComments;
-  }
-
-  private cancelHandler() {
-    this.showEditor = false;
-  }
-
-  private deleteDraft() {
-    this.showEditor = false;
-    this.showHasDraftBadge = false;
-  }
-
-  private truncatedIntro(intro: string) {
-    if (this.$vuetify.breakpoint.mdAndUp) {
-      if (intro.length > 30) {
-        return intro.substring(0, 30) + '...';
+        commitSetWorkingDraft(store, bodyDraftFromLocalSavedEdit.value.edit as IRichEditorState);
+      } else if (draft && draft.content_draft) {
+        commitAddNotification(store, {
+          content: '载入最近的草稿',
+          color: 'success',
+        });
+        commitSetWorkingDraft(store, {
+          body: draft.content_draft?.source || '',
+          rendered_body_text: null,
+          is_draft: true,
+          editor: draft.content_draft?.editor || 'wysiwyg',
+          visibility: answer.value.visibility,
+        });
       } else {
-        return intro;
+        commitSetWorkingDraft(store, {
+          body: answer.value.content.source,
+          rendered_body_text: null,
+          visibility: answer.value.visibility,
+          editor: answer.value.content.editor,
+          is_draft: false,
+        });
       }
-    } else {
-      if (intro.length > 18) {
-        return intro.substring(0, 18) + '...';
-      } else {
-        return intro;
-      }
+      showEditor.value = true;
+    }
+    // Load editor for non-author user for suggest
+    if (!currentUserIsAuthor.value && answer.value.suggest_editable) {
+      commitSetWorkingDraft(store, {
+        body: answer.value.content.source,
+        rendered_body_text: null,
+        visibility: answer.value.visibility,
+        editor: answer.value.content.editor,
+        is_draft: false,
+      });
+      showEditor.value = true;
     }
   }
+}
 
-  private suggestedEdits: IAnswerSuggestEdit[] = [];
-  private submitAnswerSuggestEditCallback(edit: IAnswerSuggestEdit) {
-    this.showEditor = false;
-    this.suggestedEdits.push(edit);
-  }
-
-  private previewedSuggestion: IAnswerSuggestEdit | null = null;
-  private showSuggestionPreviewDialog = false;
-  private previewSuggestion(suggestion: IAnswerSuggestEdit) {
-    this.previewedSuggestion = suggestion;
-    this.showSuggestionPreviewDialog = true;
-  }
-
-  private async acceptSuggestion(suggestion: IAnswerSuggestEdit) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
-        status: 'accepted',
-      });
-      this.$router.go(0);
-    });
-  }
-
-  private async rejectSuggestion(suggestion: IAnswerSuggestEdit) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r = await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
-        status: 'rejected',
-      });
-      suggestion.status = r.data.status;
-      suggestion.rejected_at = r.data.rejected_at;
-    });
-  }
-
-  private async retractSuggestion(suggestion: IAnswerSuggestEdit) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r = await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
-        status: 'retracted',
-      });
-      suggestion.status = r.data.status;
-      suggestion.retracted_at = r.data.retracted_at;
-    });
-  }
-
-  private async revertRetractSuggestion(suggestion: IAnswerSuggestEdit) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r = await apiAnswer.updateSuggestion(this.token, suggestion.uuid, {
-        status: 'pending',
-      });
-      suggestion.status = r.data.status;
-    });
-  }
-
-  private reportDialog: boolean = false;
-  private reportReasonItems = [
-    {
-      value: 'SPAM',
-      text: '垃圾信息',
-    },
-    {
-      value: 'OFF_TOPIC',
-      text: '和主题范围无关',
-    },
-    {
-      value: 'RUDE_OR_ABUSIVE',
-      text: '恶意、极端、偏激类言论',
-    },
-    {
-      value: 'RIGHT_INFRINGEMENT',
-      text: '抄袭或者侵犯他人隐私',
-    },
-    {
-      value: 'NEED_MODERATOR_INTERVENTION',
-      text: '需要管理员人工判断',
-    },
-  ];
-  private reportReason: ISevereReportReason = 'NEED_MODERATOR_INTERVENTION';
-  private reportReasonComment: string | null = null;
-  private submitReportIntermediate = false;
-
-  private async submitReport() {
-    this.submitReportIntermediate = true;
-    await api.createReport(this.token, {
-      answer_uuid: this.answerPreview.uuid,
-      reason: this.reportReason,
-      reason_comment: this.reportReasonComment || undefined,
-    });
-    commitAddNotification(this.$store, {
+async function deleteAnswer() {
+  if (props.draftMode) {
+    if (editorRef.value) {
+      await editorRef.value.deleteDraft();
+    }
+    clearLocalEdit('answer', props.answerPreview.uuid);
+    await apiAnswer.deleteAnswerDraft(token.value, props.answerPreview.uuid);
+    commitAddNotification(store, {
+      content: '草稿已删除',
       color: 'success',
-      content: '举报提交成功',
     });
-    this.submitReportIntermediate = false;
-    this.reportDialog = false;
+    emit('delete-answer-draft', props.answerPreview.uuid);
+  } else {
+    await dispatchCaptureApiError(store, async () => {
+      await apiAnswer.deleteAnswer(token.value, props.answerPreview.uuid);
+      commitAddNotification(store, {
+        content: '答案已永久删除',
+        color: 'success',
+      });
+      confirmDeleteDialog.value = false;
+    });
   }
+  emit('delete-answer', props.answerPreview.uuid);
+}
+
+function toggleShowComments() {
+  if (!userProfile.value && answer.value!.comments.length === 0) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  showComments.value = !showComments.value;
+}
+
+function cancelHandler() {
+  showEditor.value = false;
+}
+
+function deleteDraft() {
+  showEditor.value = false;
+  showHasDraftBadge.value = false;
+}
+
+function truncatedIntro(intro: string) {
+  if (isDesktop.value) {
+    if (intro.length > 30) {
+      return intro.substring(0, 30) + '...';
+    } else {
+      return intro;
+    }
+  } else {
+    if (intro.length > 18) {
+      return intro.substring(0, 18) + '...';
+    } else {
+      return intro;
+    }
+  }
+}
+
+function submitAnswerSuggestEditCallback(edit: IAnswerSuggestEdit) {
+  showEditor.value = false;
+  suggestedEdits.value.push(edit);
+}
+
+function previewSuggestion(suggestion: IAnswerSuggestEdit) {
+  previewedSuggestion.value = suggestion;
+  showSuggestionPreviewDialog.value = true;
+}
+
+async function acceptSuggestion(suggestion: IAnswerSuggestEdit) {
+  await dispatchCaptureApiError(store, async () => {
+    await apiAnswer.updateSuggestion(token.value, suggestion.uuid, {
+      status: 'accepted',
+    });
+    router.go(0);
+  });
+}
+
+async function rejectSuggestion(suggestion: IAnswerSuggestEdit) {
+  await dispatchCaptureApiError(store, async () => {
+    const r = await apiAnswer.updateSuggestion(token.value, suggestion.uuid, {
+      status: 'rejected',
+    });
+    suggestion.status = r.data.status;
+    suggestion.rejected_at = r.data.rejected_at;
+  });
+}
+
+async function retractSuggestion(suggestion: IAnswerSuggestEdit) {
+  await dispatchCaptureApiError(store, async () => {
+    const r = await apiAnswer.updateSuggestion(token.value, suggestion.uuid, {
+      status: 'retracted',
+    });
+    suggestion.status = r.data.status;
+    suggestion.retracted_at = r.data.retracted_at;
+  });
+}
+
+async function revertRetractSuggestion(suggestion: IAnswerSuggestEdit) {
+  await dispatchCaptureApiError(store, async () => {
+    const r = await apiAnswer.updateSuggestion(token.value, suggestion.uuid, {
+      status: 'pending',
+    });
+    suggestion.status = r.data.status;
+  });
+}
+
+async function submitReport() {
+  submitReportIntermediate.value = true;
+  await api.createReport(token.value, {
+    answer_uuid: props.answerPreview.uuid,
+    reason: reportReason.value,
+    reason_comment: reportReasonComment.value || undefined,
+  });
+  commitAddNotification(store, {
+    color: 'success',
+    content: '举报提交成功',
+  });
+  submitReportIntermediate.value = false;
+  reportDialog.value = false;
 }
 </script>

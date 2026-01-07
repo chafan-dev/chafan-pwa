@@ -358,14 +358,17 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from 'vue-router/composables';
 
 import Answer from '@/components/Answer.vue';
 import QuestionInfo from '@/components/question/QuestionInfo.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import UserLink from '@/components/UserLink.vue';
+import AnswerEditor from '@/components/AnswerEditor.vue';
 
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
@@ -400,8 +403,7 @@ import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, isEqual, updateHead } from '@/common';
+import { isEqual, updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
@@ -412,388 +414,350 @@ import TransferIcon from '@/components/icons/TransferIcon.vue';
 import SiteSearch from '@/components/SiteSearch.vue';
 import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
-import  { warn, info }  from '@/logging'
+import { warn, info } from '@/logging';
+import { useAuth, useTheme, useResponsive, useErrorHandling } from '@/composables';
 
-@Component({
-  components: {
-    TopicChip,
-    LockOutlineIcon,
-    SiteSearch,
-    TransferIcon,
-    QuestionUpvotes,
-    DotsIcon,
-    CommentBtn,
-    ShareCardButton,
-    AnswerIcon,
-    Answer,
-    QuestionInfo,
-    CommentBlock,
-    UserLink,
-    EditIcon,
-    SiteBtn,
-    BookmarkedIcon,
-    ToBookmarkIcon,
-    HistoryIcon,
-    InfoIcon,
-    CommentsIcon,
-    Viewer,
-    SimpleEditor,
-  },
-})
-export default class Question extends CVue {
-  private questionPage: IQuestionPage | null = null;
-  private showEditor: boolean = false;
-  private newQuestionTitle: string = '';
-  private showQuestionEditor: boolean = false;
-  private showComments: boolean = false;
-  private newQuestionTopicNames: string[] = [];
-  private hintTopicNames: string[] = []; // TODO
-  private showConfirmHideQuestionDialog = false;
-  private commitQuestionEditIntermediate = false;
-  private cancelSubscriptionIntermediate = false;
-  private subscribeIntermediate = false;
-  private savedNewAnswer: IAnswer | null = null;
-  private handlingNewEdit = false;
-  private archives: IQuestionArchive[] = [];
-  private historyDialog = false;
-  private commentSubmitIntermediate = false;
-  private savedLocalEdit: LocalEdit | null = null;
-  private answers: IAnswer[] = [];
-  private answeredBefore: boolean = false;
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile, loggedIn } = useAuth();
+const { theme } = useTheme();
+const { isDesktop } = useResponsive();
+const { commitErrMsg, recursiveCommentsCount } = useErrorHandling();
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
+const questionPage = ref<IQuestionPage | null>(null);
+const showEditor = ref(false);
+const newQuestionTitle = ref('');
+const showQuestionEditor = ref(false);
+const showComments = ref(false);
+const newQuestionTopicNames = ref<string[]>([]);
+const hintTopicNames = ref<string[]>([]); // TODO
+const showConfirmHideQuestionDialog = ref(false);
+const commitQuestionEditIntermediate = ref(false);
+const cancelSubscriptionIntermediate = ref(false);
+const subscribeIntermediate = ref(false);
+const savedNewAnswer = ref<IAnswer | null>(null);
+const handlingNewEdit = ref(false);
+const archives = ref<IQuestionArchive[]>([]);
+const historyDialog = ref(false);
+const commentSubmitIntermediate = ref(false);
+const savedLocalEdit = ref<LocalEdit | null>(null);
+const answers = ref<IAnswer[]>([]);
+const answeredBefore = ref(false);
+const transferToSite = ref<ISite | null>(null);
+const transferQuestionDialog = ref(false);
+const descEditor = ref<any>(null);
 
-  get id() {
-    return this.$route.params.id;
-  }
+const isNarrowFeedUI = computed(() => readNarrowUI(store));
 
-  get answerUUID() {
-    const aid = this.$route.params.aid;
-    if (aid) {
-      return aid;
-    } else {
-      return null;
+const id = computed(() => route.params.id);
+
+const answerUUID = computed(() => {
+  const aid = route.params.aid;
+  return aid ? aid : null;
+});
+
+const answerCommentId = computed(() => {
+  const acid = route.params.acid;
+  return acid ? acid : null;
+});
+
+const answerSuggestionId = computed(() => {
+  const asid = route.params.asid;
+  return asid ? asid : null;
+});
+
+const questionCommentId = computed(() => {
+  const qcid = route.params.qcid;
+  return qcid ? qcid : null;
+});
+
+const question = computed(() => questionPage.value?.question);
+
+// Watch for route changes (replacing beforeRouteUpdate)
+watch(
+  () => route.params,
+  (newParams, oldParams) => {
+    if (route.name === 'question' && !isEqual(newParams, oldParams)) {
+      showEditor.value = false;
+      showQuestionEditor.value = false;
+      showComments.value = false;
+      answers.value = [];
+      showConfirmHideQuestionDialog.value = false;
+      savedNewAnswer.value = null;
+      archives.value = [];
+      questionPage.value = null;
+      loadQuestion();
     }
   }
+);
 
-  get answerCommentId() {
-    const acid = this.$route.params.acid;
-    if (acid) {
-      return acid;
-    } else {
-      return null;
-    }
+async function loadQuestion() {
+  let tokenValue: string = '';
+  if (loggedIn.value) {
+    info('logged in. Send token when get question page');
+    tokenValue = token.value;
+  } else {
+    info('loading question when not logged in');
   }
+  await dispatchCaptureApiErrorWithErrorHandler(store, {
+    action: async () => {
+      const response = await apiQuestion.getQuestionPage(tokenValue, id.value);
+      questionPage.value = response.data;
+    },
+    errorFilter: (err: AxiosError) => {
+      const matched = commitErrMsg(err);
+      if (matched) {
+        router.push('/');
+      }
+      return matched !== null;
+    },
+  });
 
-  get answerSuggestionId() {
-    const asid = this.$route.params.asid;
-    if (asid) {
-      return asid;
-    } else {
-      return null;
-    }
-  }
+  await dispatchCaptureApiError(store, async () => {
+    if (questionPage.value) {
+      const questionVal = questionPage.value.question;
+      const _response = await apiQuestion.bumpViewsCounter(token.value, questionVal.uuid);
+      // TODO put it in another place, don't block the whole function 2025-07-03
+      if (questionCommentId.value !== null) {
+        showComments.value = true;
+      }
+      updateHead(route.path, questionVal.title, questionVal.desc?.rendered_text);
 
-  get questionCommentId() {
-    const qcid = this.$route.params.qcid;
-    if (qcid) {
-      return qcid;
-    } else {
-      return null;
-    }
-  }
-
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'question');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.showEditor = false;
-      this.showQuestionEditor = false;
-      this.showComments = false;
-      this.answers = [];
-      this.showConfirmHideQuestionDialog = false;
-      this.savedNewAnswer = null;
-      this.archives = [];
-      this.questionPage = null;
-      this.loadQuestion();
-    }
-  }
-
-  private async loadQuestion() {
-    let token: string = "";
-    if (this.loggedIn) {
-        info("logged in. Send token when get question page");
-        token = this.token;
-    } else {
-        info("loading question when not logged in");
-    }
-    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-      action: async () => {
-        const response = await apiQuestion.getQuestionPage(token, this.id);
-        this.questionPage = response.data;
-      },
-      errorFilter: (err: AxiosError) => {
-        const matched = this.commitErrMsg(err);
-        if (matched) {
-          this.$router.push('/');
+      newQuestionTitle.value = questionVal.title;
+      newQuestionTopicNames.value = questionVal.topics.map((topic) => topic.name);
+      const answersData = questionPage.value.full_answers;
+      if (answerUUID.value !== null) {
+        // TODO: Fix when there is continuation
+        if (!answersData.find((preview) => preview.uuid === answerUUID.value)) {
+          commitAddNotification(store, {
+            content: '答案不存在',
+            color: 'error',
+          });
         }
-        return matched !== null;
-      },
-    });
-
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.questionPage) {
-        const question = this.questionPage.question;
-        const _response = await apiQuestion.bumpViewsCounter(this.token, question.uuid);
-        // TODO put it in another place, don't block the whole function 2025-07-03
-        if (this.questionCommentId !== null) {
-          this.showComments = true;
+      }
+      if (answersData.length === 0 && !showQuestionEditor.value) {
+        showEditor.value = true;
+      }
+      answers.value = answersData.sort((a, b) => {
+        // First priority
+        if (a.uuid === answerUUID.value) {
+          return -1;
         }
-        updateHead(this.$route.path, question.title, question.desc?.rendered_text);
-
-        this.newQuestionTitle = question.title;
-        this.newQuestionTopicNames = question.topics.map((topic) => topic.name);
-        const answers = this.questionPage.full_answers;
-        if (this.answerUUID !== null) {
-          // TODO: Fix when there is continuation
-          if (!answers.find((preview) => preview.uuid === this.answerUUID)) {
-            commitAddNotification(this.$store, {
-              content: '答案不存在',
-              color: 'error',
-            });
-          }
-        }
-        if (answers.length === 0 && !this.showQuestionEditor) {
-          this.showEditor = true;
-        }
-        this.answers = answers.sort((a, b) => {
-          // First priority
-          if (a.uuid === this.answerUUID) {
-            return -1;
-          }
-          if (b.uuid === this.answerUUID) {
-            return 1;
-          }
-          // Second priority
-          if (a.author.uuid === this.userProfile?.uuid) {
-            return -1;
-          }
-          if (b.author.uuid === this.userProfile?.uuid) {
-            return 1;
-          }
+        if (b.uuid === answerUUID.value) {
           return 1;
-        });
-        this.answeredBefore =
-          answers.filter((a) => a.author.uuid === this.userProfile?.uuid).length > 0;
-        if (!this.answeredBefore) {
-          this.savedLocalEdit = loadLocalEdit('answer', 'answer-of-' + question.uuid);
         }
-      }
-    });
-  }
-
-  async mounted() {
-    try {
-      if (localStorage.getItem('new-question')) {
-        commitAddNotification(this.$store, {
-          content: '点击「编辑」加入更多细节',
-          color: 'info',
-        });
-        localStorage.removeItem('new-question');
-      }
-    } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
-
-    await this.loadQuestion();
-  }
-
-  private updateOrAddFullyLoadedAnswer(answer: IAnswer) {
-    this.$router.go(0);
-  }
-
-  private updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
-    this.handlingNewEdit = true;
-    this.savedNewAnswer = event.answer;
-    if (!event.isAutoSaved) {
-      this.showEditor = false;
-      this.updateOrAddFullyLoadedAnswer(event.answer);
-    }
-    this.handlingNewEdit = false;
-  }
-
-  private async submitNewQuestionCommentBody({ body, body_text, editor, mentioned }) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.questionPage) {
-        this.commentSubmitIntermediate = true;
-        const response = await apiComment.postComment(this.token, {
-          site_uuid: this.question!.site.uuid,
-          question_uuid: this.id,
-          content: {
-            source: body,
-            rendered_text: body_text,
-            editor,
-          },
-          mentioned,
-        });
-        const comment = response.data;
-        this.questionPage.question.comments.push(comment);
-        this.commentSubmitIntermediate = false;
-      }
-    });
-  }
-
-  private async commitQuestionEdit() {
-    this.commitQuestionEditIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      const descEditor = this.$refs.descEditor as any;
-      if (this.questionPage && (this.newQuestionTitle || descEditor.getContent())) {
-        const responses = await Promise.all(
-          this.newQuestionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
-        );
-        const topicsUUIDs = responses.map((r) => r.data.uuid);
-        let desc: IRichText | null = null;
-        const content = descEditor.getContent();
-        if (content) {
-          desc = {
-            source: content,
-            rendered_text: descEditor.getTextContent() || undefined,
-            editor: descEditor.editor,
-          };
+        // Second priority
+        if (a.author.uuid === userProfile.value?.uuid) {
+          return -1;
         }
-        const response = await apiQuestion.updateQuestion(this.token, this.question!.uuid, {
-          title: this.newQuestionTitle,
-          desc: desc,
-          topic_uuids: topicsUUIDs,
-        });
-        if (response) {
-          this.questionPage.question = response.data;
+        if (b.author.uuid === userProfile.value?.uuid) {
+          return 1;
         }
-      }
-      this.commitQuestionEditIntermediate = false;
-      this.showQuestionEditor = false;
-    });
-  }
-
-  private async cancelSubscription() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.questionPage) {
-        this.cancelSubscriptionIntermediate = true;
-        this.questionPage.question_subscription = (
-          await apiMe.unsubscribeQuestion(this.token, this.question!.uuid)
-        ).data;
-        this.cancelSubscriptionIntermediate = false;
-      }
-    });
-  }
-
-  private async subscribe() {
-    if (!this.userProfile) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.questionPage) {
-        this.subscribeIntermediate = true;
-        this.questionPage.question_subscription = (
-          await apiMe.subscribeQuestion(this.token, this.question!.uuid)
-        ).data;
-        this.subscribeIntermediate = false;
-      }
-    });
-  }
-
-  private deleteDraft() {
-    this.savedLocalEdit = null;
-    this.showEditor = false;
-  }
-
-  private async showHistoryDialog() {
-    if (this.question) {
-      this.archives = (await apiQuestion.getQuestionArchives(this.token, this.question.uuid)).data;
-      this.archives.unshift({
-        id: 0,
-        title: this.question.title,
-        desc: this.question.desc,
-        topics: this.question.topics,
-        created_at: this.question.updated_at,
-        editor: this.question.editor,
+        return 1;
       });
-      if (this.archives.length > 0) {
-        this.historyDialog = true;
-      } else {
-        commitAddNotification(this.$store, {
-          content: '尚无历史存档',
-          color: 'info',
-        });
+      answeredBefore.value =
+        answersData.filter((a) => a.author.uuid === userProfile.value?.uuid).length > 0;
+      if (!answeredBefore.value) {
+        savedLocalEdit.value = loadLocalEdit('answer', 'answer-of-' + questionVal.uuid);
       }
     }
-  }
+  });
+}
 
-  private cancelHandler() {
-    this.showEditor = false;
-    if (this.questionPage && this.savedNewAnswer) {
-      this.answers.unshift(this.savedNewAnswer);
-    }
-  }
-
-  private removeAnswer(answerUUID: string) {
-    let idx = this.answers.findIndex((answer) => answer.uuid === answerUUID);
-    if (idx !== -1) {
-      this.answers.splice(idx, 1);
-    }
-  }
-
-  private deleteHandler(answerUUID: string) {
-    this.removeAnswer(answerUUID);
-    if (this.answerUUID === answerUUID) {
-      this.$router.push(`/questions/${this.question!.uuid}`);
-    }
-  }
-
-  private async confirmHideQuestion() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      await apiQuestion.hideQuestion(this.token, this.question!.uuid);
-      commitAddNotification(this.$store, {
-        content: '已隐藏',
+onMounted(async () => {
+  try {
+    if (localStorage.getItem('new-question')) {
+      commitAddNotification(store, {
+        content: '点击「编辑」加入更多细节',
         color: 'info',
       });
-      await this.$router.push(`/sites/${this.questionPage!.question.site.subdomain}`);
+      localStorage.removeItem('new-question');
+    }
+  } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
+
+  await loadQuestion();
+});
+
+function updateOrAddFullyLoadedAnswer(answer: IAnswer) {
+  router.go(0);
+}
+
+function updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean }) {
+  handlingNewEdit.value = true;
+  savedNewAnswer.value = event.answer;
+  if (!event.isAutoSaved) {
+    showEditor.value = false;
+    updateOrAddFullyLoadedAnswer(event.answer);
+  }
+  handlingNewEdit.value = false;
+}
+
+async function submitNewQuestionCommentBody({ body, body_text, editor, mentioned }: any) {
+  await dispatchCaptureApiError(store, async () => {
+    if (questionPage.value) {
+      commentSubmitIntermediate.value = true;
+      const response = await apiComment.postComment(token.value, {
+        site_uuid: question.value!.site.uuid,
+        question_uuid: id.value,
+        content: {
+          source: body,
+          rendered_text: body_text,
+          editor,
+        },
+        mentioned,
+      });
+      const comment = response.data;
+      questionPage.value.question.comments.push(comment);
+      commentSubmitIntermediate.value = false;
+    }
+  });
+}
+
+async function commitQuestionEdit() {
+  commitQuestionEditIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    const descEditorRef = descEditor.value as any;
+    if (questionPage.value && (newQuestionTitle.value || descEditorRef.getContent())) {
+      const responses = await Promise.all(
+        newQuestionTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
+      );
+      const topicsUUIDs = responses.map((r) => r.data.uuid);
+      let desc: IRichText | null = null;
+      const content = descEditorRef.getContent();
+      if (content) {
+        desc = {
+          source: content,
+          rendered_text: descEditorRef.getTextContent() || undefined,
+          editor: descEditorRef.editor,
+        };
+      }
+      const response = await apiQuestion.updateQuestion(token.value, question.value!.uuid, {
+        title: newQuestionTitle.value,
+        desc: desc,
+        topic_uuids: topicsUUIDs,
+      });
+      if (response) {
+        questionPage.value.question = response.data;
+      }
+    }
+    commitQuestionEditIntermediate.value = false;
+    showQuestionEditor.value = false;
+  });
+}
+
+async function cancelSubscription() {
+  await dispatchCaptureApiError(store, async () => {
+    if (questionPage.value) {
+      cancelSubscriptionIntermediate.value = true;
+      questionPage.value.question_subscription = (
+        await apiMe.unsubscribeQuestion(token.value, question.value!.uuid)
+      ).data;
+      cancelSubscriptionIntermediate.value = false;
+    }
+  });
+}
+
+async function subscribe() {
+  if (!userProfile.value) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  await dispatchCaptureApiError(store, async () => {
+    if (questionPage.value) {
+      subscribeIntermediate.value = true;
+      questionPage.value.question_subscription = (
+        await apiMe.subscribeQuestion(token.value, question.value!.uuid)
+      ).data;
+      subscribeIntermediate.value = false;
+    }
+  });
+}
+
+function deleteDraft() {
+  savedLocalEdit.value = null;
+  showEditor.value = false;
+}
+
+async function showHistoryDialog() {
+  if (question.value) {
+    archives.value = (await apiQuestion.getQuestionArchives(token.value, question.value.uuid)).data;
+    archives.value.unshift({
+      id: 0,
+      title: question.value.title,
+      desc: question.value.desc,
+      topics: question.value.topics,
+      created_at: question.value.updated_at,
+      editor: question.value.editor,
     });
-  }
-
-  private toggleShowComments() {
-    if (!this.userProfile && this.question!.comments.length === 0) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
+    if (archives.value.length > 0) {
+      historyDialog.value = true;
+    } else {
+      commitAddNotification(store, {
+        content: '尚无历史存档',
+        color: 'info',
+      });
     }
-    this.showComments = !this.showComments;
   }
+}
 
-  private loadSavedLocalEdit() {
-    commitSetWorkingDraft(this.$store, this.savedLocalEdit!.edit as IRichEditorState);
-    this.showEditor = true;
+function cancelHandler() {
+  showEditor.value = false;
+  if (questionPage.value && savedNewAnswer.value) {
+    answers.value.unshift(savedNewAnswer.value);
   }
+}
 
-  private async cancelQuestionUpdate() {
-    this.showQuestionEditor = false;
+function removeAnswer(answerUUID: string) {
+  let idx = answers.value.findIndex((answer) => answer.uuid === answerUUID);
+  if (idx !== -1) {
+    answers.value.splice(idx, 1);
   }
+}
 
-  private transferToSite: ISite | null = null;
-  private transferQuestionDialog: boolean = false;
-  private async transferQuestion() {
-    if (this.transferToSite) {
-        warn("This function is turned off during dev. TODO");
-    }
-    return null;
+function deleteHandler(answerUUID: string) {
+  removeAnswer(answerUUID);
+  if (answerUUID === answerUUID) {
+    router.push(`/questions/${question.value!.uuid}`);
   }
+}
 
-  get question() {
-    return this.questionPage?.question;
-  }
+async function confirmHideQuestion() {
+  await dispatchCaptureApiError(store, async () => {
+    await apiQuestion.hideQuestion(token.value, question.value!.uuid);
+    commitAddNotification(store, {
+      content: '已隐藏',
+      color: 'info',
+    });
+    await router.push(`/sites/${questionPage.value!.question.site.subdomain}`);
+  });
+}
 
-  private answerPreviewOf(uuid: string) {
-    return this.questionPage!.answer_previews?.find((a) => a.uuid === uuid);
+function toggleShowComments() {
+  if (!userProfile.value && question.value!.comments.length === 0) {
+    commitSetShowLoginPrompt(store, true);
+    return;
   }
+  showComments.value = !showComments.value;
+}
+
+function loadSavedLocalEdit() {
+  commitSetWorkingDraft(store, savedLocalEdit.value!.edit as IRichEditorState);
+  showEditor.value = true;
+}
+
+async function cancelQuestionUpdate() {
+  showQuestionEditor.value = false;
+}
+
+async function transferQuestion() {
+  if (transferToSite.value) {
+    warn('This function is turned off during dev. TODO');
+  }
+  return null;
+}
+
+function answerPreviewOf(uuid: string) {
+  return questionPage.value!.answer_previews?.find((a) => a.uuid === uuid);
 }
 </script>

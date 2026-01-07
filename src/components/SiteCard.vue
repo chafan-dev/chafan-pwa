@@ -87,9 +87,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import { api } from '@/api';
-import { Component, Prop } from 'vue-property-decorator';
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
@@ -109,114 +111,110 @@ import { AxiosError } from 'axios';
 import DoorIcon from '@/components/icons/DoorIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { apiSite } from '@/api/site';
-import { CVue, INSUFFICIENT_KARMA_TO_JOIN_SITE, MISSING_REQUIRED_SECONDARY_EMAIL } from '@/common';
+import { INSUFFICIENT_KARMA_TO_JOIN_SITE, MISSING_REQUIRED_SECONDARY_EMAIL } from '@/common';
 import SiteBtn from '@/components/SiteBtn.vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import RotationCard from '@/components/base/RotationCard.vue';
+import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 
-@Component({
-  name: 'SiteCard',
-  components: {
-    RotationCard,
-    RefreshIcon,
-    SiteBtn,
-    UserLink,
-    Invite,
-    CreateSubmissionForm,
-    CreateQuestionForm,
-    SiteJoinConditions,
-    NewInviteLinkBtn,
-    DoorIcon,
-    SettingsIcon,
-    Viewer,
-  },
-})
-export default class SiteCard extends CVue {
-  @Prop() private readonly site!: ISite;
-  @Prop() private readonly isMember: boolean | undefined;
-  @Prop({ default: true }) private readonly compactMode!: boolean;
-  private notMember = true;
-  private siteApplied = false;
-  private applyToJoinIntermediate = false;
-  private loading = true;
-  private showJoinConditionsDialog = false;
-  private intermediate = false;
-  private relatedSites: ISite[] = [];
-
-  private async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.site && this.site.moderator !== undefined && this.site.moderator.handle) {
-        if (this.isMember === undefined) {
-          const userProfile = readUserProfile(this.$store);
-          if (userProfile) {
-            const siteProfile = (
-              await api.getUserSiteProfile(this.token, this.site.uuid, userProfile.uuid)
-            ).data;
-            if (siteProfile) {
-              this.notMember = false;
-            }
-          }
-        } else if (this.isMember) {
-          this.notMember = false;
-        }
-
-        if (this.notMember && this.token) {
-          const r = await apiSite.getSiteApply(this.token, this.site.uuid);
-          if (r) {
-            this.siteApplied = r.data.applied_before;
-          }
-        }
-      }
-      this.loading = false;
-      if (!this.compactMode) {
-        this.relatedSites = (await apiSite.getRelatedSites(this.site.uuid)).data.filter(
-          (s) => s.uuid !== this.site.uuid
-        );
-      }
-    });
+const props = withDefaults(
+  defineProps<{
+    site: ISite;
+    isMember?: boolean;
+    compactMode?: boolean;
+  }>(),
+  {
+    compactMode: true,
   }
+);
 
-  private async applyToJoin() {
-    if (!this.token) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
+const store = useStore();
+const router = useRouter();
+const { token } = useAuth();
+const { isDesktop } = useResponsive();
+const { commitErrMsg } = useErrorHandling();
+
+const notMember = ref(true);
+const siteApplied = ref(false);
+const applyToJoinIntermediate = ref(false);
+const loading = ref(true);
+const showJoinConditionsDialog = ref(false);
+const intermediate = ref(false);
+const relatedSites = ref<ISite[]>([]);
+
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    if (props.site && props.site.moderator !== undefined && props.site.moderator.handle) {
+      if (props.isMember === undefined) {
+        const userProfile = readUserProfile(store);
+        if (userProfile) {
+          const siteProfile = (
+            await api.getUserSiteProfile(token.value, props.site.uuid, userProfile.uuid)
+          ).data;
+          if (siteProfile) {
+            notMember.value = false;
+          }
+        }
+      } else if (props.isMember) {
+        notMember.value = false;
+      }
+
+      if (notMember.value && token.value) {
+        const r = await apiSite.getSiteApply(token.value, props.site.uuid);
+        if (r) {
+          siteApplied.value = r.data.applied_before;
+        }
+      }
     }
-    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-      action: async () => {
-        if (this.site !== null && this.site.moderator && !this.isMember) {
-          this.applyToJoinIntermediate = true;
-          const response = await apiSite.applySite(this.token, this.site.uuid);
-          if (response) {
-            if (response.data.applied_before) {
-              this.siteApplied = true;
-            } else if (response.data.auto_approved) {
-              this.notMember = false;
-            }
+    loading.value = false;
+    if (!props.compactMode) {
+      relatedSites.value = (await apiSite.getRelatedSites(props.site.uuid)).data.filter(
+        (s) => s.uuid !== props.site.uuid
+      );
+    }
+  });
+});
+
+async function applyToJoin() {
+  if (!token.value) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  await dispatchCaptureApiErrorWithErrorHandler(store, {
+    action: async () => {
+      if (props.site !== null && props.site.moderator && !props.isMember) {
+        applyToJoinIntermediate.value = true;
+        const response = await apiSite.applySite(token.value, props.site.uuid);
+        if (response) {
+          if (response.data.applied_before) {
+            siteApplied.value = true;
+          } else if (response.data.auto_approved) {
+            notMember.value = false;
           }
         }
-        this.applyToJoinIntermediate = false;
-      },
-      errorFilter: (err: AxiosError) => {
-        const matched = this.commitErrMsg(err);
-        if (
-          matched === INSUFFICIENT_KARMA_TO_JOIN_SITE ||
-          matched === MISSING_REQUIRED_SECONDARY_EMAIL
-        ) {
-          this.showJoinConditionsDialog = true;
-          this.applyToJoinIntermediate = false;
-        }
-        return matched !== null;
-      },
-    });
-  }
+      }
+      applyToJoinIntermediate.value = false;
+    },
+    errorFilter: (err: AxiosError) => {
+      const matched = commitErrMsg(err);
+      if (
+        matched === INSUFFICIENT_KARMA_TO_JOIN_SITE ||
+        matched === MISSING_REQUIRED_SECONDARY_EMAIL
+      ) {
+        showJoinConditionsDialog.value = true;
+        applyToJoinIntermediate.value = false;
+      }
+      return matched !== null;
+    },
+  });
+}
 
-  private async leaveSite() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      await apiSite.leaveSite(this.token, this.site.uuid);
-      this.intermediate = false;
-      this.$router.go(0);
-    });
-  }
+async function leaveSite() {
+  await dispatchCaptureApiError(store, async () => {
+    intermediate.value = true;
+    await apiSite.leaveSite(token.value, props.site.uuid);
+    intermediate.value = false;
+    router.go(0);
+  });
 }
 </script>

@@ -10,27 +10,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import { ISubmission } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
-import { CVue } from '@/common';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { SubmissionPreview },
-})
-export default class UserSubmissionsRankedFeed extends CVue {
-  private loadingSubmissions = false;
-  private submissions: ISubmission[] | null = null;
+const store = useStore();
+const { token } = useAuth();
 
-  private async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.loadingSubmissions = true;
-      this.submissions = (await apiSubmission.getForUser(this.token)).data;
-      this.loadingSubmissions = false;
-    });
-  }
-}
+const loadingSubmissions = ref(false);
+const submissions = ref<ISubmission[] | null>(null);
+
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    loadingSubmissions.value = true;
+    submissions.value = (await apiSubmission.getForUser(token.value)).data;
+    loadingSubmissions.value = false;
+  });
+});
 </script>

@@ -251,10 +251,12 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 
-import { appName } from '@/env';
+import { appName, isDev } from '@/env';
 import {
   readDashboardMiniDrawer,
   readDashboardShowDrawer,
@@ -290,143 +292,116 @@ import BaseCard from '@/components/base/BaseCard.vue';
 import html2canvas from 'html2canvas';
 import FeedbackIcon from '@/components/icons/FeedbackIcon.vue';
 import Notifications from '@/components/Notifications.vue';
-import { CVue } from '@/common';
+import { useAuth } from '@/composables';
 
-const routeGuardMain = async (to, from, next) => {
-  if (to.meta && to.meta.title) {
-    document.title = to.meta.title;
-  } else if (process.env.VUE_APP_NAME) {
-    document.title = process.env.VUE_APP_NAME;
-  }
-  next();
-};
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile } = useAuth();
 
-@Component({
-  components: {
-    Notifications,
-    FeedbackIcon,
-    BaseCard,
-    CreateQuestionForm,
-    AccountIcon,
-    SearchBox,
-    Event,
-    Avatar,
-    EditIcon,
-    PasswordIcon,
-    EmailIcon,
-    ProfileIcon,
-    MenuIcon,
-    MuteNotificationIcon,
-    NotificationIcon,
-    LogoutIcon,
-    DashboardIcon,
-    HomeIcon,
+const accountItems = [
+  {
+    icon: 'DashboardIcon',
+    text: '个人中心',
+    to: '/dashboard',
   },
-})
-export default class Main extends CVue {
-  private appName = appName;
+  {
+    icon: 'ProfileIcon',
+    text: '我的主页',
+    toRequiresUserProfile: true,
+    to: (up: IUserProfile) => `/users/${up.handle}`,
+  },
+];
 
-  private readonly accountItems = [
-    {
-      icon: 'DashboardIcon',
-      text: '个人中心',
-      to: '/dashboard',
-    },
-    {
-      icon: 'ProfileIcon',
-      text: '我的主页',
-      toRequiresUserProfile: true,
-      to: (userProfile: IUserProfile) => `/users/${userProfile.handle}`,
-    },
-  ];
-  private showTopMenu = false;
-  private showFeedbackForm = false;
-  private feedbackScreenshotUrl: string | null = null;
-  private feedbackIncludesScreenshot = true;
-  private showFeedbackScreenshot = false;
-  private feedbackText = '';
-  private feedbackEmail = '';
-  private sendingFeedback = false;
+const showTopMenu = ref(false);
+const showFeedbackForm = ref(false);
+const feedbackScreenshotUrl = ref<string | null>(null);
+const feedbackIncludesScreenshot = ref(true);
+const showFeedbackScreenshot = ref(false);
+const feedbackText = ref('');
+const feedbackEmail = ref('');
+const sendingFeedback = ref(false);
+const prepareFeedbackFormIntermediate = ref(false);
 
-  get miniDrawer() {
-    return readDashboardMiniDrawer(this.$store);
-  }
+const miniDrawer = computed(() => readDashboardMiniDrawer(store));
 
-  get showDrawer() {
-    return readDashboardShowDrawer(this.$store);
-  }
+const showDrawer = computed({
+  get() {
+    return readDashboardShowDrawer(store);
+  },
+  set(value: boolean) {
+    commitSetDashboardShowDrawer(store, value);
+  },
+});
 
-  set showDrawer(value) {
-    commitSetDashboardShowDrawer(this.$store, value);
-  }
+const hasModeratedSites = computed(() => readHasModeratedSites(store));
 
-  private get hasModeratedSites() {
-    return readHasModeratedSites(this.$store);
-  }
-
-  public beforeRouteEnter(to, from, next) {
-    routeGuardMain(to, from, next);
-  }
-
-  public beforeRouteUpdate(to, from, next) {
-    routeGuardMain(to, from, next);
-  }
-
-  private showLoginPrompt() {
-    commitSetShowLoginPrompt(this.$store, true);
-  }
-
-  private switchShowDrawer() {
-    commitSetDashboardShowDrawer(this.$store, !readDashboardShowDrawer(this.$store));
-  }
-
-  private switchMiniDrawer() {
-    commitSetDashboardMiniDrawer(this.$store, !readDashboardMiniDrawer(this.$store));
-  }
-
-  private async logout() {
-    this.showDrawer = false;
-    await dispatchUserLogOut(this.$store);
-    this.$router.go(0);
-  }
-
-  private prepareFeedbackFormIntermediate = false;
-  private prepareFeedbackForm() {
-    this.prepareFeedbackFormIntermediate = true;
-    this.showTopMenu = false;
-    setTimeout(() => {
-      html2canvas(document.body).then((canvas) => {
-        this.showFeedbackForm = true;
-        this.feedbackScreenshotUrl = canvas.toDataURL('image/jpeg', 0.5);
-        this.prepareFeedbackFormIntermediate = false;
-      });
-    }, 100);
-  }
-
-  private async submitFeedbackForm() {
-    this.sendingFeedback = true;
-    const formData = new FormData();
-    formData.append('description', this.feedbackText);
-    if (this.feedbackIncludesScreenshot) {
-      const blob = await (await fetch(this.feedbackScreenshotUrl!)).blob();
-      formData.append('file', blob);
+// Watch for route changes to update title
+watch(
+  () => route.fullPath,
+  () => {
+    if (route.meta && route.meta.title) {
+      document.title = route.meta.title as string;
+    } else if (process.env.VUE_APP_NAME) {
+      document.title = process.env.VUE_APP_NAME;
     }
-    if (!this.userProfile) {
-      formData.append('email', this.feedbackEmail);
-    }
-    formData.append('location_url', this.$route.fullPath);
-    await api2.uploadFeedback(this.token, formData);
-    commitAddNotification(this.$store, {
-      color: 'success',
-      content: '反馈已成功提交',
+  },
+  { immediate: true }
+);
+
+function showLoginPrompt() {
+  commitSetShowLoginPrompt(store, true);
+}
+
+function switchShowDrawer() {
+  commitSetDashboardShowDrawer(store, !readDashboardShowDrawer(store));
+}
+
+function switchMiniDrawer() {
+  commitSetDashboardMiniDrawer(store, !readDashboardMiniDrawer(store));
+}
+
+async function logout() {
+  showDrawer.value = false;
+  await dispatchUserLogOut(store);
+  router.go(0);
+}
+
+function prepareFeedbackForm() {
+  prepareFeedbackFormIntermediate.value = true;
+  showTopMenu.value = false;
+  setTimeout(() => {
+    html2canvas(document.body).then((canvas) => {
+      showFeedbackForm.value = true;
+      feedbackScreenshotUrl.value = canvas.toDataURL('image/jpeg', 0.5);
+      prepareFeedbackFormIntermediate.value = false;
     });
-    this.sendingFeedback = false;
-    this.showFeedbackForm = false;
-  }
+  }, 100);
+}
 
-  private cancelFeedbackForm(reset) {
-    this.showFeedbackForm = false;
-    reset();
+async function submitFeedbackForm() {
+  sendingFeedback.value = true;
+  const formData = new FormData();
+  formData.append('description', feedbackText.value);
+  if (feedbackIncludesScreenshot.value) {
+    const blob = await (await fetch(feedbackScreenshotUrl.value!)).blob();
+    formData.append('file', blob);
   }
+  if (!userProfile.value) {
+    formData.append('email', feedbackEmail.value);
+  }
+  formData.append('location_url', route.fullPath);
+  await api2.uploadFeedback(token.value, formData);
+  commitAddNotification(store, {
+    color: 'success',
+    content: '反馈已成功提交',
+  });
+  sendingFeedback.value = false;
+  showFeedbackForm.value = false;
+}
+
+function cancelFeedbackForm(reset: () => void) {
+  showFeedbackForm.value = false;
+  reset();
 }
 </script>

@@ -9,54 +9,40 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from '@/router';
 import { api } from '@/api';
 import { IChannel } from '@/interfaces';
 import ChatWindow from '@/components/ChatWindow.vue';
-import UserLink from '@/components/UserLink.vue';
-import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { Route, RouteRecord } from 'vue-router';
-import { isEqual } from '@/common';
 
-@Component({
-  components: { UserLink, ChannelIcon, ChatWindow },
-})
-export default class Chat extends Vue {
-  private channel: IChannel | null = null;
-  private loading = true;
+const store = useStore();
+const route = useRoute();
 
-  get id() {
-    return parseInt(this.$route.params.id, 10);
-  }
+const channel = ref<IChannel | null>(null);
+const loading = ref(true);
 
-  get currentUserId() {
-    return this.$store.state.main.userProfile.uuid;
-  }
+const id = computed(() => parseInt(route.params.id as string, 10));
+const token = computed(() => store.state.main.token);
 
-  get token() {
-    return this.$store.state.main.token;
-  }
-
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'channel');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.load();
-    }
-  }
-
-  private async mounted() {
-    await this.load();
-  }
-
-  private async load() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.channel = (await api.getChannel(this.token, this.id)).data;
-      this.loading = false;
-    });
-  }
+async function load() {
+  await dispatchCaptureApiError(store, async () => {
+    channel.value = (await api.getChannel(token.value, id.value)).data;
+    loading.value = false;
+  });
 }
+
+// Watch for route param changes (replaces beforeRouteUpdate)
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId && route.name === 'channel') {
+    loading.value = true;
+    load();
+  }
+});
+
+onMounted(async () => {
+  await load();
+});
 </script>

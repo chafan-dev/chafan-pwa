@@ -306,8 +306,10 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router/composables';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
 import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
@@ -317,13 +319,12 @@ import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { deepCopy, getRecentYears } from '@/utils';
-import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
 import { VditorCF } from 'chafan-vue-editors';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { CVue, getVditorUploadConfig } from '@/common';
+import { getVditorUploadConfig } from '@/common';
 import UpIcon from '@/components/icons/UpIcon.vue';
 import DownIcon from '@/components/icons/DownIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
@@ -336,6 +337,7 @@ import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
 import ValidateUrl from '@/components/base/ValidateUrl.vue';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
+import { useAuth, useResponsive, useDayjs } from '@/composables';
 
 interface IUserWorkExperienceItem {
   company_topic_name?: string;
@@ -353,394 +355,383 @@ interface IUserEducationExperienceItem {
   graduate_year?: string;
 }
 
-@Component({
-  components: {
-    ZhihuIcon,
-    ValidateUrl,
-    WorkExp,
-    EduExp,
-    EditIcon,
-    LinkedinIcon,
-    TwitterIcon,
-    GithubIcon,
-    WebIcon,
-    DeleteIcon,
-    DownIcon,
-    UpIcon,
-    CloseIcon,
-    VditorCF,
-    ProfileIcon,
-  },
-})
-export default class UserProfileEdit extends CVue {
-  public valid = true;
-  private newResidencyTopicNames: string[] = [];
-  private newProfessionTopicNames: string[] = [];
-  private userUpdateMe: IUserUpdateMe = {
-    full_name: '',
-    handle: '',
-    personal_introduction: '',
-  };
-  private newWorkExpCompanyName = '';
-  private newWorkExpPositionName = '';
-  private readonly eduExpLeveNames = ['高中及以下', '大专', '本科', '硕士', '博士及以上'];
-  private eduExps: IUserEducationExperienceItem[] = [];
-  private workExps: IUserWorkExperienceItem[] = [];
-  private submitIntermediate = false;
-  private avatarURL = '#';
-  private uploadAvatarIntermediate = false;
-  private uploadGifAvatarIntermediate = false;
-  private gifAvatarURL: string | null = null;
-  private showGifAvatar = false;
-  private aboutEditor: editor_T = 'wysiwyg';
-  private showAboutEditor: boolean = false;
-  private showClearAboutMe: boolean = false;
-  private categoryTopics: ITopic[] | null = null;
-  private years: string[] = [];
+const store = useStore();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+const dayjs = useDayjs();
 
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
+const valid = ref(true);
+const newResidencyTopicNames = ref<string[]>([]);
+const newProfessionTopicNames = ref<string[]>([]);
+const userUpdateMe = reactive<IUserUpdateMe>({
+  full_name: '',
+  handle: '',
+  personal_introduction: '',
+});
+const newWorkExpCompanyName = ref('');
+const newWorkExpPositionName = ref('');
+const eduExpLeveNames = ['高中及以下', '大专', '本科', '硕士', '博士及以上'];
+const eduExps = ref<IUserEducationExperienceItem[]>([]);
+const workExps = ref<IUserWorkExperienceItem[]>([]);
+const submitIntermediate = ref(false);
+const avatarURL = ref('#');
+const uploadAvatarIntermediate = ref(false);
+const uploadGifAvatarIntermediate = ref(false);
+const gifAvatarURL = ref<string | null>(null);
+const showGifAvatar = ref(false);
+const aboutEditor = ref<editor_T>('wysiwyg');
+const showAboutEditor = ref(false);
+const showClearAboutMe = ref(false);
+const categoryTopics = ref<ITopic[] | null>(null);
+const years = ref<string[]>([]);
+const vditor = ref<any>(null);
+
+const eduExpEditedIndex = ref<number | null>(null);
+const eduExpEditorShown = ref(false);
+const editedEduExp = ref<IUserEducationExperienceItem | null>(null);
+
+const workExpEditedIndex = ref<number | null>(null);
+const workExpEditorShown = ref(false);
+const editedWorkExp = ref<IUserWorkExperienceItem | null>(null);
+
+const showRemoveConfirm = ref(false);
+const removeCallback = ref<(() => void) | null>(null);
+
+const vditorUploadConfig = computed(() => {
+  return getVditorUploadConfig(readToken(store));
+});
+
+onMounted(async () => {
+  years.value = getRecentYears(dayjs);
+  categoryTopics.value = (await api.getCategoryTopics()).data;
+  const profile = userProfile.value;
+  if (!profile) {
+    return;
+  }
+  if (profile.avatar_url) {
+    avatarURL.value = profile.avatar_url;
+  } else {
+    avatarURL.value = '/img/default-avatar.png';
+  }
+  if (profile.gif_avatar_url) {
+    gifAvatarURL.value = profile.gif_avatar_url;
+    showGifAvatar.value = true;
+  }
+  Object.keys(userUpdateMe).forEach((key) => {
+    userUpdateMe[key] = profile[key];
+  });
+  userUpdateMe.residency_topic_uuids = profile.residency_topics.map((t) => t.uuid);
+  newResidencyTopicNames.value = profile.residency_topics.map((t) => t.name);
+  if (profile.profession_topics) {
+    userUpdateMe.profession_topic_uuids = profile.profession_topics.map((t) => t.uuid);
+    newProfessionTopicNames.value = profile.profession_topics.map((t) => t.name);
+  } else {
+    userUpdateMe.profession_topic_uuids = [];
+    newProfessionTopicNames.value = [];
   }
 
-  public async mounted() {
-    this.years = getRecentYears(this.$dayjs);
-    this.categoryTopics = (await api.getCategoryTopics()).data;
-    const userProfile = this.userProfile;
-    if (!userProfile) {
-      return;
+  userUpdateMe.homepage_url = profile.homepage_url;
+  userUpdateMe.zhihu_url = profile.zhihu_url;
+  userUpdateMe.github_username = profile.github_username;
+  userUpdateMe.twitter_username = profile.twitter_username;
+  userUpdateMe.linkedin_url = profile.linkedin_url;
+
+  await dispatchCaptureApiError(store, async () => {
+    const response = await apiPeople.getUserEducationExperiences(token.value, profile.uuid);
+    if (response.data) {
+      eduExps.value = response.data.map((e) => {
+        return {
+          school_topic_name: e.school_topic.name,
+          level_name: e.level,
+          major: e.major,
+          enroll_year: e.enroll_year,
+          graduate_year: e.graduate_year,
+        };
+      });
     }
-    if (userProfile.avatar_url) {
-      this.avatarURL = userProfile.avatar_url;
-    } else {
-      this.avatarURL = '/img/default-avatar.png';
+    const response2 = await apiPeople.getUserWorkExperiences(token.value, profile.uuid);
+    if (response2.data) {
+      workExps.value = response2.data.map((e) => {
+        return {
+          company_topic_name: e.company_topic.name,
+          position_topic_name: e.position_topic.name,
+        };
+      });
     }
-    if (userProfile.gif_avatar_url) {
-      this.gifAvatarURL = userProfile.gif_avatar_url;
-      this.showGifAvatar = true;
-    }
-    Object.keys(this.userUpdateMe).forEach((key) => {
-      this.userUpdateMe[key] = userProfile[key];
+  });
+});
+
+function resetAll(reset: () => void) {
+  const profile = readUserProfile(store);
+  if (profile) {
+    newResidencyTopicNames.value = profile.residency_topics.map((topic) => topic.name);
+    newProfessionTopicNames.value = profile.profession_topics.map((topic) => topic.name);
+    Object.keys(userUpdateMe).forEach((key) => {
+      userUpdateMe[key] = profile[key];
     });
-    this.userUpdateMe.residency_topic_uuids = userProfile.residency_topics.map((t) => t.uuid);
-    this.newResidencyTopicNames = userProfile.residency_topics.map((t) => t.name);
-    if (userProfile.profession_topics) {
-      this.userUpdateMe.profession_topic_uuids = userProfile.profession_topics.map((t) => t.uuid);
-      this.newProfessionTopicNames = userProfile.profession_topics.map((t) => t.name);
-    } else {
-      this.userUpdateMe.profession_topic_uuids = [];
-      this.newProfessionTopicNames = [];
+  }
+  reset();
+}
+
+function cancel() {
+  router.back();
+}
+
+async function submit() {
+  submitIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    const responses = await Promise.all(
+      newResidencyTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
+    );
+    userUpdateMe.residency_topic_uuids = responses.map((r) => r.data.uuid);
+
+    const responses2 = await Promise.all(
+      newProfessionTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
+    );
+    userUpdateMe.profession_topic_uuids = responses2.map((r) => r.data.uuid);
+
+    const workExpsData = await Promise.all(
+      workExps.value.map(async (e) => {
+        if (e.company_topic_name && e.position_topic_name) {
+          const r1 = await apiTopic.createTopic(token.value, {
+            name: e.company_topic_name,
+          });
+          const r2 = await apiTopic.createTopic(token.value, {
+            name: e.position_topic_name,
+          });
+          return {
+            company_topic_uuid: r1.data.uuid,
+            position_topic_uuid: r2.data.uuid,
+          };
+        } else {
+          return null;
+        }
+      })
+    );
+
+    userUpdateMe.work_experiences = [];
+    for (const e of workExpsData) {
+      if (e !== null) {
+        userUpdateMe.work_experiences.push(e);
+      }
     }
 
-    this.userUpdateMe.homepage_url = userProfile.homepage_url;
-    this.userUpdateMe.zhihu_url = userProfile.zhihu_url;
-    this.userUpdateMe.github_username = userProfile.github_username;
-    this.userUpdateMe.twitter_username = userProfile.twitter_username;
-    this.userUpdateMe.linkedin_url = userProfile.linkedin_url;
-
-    await dispatchCaptureApiError(this.$store, async () => {
-      const response = await apiPeople.getUserEducationExperiences(this.token, userProfile.uuid);
-      if (response.data) {
-        this.eduExps = response.data.map((e) => {
+    const eduExpsData = await Promise.all(
+      eduExps.value.map(async (e) => {
+        if (e.school_topic_name && e.level_name) {
+          const r1 = await apiTopic.createTopic(token.value, {
+            name: e.school_topic_name,
+          });
           return {
-            school_topic_name: e.school_topic.name,
-            level_name: e.level,
+            school_topic_uuid: r1.data.uuid,
+            level_name: e.level_name,
             major: e.major,
             enroll_year: e.enroll_year,
             graduate_year: e.graduate_year,
           };
-        });
-      }
-      const response2 = await apiPeople.getUserWorkExperiences(this.token, userProfile.uuid);
-      if (response2.data) {
-        this.workExps = response2.data.map((e) => {
-          return {
-            company_topic_name: e.company_topic.name,
-            position_topic_name: e.position_topic.name,
-          };
-        });
-      }
-    });
-  }
+        } else {
+          return null;
+        }
+      })
+    );
 
-  public resetAll(reset) {
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile) {
-      this.newResidencyTopicNames = userProfile.residency_topics.map((topic) => topic.name);
-      this.newProfessionTopicNames = userProfile.profession_topics.map((topic) => topic.name);
-      Object.keys(this.userUpdateMe).forEach((key) => {
-        this.userUpdateMe[key] = userProfile[key];
+    userUpdateMe.education_experiences = [];
+    for (const e of eduExpsData) {
+      if (e !== null) {
+        userUpdateMe.education_experiences.push(e);
+      }
+    }
+
+    const response = await apiMe.updateMe(token.value, userUpdateMe);
+    if (response) {
+      commitSetUserProfile(store, response.data);
+      commitAddNotification(store, {
+        content: '更新成功',
+        color: 'success',
+      });
+      await router.push({
+        name: 'user',
+        params: { handle: response.data.handle },
+        query: { details: 'true' },
       });
     }
-    reset();
-  }
+    submitIntermediate.value = false;
+  });
+}
 
-  public cancel() {
-    this.$router.back();
-  }
-
-  public async submit() {
-    this.submitIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      const responses = await Promise.all(
-        this.newResidencyTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
-      );
-      this.userUpdateMe.residency_topic_uuids = responses.map((r) => r.data.uuid);
-
-      const responses2 = await Promise.all(
-        this.newProfessionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
-      );
-      this.userUpdateMe.profession_topic_uuids = responses2.map((r) => r.data.uuid);
-
-      const workExps = await Promise.all(
-        this.workExps.map(async (e) => {
-          if (e.company_topic_name && e.position_topic_name) {
-            const r1 = await apiTopic.createTopic(this.token, {
-              name: e.company_topic_name,
-            });
-            const r2 = await apiTopic.createTopic(this.token, {
-              name: e.position_topic_name,
-            });
-            return {
-              company_topic_uuid: r1.data.uuid,
-              position_topic_uuid: r2.data.uuid,
-            };
-          } else {
-            return null;
-          }
-        })
-      );
-
-      this.userUpdateMe.work_experiences = [];
-      for (const e of workExps) {
-        if (e !== null) {
-          this.userUpdateMe.work_experiences.push(e);
-        }
-      }
-
-      const eduExps = await Promise.all(
-        this.eduExps.map(async (e) => {
-          if (e.school_topic_name && e.level_name) {
-            const r1 = await apiTopic.createTopic(this.token, {
-              name: e.school_topic_name,
-            });
-            return {
-              school_topic_uuid: r1.data.uuid,
-              level_name: e.level_name,
-              major: e.major,
-              enroll_year: e.enroll_year,
-              graduate_year: e.graduate_year,
-            };
-          } else {
-            return null;
-          }
-        })
-      );
-
-      this.userUpdateMe.education_experiences = [];
-      for (const e of eduExps) {
-        if (e !== null) {
-          this.userUpdateMe.education_experiences.push(e);
-        }
-      }
-
-      const response = await apiMe.updateMe(this.token, this.userUpdateMe);
-      if (response) {
-        commitSetUserProfile(this.$store, response.data);
-        commitAddNotification(this.$store, {
-          content: '更新成功',
-          color: 'success',
-        });
-        await this.$router.push({
-          name: 'user',
-          params: { handle: response.data.handle },
-          query: { details: 'true' },
-        });
-      }
-      this.submitIntermediate = false;
+function addNewWorkExp() {
+  if (!newWorkExpCompanyName.value || !newWorkExpPositionName.value) {
+    commitAddNotification(store, {
+      content: '公司名和职位均为必填',
+      color: 'error',
     });
+    return;
   }
+  workExps.value.push({
+    company_topic_name: newWorkExpCompanyName.value,
+    position_topic_name: newWorkExpPositionName.value,
+  });
+  newWorkExpCompanyName.value = '';
+  newWorkExpPositionName.value = '';
+}
 
-  public addNewWorkExp() {
-    if (!this.newWorkExpCompanyName || !this.newWorkExpPositionName) {
-      commitAddNotification(this.$store, {
-        content: '公司名和职位均为必填',
-        color: 'error',
-      });
-      return;
-    }
-    this.workExps.push({
-      company_topic_name: this.newWorkExpCompanyName,
-      position_topic_name: this.newWorkExpPositionName,
-    });
-    this.newWorkExpCompanyName = '';
-    this.newWorkExpPositionName = '';
+function showAddNewEduExpDialog() {
+  editedEduExp.value = {};
+  eduExpEditedIndex.value = eduExps.value.length;
+  eduExpEditorShown.value = true;
+}
+
+function showAddNewWorkExpDialog() {
+  editedWorkExp.value = {};
+  workExpEditedIndex.value = workExps.value.length;
+  workExpEditorShown.value = true;
+}
+
+function removeFrom(index: number, arr: any[]) {
+  arr.splice(index, 1);
+}
+
+function moveUpFrom(index: number, arr: any[]) {
+  if (index === 0) {
+    return;
   }
+  const e = arr[index];
+  arr.splice(index, 1);
+  arr.splice(index - 1, 0, e);
+}
 
-  public showAddNewEduExpDialog() {
-    this.editedEduExp = {};
-    this.eduExpEditedIndex = this.eduExps.length;
-    this.eduExpEditorShown = true;
+function moveDownFrom(index: number, arr: any[]) {
+  if (index === arr.length - 1) {
+    return;
   }
+  const e = arr[index];
+  arr.splice(index, 1);
+  arr.splice(index + 1, 0, e);
+}
 
-  public showAddNewWorkExpDialog() {
-    this.editedWorkExp = {};
-    this.workExpEditedIndex = this.workExps.length;
-    this.workExpEditorShown = true;
-  }
-
-  public removeFrom(index: number, arr) {
-    arr.splice(index, 1);
-  }
-
-  public moveUpFrom(index: number, arr) {
-    if (index === 0) {
-      return;
-    }
-    const e = arr[index];
-    arr.splice(index, 1);
-    arr.splice(index - 1, 0, e);
-  }
-
-  public moveDownFrom(index: number, arr) {
-    if (index === arr.length - 1) {
-      return;
-    }
-    const e = arr[index];
-    arr.splice(index, 1);
-    arr.splice(index + 1, 0, e);
-  }
-
-  private async uploadAvatar() {
-    this.uploadAvatarIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
-      if (fileInput !== null) {
-        if (fileInput.files && fileInput.files[0]) {
-          const file = fileInput.files[0];
-          if (file.size <= 128) {
-            commitAddNotification(this.$store, {
-              content: '头像文件过小',
-              color: 'error',
-            });
-            this.uploadAvatarIntermediate = false;
-            return;
-          }
-          const formData = new FormData();
-          const resized = await resizeImage({
-            maxSize: 500, // px
-            file,
+async function uploadAvatar() {
+  uploadAvatarIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+    if (fileInput !== null) {
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        if (file.size <= 128) {
+          commitAddNotification(store, {
+            content: '头像文件过小',
+            color: 'error',
           });
-
-          // Upload candidate image and update URL
-          try {
-            formData.append('file', piexif.remove(resized.blob));
-            // Remove EXIF if it is jpeg
-          } catch {
-            formData.append('file', resized.blob);
-          }
-          this.avatarURL = resized.dataUrl;
-          const response = await api2.uploadFile(this.token, formData);
-          this.userUpdateMe.avatar_url = response.data.url;
+          uploadAvatarIntermediate.value = false;
+          return;
         }
-      }
-      this.uploadAvatarIntermediate = false;
-    });
-  }
+        const formData = new FormData();
+        const resized = await resizeImage({
+          maxSize: 500, // px
+          file,
+        });
 
-  private async uploadGifAvatar() {
-    this.uploadGifAvatarIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      const fileInput = document.getElementById('gifFileInput') as HTMLInputElement;
-      if (fileInput !== null) {
-        if (fileInput.files && fileInput.files[0]) {
-          const file = fileInput.files[0];
-          if (file.size <= 128) {
-            commitAddNotification(this.$store, {
-              content: '头像文件过小',
-              color: 'error',
-            });
-            this.uploadGifAvatarIntermediate = false;
-            return;
-          }
-          const formData = new FormData();
-
-          formData.append('file', file);
-
-          const fileReader = new FileReader();
-          fileReader.readAsDataURL(file);
-          fileReader.onload = () => {
-            this.gifAvatarURL = fileReader.result as string;
-          };
-          const response = await api2.uploadFile(this.token, formData);
-          this.userUpdateMe.gif_avatar_url = response.data.url;
+        // Upload candidate image and update URL
+        try {
+          formData.append('file', piexif.remove(resized.blob));
+          // Remove EXIF if it is jpeg
+        } catch {
+          formData.append('file', resized.blob);
         }
+        avatarURL.value = resized.dataUrl;
+        const response = await api2.uploadFile(token.value, formData);
+        userUpdateMe.avatar_url = response.data.url;
       }
-      this.uploadGifAvatarIntermediate = false;
-    });
-  }
-
-  private showFilePicker() {
-    document.getElementById('fileInput')?.click();
-  }
-
-  private showGifFilePicker() {
-    this.showGifAvatar = true;
-    document.getElementById('gifFileInput')?.click();
-  }
-
-  private onEditorChange() {
-    const vditor = this.$refs.vditor as any;
-    this.userUpdateMe.about = vditor.getContent() || undefined;
-  }
-
-  private clearAboutMe() {
-    const vditor = this.$refs.vditor as any;
-    vditor.init(this.aboutEditor, '');
-    this.showAboutEditor = false;
-    this.showClearAboutMe = false;
-    this.userUpdateMe.about = null;
-  }
-
-  private eduExpEditedIndex: number | null = null;
-  private eduExpEditorShown = false;
-  private editedEduExp: IUserEducationExperienceItem | null = null;
-  private showEduExpEditor(index: number) {
-    this.eduExpEditedIndex = index;
-    this.editedEduExp = deepCopy(this.eduExps[index]);
-    this.eduExpEditorShown = true;
-  }
-
-  private saveEduExpEditDraft() {
-    if (this.eduExpEditedIndex !== null && this.editedEduExp) {
-      this.eduExps.splice(this.eduExpEditedIndex, 1, this.editedEduExp);
-      this.eduExpEditorShown = false;
     }
-  }
+    uploadAvatarIntermediate.value = false;
+  });
+}
 
-  private workExpEditedIndex: number | null = null;
-  private workExpEditorShown = false;
-  private editedWorkExp: IUserWorkExperienceItem | null = null;
-  private showWorkExpEditor(index: number) {
-    this.workExpEditedIndex = index;
-    this.editedWorkExp = deepCopy(this.workExps[index]);
-    this.workExpEditorShown = true;
-  }
+async function uploadGifAvatar() {
+  uploadGifAvatarIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    const fileInput = document.getElementById('gifFileInput') as HTMLInputElement;
+    if (fileInput !== null) {
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        if (file.size <= 128) {
+          commitAddNotification(store, {
+            content: '头像文件过小',
+            color: 'error',
+          });
+          uploadGifAvatarIntermediate.value = false;
+          return;
+        }
+        const formData = new FormData();
 
-  private saveWorkExpEditDraft() {
-    if (this.workExpEditedIndex !== null && this.editedWorkExp) {
-      this.workExps.splice(this.workExpEditedIndex, 1, this.editedWorkExp);
-      this.workExpEditorShown = false;
+        formData.append('file', file);
+
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onload = () => {
+          gifAvatarURL.value = fileReader.result as string;
+        };
+        const response = await api2.uploadFile(token.value, formData);
+        userUpdateMe.gif_avatar_url = response.data.url;
+      }
     }
-  }
+    uploadGifAvatarIntermediate.value = false;
+  });
+}
 
-  private showRemoveConfirm = false;
-  private removeCallback: (() => void) | null = null;
-  removeFromConfirm(index: number, arr) {
-    this.showRemoveConfirm = true;
-    this.removeCallback = () => {
-      this.removeFrom(index, arr);
-      this.showRemoveConfirm = false;
-    };
+function showFilePicker() {
+  document.getElementById('fileInput')?.click();
+}
+
+function showGifFilePicker() {
+  showGifAvatar.value = true;
+  document.getElementById('gifFileInput')?.click();
+}
+
+function onEditorChange() {
+  const vditorRef = vditor.value as any;
+  userUpdateMe.about = vditorRef.getContent() || undefined;
+}
+
+function clearAboutMe() {
+  const vditorRef = vditor.value as any;
+  vditorRef.init(aboutEditor.value, '');
+  showAboutEditor.value = false;
+  showClearAboutMe.value = false;
+  userUpdateMe.about = null;
+}
+
+function showEduExpEditor(index: number) {
+  eduExpEditedIndex.value = index;
+  editedEduExp.value = deepCopy(eduExps.value[index]);
+  eduExpEditorShown.value = true;
+}
+
+function saveEduExpEditDraft() {
+  if (eduExpEditedIndex.value !== null && editedEduExp.value) {
+    eduExps.value.splice(eduExpEditedIndex.value, 1, editedEduExp.value);
+    eduExpEditorShown.value = false;
   }
+}
+
+function showWorkExpEditor(index: number) {
+  workExpEditedIndex.value = index;
+  editedWorkExp.value = deepCopy(workExps.value[index]);
+  workExpEditorShown.value = true;
+}
+
+function saveWorkExpEditDraft() {
+  if (workExpEditedIndex.value !== null && editedWorkExp.value) {
+    workExps.value.splice(workExpEditedIndex.value, 1, editedWorkExp.value);
+    workExpEditorShown.value = false;
+  }
+}
+
+function removeFromConfirm(index: number, arr: any[]) {
+  showRemoveConfirm.value = true;
+  removeCallback.value = () => {
+    removeFrom(index, arr);
+    showRemoveConfirm.value = false;
+  };
 }
 </script>

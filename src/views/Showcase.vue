@@ -77,36 +77,17 @@
   </v-main>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import * as mockData from '@/mock/data';
 import UserGrid from '@/components/UserGrid.vue';
-import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import ExampleSubmissionPreview from '@/views/showcase/ExampleSubmissionPreview.vue';
 import RotationCard from '@/components/base/RotationCard.vue';
 import SiteCard from '@/components/SiteCard.vue';
 import Answer from '@/components/Answer.vue';
-import ContribGraph from '@/components/widgets/ContribGraph.vue';
 import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
 
-@Component({
-  components: {
-    ContribGraphs,
-    ContribGraph,
-    Answer,
-    SiteCard,
-    RotationCard,
-    ExampleSubmissionPreview,
-    SubmissionPreview,
-    UserGrid,
-    QuestionPreview,
-  },
-})
-export default class Showcase extends Vue {
-  private mockData = mockData;
-  private questionPreviewDisabled = false;
-
-  private answerExample: number = 0;
-}
+const questionPreviewDisabled = ref(false);
+const answerExample = ref(0);
 </script>

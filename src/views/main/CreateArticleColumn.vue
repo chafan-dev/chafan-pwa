@@ -28,42 +28,46 @@
   </span>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { CVue } from '@/common';
+<script setup lang="ts">
+import { ref, reactive } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import { IArticleColumn, IArticleColumnCreate } from '@/interfaces';
 import { commitAddNotification } from '@/store/main/mutations';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-@Component({
-  components: { CloseIcon },
-})
-export default class CreateArticleColumn extends CVue {
-  @Prop() readonly onNewArticleColumn: ((articleColumn: IArticleColumn) => void) | undefined;
+import { useAuth } from '@/composables';
 
-  private dialogNewArticleColumn: boolean = false;
-  private newArticleColumn: IArticleColumnCreate = { name: '' };
-  private commitNewArticleColumnIntermediate = false;
+const props = defineProps<{
+  onNewArticleColumn?: (articleColumn: IArticleColumn) => void;
+}>();
 
-  private async commitNewArticleColumn() {
-    if (this.newArticleColumn.name.length === 0) {
-      commitAddNotification(this.$store, {
-        content: '专栏名不能为空',
-        color: 'error',
-      });
-      return;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.commitNewArticleColumnIntermediate = true;
-      const response = await apiArticle.createArticleColumn(this.token, this.newArticleColumn);
-      if (this.onNewArticleColumn) {
-        this.onNewArticleColumn(response.data);
-        this.dialogNewArticleColumn = false;
-      } else {
-        await this.$router.push(`/article-columns/${response.data.uuid}`);
-      }
+const store = useStore();
+const router = useRouter();
+const { token } = useAuth();
+
+const dialogNewArticleColumn = ref(false);
+const newArticleColumn = reactive<IArticleColumnCreate>({ name: '' });
+const commitNewArticleColumnIntermediate = ref(false);
+
+async function commitNewArticleColumn() {
+  if (newArticleColumn.name.length === 0) {
+    commitAddNotification(store, {
+      content: '专栏名不能为空',
+      color: 'error',
     });
+    return;
   }
+  await dispatchCaptureApiError(store, async () => {
+    commitNewArticleColumnIntermediate.value = true;
+    const response = await apiArticle.createArticleColumn(token.value, newArticleColumn);
+    if (props.onNewArticleColumn) {
+      props.onNewArticleColumn(response.data);
+      dialogNewArticleColumn.value = false;
+    } else {
+      await router.push(`/article-columns/${response.data.uuid}`);
+    }
+  });
 }
 </script>

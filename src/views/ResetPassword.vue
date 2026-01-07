@@ -72,60 +72,61 @@
   </v-main>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { appName } from '@/env';
 import { dispatchResetPassword } from '@/store/main/actions';
 import { api } from '@/api';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-@Component({
-  components: { DebugSpan },
-})
-export default class UserProfileEdit extends Vue {
-  public appName = appName;
-  public valid = false;
-  private tokenIsValid = true;
-  public password = '';
-  public confirmation = '';
 
-  public mounted() {
-    this.checkToken();
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+
+const valid = ref(false);
+const tokenIsValid = ref(true);
+const password = ref('');
+const confirmation = ref('');
+
+onMounted(() => {
+  checkToken();
+});
+
+function resetAll() {
+  password.value = '';
+  confirmation.value = '';
+}
+
+function cancel() {
+  router.push('/');
+}
+
+async function checkToken() {
+  const token = route.query.token as string;
+  let isValid = false;
+  if (token) {
+    const r = await api.checkTokenValidity(token);
+    isValid = r.data.success;
   }
-
-  public resetAll() {
-    this.password = '';
-    this.confirmation = '';
+  if (!token || !isValid) {
+    tokenIsValid.value = false;
+    return null;
+  } else {
+    return token;
   }
+}
 
-  public cancel() {
-    this.$router.push('/');
-  }
-
-  public async checkToken() {
-    const token = this.$route.query.token as string;
-    let isTokenValid = false;
-    if (token) {
-      const r = await api.checkTokenValidity(token);
-      isTokenValid = r.data.success;
-    }
-    if (!token || !isTokenValid) {
-      this.tokenIsValid = false;
-      return null;
-    } else {
-      return token;
-    }
-  }
-
-  public async submit() {
-    const token = await this.checkToken();
-    if (token) {
-      const resetOk = await dispatchResetPassword(this.$store, {
-        token,
-        password: this.password,
-      });
-      if (resetOk) {
-        await this.$router.push('/login');
-      }
+async function submit() {
+  const token = await checkToken();
+  if (token) {
+    const resetOk = await dispatchResetPassword(store, {
+      token,
+      password: password.value,
+    });
+    if (resetOk) {
+      await router.push('/login');
     }
   }
 }

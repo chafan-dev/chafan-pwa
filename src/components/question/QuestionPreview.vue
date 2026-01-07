@@ -40,43 +40,42 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue';
 import { IQuestionPreview, IQuestionUpvotes } from '@/interfaces';
-import SiteBtn from '@/components/SiteBtn.vue';
-import { Component, Prop } from 'vue-property-decorator';
+import { useAuth, useResponsive, useTheme } from '@/composables';
 
 import AnswerIcon from '@/components/icons/AnswerIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
-import BaseCard from '@/components/base/BaseCard.vue';
 import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
-import { CVue } from '@/common';
 
-@Component({
-  components: { QuestionUpvotes, BaseCard, SiteBtn, AnswerIcon, CommentsIcon },
-})
-export default class QuestionPreview extends CVue {
-  @Prop() public readonly questionPreview!: IQuestionPreview;
-  @Prop() public readonly upvotesPlaceholder: IQuestionUpvotes | undefined;
-  @Prop() public readonly disabledPlaceholder: boolean | undefined;
+const props = defineProps<{
+  questionPreview: IQuestionPreview;
+  upvotesPlaceholder?: IQuestionUpvotes;
+  disabledPlaceholder?: boolean;
+}>();
 
-  get shortDesc() {
-    let d = this.questionPreview.desc?.rendered_text;
-    if (!d) {
-      return null;
-    }
-    d = d.trim();
-    if (d.length > 60) {
-      return d.substring(0, 60) + '..';
-    } else {
-      return d;
-    }
+const { userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+const { theme } = useTheme();
+
+const shortDesc = computed(() => {
+  let d = props.questionPreview.desc?.rendered_text;
+  if (!d) {
+    return null;
   }
-
-  get disabled() {
-    if (this.disabledPlaceholder !== undefined) {
-      return this.disabledPlaceholder;
-    }
-    return !this.userProfile || this.userProfile.uuid === this.questionPreview.author.uuid;
+  d = d.trim();
+  if (d.length > 60) {
+    return d.substring(0, 60) + '..';
+  } else {
+    return d;
   }
-}
+});
+
+const disabled = computed(() => {
+  if (props.disabledPlaceholder !== undefined) {
+    return props.disabledPlaceholder;
+  }
+  return !userProfile.value || userProfile.value.uuid === props.questionPreview.author.uuid;
+});
 </script>

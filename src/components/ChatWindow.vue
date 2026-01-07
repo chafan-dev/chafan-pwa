@@ -89,77 +89,76 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import { api } from '@/api';
 import { IChannel, IMessage, IMessageCreate, IRichText } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
-import ChannelIcon from '@/components/icons/ChannelIcon.vue';
 import {
   dispatchCaptureApiError,
   dispatchCaptureApiErrorWithErrorHandler,
 } from '@/store/main/actions';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
-import { CVue } from '@/common';
 import Feedback from '@/views/main/dashboard/Feedback.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
 import SiteCreation from '@/views/main/dashboard/SiteCreation.vue';
+import { useAuth, useDayjs } from '@/composables';
 
-@Component({
-  components: {
-    SiteCreation,
-    HelpIcon,
-    CloseIcon,
-    Feedback,
-    EmptyPlaceholder,
-    UserLink,
-    ChannelIcon,
-    Viewer,
-  },
-})
-export default class ChatWindow extends CVue {
-  @Prop() public readonly channel!: IChannel;
-  private messages: IMessage[] = [];
-  private messageCreate: IMessageCreate = {
-    channel_id: -1,
-    body: '',
+const props = defineProps<{
+  channel: IChannel;
+}>();
+
+const store = useStore();
+const { token, userProfile } = useAuth();
+const dayjs = useDayjs();
+
+function fromNow(date: string) {
+  return dayjs(date).fromNow();
+}
+
+const currentUserId = userProfile.value?.uuid;
+
+const messages = ref<IMessage[]>([]);
+const messageCreate = reactive<IMessageCreate>({
+  channel_id: -1,
+  body: '',
+});
+const loading = ref(true);
+const sendMsgIntermediate = ref(false);
+const showTips = ref(false);
+
+function plainTextContent(text: string): IRichText {
+  return {
+    source: text,
+    editor: 'markdown',
+    rendered_text: text,
   };
-  private loading = true;
-  private sendMsgIntermediate = false;
-  private showTips = false;
+}
 
-  private plainTextContent(text: string): IRichText {
-    return {
-      source: text,
-      editor: 'markdown',
-      rendered_text: text,
-    };
-  }
+onMounted(async () => {
+  messageCreate.channel_id = props.channel.id;
+  await dispatchCaptureApiError(store, async () => {
+    messages.value = (await api.getChannelMessages(token.value, props.channel.id)).data;
+    loading.value = false;
+  });
+});
 
-  private async mounted() {
-    this.messageCreate.channel_id = this.channel.id;
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.messages = (await api.getChannelMessages(this.token, this.channel.id)).data;
-      this.loading = false;
-    });
-  }
-
-  private async commitNewMessage() {
-    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-      action: async () => {
-        this.sendMsgIntermediate = true;
-        const response = await api.createMessage(this.token, this.messageCreate);
-        this.messages.push(response.data);
-        this.messageCreate.body = '';
-        this.sendMsgIntermediate = false;
-      },
-      errorFilter: () => {
-        this.sendMsgIntermediate = false;
-        return false;
-      },
-    });
-  }
+async function commitNewMessage() {
+  await dispatchCaptureApiErrorWithErrorHandler(store, {
+    action: async () => {
+      sendMsgIntermediate.value = true;
+      const response = await api.createMessage(token.value, messageCreate);
+      messages.value.push(response.data);
+      messageCreate.body = '';
+      sendMsgIntermediate.value = false;
+    },
+    errorFilter: () => {
+      sendMsgIntermediate.value = false;
+      return false;
+    },
+  });
 }
 </script>

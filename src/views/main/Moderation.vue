@@ -307,10 +307,11 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
-import { readToken } from '@/store/main/getters';
 import { api } from '@/api';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
@@ -323,6 +324,7 @@ import { apiSite } from '@/api/site';
 import { deepCopy } from '@/utils';
 import { apiWebhook } from '@/api/webhook';
 import { apiMe } from '@/api/me';
+import { useAuth } from '@/composables';
 
 const defaultWebhookCreate: IWebhookCreate = {
   site_uuid: '',
@@ -333,247 +335,233 @@ const defaultWebhookCreate: IWebhookCreate = {
   callback_url: '',
 };
 
-@Component({
-  components: { UserLink, UserSearch, EditIcon, SiteBtn },
-})
-export default class Moderation extends Vue {
-  private applicationHeaders = [
-    {
-      text: '申请者',
-      sortable: true,
-      value: 'applicant',
-      align: 'left',
-    },
-    { text: '圈子', value: 'applied_site', sortable: false },
-    { text: '动作', value: 'actions', sortable: false },
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token } = useAuth();
+
+const applicationHeaders = [
+  {
+    text: '申请者',
+    sortable: true,
+    value: 'applicant',
+    align: 'left',
+  },
+  { text: '圈子', value: 'applied_site', sortable: false },
+  { text: '动作', value: 'actions', sortable: false },
+];
+
+const webhookHeaders = [
+  { text: '圈子', value: 'site', sortable: false },
+  { text: 'Event', value: 'event_spec', sortable: false },
+  { text: '启用', value: 'enabled', sortable: true },
+  { text: 'Secret', value: 'secret', sortable: false },
+  { text: 'Callback URL', value: 'callback_url', sortable: false },
+  { text: '更新', value: 'update_action', sortable: false },
+];
+
+const siteTopics = ref<ITopic[]>([]);
+const showNewWebhookDialog = ref(false);
+
+const newSiteTopicNames = ref<string[]>([]);
+const showSiteConfigEditor = ref(false);
+const selectedSiteUUID = ref<string | null>(null);
+const selectedSite = ref<ISite | null>(null);
+const autoApproval = ref(false);
+const emailSuffixes = ref<string[]>([]);
+
+const applications = ref<IApplication[]>([]);
+const allApplications = reactive<Map<string, IApplication[]>>(new Map());
+
+const siteConfigUpdate = ref<ISiteUpdate>({});
+
+const webhooks = ref<IWebhook[]>([]);
+
+const broadcastSubmissionLink = ref('');
+const transferToNewAdminUUID = ref<string | null>(null);
+const loading = ref(true);
+const moderatedSites = ref<ISite[] | null>(null);
+const categoryTopics = ref<ITopic[] | null>(null);
+const webhookCreate = ref<IWebhookCreate>(deepCopy(defaultWebhookCreate));
+const webhookCreateEventSpecJson = ref('');
+
+onMounted(async () => {
+  moderatedSites.value = (await apiMe.getModeratedSites(token.value)).data;
+  if (moderatedSites.value) {
+    const allApps = (await api.getPendingApplications(token.value)).data;
+    for (const application of allApps) {
+      const siteId = application.applied_site.uuid;
+      if (!allApplications.has(siteId)) {
+        allApplications.set(siteId, []);
+      }
+      allApplications.get(siteId)!.push(application);
+    }
+  }
+  if (route.query.siteUUID) {
+    selectedSiteUUID.value = route.query.siteUUID.toString();
+  }
+  await onSiteSelected();
+  categoryTopics.value = (await api.getCategoryTopics()).data;
+  loading.value = false;
+});
+
+function resetSiteConfig(site: ISite) {
+  siteConfigUpdate.value = {};
+  const keys = [
+    'name',
+    'description',
+    'auto_approval',
+    'min_karma_for_application',
+    'email_domain_suffix_for_application',
   ];
 
-  private webhookHeaders = [
-    { text: '圈子', value: 'site', sortable: false },
-    { text: 'Event', value: 'event_spec', sortable: false },
-    { text: '启用', value: 'enabled', sortable: true },
-    { text: 'Secret', value: 'secret', sortable: false },
-    { text: 'Callback URL', value: 'callback_url', sortable: false },
-    { text: '更新', value: 'update_action', sortable: false },
-  ];
-
-  private siteTopics: ITopic[] = [];
-  private showNewWebhookDialog: boolean = false;
-
-  private newSiteTopicNames: string[] = [];
-  private showSiteConfigEditor: boolean = false;
-  private selectedSiteUUID: string | null = null;
-  private selectedSite: ISite | null = null;
-  private autoApproval = false;
-  private emailSuffixes: string[] = [];
-
-  private applications: IApplication[] = [];
-  private allApplications: Map<string, IApplication[]> = new Map();
-
-  private siteConfigUpdate: ISiteUpdate = {};
-
-  private webhooks: IWebhook[] = [];
-
-  private broadcastSubmissionLink = '';
-  private transferToNewAdminUUID: string | null = null;
-  private loading = true;
-  private moderatedSites: ISite[] | null = null;
-  private categoryTopics: ITopic[] | null = null;
-  private webhookCreate: IWebhookCreate = deepCopy(defaultWebhookCreate);
-  /*
-{
-  "content": {
-    "event_type": "site_event",
-    "new_question": true,
-    "new_answer": true,
-    "new_submission": true
+  for (const key of keys) {
+    if (site[key] !== undefined) {
+      siteConfigUpdate.value[key] = site[key];
+    }
+  }
+  if (site.category_topic) {
+    siteConfigUpdate.value.category_topic_uuid = site.category_topic.uuid;
+  }
+  siteTopics.value = site.topics;
+  webhookCreate.value.site_uuid = site.uuid;
+  apiSite.getWebhooks(token.value, site.uuid).then((r) => {
+    webhooks.value = r.data;
+  });
+  autoApproval.value = site.auto_approval;
+  newSiteTopicNames.value = site.topics.map((s) => s.name);
+  if (site.email_domain_suffix_for_application) {
+    emailSuffixes.value = site.email_domain_suffix_for_application.split(',');
   }
 }
-   */
-  private webhookCreateEventSpecJson: string = '';
 
-  get token() {
-    return readToken(this.$store);
-  }
-
-  private async mounted() {
-    this.moderatedSites = (await apiMe.getModeratedSites(this.token)).data;
-    if (this.moderatedSites) {
-      const allApplications = (await api.getPendingApplications(this.token)).data;
-      for (const application of allApplications) {
-        const siteId = application.applied_site.uuid;
-        if (!this.allApplications.has(siteId)) {
-          this.allApplications.set(siteId, []);
+async function onSiteSelected() {
+  await dispatchCaptureApiError(store, async () => {
+    if (moderatedSites.value) {
+      if (selectedSiteUUID.value !== null) {
+        selectedSite.value = moderatedSites.value.filter(
+          (site) => site.uuid === selectedSiteUUID.value
+        )[0];
+        const siteUUID = selectedSiteUUID.value;
+        if (route.query.siteUUID !== siteUUID) {
+          router.replace({ query: { ...route.query, siteUUID } });
         }
-        this.allApplications.get(siteId)!.push(application);
+        resetSiteConfig(selectedSite.value);
+        applications.value = allApplications.get(selectedSiteUUID.value) || [];
+      } else {
+        selectedSite.value = null;
+        applications.value = Array.from(allApplications.values()).flatMap((a) => a);
       }
     }
-    if (this.$route.query.siteUUID) {
-      this.selectedSiteUUID = this.$route.query.siteUUID.toString();
-    }
-    await this.onSiteSelected();
-    this.categoryTopics = (await api.getCategoryTopics()).data;
-    this.loading = false;
-  }
+  });
+}
 
-  private resetSiteConfig(site: ISite) {
-    this.siteConfigUpdate = {};
-    const keys = [
-      'name',
-      'description',
-      'auto_approval',
-      'min_karma_for_application',
-      'email_domain_suffix_for_application',
-    ];
-
-    for (const key of keys) {
-      if (site[key] !== undefined) {
-        this.siteConfigUpdate[key] = site[key];
+async function commitSiteConfig() {
+  await dispatchCaptureApiError(store, async () => {
+    if (selectedSite.value) {
+      const responses = await Promise.all(
+        newSiteTopicNames.value.map((name) =>
+          apiTopic.createTopic(store.state.main.token, { name })
+        )
+      );
+      const topicsIds = responses.map((r) => r.data.uuid);
+      siteConfigUpdate.value.topic_uuids = topicsIds;
+      siteConfigUpdate.value.auto_approval = autoApproval.value;
+      if (emailSuffixes.value) {
+        siteConfigUpdate.value.email_domain_suffix_for_application = emailSuffixes.value.join(',');
+      }
+      const response = await apiSite.updateSiteConfig(
+        token.value,
+        selectedSite.value.uuid,
+        siteConfigUpdate.value
+      );
+      if (response) {
+        selectedSite.value = response.data;
+        resetSiteConfig(selectedSite.value!);
+        showSiteConfigEditor.value = false;
       }
     }
-    if (site.category_topic) {
-      this.siteConfigUpdate.category_topic_uuid = site.category_topic.uuid;
-    }
-    this.siteTopics = site.topics;
-    this.webhookCreate.site_uuid = site.uuid;
-    apiSite.getWebhooks(this.token, site.uuid).then((r) => {
-      this.webhooks = r.data;
-    });
-    this.autoApproval = site.auto_approval;
-    this.newSiteTopicNames = site.topics.map((s) => s.name);
-    if (site.email_domain_suffix_for_application) {
-      this.emailSuffixes = site.email_domain_suffix_for_application.split(',');
-    }
-  }
+  });
+}
 
-  private async onSiteSelected() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.moderatedSites) {
-        if (this.selectedSiteUUID !== null) {
-          this.selectedSite = this.moderatedSites.filter(
-            (site) => site.uuid === this.selectedSiteUUID
-          )[0];
-          const siteUUID = this.selectedSiteUUID;
-          if (this.$route.query.siteUUID !== siteUUID) {
-            this.$router.replace({ query: { ...this.$route.query, siteUUID } });
-          }
-          this.resetSiteConfig(this.selectedSite);
-          this.applications = this.allApplications.get(this.selectedSiteUUID)!;
-        } else {
-          this.selectedSite = null;
-          this.applications = Array.from(this.allApplications.values()).flatMap((a) => a);
-        }
-      }
-    });
-  }
-
-  private async commitSiteConfig() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.selectedSite) {
-        const responses = await Promise.all(
-          this.newSiteTopicNames.map((name) =>
-            apiTopic.createTopic(this.$store.state.main.token, { name })
-          )
-        );
-        const topicsIds = responses.map((r) => r.data.uuid);
-        this.siteConfigUpdate.topic_uuids = topicsIds;
-        this.siteConfigUpdate.auto_approval = this.autoApproval;
-        if (this.emailSuffixes) {
-          this.siteConfigUpdate.email_domain_suffix_for_application = this.emailSuffixes.join(',');
-        }
-        const response = await apiSite.updateSiteConfig(
-          this.token,
-          this.selectedSite.uuid,
-          this.siteConfigUpdate
-        );
-        if (response) {
-          this.selectedSite = response.data;
-          this.resetSiteConfig(this.selectedSite!);
-          this.showSiteConfigEditor = false;
-        }
-      }
-    });
-  }
-
-  private async approveApplication(application: IApplication) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const updatedApplication = (await api.approveApplication(this.token, application.id)).data;
-      if (updatedApplication.pending) {
-        commitAddNotification(this.$store, {
-          color: 'error',
-          content: 'Failed to approve',
-        });
-        return;
-      }
-      this.applications.splice(this.applications.indexOf(application), 1);
-    });
-  }
-
-  private async submitNewSubmissionBroadcast() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (!this.selectedSite) {
-        commitAddNotification(this.$store, {
-          color: 'error',
-          content: 'Site is not selected',
-        });
-        return;
-      }
-      let submissionUUID = '';
-      try {
-        const url = new URL(this.broadcastSubmissionLink);
-        const segments = url.pathname.split('/');
-        if (segments[0] === '' && segments[1] === 'submissions' && segments[2]) {
-          submissionUUID = segments[2];
-        } else {
-          throw new Error('Invalid sharing link');
-        }
-      } catch (e: any) {
-        commitAddNotification(this.$store, { color: 'error', content: e });
-        return;
-      }
-      await api.createTask(this.token, {
-        task_type: 'site_broadcast',
-        submission_uuid: submissionUUID,
-        to_members_of_site_uuid: this.selectedSite!.uuid,
+async function approveApplication(application: IApplication) {
+  await dispatchCaptureApiError(store, async () => {
+    const updatedApplication = (await api.approveApplication(token.value, application.id)).data;
+    if (updatedApplication.pending) {
+      commitAddNotification(store, {
+        color: 'error',
+        content: 'Failed to approve',
       });
-      commitAddNotification(this.$store, {
-        color: 'success',
-        content: '通知创建成功，即将发送',
-      });
-      this.broadcastSubmissionLink = '';
-    });
-  }
-
-  private async submitTransferToNewAdmin() {
-    if (this.selectedSite && this.transferToNewAdminUUID) {
-      await apiSite.updateSiteConfig(this.token, this.selectedSite.uuid, {
-        moderator_uuid: this.transferToNewAdminUUID,
-      });
-      await this.$router.push('/');
+      return;
     }
-  }
+    applications.value.splice(applications.value.indexOf(application), 1);
+  });
+}
 
-  private async disableWebhook(webhook: IWebhook) {
-    webhook.enabled = (
-      (
-        await apiWebhook.update(this.token, webhook.id, {
-          enabled: false,
-        })
-      ).data as IWebhook
-    ).enabled;
-  }
+async function submitNewSubmissionBroadcast() {
+  await dispatchCaptureApiError(store, async () => {
+    if (!selectedSite.value) {
+      commitAddNotification(store, {
+        color: 'error',
+        content: 'Site is not selected',
+      });
+      return;
+    }
+    let submissionUUID = '';
+    try {
+      const url = new URL(broadcastSubmissionLink.value);
+      const segments = url.pathname.split('/');
+      if (segments[0] === '' && segments[1] === 'submissions' && segments[2]) {
+        submissionUUID = segments[2];
+      } else {
+        throw new Error('Invalid sharing link');
+      }
+    } catch (e: any) {
+      commitAddNotification(store, { color: 'error', content: e });
+      return;
+    }
+    await api.createTask(token.value, {
+      task_type: 'site_broadcast',
+      submission_uuid: submissionUUID,
+      to_members_of_site_uuid: selectedSite.value!.uuid,
+    });
+    commitAddNotification(store, {
+      color: 'success',
+      content: '通知创建成功，即将发送',
+    });
+    broadcastSubmissionLink.value = '';
+  });
+}
 
-  private resetNewWebhook() {
-    this.webhookCreate = deepCopy(defaultWebhookCreate);
-    this.showNewWebhookDialog = false;
+async function submitTransferToNewAdmin() {
+  if (selectedSite.value && transferToNewAdminUUID.value) {
+    await apiSite.updateSiteConfig(token.value, selectedSite.value.uuid, {
+      moderator_uuid: transferToNewAdminUUID.value,
+    });
+    await router.push('/');
   }
+}
 
-  private async addNewWebhook() {
-    this.webhookCreate.event_spec = JSON.parse(this.webhookCreateEventSpecJson);
-    const webhook = (await apiWebhook.create(this.token, this.webhookCreate)).data;
-    this.webhooks.push(webhook);
-    this.webhookCreate = deepCopy(defaultWebhookCreate);
-    this.showNewWebhookDialog = false;
-  }
+async function disableWebhook(webhook: IWebhook) {
+  webhook.enabled = (
+    (
+      await apiWebhook.update(token.value, webhook.id, {
+        enabled: false,
+      })
+    ).data as IWebhook
+  ).enabled;
+}
+
+function resetNewWebhook() {
+  webhookCreate.value = deepCopy(defaultWebhookCreate);
+  showNewWebhookDialog.value = false;
+}
+
+async function addNewWebhook() {
+  webhookCreate.value.event_spec = JSON.parse(webhookCreateEventSpecJson.value);
+  const webhook = (await apiWebhook.create(token.value, webhookCreate.value)).data;
+  webhooks.value.push(webhook);
+  webhookCreate.value = deepCopy(defaultWebhookCreate);
+  showNewWebhookDialog.value = false;
 }
 </script>

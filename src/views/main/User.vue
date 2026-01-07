@@ -77,11 +77,12 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { apiPeople } from '@/api/people';
-import  { info }  from '@/logging'
-
+import { info } from '@/logging';
 
 import {
   IAnswerPreview,
@@ -104,155 +105,144 @@ import DynamicItemList from '@/components/DynamicItemList.vue';
 
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, isEqual, updateHead } from '@/common';
+import { isEqual, updateHead } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
+import { useAuth, useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    EmptyPlaceholder,
-    UserFeed,
-    RegisteredUserOnlyIcon,
-    QuestionPreview,
-    Answer,
-    UserProfileCard,
-    UserLink,
-    SiteBtn,
-    UserGrid,
-    ArticlePreview,
-    SubmissionPreview,
-    DynamicItemList,
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, loggedIn, userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+
+const tabItems = [
+  {
+    code: 'recent',
+    text: '动态',
   },
-})
-export default class User extends CVue {
-  private tabItems = [
-    {
-      code: 'recent',
-      text: '动态',
-    },
-    {
-      code: 'answers',
-      text: '回答',
-      tabExtraCount: (userPublic: IUserPublic) => userPublic.answers_count,
-    },
-    {
-      code: 'questions',
-      text: '问题',
-      tabExtraCount: (userPublic: IUserPublic) => userPublic.questions_count,
-    },
-    {
-      code: 'articles',
-      text: '文章',
-      tabExtraCount: (userPublic: IUserPublic) => userPublic.articles_count,
-    },
-    {
-      code: 'submissions',
-      text: '分享',
-      tabExtraCount: (userPublic: IUserPublic) => userPublic.submissions_count,
-    },
-  ];
-  private userPublic: IUserPublic | null = null;
-  private userPublicForVisitor: IUserPublicForVisitor | null = null;
+  {
+    code: 'answers',
+    text: '回答',
+    tabExtraCount: (userPublic: IUserPublic) => userPublic.answers_count,
+  },
+  {
+    code: 'questions',
+    text: '问题',
+    tabExtraCount: (userPublic: IUserPublic) => userPublic.questions_count,
+  },
+  {
+    code: 'articles',
+    text: '文章',
+    tabExtraCount: (userPublic: IUserPublic) => userPublic.articles_count,
+  },
+  {
+    code: 'submissions',
+    text: '分享',
+    tabExtraCount: (userPublic: IUserPublic) => userPublic.submissions_count,
+  },
+];
 
-  get handle() {
-    return this.$route.params.handle;
-  }
+const userPublic = ref<IUserPublic | null>(null);
+const userPublicForVisitor = ref<IUserPublicForVisitor | null>(null);
 
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'recent';
-  }
+const handle = computed(() => route.params.handle as string);
 
-  set currentTabItem(tab) {
+const currentTabItem = computed({
+  get() {
+    return route.query.tab ? route.query.tab : 'recent';
+  },
+  set(tab) {
     if (tab !== 'recent') {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
+      router.replace({ query: { ...route.query, tab: tab as string } });
     } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+      router.replace({ query: { ...route.query, tab: undefined } });
+    }
+  },
+});
+
+// Watch for route changes (replaces beforeRouteUpdate)
+watch(
+  () => route.params.handle,
+  (newHandle, oldHandle) => {
+    if (newHandle !== oldHandle && route.name === 'user') {
+      userPublic.value = null;
+      userPublicForVisitor.value = null;
+      load();
     }
   }
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'user');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.userPublic = null;
-      this.userPublicForVisitor = null;
-      this.load();
+);
+
+onMounted(async () => {
+  await load();
+});
+
+async function load() {
+  await dispatchCaptureApiError(store, async () => {
+    if (loggedIn.value) {
+      userPublic.value = (await apiPeople.getUserPublic(token.value, handle.value)).data;
+      let title = userPublic.value!.full_name || userPublic.value!.handle;
+      updateHead(route.path, title, userPublic.value!.personal_introduction);
+    } else {
+      userPublicForVisitor.value = (await apiPeople.getUserPublic(token.value, handle.value)).data;
     }
-  }
+  });
+}
 
-  public async mounted() {
-    await this.load();
-  }
-
-  private async load() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.loggedIn) {
-        this.userPublic = (await apiPeople.getUserPublic(this.token, this.handle)).data;
-        let title = this.userPublic!.full_name || this.userPublic!.handle;
-        updateHead(this.$route.path, title, this.userPublic!.personal_introduction);
-      } else {
-        this.userPublicForVisitor = (await apiPeople.getUserPublic(this.token, this.handle)).data;
-      }
-    });
-  }
-
-  private async getUserUuid() {
-    while (true) {
-        if (this.userPublic !== null) {
-            return this.userPublic.uuid;
-        }
-        if (this.userPublicForVisitor !== null) {
-            return this.userPublicForVisitor.uuid;
-        }
-        await this.load();
+async function getUserUuid() {
+  while (true) {
+    if (userPublic.value !== null) {
+      return userPublic.value.uuid;
     }
-    return "should_not_reach_this_branch";
-  }
-  private async loadAnswers(skip: number, limit: number) {
-    let items: IAnswerPreview[] | null = null;
-    let uuid = await this.getUserUuid();
-    if (uuid !== null) {
-        info("load answers, uuid = " + uuid + " skip = " + skip.toString());
-        items = (await apiPeople.getAnswersByAuthor(this.token, uuid, skip, limit))
-          .data;
-        info("loadAnswers items length = " + items.length.toString());
+    if (userPublicForVisitor.value !== null) {
+      return userPublicForVisitor.value.uuid;
     }
-    return items;
+    await load();
   }
+  return 'should_not_reach_this_branch';
+}
 
-  private async loadQuestions(skip: number, limit: number) {
-    let items: IQuestionPreview[] | null = null;
-    let uuid = await this.getUserUuid();
-    if (uuid !== null) {
-        info("load questions, uuid = " + uuid + " skip = " + skip.toString());
-        items = (await apiPeople.getQuestionsByAuthor(this.token, uuid, skip, limit))
-          .data;
+async function loadAnswers(skip: number, limit: number) {
+  let items: IAnswerPreview[] | null = null;
+  let uuid = await getUserUuid();
+  if (uuid !== null) {
+    info('load answers, uuid = ' + uuid + ' skip = ' + skip.toString());
+    items = (await apiPeople.getAnswersByAuthor(token.value, uuid, skip, limit)).data;
+    info('loadAnswers items length = ' + items.length.toString());
+  }
+  return items;
+}
+
+async function loadQuestions(skip: number, limit: number) {
+  let items: IQuestionPreview[] | null = null;
+  let uuid = await getUserUuid();
+  if (uuid !== null) {
+    info('load questions, uuid = ' + uuid + ' skip = ' + skip.toString());
+    items = (await apiPeople.getQuestionsByAuthor(token.value, uuid, skip, limit)).data;
+  }
+  return items;
+}
+
+async function loadSubmissions(skip: number, limit: number) {
+  let items: ISubmission[] | null = null;
+  await dispatchCaptureApiError(store, async () => {
+    if (userPublic.value !== null) {
+      items = (
+        await apiPeople.getSubmissionsByAuthor(token.value, userPublic.value.uuid, skip, limit)
+      ).data;
     }
-    return items;
-  }
+  });
+  return items;
+}
 
-  private async loadSubmissions(skip: number, limit: number) {
-    let items: ISubmission[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.userPublic !== null) {
-        items = (
-          await apiPeople.getSubmissionsByAuthor(this.token, this.userPublic.uuid, skip, limit)
-        ).data;
-      }
-    });
-    return items;
+async function loadArticles(skip: number, limit: number) {
+  info('load articles info called');
+  let items: IArticlePreview[] | null = null;
+  let uuid = await getUserUuid();
+  if (uuid !== null) {
+    info('load articles, uuid = ' + uuid + ' skip = ' + skip.toString());
+    items = (await apiPeople.getArticlesByAuthor(token.value, uuid, skip, limit)).data;
   }
-
-  private async loadArticles(skip: number, limit: number) {
-    info("load articles info called");
-    let items: IArticlePreview[] | null = null;
-    let uuid = await this.getUserUuid();
-    if (uuid !== null) {
-        info("load articles, uuid = " + uuid + " skip = " + skip.toString());
-        items = (await apiPeople.getArticlesByAuthor(this.token, uuid, skip, limit))
-          .data;
-    }
-    return items;
-  }
+  return items;
 }
 </script>

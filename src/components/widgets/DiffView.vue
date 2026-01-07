@@ -8,19 +8,18 @@
   </span>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { computed } from 'vue';
 import * as diff from 'diff';
 
-@Component
-export default class Diff extends Vue {
-  @Prop() readonly s1!: string;
-  @Prop() readonly s2!: string;
+const props = defineProps<{
+  s1: string;
+  s2: string;
+}>();
 
-  get diffs() {
-    return diff.diffLines(this.s1, this.s2, {
-      newlineIsToken: true,
-    });
-  }
-}
+const diffs = computed(() => {
+  return diff.diffLines(props.s1, props.s2, {
+    newlineIsToken: true,
+  });
+});
 </script>

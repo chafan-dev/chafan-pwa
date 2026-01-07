@@ -14,31 +14,24 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { readToken } from '@/store/main/getters';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from '@/router';
 import SearchResults from '@/components/SearchResults.vue';
 
-@Component({
-  components: { SearchResults },
-})
-export default class Search extends Vue {
-  private loading = true;
+const route = useRoute();
 
-  get token() {
-    return readToken(this.$store);
-  }
+const loading = ref(true);
+const searchResults = ref<InstanceType<typeof SearchResults> | null>(null);
 
-  get q() {
-    return this.$route.query.q ? this.$route.query.q.toString() : null;
-  }
+const q = computed(() => {
+  return route.query.q ? route.query.q.toString() : null;
+});
 
-  async mounted() {
-    const q = this.q;
-    if (q) {
-      await (this.$refs.searchResults as SearchResults).doSearch(q);
-    }
-    this.loading = false;
+onMounted(async () => {
+  if (q.value && searchResults.value) {
+    await (searchResults.value as any).doSearch(q.value);
   }
-}
+  loading.value = false;
+});
 </script>

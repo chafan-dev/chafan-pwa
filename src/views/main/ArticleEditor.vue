@@ -266,7 +266,7 @@ export default class ArticleEditor extends CVue {
   }
 
   get chafanTiptap() {
-    return this.$refs.tiptap as ChafanTiptap;
+    return this.$refs.tiptap as any;
   }
 
   get vditorComponent() {
@@ -442,7 +442,7 @@ export default class ArticleEditor extends CVue {
 
   private getContent(): string | null {
     if (this.topLevelEditor === 'tiptap') {
-      return (this.$refs.tiptap as ChafanTiptap).getContent();
+      return (this.$refs.tiptap as any).getContent();
     } else if (this.topLevelEditor === 'vditor') {
       return (this.$refs.vditor as any).getContent();
     }
@@ -455,7 +455,7 @@ export default class ArticleEditor extends CVue {
 
   private getTextContent(): string | null {
     if (this.topLevelEditor === 'tiptap') {
-      return (this.$refs.tiptap as ChafanTiptap).getText();
+      return (this.$refs.tiptap as any).getText();
     } else if (this.topLevelEditor === 'vditor') {
       return (this.$refs.vditor as any).getText();
     }
@@ -482,7 +482,7 @@ export default class ArticleEditor extends CVue {
     if (editor === 'tiptap') {
       this.topLevelEditor = 'tiptap';
       if (body) {
-        (this.$refs.tiptap as ChafanTiptap).loadJSON(JSON.parse(body));
+        (this.$refs.tiptap as any).loadJSON(JSON.parse(body));
       }
     }
     this.editor = editor;

@@ -103,8 +103,9 @@
   </span>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
 
 import MuteNotificationIcon from '@/components/icons/MuteNotificationIcon.vue';
 import NotificationIcon from '@/components/icons/NotificationIcon.vue';
@@ -114,77 +115,71 @@ import { api } from '@/api';
 import { api2 } from '@/api2';
 import { wsUrl } from '@/env';
 import Event from '@/components/Event.vue';
-import { CVue } from '@/common';
 import { logDebug } from '@/utils';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: {
-    MuteNotificationIcon,
-    NotificationIcon,
-    Event,
-  },
-})
-export default class Notifications extends CVue {
-  private notifications: INotification[] = [];
-  private loadNotifsIntermediate = true;
-  private showReadNotifications = false;
-  private showNotifications = false;
-  private wsConnection: WebSocket | null = null;
+const store = useStore();
+const { token, userProfile } = useAuth();
 
-  get unreadNotificationsCount() {
-    return this.notifications.filter((x) => !x.is_read).length;
-  }
+const notifications = ref<INotification[]>([]);
+const loadNotifsIntermediate = ref(true);
+const showReadNotifications = ref(false);
+const showNotifications = ref(false);
+const wsConnection = ref<WebSocket | null>(null);
 
-  private async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const notifs = (await api.getUnreadNotifications(this.$store.state.main.token)).data;
-      if (notifs) {
-        notifs.forEach((notif) => {
-          if (notif !== null) {
-            this.notifications.push(notif);
-          }
-        });
-      }
-      this.notifications.push(...(await api2.getReadNotifications(this.token)).data);
-      this.loadNotifsIntermediate = false;
+const unreadNotificationsCount = computed(() => {
+  return notifications.value.filter((x) => !x.is_read).length;
+});
 
-      const wsToken = (await api2.getWsToken(this.token)).data.token;
-      this.wsConnection = new WebSocket(wsUrl + '/ws?token=' + wsToken);
-      this.wsConnection.onmessage = (message) => {
-        const wsMsg = JSON.parse(message.data) as IWsUserMsg;
-        this.handleWsMsg(wsMsg);
-      };
-      this.wsConnection.onerror = (err) => {
-        logDebug('notif ws err: ' + err);
-      };
-      this.wsConnection.onopen = () => {
-        logDebug('notif ws opened');
-      };
-      this.wsConnection.onclose = () => {
-        logDebug('notif ws closed');
-      };
-    });
-  }
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    const notifs = (await api.getUnreadNotifications(store.state.main.token)).data;
+    if (notifs) {
+      notifs.forEach((notif) => {
+        if (notif !== null) {
+          notifications.value.push(notif);
+        }
+      });
+    }
+    notifications.value.push(...(await api2.getReadNotifications(token.value)).data);
+    loadNotifsIntermediate.value = false;
 
-  private handleWsMsg(msg: IWsUserMsg) {
-    if (msg.type === 'notification') {
-      if (!this.notifications.find((notif) => notif.id === msg.data.id)) {
-        this.notifications.unshift(msg.data);
-      }
+    const wsToken = (await api2.getWsToken(token.value)).data.token;
+    wsConnection.value = new WebSocket(wsUrl + '/ws?token=' + wsToken);
+    wsConnection.value.onmessage = (message) => {
+      const wsMsg = JSON.parse(message.data) as IWsUserMsg;
+      handleWsMsg(wsMsg);
+    };
+    wsConnection.value.onerror = (err) => {
+      logDebug('notif ws err: ' + err);
+    };
+    wsConnection.value.onopen = () => {
+      logDebug('notif ws opened');
+    };
+    wsConnection.value.onclose = () => {
+      logDebug('notif ws closed');
+    };
+  });
+});
+
+function handleWsMsg(msg: IWsUserMsg) {
+  if (msg.type === 'notification') {
+    if (!notifications.value.find((notif) => notif.id === msg.data.id)) {
+      notifications.value.unshift(msg.data);
     }
   }
+}
 
-  private readNotif(notif: INotification) {
-    notif.is_read = true;
-    api.updateNotification(this.$store.state.main.token, notif.id, {
-      is_read: true,
-    });
-  }
+function readNotif(notif: INotification) {
+  notif.is_read = true;
+  api.updateNotification(store.state.main.token, notif.id, {
+    is_read: true,
+  });
+}
 
-  private async readAllNotifs() {
-    this.notifications.forEach((notif) => {
-      this.readNotif(notif);
-    });
-  }
+async function readAllNotifs() {
+  notifications.value.forEach((notif) => {
+    readNotif(notif);
+  });
 }
 </script>

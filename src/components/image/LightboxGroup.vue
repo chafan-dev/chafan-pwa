@@ -14,32 +14,36 @@
   </v-sheet>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 
-@Component
-export default class LightboxGroup extends Vue {
-  @Prop() public readonly container!: HTMLElement;
+interface ImgObject {
+  url: string;
+  showDialog: boolean;
+}
 
-  private imgObjects: { url: string; showDialog: boolean }[] = [];
-  private openedImgObject: { url: string; showDialog: boolean } | null = null;
+const props = defineProps<{
+  container: HTMLElement;
+}>();
 
-  public mounted() {
-    for (const img of this.container.getElementsByTagName('img')) {
-      const imgObject = {
-        url: img.src,
-        showDialog: false,
-      };
-      this.imgObjects.push(imgObject);
-      img.onclick = () => {
-        this.openedImgObject = imgObject;
-      };
-      img.style.cursor = 'pointer';
-    }
+const imgObjects = ref<ImgObject[]>([]);
+const openedImgObject = ref<ImgObject | null>(null);
+
+onMounted(() => {
+  for (const img of props.container.getElementsByTagName('img')) {
+    const imgObject: ImgObject = {
+      url: img.src,
+      showDialog: false,
+    };
+    imgObjects.value.push(imgObject);
+    img.onclick = () => {
+      openedImgObject.value = imgObject;
+    };
+    img.style.cursor = 'pointer';
   }
+});
 
-  protected close() {
-    this.openedImgObject = null;
-  }
+function close() {
+  openedImgObject.value = null;
 }
 </script>

@@ -33,55 +33,55 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { apiMe } from '@/api/me';
 import { ITopic, IUserTopicSubscription } from '@/interfaces';
-import TopicSearch from '@/components/TopicSearch.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { Component, Prop } from 'vue-property-decorator';
 import { apiTopic } from '@/api/topic';
-import { CVue } from '@/common';
+import { useAuth } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: { TopicSearch },
-})
-export default class TopicCard extends CVue {
-  @Prop() public readonly topic!: ITopic;
-  private topicSubscription: IUserTopicSubscription | null = null;
-  private cancelSubscriptionIntermediate = false;
-  private subscribeIntermediate = false;
-  private parentTopic: ITopic | null = null;
+const props = defineProps<{
+  topic: ITopic;
+}>();
 
-  public async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const response3 = await apiMe.getTopicSubscription(this.token, this.topic.uuid);
-      this.topicSubscription = response3.data;
-    });
-    if (this.topic.parent_topic_uuid) {
-      this.parentTopic = (await apiTopic.getTopic(this.topic.parent_topic_uuid)).data;
+const { token } = useAuth();
+
+const topicSubscription = ref<IUserTopicSubscription | null>(null);
+const cancelSubscriptionIntermediate = ref(false);
+const subscribeIntermediate = ref(false);
+const parentTopic = ref<ITopic | null>(null);
+
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    const response3 = await apiMe.getTopicSubscription(token.value, props.topic.uuid);
+    topicSubscription.value = response3.data;
+  });
+  if (props.topic.parent_topic_uuid) {
+    parentTopic.value = (await apiTopic.getTopic(props.topic.parent_topic_uuid)).data;
+  }
+});
+
+async function cancelSubscription() {
+  await dispatchCaptureApiError(store, async () => {
+    if (props.topic) {
+      cancelSubscriptionIntermediate.value = true;
+      const r = await apiMe.unsubscribeTopic(token.value, props.topic.uuid);
+      cancelSubscriptionIntermediate.value = false;
+      topicSubscription.value = r.data;
     }
-  }
+  });
+}
 
-  public async cancelSubscription() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.topic) {
-        this.cancelSubscriptionIntermediate = true;
-        const r = await apiMe.unsubscribeTopic(this.token, this.topic.uuid);
-        this.cancelSubscriptionIntermediate = false;
-        this.topicSubscription = r.data;
-      }
-    });
-  }
-
-  public async subscribe() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.topic) {
-        this.subscribeIntermediate = true;
-        const r = await apiMe.subscribeTopic(this.token, this.topic.uuid);
-        this.subscribeIntermediate = false;
-        this.topicSubscription = r.data;
-      }
-    });
-  }
+async function subscribe() {
+  await dispatchCaptureApiError(store, async () => {
+    if (props.topic) {
+      subscribeIntermediate.value = true;
+      const r = await apiMe.subscribeTopic(token.value, props.topic.uuid);
+      subscribeIntermediate.value = false;
+      topicSubscription.value = r.data;
+    }
+  });
 }
 </script>

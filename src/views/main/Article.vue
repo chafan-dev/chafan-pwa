@@ -55,7 +55,7 @@
               />
               <v-btn
                 v-show="currentUserIsAuthor"
-                :to="`/article-editor?articleColumnId=${this.article.article_column.uuid}&articleId=${this.article.uuid}`"
+                :to="`/article-editor?articleColumnId=${article.article_column.uuid}&articleId=${article.uuid}`"
                 class="mr-1 slim-btn"
                 depressed
                 small
@@ -181,8 +181,10 @@
   </v-row>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { IArticle, IArticleUpvotes, IUserArticleBookmark } from '@/interfaces';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
@@ -203,8 +205,7 @@ import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mu
 import { apiComment } from '@/api/comment';
 import { readNarrowUI } from '@/store/main/getters';
 import { apiMe } from '@/api/me';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, isEqual, updateHead } from '@/common';
+import { isEqual, updateHead } from '@/common';
 import ShareCardButton from '@/components/ShareCardButton.vue';
 import Viewer from '@/components/Viewer.vue';
 import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
@@ -213,185 +214,177 @@ import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import { getArticleDraft } from '@/utils';
 import Upvote from '@/components/Upvote.vue';
 import { AxiosError } from 'axios';
+import { useAuth, useResponsive, useDayjs, useErrorHandling } from '@/composables';
 
-@Component({
-  components: {
-    Upvote,
-    CommentBtn,
-    UpvoteBtn,
-    UpvotedBtn,
-    ShareCardButton,
-    UserLink,
-    QuestionLink,
-    CommentBlock,
-    SiteBtn,
-    BookmarkedIcon,
-    ToBookmarkIcon,
-    DeleteIcon,
-    CollapseUpIcon,
-    LinkIcon,
-  },
-})
-export default class Article extends CVue {
-  private article: IArticle | null = null;
-  private upvotes: IArticleUpvotes | null = null;
-  private userBookmark: IUserArticleBookmark | null = null;
-  private confirmDeleteDialog = false;
-  private loading = true;
-  private deleteArticleIntermediate = false;
-  private bookmarkIntermediate = false;
-  private unbookmarkIntermediate = false;
-  private currentUserIsAuthor = false;
-  private editButtonText = '编辑';
-  private showHasDraftBadge = false;
-  private commentSubmitIntermediate = false;
-  private articlePreviewBody: string = '';
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile, loggedIn } = useAuth();
+const { isDesktop } = useResponsive();
+const dayjs = useDayjs();
+const { commitErrMsg } = useErrorHandling();
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
+const viewer = ref<any>(null);
 
-  get id() {
-    return this.$route.params.id;
-  }
+const article = ref<IArticle | null>(null);
+const upvotes = ref<IArticleUpvotes | null>(null);
+const userBookmark = ref<IUserArticleBookmark | null>(null);
+const confirmDeleteDialog = ref(false);
+const loading = ref(true);
+const deleteArticleIntermediate = ref(false);
+const bookmarkIntermediate = ref(false);
+const unbookmarkIntermediate = ref(false);
+const currentUserIsAuthor = ref(false);
+const editButtonText = ref('编辑');
+const showHasDraftBadge = ref(false);
+const commentSubmitIntermediate = ref(false);
+const articlePreviewBody = ref('');
 
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'article');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.load();
+const isNarrowFeedUI = computed(() => readNarrowUI(store));
+const id = computed(() => route.params.id as string);
+
+function fromNow(date: string) {
+  return dayjs(date).fromNow();
+}
+
+// Watch for route changes (replaces beforeRouteUpdate)
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId && route.name === 'article') {
+      loading.value = true;
+      load();
     }
   }
+);
 
-  private async load() {
-    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-      action: async () => {
-        this.article = (await apiArticle.getArticle(this.token, this.id)).data;
-        this.updateStateWithLoadedArticle(this.article);
-        this.loading = false;
-      },
-      errorFilter: (err: AxiosError) => {
-        const matched = this.commitErrMsg(err);
-        if (matched) {
-          this.$router.push('/');
-        }
-        return matched !== null;
-      },
-    });
+async function load() {
+  await dispatchCaptureApiErrorWithErrorHandler(store, {
+    action: async () => {
+      article.value = (await apiArticle.getArticle(token.value, id.value)).data;
+      updateStateWithLoadedArticle(article.value);
+      loading.value = false;
+    },
+    errorFilter: (err: AxiosError) => {
+      const matched = commitErrMsg(err);
+      if (matched) {
+        router.push('/');
+      }
+      return matched !== null;
+    },
+  });
+}
+
+function onClickShare() {
+  articlePreviewBody.value = viewer.value?.textContent || '';
+  if (articlePreviewBody.value.length > 40) {
+    articlePreviewBody.value = articlePreviewBody.value.substring(0, 40) + '...';
   }
+}
 
-  private onClickShare() {
-    this.articlePreviewBody = (this.$refs.viewer as any).textContent || '';
-    if (this.articlePreviewBody.length > 40) {
-      this.articlePreviewBody = this.articlePreviewBody.substring(0, 40) + '...';
+onMounted(async () => {
+  await load();
+});
+
+async function upvote() {
+  if (!userProfile.value) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  await dispatchCaptureApiError(store, async () => {
+    if (article.value) {
+      upvotes.value = (await apiArticle.upvoteArticle(token.value, article.value.uuid)).data;
     }
-  }
+  });
+}
 
-  private async mounted() {
-    await this.load();
-  }
-
-  private async upvote() {
-    if (!this.userProfile) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
+async function cancelUpvote() {
+  await dispatchCaptureApiError(store, async () => {
+    if (article.value) {
+      upvotes.value = (await apiArticle.cancelUpvoteArticle(token.value, article.value.uuid)).data;
     }
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.article) {
-        this.upvotes = (await apiArticle.upvoteArticle(this.token, this.article.uuid)).data;
-      }
-    });
-  }
+  });
+}
 
-  private async cancelUpvote() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.article) {
-        this.upvotes = (await apiArticle.cancelUpvoteArticle(this.token, this.article.uuid)).data;
-      }
-    });
-  }
-
-  private async bookmark() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.article) {
-        this.bookmarkIntermediate = true;
-        this.userBookmark = (await apiMe.bookmarkArticle(this.token, this.article.uuid)).data;
-        this.bookmarkIntermediate = false;
-      }
-    });
-  }
-
-  private async unbookmark() {
-    this.unbookmarkIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.article) {
-        this.userBookmark = (await apiMe.unbookmarkArticle(this.token, this.article.uuid)).data;
-        this.unbookmarkIntermediate = false;
-      }
-    });
-  }
-
-  private async submitNewArticleCommentBody({ body, body_text, editor, mentioned }) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.article) {
-        this.commentSubmitIntermediate = true;
-        const response = await apiComment.postComment(this.token, {
-          article_uuid: this.article.uuid,
-          content: {
-            source: body,
-            rendered_text: body_text,
-            editor,
-          },
-          mentioned,
-        });
-        const comment = response.data;
-        this.article.comments.push(comment);
-        this.commentSubmitIntermediate = false;
-      }
-    });
-  }
-
-  private updateStateWithLoadedArticle(article: IArticle) {
-    updateHead(this.$route.path, article.title);
-    if (this.token) {
-      apiArticle.bumpViewsCounter(this.token, article.uuid);
+async function bookmark() {
+  await dispatchCaptureApiError(store, async () => {
+    if (article.value) {
+      bookmarkIntermediate.value = true;
+      userBookmark.value = (await apiMe.bookmarkArticle(token.value, article.value.uuid)).data;
+      bookmarkIntermediate.value = false;
     }
-    this.currentUserIsAuthor = this.userProfile?.uuid === article.author.uuid;
-    if (this.currentUserIsAuthor) {
-      getArticleDraft(this.$dayjs, this.token, this.id).then((draft) => {
-        if (draft && this.article) {
-          // Override article title -> this is a server-side behavior
-          this.article.title = draft.title || '';
-          this.editButtonText = '编辑草稿';
-          this.showHasDraftBadge = true;
-        }
+  });
+}
+
+async function unbookmark() {
+  unbookmarkIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (article.value) {
+      userBookmark.value = (await apiMe.unbookmarkArticle(token.value, article.value.uuid)).data;
+      unbookmarkIntermediate.value = false;
+    }
+  });
+}
+
+async function submitNewArticleCommentBody({ body, body_text, editor, mentioned }: any) {
+  await dispatchCaptureApiError(store, async () => {
+    if (article.value) {
+      commentSubmitIntermediate.value = true;
+      const response = await apiComment.postComment(token.value, {
+        article_uuid: article.value.uuid,
+        content: {
+          source: body,
+          rendered_text: body_text,
+          editor,
+        },
+        mentioned,
       });
+      const comment = response.data;
+      article.value.comments.push(comment);
+      commentSubmitIntermediate.value = false;
     }
+  });
+}
 
-    this.upvotes = {
-      article_uuid: article.uuid,
-      count: article.upvotes_count,
-      upvoted: article.upvoted,
-    };
-    this.userBookmark = {
-      article_uuid: article.uuid,
-      bookmarkers_count: article.bookmark_count,
-      bookmarked_by_me: article.bookmarked,
-    };
-    this.loading = false;
+function updateStateWithLoadedArticle(articleData: IArticle) {
+  updateHead(route.path, articleData.title);
+  if (token.value) {
+    apiArticle.bumpViewsCounter(token.value, articleData.uuid);
+  }
+  currentUserIsAuthor.value = userProfile.value?.uuid === articleData.author.uuid;
+  if (currentUserIsAuthor.value) {
+    getArticleDraft(dayjs, token.value, id.value).then((draft) => {
+      if (draft && article.value) {
+        // Override article title -> this is a server-side behavior
+        article.value.title = draft.title || '';
+        editButtonText.value = '编辑草稿';
+        showHasDraftBadge.value = true;
+      }
+    });
   }
 
-  private async deleteArticle() {
-    if (this.article) {
-      await apiArticle.deleteArticle(this.token, this.article.uuid);
-      commitAddNotification(this.$store, {
-        content: '文章已永久删除',
-        color: 'success',
-      });
-      this.confirmDeleteDialog = false;
-      await this.$router.push(`/article-columns/${this.article.article_column.uuid}`);
-    }
+  upvotes.value = {
+    article_uuid: articleData.uuid,
+    count: articleData.upvotes_count,
+    upvoted: articleData.upvoted,
+  };
+  userBookmark.value = {
+    article_uuid: articleData.uuid,
+    bookmarkers_count: articleData.bookmark_count,
+    bookmarked_by_me: articleData.bookmarked,
+  };
+  loading.value = false;
+}
+
+async function deleteArticle() {
+  if (article.value) {
+    await apiArticle.deleteArticle(token.value, article.value.uuid);
+    commitAddNotification(store, {
+      content: '文章已永久删除',
+      color: 'success',
+    });
+    confirmDeleteDialog.value = false;
+    await router.push(`/article-columns/${article.value.article_column.uuid}`);
   }
 }
 </script>

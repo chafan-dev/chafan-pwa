@@ -38,38 +38,32 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref } from 'vue';
 import { api } from '@/api';
-import { Component, Prop } from 'vue-property-decorator';
-import UserSearch from '@/components/UserSearch.vue';
-import SiteBtn from '@/components/SiteBtn.vue';
-import AccountIcon from '@/components/icons/AccountIcon.vue';
-import SiteIcon from '@/components/icons/SiteIcon.vue';
-import ShieldCheckIcon from '@/components/icons/ShieldCheckIcon.vue';
 import { IInvitationLinkCreate, ISite } from '@/interfaces';
 import SiteSearch from '@/components/SiteSearch.vue';
-import { CVue } from '@/common';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { SiteSearch, UserSearch, AccountIcon, ShieldCheckIcon, SiteIcon, SiteBtn },
-})
-export default class NewInviteLinkBtn extends CVue {
-  @Prop() public readonly site: ISite | undefined;
+const props = defineProps<{
+  site?: ISite;
+}>();
 
-  private invitedSite: ISite | null = null;
-  private showDialog = false;
-  private intermediate = false;
-  private invitationLinkHref: string | null = null;
+const { token } = useAuth();
 
-  private async createInvitationLink() {
-    const payload: IInvitationLinkCreate = {};
-    if (this.site !== undefined) {
-      payload.invited_to_site_uuid = this.site.uuid;
-    } else if (this.invitedSite) {
-      payload.invited_to_site_uuid = this.invitedSite.uuid;
-    }
-    const invitationLink = (await api.createInvitationLink(this.token, payload)).data;
-    this.invitationLinkHref = `/invitation-links/${invitationLink.uuid}`;
+const invitedSite = ref<ISite | null>(null);
+const showDialog = ref(false);
+const intermediate = ref(false);
+const invitationLinkHref = ref<string | null>(null);
+
+async function createInvitationLink() {
+  const payload: IInvitationLinkCreate = {};
+  if (props.site !== undefined) {
+    payload.invited_to_site_uuid = props.site.uuid;
+  } else if (invitedSite.value) {
+    payload.invited_to_site_uuid = invitedSite.value.uuid;
   }
+  const invitationLink = (await api.createInvitationLink(token.value, payload)).data;
+  invitationLinkHref.value = `/invitation-links/${invitationLink.uuid}`;
 }
 </script>

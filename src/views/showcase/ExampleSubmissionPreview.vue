@@ -13,16 +13,10 @@
     </v-card-actions>
   </v-card>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref } from 'vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import * as mockData from '@/mock/data';
 
-@Component({
-  components: { SubmissionPreview },
-})
-export default class ExampleSubmissionPreview extends Vue {
-  private mockData = mockData;
-  private submissionPreviewDisabled = false;
-}
+const submissionPreviewDisabled = ref(false);
 </script>

@@ -49,76 +49,69 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from '@/router';
 import { apiTopic } from '@/api/topic';
 import { IQuestionPreview, ITopic } from '@/interfaces';
-import QuestionLink from '@/components/question/QuestionLink.vue';
 import TopicCard from '@/components/TopicCard.vue';
 import InfoIcon from '@/components/icons/InfoIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, isEqual } from '@/common';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import { readNarrowUI } from '@/store/main/getters';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { DynamicItemList, QuestionPreview, QuestionLink, TopicCard, InfoIcon },
-})
-export default class Topic extends CVue {
-  private topic: ITopic | null = null;
-  private questions: IQuestionPreview[] = [];
-  private loading = true;
-  private loadingProgress = 0;
+const store = useStore();
+const route = useRoute();
+const { token } = useAuth();
 
-  get id() {
-    return this.$route.params.id;
-  }
+const topic = ref<ITopic | null>(null);
+const questions = ref<IQuestionPreview[]>([]);
+const loading = ref(true);
+const loadingProgress = ref(0);
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
+const id = computed(() => route.params.id as string);
+const isNarrowFeedUI = computed(() => readNarrowUI(store));
 
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'topic');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.loadingProgress = 0;
-      this.questions = [];
-      this.load();
+async function load() {
+  await dispatchCaptureApiError(store, async () => {
+    const response = await apiTopic.getTopic(id.value);
+    loadingProgress.value = 33;
+    if (response) {
+      topic.value = response.data;
+      loadingProgress.value = 100;
+      loading.value = false;
     }
-  }
+  });
+}
 
-  public async mounted() {
-    await this.load();
+// Watch for route param changes (replaces beforeRouteUpdate)
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId && route.name === 'topic') {
+    loading.value = true;
+    loadingProgress.value = 0;
+    questions.value = [];
+    load();
   }
+});
 
-  private async load() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const response = await apiTopic.getTopic(this.id);
-      this.loadingProgress = 33;
-      if (response) {
-        this.topic = response.data;
-        this.loadingProgress = 100;
-        this.loading = false;
-      }
-    });
+onMounted(async () => {
+  await load();
+});
+
+async function loadQuestions(skip: number, limit: number) {
+  // TODO: implement pagination
+  if (skip > 0) {
+    return [];
   }
-
-  private async loadQuestions(skip: number, limit: number) {
-    // TODO: implement pagination
-    if (skip > 0) {
-      return [];
+  let items: IQuestionPreview[] | null = null;
+  await dispatchCaptureApiError(store, async () => {
+    if (topic.value !== null) {
+      items = (await apiTopic.getQuestionsOfTopic(token.value, topic.value.uuid)).data;
     }
-    let items: IQuestionPreview[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.topic !== null) {
-        items = (await apiTopic.getQuestionsOfTopic(this.token, this.topic.uuid)).data;
-      }
-    });
-    return items;
-  }
+  });
+  return items;
 }
 </script>

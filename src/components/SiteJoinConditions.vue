@@ -14,13 +14,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
 import { ISite } from '@/interfaces';
 
-@Component
-export default class SiteJoinConditions extends Vue {
-  @Prop() private readonly site!: ISite;
-  @Prop({ default: false }) private readonly showHint!: boolean;
-}
+withDefaults(
+  defineProps<{
+    site: ISite;
+    showHint?: boolean;
+  }>(),
+  {
+    showHint: false,
+  }
+);
 </script>

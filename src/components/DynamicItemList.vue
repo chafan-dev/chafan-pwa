@@ -18,64 +18,70 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
-import { CVue } from '@/common';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-import  { info }  from '@/logging'
+import { info } from '@/logging';
 
-@Component({
-  components: { DebugSpan, EmptyPlaceholder },
-})
-export default class DynamicItemList<T> extends CVue {
-  @Prop({ default: 20 }) public readonly pageLimit!: number;
-  @Prop() public readonly loadItems!: (skip: number, limit: number) => Promise<(T | null)[] | null>;
+const props = withDefaults(defineProps<{
+  pageLimit?: number;
+  loadItems: (skip: number, limit: number) => Promise<(any | null)[] | null>;
+}>(), {
+  pageLimit: 20,
+});
 
-  private items: T[] | null = null;
+const items = ref<any[] | null>(null);
+const currentPage = ref(0);
+const noMore = ref(false);
+const emptyItems = ref(false);
+const loading = ref(false);
 
-  private currentPage = 0;
-  private noMore = false;
-  private emptyItems = false;
-  private loading = false;
-
-  private async mounted() {
-    window.onscroll = () => {
-      this.tryLoadMore(false);
-    };
-    await this.tryLoadMore(true);
+async function tryLoadMore(ignoreScroll?: boolean) {
+  if (noMore.value) {
+    return;
   }
+  if (loading.value) {
+    info('tryLoadMore waiting for a current loading task');
+    return;
+  }
+  loading.value = true;
 
-  private async tryLoadMore(ignoreScroll: boolean) {
-    if (this.noMore) {
-      return;
+  info('tryLoadMore, currentPage = ' + currentPage.value.toString());
+  currentPage.value += 1;
+  const newItems = await props.loadItems(
+    (currentPage.value - 1) * props.pageLimit,
+    props.pageLimit
+  );
+  if (newItems) {
+    const newNotNullItems: any[] = newItems.filter((x) => x !== null) as any[];
+    if (!items.value) {
+      items.value = newNotNullItems;
+    } else {
+      items.value.push(...newNotNullItems);
     }
-    if (this.loading) {
-      info("tryLoadMore waiting for a current loading task");
-      return;
-    }
-    this.loading = true;
-
-    info("tryLoadMore, currentPage = " + this.currentPage.toString());
-    this.currentPage += 1;
-    const newItems = await this.loadItems((this.currentPage - 1) * this.pageLimit, this.pageLimit);
-    if (newItems) {
-      const newNotNullItems: T[] = newItems.filter((x) => x !== null) as T[];
-      if (!this.items) {
-        this.items = newNotNullItems;
-      } else {
-        this.items.push(...newNotNullItems);
-      }
-      info("tryLoadMore, get netItems " + newItems.length.toString());
-      if (newItems.length < this.pageLimit) {
-        this.noMore = true;
-        info("tryLoadMore got no new items. List in total " + this.items.length.toString());
-        if (!this.items) {
-          this.emptyItems = true;
-        }
+    info('tryLoadMore, get netItems ' + newItems.length.toString());
+    if (newItems.length < props.pageLimit) {
+      noMore.value = true;
+      info('tryLoadMore got no new items. List in total ' + (items.value?.length || 0).toString());
+      if (!items.value) {
+        emptyItems.value = true;
       }
     }
-    this.loading = false;
   }
+  loading.value = false;
 }
+
+function handleScroll() {
+  tryLoadMore(false);
+}
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll);
+  await tryLoadMore(true);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 </script>
