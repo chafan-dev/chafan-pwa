@@ -128,8 +128,10 @@
   </v-main>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { api } from '@/api';
 import { appName } from '@/env';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
@@ -141,74 +143,63 @@ import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-import { email } from 'vee-validate/dist/rules';
+import { email as emailRule } from 'vee-validate/dist/rules';
 
-// TODO: share a parent component with Login.vue
-@Component({
-  components: {
-    DebugSpan,
-    VerificationCodeBtn,
-    AccountIcon,
-    PasswordIcon,
-    HandleIcon,
-    VerifyCodeIcon,
-  },
-})
-export default class Signup extends Vue {
-  private email: string = '';
-  private password: string = '';
-  private handle: string = '';
-  private appName = appName;
-  private verificationCode: string = '';
-  private invitationToken: string = '';
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
 
-  private intermediate = false;
+const email = ref('');
+const password = ref('');
+const handle = ref('');
+const verificationCode = ref('');
+const invitationToken = ref('');
+const intermediate = ref(false);
 
-  private mounted() {
-    commitSetShowLoginPrompt(this.$store, false);
-    if (this.$route.query.invitation_link_uuid) {
-      this.invitationToken = this.$route.query.invitation_link_uuid.toString();
+onMounted(() => {
+  commitSetShowLoginPrompt(store, false);
+  if (route.query.invitation_link_uuid) {
+    invitationToken.value = route.query.invitation_link_uuid.toString();
+  }
+});
+
+async function sendVerificationCode() {
+  return dispatchCaptureApiError(store, async () => {
+    const response = await api.sendVerificationCode({ email: email.value });
+    if (response) {
+      const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
+      commitAddNotification(store, {
+        content: msg,
+        color: 'success',
+      });
+      return true;
     }
-  }
+    return false;
+  });
+}
 
-  private async sendVerificationCode() {
-    return dispatchCaptureApiError(this.$store, async () => {
-      const response = await api.sendVerificationCode({ email: this.email });
-      if (response) {
-        const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
-        commitAddNotification(this.$store, {
-          content: msg,
-          color: 'success',
-        });
-        return true;
-      }
-      return false;
-    });
-  }
+async function openAccount() {
+  await dispatchCaptureApiError(store, async () => {
+    intermediate.value = true;
+    const response = await api.openAccount(
+      email.value,
+      handle.value,
+      verificationCode.value,
+      password.value,
+      invitationToken.value
+    );
+    if (response) {
+      commitAddNotification(store, {
+        content: '账号创建成功，返回登陆界面',
+        color: 'success',
+      });
+      await router.push('/login');
+    }
+    intermediate.value = false;
+  });
+}
 
-  private async openAccount() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      const response = await api.openAccount(
-        this.email,
-        this.handle,
-        this.verificationCode,
-        this.password,
-        this.invitationToken
-      );
-      if (response) {
-        commitAddNotification(this.$store, {
-          content: '账号创建成功，返回登陆界面',
-          color: 'success',
-        });
-        await this.$router.push('/login');
-      }
-      this.intermediate = false;
-    });
-  }
-
-  isEmail(s: string) {
-    return email.validate(s);
-  }
+function isEmail(s: string) {
+  return emailRule.validate(s);
 }
 </script>

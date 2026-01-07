@@ -256,10 +256,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import { IUserFollows, IUserPreview, IUserPublic } from '@/interfaces';
 import { api } from '@/api';
-import { Component, Prop } from 'vue-property-decorator';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import { commitSetShowLoginPrompt } from '@/store/main/mutations';
@@ -268,112 +270,110 @@ import UserNameHeadline from '@/components/UserNameHeadline.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import { apiPeople } from '@/api/people';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { CVue } from '@/common';
 import Avatar from '@/components/Avatar.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import UserCard from '@/components/UserCard.vue';
+import { useAuth, useResponsive, useTheme } from '@/composables';
 
-@Component({
-  components: {
-    UserCard,
-    DynamicItemList,
-    Avatar,
-    CloseIcon,
-    UserGrid,
-    UserNameHeadline,
-    UserProfileDetails,
-  },
-})
-export default class UserProfileCard extends CVue {
-  @Prop() public readonly userPreview!: IUserPreview;
-  @Prop() public readonly userPublic: IUserPublic | undefined;
-  @Prop() private readonly siteKarmas: number | undefined;
-  private loading = true;
-  private follows: IUserFollows | null = null;
-  private followIntermediate = false;
-  private cancelFollowIntermediate = false;
-  private privateMessageIntermediate = false;
-  private avatarURL: string | null = null;
-  private showFollowersDialog = false;
-  private showFollowedDialog = false;
+const props = defineProps<{
+  userPreview: IUserPreview;
+  userPublic?: IUserPublic;
+  siteKarmas?: number;
+}>();
 
-  private shortIntro(intro: string) {
-    if (!intro) {
-      return intro;
-    }
-    if (intro.length > 25) {
-      return intro.substring(0, 25) + '...';
-    }
+const store = useStore();
+const router = useRouter();
+const { token, loggedIn } = useAuth();
+const { isDesktop } = useResponsive();
+const { theme } = useTheme();
+
+const currentUserId = useAuth().userProfile.value?.uuid;
+
+const loading = ref(true);
+const follows = ref<IUserFollows | null>(null);
+const followIntermediate = ref(false);
+const cancelFollowIntermediate = ref(false);
+const privateMessageIntermediate = ref(false);
+const avatarURL = ref<string | null>(null);
+const showFollowersDialog = ref(false);
+const showFollowedDialog = ref(false);
+
+function shortIntro(intro: string) {
+  if (!intro) {
     return intro;
   }
-
-  private async mounted() {
-    if (this.userPublic && this.userPublic.gif_avatar_url) {
-      this.avatarURL = this.userPublic.gif_avatar_url;
-    } else if (this.userPreview.avatar_url) {
-      this.avatarURL = this.userPreview.avatar_url;
-    } else {
-      this.avatarURL = '/img/default-avatar.png';
-    }
-    if (this.userPublic?.follows) {
-      this.follows = this.userPublic.follows;
-    } else {
-      await dispatchCaptureApiError(this.$store, async () => {
-        this.follows = (await apiMe.getUserFollows(this.token, this.userPreview.uuid)).data;
-      });
-    }
-    this.loading = false;
+  if (intro.length > 25) {
+    return intro.substring(0, 25) + '...';
   }
+  return intro;
+}
 
-  private async follow() {
-    if (!this.currentUserId) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
-    }
-    this.followIntermediate = true;
-    this.follows = (await apiMe.followUser(this.token, this.userPreview.uuid)).data;
-    this.followIntermediate = false;
+onMounted(async () => {
+  if (props.userPublic && props.userPublic.gif_avatar_url) {
+    avatarURL.value = props.userPublic.gif_avatar_url;
+  } else if (props.userPreview.avatar_url) {
+    avatarURL.value = props.userPreview.avatar_url;
+  } else {
+    avatarURL.value = '/img/default-avatar.png';
   }
-
-  private async cancelFollow() {
-    this.cancelFollowIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.follows = (await apiMe.cancelFollowUser(this.token, this.userPreview.uuid)).data;
-      this.cancelFollowIntermediate = false;
+  if (props.userPublic?.follows) {
+    follows.value = props.userPublic.follows;
+  } else {
+    await dispatchCaptureApiError(store, async () => {
+      follows.value = (await apiMe.getUserFollows(token.value, props.userPreview.uuid)).data;
     });
   }
+  loading.value = false;
+});
 
-  private async privateMessage() {
-    if (!this.currentUserId) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
-    }
-    this.privateMessageIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r0 = await api.createChannel(this.token, {
-        private_with_user_uuid: this.userPreview.uuid,
-      });
-      const channelId = r0.data.id;
-      await this.$router.push(`/channels/${channelId}`);
+async function follow() {
+  if (!currentUserId) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  followIntermediate.value = true;
+  follows.value = (await apiMe.followUser(token.value, props.userPreview.uuid)).data;
+  followIntermediate.value = false;
+}
+
+async function cancelFollow() {
+  cancelFollowIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    follows.value = (await apiMe.cancelFollowUser(token.value, props.userPreview.uuid)).data;
+    cancelFollowIntermediate.value = false;
+  });
+}
+
+async function privateMessage() {
+  if (!currentUserId) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  privateMessageIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    const r0 = await api.createChannel(token.value, {
+      private_with_user_uuid: props.userPreview.uuid,
     });
-  }
+    const channelId = r0.data.id;
+    await router.push(`/channels/${channelId}`);
+  });
+}
 
-  private async showFollowers() {
-    this.showFollowersDialog = true;
-  }
+async function showFollowers() {
+  showFollowersDialog.value = true;
+}
 
-  private async showFollowed() {
-    this.showFollowedDialog = true;
-  }
+async function showFollowed() {
+  showFollowedDialog.value = true;
+}
 
-  private async loadFollowed(skip: number, limit: number) {
-    console.log('loadFollowed...');
-    return (await apiPeople.getUserFollowed(this.token, this.userPreview.uuid, skip, limit)).data;
-  }
+async function loadFollowed(skip: number, limit: number) {
+  console.log('loadFollowed...');
+  return (await apiPeople.getUserFollowed(token.value, props.userPreview.uuid, skip, limit)).data;
+}
 
-  private async loadFollowers(skip: number, limit: number) {
-    console.log('loadFollowers...');
-    return (await apiPeople.getUserFollowers(this.token, this.userPreview.uuid, skip, limit)).data;
-  }
+async function loadFollowers(skip: number, limit: number) {
+  console.log('loadFollowers...');
+  return (await apiPeople.getUserFollowers(token.value, props.userPreview.uuid, skip, limit)).data;
 }
 </script>

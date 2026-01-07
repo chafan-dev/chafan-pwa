@@ -66,61 +66,50 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import HomeSideCard from '@/components/HomeSideCard.vue';
-import ExploreIcon from '@/components/icons/ExploreIcon.vue';
 import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';
 import FeedIcon from '@/components/icons/FeedIcon.vue';
 import { readNarrowUI } from '@/store/main/getters';
-import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
-import { CVue } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import SharingIcon from '@/components/icons/SharingIcon.vue';
 import UserSubmissionsRankedFeed from '@/components/home/UserSubmissionsRankedFeed.vue';
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
+import { useAuth, useTheme, useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    RefreshIcon,
-    UserSubmissionsRankedFeed,
-    SharingIcon,
-    UserFeed,
-    UserLogoutWelcome,
-    UserAgreement,
-    CreateQuestionForm,
-    UIStyleControllers,
-    HomeSideCard,
-    HomeFabIcon,
-    ExploreIcon,
-    NewContentActionBar,
-    FeedIcon,
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { userProfile } = useAuth();
+const { theme } = useTheme();
+const { isDesktop } = useResponsive();
+
+const userFeed = ref<InstanceType<typeof UserFeed> | null>(null);
+
+const currentTabItem = computed({
+  get() {
+    return route.query.tab ? route.query.tab : 'feed';
   },
-})
-export default class Home extends CVue {
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'feed';
-  }
-
-  set currentTabItem(tab) {
+  set(tab) {
     if (tab !== 'feed') {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
+      router.replace({ query: { ...route.query, tab: tab as string } });
     } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+      router.replace({ query: { ...route.query, tab: undefined } });
     }
-  }
+  },
+});
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
+const isNarrowFeedUI = computed(() => readNarrowUI(store));
 
-  private refreshFeed() {
-    // UserFeed uses script setup with defineExpose - cast to any for method access
-    (this.$refs.userFeed as any).loadNewActivities();
-  }
+function refreshFeed() {
+  // UserFeed uses script setup with defineExpose
+  (userFeed.value as any)?.loadNewActivities();
 }
 </script>

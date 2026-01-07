@@ -27,31 +27,33 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { CVue } from '@/common';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { IFeedback } from '@/interfaces';
 import { api } from '@/api';
+import { useAuth } from '@/composables';
 
-@Component
-export default class Feedback extends CVue {
-  @Prop() readonly feedback!: IFeedback;
-  private showScreenshot: boolean = false;
-  private screenshotUrl: string = '';
+const props = defineProps<{
+  feedback: IFeedback;
+}>();
 
-  readonly statusCN = {
-    sent: '已发送',
-    processing: '正在处理',
-    closed: '已解决',
-    wontfix: '无法解决',
-  };
+const { token } = useAuth();
 
-  async mounted() {
-    if (this.feedback.has_screenshot) {
-      this.screenshotUrl =
-        'data:image/gif;base64,' +
-        (await api.getFeedbackScreenshotBase64(this.token, this.feedback.id));
-    }
+const showScreenshot = ref(false);
+const screenshotUrl = ref('');
+
+const statusCN: Record<string, string> = {
+  sent: '已发送',
+  processing: '正在处理',
+  closed: '已解决',
+  wontfix: '无法解决',
+};
+
+onMounted(async () => {
+  if (props.feedback.has_screenshot) {
+    screenshotUrl.value =
+      'data:image/gif;base64,' +
+      (await api.getFeedbackScreenshotBase64(token.value, props.feedback.id));
   }
-}
+});
 </script>

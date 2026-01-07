@@ -4,12 +4,6 @@
   </v-sheet>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
 import LoginCard from '@/components/login/LoginCard.vue';
-
-@Component({
-  components: { LoginCard },
-})
-export default class Login extends Vue {}
 </script>

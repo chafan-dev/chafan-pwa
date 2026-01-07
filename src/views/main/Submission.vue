@@ -458,11 +458,11 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from 'vue-router/composables';
 
-import Answer from '@/components/Answer.vue';
-import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import UserLink from '@/components/UserLink.vue';
@@ -470,10 +470,8 @@ import UserLink from '@/components/UserLink.vue';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
 import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
 import HistoryIcon from '@/components/icons/HistoryIcon.vue';
-import InfoIcon from '@/components/icons/InfoIcon.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
-import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
@@ -495,405 +493,377 @@ import { apiSubmission } from '@/api/submission';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { apiMe } from '@/api/me';
-import MoreIcon from '@/components/icons/MoreIcon.vue';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, doNothing, isEqual, updateHead } from '@/common';
+import { doNothing, isEqual, updateHead } from '@/common';
 import { apiSearch } from '@/api/search';
 import RotationList from '@/components/base/RotationList.vue';
 import ShareCardButton from '@/components/ShareCardButton.vue';
-import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
-import UpvotedBtn from '@/components/widgets/UpvotedBtn.vue';
 import Upvote from '@/components/Upvote.vue';
 import DotsIcon from '@/components/icons/DotsIcon.vue';
-import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import DiffView from '@/components/widgets/DiffView.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
+import { useAuth, useResponsive, useDayjs, useErrorHandling } from '@/composables';
 
-@Component({
-  components: {
-    TopicChip,
-    DiffView,
-    DeleteIcon,
-    DotsIcon,
-    Upvote,
-    UpvotedBtn,
-    UpvoteBtn,
-    ShareCardButton,
-    RotationList,
-    MoreIcon,
-    Answer,
-    SubmissionPreview,
-    CommentBlock,
-    UserLink,
-    EditIcon,
-    UpvoteIcon,
-    LinkIcon,
-    SiteBtn,
-    BookmarkedIcon,
-    ToBookmarkIcon,
-    HistoryIcon,
-    InfoIcon,
-    CommentsIcon,
-    Viewer,
-    SimpleEditor,
-  },
-})
-export default class Submission extends CVue {
-  private showHelp: boolean = false;
-  private submission: ISubmission | null = null;
-  private newSubmissionTitle: string = '';
-  private newSubmissionUrl: string | undefined = undefined;
-  private showSubmissionEditor: boolean = false;
-  private newSubmissionTopicNames: string[] = [];
-  private hintTopicNames: string[] = []; // TODO
-  private commentWritable = false;
-  private editable = false;
-  private showConfirmHideSubmissionDialog = false;
-  private loadingProgress = 0;
-  private loading = true;
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+const dayjs = useDayjs();
+const { recursiveCommentsCount } = useErrorHandling();
 
-  private commitSubmissionEditIntermediate = false;
-  private cancelSubscriptionIntermediate = false;
-  private subscribeIntermediate = false;
-  private showCancelUpvoteDialog: boolean = false;
-  private upvoteIntermediate: boolean = false;
-  private cancelUpvoteIntermediate = false;
-  private upvotes: ISubmissionUpvotes | null = null;
-  private archives: ISubmissionArchive[] = [];
-  private historyDialog = false;
-  private comments: IComment[] = [];
-  private commentSubmitIntermediate = false;
-  private submissionSubscription: IUserSubmissionSubscription | null = null;
-  private relatedSubmissions: ISubmission[] | null = null;
-  private submissionSuggestions: ISubmissionSuggestion[] = [];
-  private newSuggestionCommment: string | null = null;
-  private previewedSuggestion: ISubmissionSuggestion | null = null;
-  private showSuggestionPreviewDialog = false;
+function fromNow(date: string) {
+  return dayjs(date).fromNow();
+}
 
-  get suggestionEditable() {
-    return !this.editable && this.userProfile;
-  }
+const showHelp = ref(false);
+const submission = ref<ISubmission | null>(null);
+const newSubmissionTitle = ref('');
+const newSubmissionUrl = ref<string | undefined>(undefined);
+const showSubmissionEditor = ref(false);
+const newSubmissionTopicNames = ref<string[]>([]);
+const hintTopicNames = ref<string[]>([]); // TODO
+const commentWritable = ref(false);
+const editable = ref(false);
+const showConfirmHideSubmissionDialog = ref(false);
+const loadingProgress = ref(0);
+const loading = ref(true);
 
-  get id() {
-    return this.$route.params.id;
-  }
+const commitSubmissionEditIntermediate = ref(false);
+const cancelSubscriptionIntermediate = ref(false);
+const subscribeIntermediate = ref(false);
+const showCancelUpvoteDialog = ref(false);
+const upvoteIntermediate = ref(false);
+const cancelUpvoteIntermediate = ref(false);
+const upvotes = ref<ISubmissionUpvotes | null>(null);
+const archives = ref<ISubmissionArchive[]>([]);
+const historyDialog = ref(false);
+const comments = ref<IComment[]>([]);
+const commentSubmitIntermediate = ref(false);
+const submissionSubscription = ref<IUserSubmissionSubscription | null>(null);
+const relatedSubmissions = ref<ISubmission[] | null>(null);
+const submissionSuggestions = ref<ISubmissionSuggestion[]>([]);
+const newSuggestionCommment = ref<string | null>(null);
+const previewedSuggestion = ref<ISubmissionSuggestion | null>(null);
+const showSuggestionPreviewDialog = ref(false);
+const descEditor = ref<any>(null);
 
-  get submissionSuggestionUUID() {
-    return this.$route.params.submission_suggestion_id;
-  }
+const suggestionEditable = computed(() => !editable.value && userProfile.value);
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
+const id = computed(() => route.params.id);
 
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'submission');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.loadingProgress = 0;
-      this.showHelp = false;
-      this.showSubmissionEditor = false;
-      this.commentWritable = false;
-      this.editable = false;
-      this.upvotes = null;
-      this.archives = [];
-      this.comments = [];
-      this.relatedSubmissions = [];
-      this.submissionSuggestions = [];
-      this.load();
+const submissionSuggestionUUID = computed(() => route.params.submission_suggestion_id);
+
+const isNarrowFeedUI = computed(() => readNarrowUI(store));
+
+// Watch for route changes (replacing beforeRouteUpdate)
+watch(
+  () => route.params,
+  (newParams, oldParams) => {
+    if (route.name === 'submission' && !isEqual(newParams, oldParams)) {
+      loading.value = true;
+      loadingProgress.value = 0;
+      showHelp.value = false;
+      showSubmissionEditor.value = false;
+      commentWritable.value = false;
+      editable.value = false;
+      upvotes.value = null;
+      archives.value = [];
+      comments.value = [];
+      relatedSubmissions.value = [];
+      submissionSuggestions.value = [];
+      load();
     }
   }
+);
 
-  async mounted() {
-    try {
-      if (localStorage.getItem('new-submission')) {
-        commitAddNotification(this.$store, {
-          content: '点击「更多」编辑细节',
-          color: 'info',
-        });
-        localStorage.removeItem('new-submission');
-      }
-    } catch (e) {}
-    await this.load();
-  }
-
-  private async load() {
-    try {
-      const response = await apiSubmission.getSubmission(this.token, this.id);
-      this.submission = response.data;
-      updateHead(this.$route.path, this.submission!.title, this.submission?.desc?.rendered_text);
-      if (this.token) {
-        this.submissionSubscription = (
-          await apiMe.getSubmissionSubscription(this.token, this.submission!.uuid)
-        ).data;
-        this.submissionSuggestions = (
-          await apiSubmission.getSuggestions(this.token, this.submission!.uuid)
-        ).data;
-      }
-    } catch (err) {
-      commitAddNotification(this.$store, {
-        content: '分享不存在，返回主页',
-        color: 'error',
-      });
-      await this.$router.push('/');
-    }
-
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.submission) {
-        this.comments = this.submission.comments;
-
-        if (this.token) {
-          apiSubmission.bumpViewsCounter(this.token, this.submission.uuid).then(doNothing);
-        }
-        this.upvotes = (
-          await apiSubmission.getSubmissionUpvotes(this.token, this.submission.uuid)
-        ).data;
-        this.loadingProgress = 33;
-
-        this.newSubmissionTitle = this.submission.title;
-        this.newSubmissionUrl = this.submission.url;
-        this.newSubmissionTopicNames = this.submission.topics.map((topic) => topic.name);
-        if (this.userProfile) {
-          if (this.userProfile.uuid === this.submission.author.uuid) {
-            this.editable = true;
-          }
-          await dispatchCaptureApiError(this.$store, async () => {
-            const submissionSite = this.submission!.site;
-
-            if (this.userProfile) {
-              const userSiteProfile = (
-                await api.getUserSiteProfile(this.token, submissionSite.uuid, this.userProfile.uuid)
-              ).data;
-              if (userSiteProfile !== null || submissionSite.public_writable_comment) {
-                this.commentWritable = true;
-              }
-            }
-          });
-        }
-        this.loadingProgress = 100;
-        this.loading = false;
-
-        if (this.submission.keywords && this.userProfile) {
-          this.relatedSubmissions = (
-            await apiSearch.searchSubmissions(
-              this.$store.state.main.token,
-              this.submission.keywords.join(' ')
-            )
-          ).data;
-          const i = this.relatedSubmissions?.findIndex((submission) => {
-            return submission.uuid === this.submission!.uuid;
-          });
-          if (i >= 0) {
-            this.relatedSubmissions.splice(i, 1);
-          }
-        }
-      }
-    });
-  }
-
-  private async submitNewSubmissionCommentBody({ body, body_text, editor, mentioned }) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.commentSubmitIntermediate = true;
-      if (this.submission) {
-        const response = await apiComment.postComment(this.token, {
-          site_uuid: this.submission?.site.uuid,
-          submission_uuid: this.id,
-          content: {
-            source: body,
-            rendered_text: body_text,
-            editor,
-          },
-          mentioned,
-        });
-        const comment = response.data;
-        this.comments.push(comment);
-      }
-      this.commentSubmitIntermediate = false;
-    });
-  }
-
-  private async commitSubmissionEdit() {
-    this.commitSubmissionEditIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      const descEditor = this.$refs.descEditor as any;
-      if ((descEditor.getContent() || this.newSubmissionTitle) && this.submission) {
-        const responses = await Promise.all(
-          this.newSubmissionTopicNames.map((name) => apiTopic.createTopic(this.token, { name }))
-        );
-        const topicsUUIDs = responses.map((r) => r.data.uuid);
-        const desc: IRichText = {
-          source: descEditor.getContent() || '',
-          rendered_text: descEditor.getTextContent() || undefined,
-          editor: descEditor.editor,
-        };
-        const payload: any = {
-          title: this.newSubmissionTitle,
-          desc: desc,
-          topic_uuids: topicsUUIDs,
-        };
-        if (this.editable) {
-          this.submission = (
-            await apiSubmission.updateSubmission(this.token, this.submission.uuid, payload)
-          ).data;
-        } else if (this.suggestionEditable) {
-          payload.submission_uuid = this.submission.uuid;
-          if (this.newSuggestionCommment) {
-            payload.comment = this.newSuggestionCommment;
-          }
-          const submissionSuggestion = (await apiSubmission.createSuggestion(this.token, payload))
-            .data;
-          this.submissionSuggestions.splice(0, 0, submissionSuggestion);
-        }
-      }
-      this.showSubmissionEditor = false;
-      this.commitSubmissionEditIntermediate = false;
-    });
-  }
-
-  private async upvote() {
-    this.upvoteIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.submission) {
-        this.upvotes = (
-          await apiSubmission.upvoteSubmission(this.token, this.submission.uuid)
-        ).data;
-        this.upvoteIntermediate = false;
-      }
-    });
-  }
-
-  private async cancelUpvote() {
-    this.cancelUpvoteIntermediate = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.submission) {
-        this.upvotes = (
-          await apiSubmission.cancelUpvoteSubmission(this.token, this.submission.uuid)
-        ).data;
-        this.cancelUpvoteIntermediate = false;
-        this.showCancelUpvoteDialog = false;
-      }
-    });
-  }
-
-  private async showHistoryDialog() {
-    if (this.submission) {
-      this.archives = (
-        await apiSubmission.getSubmissionArchives(this.token, this.submission.uuid)
-      ).data;
-      this.archives.unshift({
-        id: 0,
-        title: this.submission.title,
-        desc: this.submission.desc,
-        created_at: this.submission.updated_at,
-      });
-      if (this.archives.length > 0) {
-        this.historyDialog = true;
-      } else {
-        commitAddNotification(this.$store, {
-          content: '尚无历史存档',
-          color: 'info',
-        });
-      }
-    }
-  }
-
-  private async confirmHideSubmission() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      await apiSubmission.hideSubmission(this.$store.state.main.token, this.submission!.uuid);
-      commitAddNotification(this.$store, {
-        content: '已隐藏',
+onMounted(async () => {
+  try {
+    if (localStorage.getItem('new-submission')) {
+      commitAddNotification(store, {
+        content: '点击「更多」编辑细节',
         color: 'info',
       });
-      await this.$router.push(`/sites/${this.submission!.site.subdomain}`);
-    });
-  }
-
-  private async cancelSubmissionUpdate() {
-    this.showSubmissionEditor = false;
-  }
-
-  private async cancelSubscription() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.submission) {
-        this.cancelSubscriptionIntermediate = true;
-        const r = await apiMe.unsubscribeSubmission(this.token, this.submission.uuid);
-        this.submissionSubscription = r.data;
-        this.cancelSubscriptionIntermediate = false;
-      }
-    });
-  }
-
-  private async subscribe() {
-    if (!this.userProfile) {
-      commitSetShowLoginPrompt(this.$store, true);
-      return;
+      localStorage.removeItem('new-submission');
     }
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.submission) {
-        this.subscribeIntermediate = true;
-        const r = await apiMe.subscribeSubmission(this.token, this.submission.uuid);
-        this.submissionSubscription = r.data;
-        this.subscribeIntermediate = false;
-      }
-    });
-  }
+  } catch (e) {}
+  await load();
+});
 
-  private async acceptSuggestion(suggestion: ISubmissionSuggestion) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
-        status: 'accepted',
-      });
-      this.$router.go(0);
-    });
-  }
-
-  private async rejectSuggestion(suggestion: ISubmissionSuggestion) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r = await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
-        status: 'rejected',
-      });
-      suggestion.status = r.data.status;
-      suggestion.rejected_at = r.data.rejected_at;
-    });
-  }
-
-  private async retractSuggestion(suggestion: ISubmissionSuggestion) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r = await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
-        status: 'retracted',
-      });
-      suggestion.status = r.data.status;
-      suggestion.retracted_at = r.data.retracted_at;
-    });
-  }
-
-  private async revertRetractSuggestion(suggestion: ISubmissionSuggestion) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const r = await apiSubmission.updateSubmissionSuggestion(this.token, suggestion.uuid, {
-        status: 'pending',
-      });
-      suggestion.status = r.data.status;
-    });
-  }
-
-  topicNames(topics: ITopic[]) {
-    return topics
-      .map((topic) => topic.name)
-      .sort()
-      .join(', ');
-  }
-
-  getDiffBase(suggestion: ISubmissionSuggestion) {
-    if (suggestion.status === 'accepted' && suggestion.accepted_diff_base) {
-      return suggestion.accepted_diff_base;
+async function load() {
+  try {
+    const response = await apiSubmission.getSubmission(token.value, id.value);
+    submission.value = response.data;
+    updateHead(route.path, submission.value!.title, submission.value?.desc?.rendered_text);
+    if (token.value) {
+      submissionSubscription.value = (
+        await apiMe.getSubmissionSubscription(token.value, submission.value!.uuid)
+      ).data;
+      submissionSuggestions.value = (
+        await apiSubmission.getSuggestions(token.value, submission.value!.uuid)
+      ).data;
     }
-    return this.submission;
+  } catch (err) {
+    commitAddNotification(store, {
+      content: '分享不存在，返回主页',
+      color: 'error',
+    });
+    await router.push('/');
   }
 
-  private previewSuggestion(suggestion: ISubmissionSuggestion) {
-    this.previewedSuggestion = suggestion;
-    this.showSuggestionPreviewDialog = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (submission.value) {
+      comments.value = submission.value.comments;
+
+      if (token.value) {
+        apiSubmission.bumpViewsCounter(token.value, submission.value.uuid).then(doNothing);
+      }
+      upvotes.value = (
+        await apiSubmission.getSubmissionUpvotes(token.value, submission.value.uuid)
+      ).data;
+      loadingProgress.value = 33;
+
+      newSubmissionTitle.value = submission.value.title;
+      newSubmissionUrl.value = submission.value.url;
+      newSubmissionTopicNames.value = submission.value.topics.map((topic) => topic.name);
+      if (userProfile.value) {
+        if (userProfile.value.uuid === submission.value.author.uuid) {
+          editable.value = true;
+        }
+        await dispatchCaptureApiError(store, async () => {
+          const submissionSite = submission.value!.site;
+
+          if (userProfile.value) {
+            const userSiteProfile = (
+              await api.getUserSiteProfile(token.value, submissionSite.uuid, userProfile.value.uuid)
+            ).data;
+            if (userSiteProfile !== null || submissionSite.public_writable_comment) {
+              commentWritable.value = true;
+            }
+          }
+        });
+      }
+      loadingProgress.value = 100;
+      loading.value = false;
+
+      if (submission.value.keywords && userProfile.value) {
+        relatedSubmissions.value = (
+          await apiSearch.searchSubmissions(
+            store.state.main.token,
+            submission.value.keywords.join(' ')
+          )
+        ).data;
+        const i = relatedSubmissions.value?.findIndex((s) => {
+          return s.uuid === submission.value!.uuid;
+        });
+        if (i >= 0) {
+          relatedSubmissions.value.splice(i, 1);
+        }
+      }
+    }
+  });
+}
+
+async function submitNewSubmissionCommentBody({ body, body_text, editor, mentioned }: any) {
+  await dispatchCaptureApiError(store, async () => {
+    commentSubmitIntermediate.value = true;
+    if (submission.value) {
+      const response = await apiComment.postComment(token.value, {
+        site_uuid: submission.value?.site.uuid,
+        submission_uuid: id.value,
+        content: {
+          source: body,
+          rendered_text: body_text,
+          editor,
+        },
+        mentioned,
+      });
+      const comment = response.data;
+      comments.value.push(comment);
+    }
+    commentSubmitIntermediate.value = false;
+  });
+}
+
+async function commitSubmissionEdit() {
+  commitSubmissionEditIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    const descEditorRef = descEditor.value as any;
+    if ((descEditorRef.getContent() || newSubmissionTitle.value) && submission.value) {
+      const responses = await Promise.all(
+        newSubmissionTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
+      );
+      const topicsUUIDs = responses.map((r) => r.data.uuid);
+      const desc: IRichText = {
+        source: descEditorRef.getContent() || '',
+        rendered_text: descEditorRef.getTextContent() || undefined,
+        editor: descEditorRef.editor,
+      };
+      const payload: any = {
+        title: newSubmissionTitle.value,
+        desc: desc,
+        topic_uuids: topicsUUIDs,
+      };
+      if (editable.value) {
+        submission.value = (
+          await apiSubmission.updateSubmission(token.value, submission.value.uuid, payload)
+        ).data;
+      } else if (suggestionEditable.value) {
+        payload.submission_uuid = submission.value.uuid;
+        if (newSuggestionCommment.value) {
+          payload.comment = newSuggestionCommment.value;
+        }
+        const submissionSuggestion = (await apiSubmission.createSuggestion(token.value, payload))
+          .data;
+        submissionSuggestions.value.splice(0, 0, submissionSuggestion);
+      }
+    }
+    showSubmissionEditor.value = false;
+    commitSubmissionEditIntermediate.value = false;
+  });
+}
+
+async function upvote() {
+  upvoteIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (submission.value) {
+      upvotes.value = (
+        await apiSubmission.upvoteSubmission(token.value, submission.value.uuid)
+      ).data;
+      upvoteIntermediate.value = false;
+    }
+  });
+}
+
+async function cancelUpvote() {
+  cancelUpvoteIntermediate.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (submission.value) {
+      upvotes.value = (
+        await apiSubmission.cancelUpvoteSubmission(token.value, submission.value.uuid)
+      ).data;
+      cancelUpvoteIntermediate.value = false;
+      showCancelUpvoteDialog.value = false;
+    }
+  });
+}
+
+async function showHistoryDialog() {
+  if (submission.value) {
+    archives.value = (
+      await apiSubmission.getSubmissionArchives(token.value, submission.value.uuid)
+    ).data;
+    archives.value.unshift({
+      id: 0,
+      title: submission.value.title,
+      desc: submission.value.desc,
+      created_at: submission.value.updated_at,
+    });
+    if (archives.value.length > 0) {
+      historyDialog.value = true;
+    } else {
+      commitAddNotification(store, {
+        content: '尚无历史存档',
+        color: 'info',
+      });
+    }
   }
+}
+
+async function confirmHideSubmission() {
+  await dispatchCaptureApiError(store, async () => {
+    await apiSubmission.hideSubmission(store.state.main.token, submission.value!.uuid);
+    commitAddNotification(store, {
+      content: '已隐藏',
+      color: 'info',
+    });
+    await router.push(`/sites/${submission.value!.site.subdomain}`);
+  });
+}
+
+async function cancelSubmissionUpdate() {
+  showSubmissionEditor.value = false;
+}
+
+async function cancelSubscription() {
+  await dispatchCaptureApiError(store, async () => {
+    if (submission.value) {
+      cancelSubscriptionIntermediate.value = true;
+      const r = await apiMe.unsubscribeSubmission(token.value, submission.value.uuid);
+      submissionSubscription.value = r.data;
+      cancelSubscriptionIntermediate.value = false;
+    }
+  });
+}
+
+async function subscribe() {
+  if (!userProfile.value) {
+    commitSetShowLoginPrompt(store, true);
+    return;
+  }
+  await dispatchCaptureApiError(store, async () => {
+    if (submission.value) {
+      subscribeIntermediate.value = true;
+      const r = await apiMe.subscribeSubmission(token.value, submission.value.uuid);
+      submissionSubscription.value = r.data;
+      subscribeIntermediate.value = false;
+    }
+  });
+}
+
+async function acceptSuggestion(suggestion: ISubmissionSuggestion) {
+  await dispatchCaptureApiError(store, async () => {
+    await apiSubmission.updateSubmissionSuggestion(token.value, suggestion.uuid, {
+      status: 'accepted',
+    });
+    router.go(0);
+  });
+}
+
+async function rejectSuggestion(suggestion: ISubmissionSuggestion) {
+  await dispatchCaptureApiError(store, async () => {
+    const r = await apiSubmission.updateSubmissionSuggestion(token.value, suggestion.uuid, {
+      status: 'rejected',
+    });
+    suggestion.status = r.data.status;
+    suggestion.rejected_at = r.data.rejected_at;
+  });
+}
+
+async function retractSuggestion(suggestion: ISubmissionSuggestion) {
+  await dispatchCaptureApiError(store, async () => {
+    const r = await apiSubmission.updateSubmissionSuggestion(token.value, suggestion.uuid, {
+      status: 'retracted',
+    });
+    suggestion.status = r.data.status;
+    suggestion.retracted_at = r.data.retracted_at;
+  });
+}
+
+async function revertRetractSuggestion(suggestion: ISubmissionSuggestion) {
+  await dispatchCaptureApiError(store, async () => {
+    const r = await apiSubmission.updateSubmissionSuggestion(token.value, suggestion.uuid, {
+      status: 'pending',
+    });
+    suggestion.status = r.data.status;
+  });
+}
+
+function topicNames(topics: ITopic[]) {
+  return topics
+    .map((topic) => topic.name)
+    .sort()
+    .join(', ');
+}
+
+function getDiffBase(suggestion: ISubmissionSuggestion) {
+  if (suggestion.status === 'accepted' && suggestion.accepted_diff_base) {
+    return suggestion.accepted_diff_base;
+  }
+  return submission.value;
+}
+
+function previewSuggestion(suggestion: ISubmissionSuggestion) {
+  previewedSuggestion.value = suggestion;
+  showSuggestionPreviewDialog.value = true;
 }
 </script>

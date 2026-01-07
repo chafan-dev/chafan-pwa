@@ -59,83 +59,77 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import { ISiteCreate, ITopic } from '@/interfaces';
 import { api } from '@/api';
 import { dispatchCaptureApiErrorWithErrorHandler } from '@/store/main/actions';
-import UserSearch from '@/components/UserSearch.vue';
 import { AxiosError } from 'axios';
 import { apiSite } from '@/api/site';
-import { CVue } from '@/common';
+import { useAuth, useErrorHandling } from '@/composables';
 
-@Component({
-  components: { UserSearch },
-})
-export default class CreateSite extends CVue {
-  private siteCreate: ISiteCreate = {
-    name: '',
-    subdomain: '',
-    permission_type: 'public',
-  };
+const store = useStore();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { commitErrMsg } = useErrorHandling();
 
-  private readonly permissionTypeItems = [
-    {
-      text: '公开',
-      value: 'public',
+const siteCreate = reactive<ISiteCreate>({
+  name: '',
+  subdomain: '',
+  permission_type: 'public',
+});
+
+const permissionTypeItems = [
+  { text: '公开', value: 'public' },
+  { text: '私密', value: 'private' },
+];
+
+const intermediate = ref(false);
+const categoryTopics = ref<ITopic[] | null>(null);
+
+onMounted(async () => {
+  categoryTopics.value = (await api.getCategoryTopics()).data;
+});
+
+function resetAll(reset: (() => void) | undefined) {
+  siteCreate.name = '';
+  siteCreate.subdomain = '';
+  siteCreate.permission_type = 'public';
+  if (reset) {
+    reset();
+  }
+}
+
+function cancel() {
+  router.back();
+}
+
+const canCreateSite = computed(() => {
+  if (siteCreate.permission_type === 'public') {
+    return userProfile.value?.can_create_public_site;
+  } else if (siteCreate.permission_type === 'private') {
+    return userProfile.value?.can_create_private_site;
+  }
+  return false;
+});
+
+async function submit() {
+  intermediate.value = true;
+  await dispatchCaptureApiErrorWithErrorHandler(store, {
+    action: async () => {
+      const r = (await apiSite.createSite(token.value, siteCreate)).data;
+      if (r.created_site) {
+        await router.push(`/sites/${r.created_site.subdomain}`);
+      } else if (r.application_channel) {
+        await router.push(`/channels/${r.application_channel.id}`);
+      }
     },
-    {
-      text: '私密',
-      value: 'private',
+    errorFilter: (err: AxiosError) => {
+      return commitErrMsg(err) !== null;
     },
-  ];
-  private intermediate = false;
-  private categoryTopics: ITopic[] | null = null;
-
-  private async mounted() {
-    this.categoryTopics = (await api.getCategoryTopics()).data;
-  }
-
-  private resetAll(reset) {
-    this.siteCreate = {
-      name: '',
-      subdomain: '',
-      permission_type: 'public',
-    };
-    if (reset) {
-      reset();
-    }
-  }
-
-  private cancel() {
-    this.$router.back();
-  }
-
-  get canCreateSite() {
-    if (this.siteCreate.permission_type === 'public') {
-      return this.userProfile?.can_create_public_site;
-    } else if (this.siteCreate.permission_type === 'private') {
-      return this.userProfile?.can_create_private_site;
-    }
-    return false;
-  }
-
-  private async submit() {
-    this.intermediate = true;
-    await dispatchCaptureApiErrorWithErrorHandler(this.$store, {
-      action: async () => {
-        const r = (await apiSite.createSite(this.token, this.siteCreate)).data;
-        if (r.created_site) {
-          await this.$router.push(`/sites/${r.created_site.subdomain}`);
-        } else if (r.application_channel) {
-          await this.$router.push(`/channels/${r.application_channel.id}`);
-        }
-      },
-      errorFilter: (err: AxiosError) => {
-        return this.commitErrMsg(err) !== null;
-      },
-    });
-    this.intermediate = false;
-  }
+  });
+  intermediate.value = false;
 }
 </script>

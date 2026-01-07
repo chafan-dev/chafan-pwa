@@ -1,5 +1,5 @@
 <template>
-  <v-container :class="{ 'pa-1': !this.isDesktop }" fluid>
+  <v-container :class="{ 'pa-1': !isDesktop }" fluid>
     <v-progress-linear v-if="loading" indeterminate />
     <v-row class="pt-3 pb-10" justify="center" v-else>
       <v-col
@@ -103,8 +103,10 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { api } from '@/api';
 import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interfaces';
 
@@ -118,146 +120,137 @@ import InfoIcon from '@/components/icons/InfoIcon.vue';
 
 import { readNarrowUI } from '@/store/main/getters';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { Route, RouteRecord } from 'vue-router';
-import { CVue, isEqual, updateHead } from '@/common';
+import { isEqual, updateHead } from '@/common';
 import { apiSite } from '@/api/site';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
+import { useAuth, useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    CreateSubmissionForm,
-    CreateQuestionForm,
-    QuestionPreview,
-    SiteCard,
-    UserCard,
-    InfoIcon,
-    SubmissionPreview,
-    DynamicItemList,
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+
+const site = ref<ISite | null>(null);
+const siteProfile = ref<IUserSiteProfile | null>(null);
+const siteProfiles = ref<IUserSiteProfile[] | null>(null);
+const showAskActionDialog = ref(false);
+const enableQuestionEditor = ref(false);
+const showSubmissionActionDialog = ref(false);
+const enableSubmissionEditor = ref(false);
+const loading = ref(true);
+const tabItems = [
+  {
+    code: 'questions',
+    text: '问题',
+    tabExtraCount: (s: ISite) => s.questions_count,
   },
-})
-export default class Site extends CVue {
-  private site: ISite | null = null;
-  private siteProfile: IUserSiteProfile | null = null;
-  private siteProfiles: IUserSiteProfile[] | null = null;
-  private showAskActionDialog = false;
-  private enableQuestionEditor = false;
-  private showSubmissionActionDialog = false;
-  private enableSubmissionEditor = false;
-  private loading = true;
-  private tabItems = [
-    {
-      code: 'questions',
-      text: '问题',
-      tabExtraCount: (site: ISite) => site.questions_count,
-    },
-    {
-      code: 'submissions',
-      text: '分享',
-      tabExtraCount: (site: ISite) => site.submissions_count,
-    },
-    {
-      code: 'members',
-      text: '成员列表',
-      tabExtraCount: (site: ISite) => site.members_count,
-    },
-  ];
+  {
+    code: 'submissions',
+    text: '分享',
+    tabExtraCount: (s: ISite) => s.submissions_count,
+  },
+  {
+    code: 'members',
+    text: '成员列表',
+    tabExtraCount: (s: ISite) => s.members_count,
+  },
+];
 
-  get isNarrowFeedUI() {
-    return readNarrowUI(this.$store);
-  }
+const isNarrowFeedUI = computed(() => readNarrowUI(store));
 
-  get readable() {
-    return this.site && (this.siteProfile !== null || this.site.public_readable);
-  }
+const readable = computed(() => {
+  return site.value && (siteProfile.value !== null || site.value.public_readable);
+});
 
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'questions';
-  }
-
-  set currentTabItem(tab) {
+const currentTabItem = computed({
+  get() {
+    return route.query.tab ? route.query.tab : 'questions';
+  },
+  set(tab) {
     if (tab !== 'questions') {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
+      router.replace({ query: { ...route.query, tab: tab as string } });
     } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+      router.replace({ query: { ...route.query, tab: undefined } });
+    }
+  },
+});
+
+const subdomain = computed(() => route.params.subdomain as string);
+
+// Watch for route changes (replaces beforeRouteUpdate)
+watch(
+  () => route.params.subdomain,
+  (newSubdomain, oldSubdomain) => {
+    if (newSubdomain !== oldSubdomain && route.name === 'site') {
+      loading.value = true;
+      site.value = null;
+      siteProfile.value = null;
+      siteProfiles.value = null;
+      load();
     }
   }
+);
 
-  get subdomain() {
-    return this.$route.params.subdomain;
-  }
+onMounted(async () => {
+  await load();
+});
 
-  beforeRouteUpdate(to: Route, from: Route, next: () => void) {
-    next();
-    const matched = from.matched.find((record: RouteRecord) => record.name === 'site');
-    if (matched && !isEqual(to.params, from.params)) {
-      this.loading = true;
-      this.site = null;
-      this.siteProfile = null;
-      this.siteProfiles = null;
-      this.load();
+async function load() {
+  await dispatchCaptureApiError(store, async () => {
+    site.value = (await apiSite.getSite(subdomain.value)).data;
+    updateHead(route.path, site.value.name, site.value?.description);
+
+    if (userProfile.value) {
+      siteProfile.value = (
+        await api.getUserSiteProfile(token.value, site.value.uuid, userProfile.value.uuid)
+      ).data;
     }
-  }
 
-  public async mounted() {
-    await this.load();
-  }
-
-  private async load() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.site = (await apiSite.getSite(this.subdomain)).data;
-      updateHead(this.$route.path, this.site.name, this.site?.description);
-
-      if (this.userProfile) {
-        this.siteProfile = (
-          await api.getUserSiteProfile(this.token, this.site.uuid, this.userProfile.uuid)
-        ).data;
-      }
-
-      if (this.siteProfile !== null || this.site.public_readable) {
-        if (this.siteProfile) {
-          this.siteProfiles = (await api.getSiteProfiles(this.token, this.site.uuid)).data.sort(
-            (a, b) => {
-              if (a.karma > b.karma) {
-                return -1;
-              }
-              return 1;
+    if (siteProfile.value !== null || site.value.public_readable) {
+      if (siteProfile.value) {
+        siteProfiles.value = (await api.getSiteProfiles(token.value, site.value.uuid)).data.sort(
+          (a, b) => {
+            if (a.karma > b.karma) {
+              return -1;
             }
-          );
-        }
+            return 1;
+          }
+        );
       }
-      if (this.siteProfile !== null || this.site!.public_writable_question) {
-        this.enableQuestionEditor = true;
+    }
+    if (siteProfile.value !== null || site.value!.public_writable_question) {
+      enableQuestionEditor.value = true;
+    }
+    if (siteProfile.value !== null || site.value!.public_writable_submission) {
+      enableSubmissionEditor.value = true;
+    }
+    loading.value = false;
+  });
+}
+
+async function loadQuestions(skip: number, limit: number) {
+  let items: IQuestionPreview[] | null = null;
+  if (siteProfile.value !== null || (site.value && site.value.public_readable)) {
+    await dispatchCaptureApiError(store, async () => {
+      if (site.value) {
+        items = (await apiSite.getSiteQuestions(token.value, site.value.uuid, skip, limit)).data;
       }
-      if (this.siteProfile !== null || this.site!.public_writable_submission) {
-        this.enableSubmissionEditor = true;
-      }
-      this.loading = false;
     });
   }
+  return items;
+}
 
-  private async loadQuestions(skip: number, limit: number) {
-    let items: IQuestionPreview[] | null = null;
-    if (this.siteProfile !== null || (this.site && this.site.public_readable)) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        if (this.site) {
-          items = (await apiSite.getSiteQuestions(this.token, this.site.uuid, skip, limit)).data;
-        }
-      });
-    }
-    return items;
+async function loadSubmissions(skip: number, limit: number) {
+  let items: ISubmission[] | null = null;
+  if (siteProfile.value !== null || (site.value && site.value.public_readable)) {
+    await dispatchCaptureApiError(store, async () => {
+      if (site.value) {
+        items = (await apiSite.getSiteSubmissions(token.value, site.value.uuid, skip, limit)).data;
+      }
+    });
   }
-
-  private async loadSubmissions(skip: number, limit: number) {
-    let items: ISubmission[] | null = null;
-    if (this.siteProfile !== null || (this.site && this.site.public_readable)) {
-      await dispatchCaptureApiError(this.$store, async () => {
-        if (this.site) {
-          items = (await apiSite.getSiteSubmissions(this.token, this.site.uuid, skip, limit)).data;
-        }
-      });
-    }
-    return items;
-  }
+  return items;
 }
 </script>

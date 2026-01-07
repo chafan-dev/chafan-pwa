@@ -51,87 +51,85 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from '@/router';
 import { apiForm } from '@/api/forms';
 import { IForm, IFormResponse, IFormResponseCreate, IFormResponseField } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import FormResponseCard from '@/components/FormResponseCard.vue';
 import { commitAddNotification } from '@/store/main/mutations';
 
-@Component({
-  components: { FormResponseCard },
-})
-export default class Form extends Vue {
-  private form: IForm | null = null;
-  private formResponseCreate: IFormResponseCreate | null = null;
-  private responseFields = new Map<string, IFormResponseField>();
-  private loading = true;
-  private showResponse = false;
-  private formResponse: IFormResponse | null = null;
+const store = useStore();
+const route = useRoute();
 
-  get uuid() {
-    return this.$route.params.uuid;
-  }
+const form = ref<IForm | null>(null);
+const formResponseCreate = ref<IFormResponseCreate | null>(null);
+const responseFields = reactive(new Map<string, IFormResponseField>());
+const loading = ref(true);
+const showResponse = ref(false);
+const formResponse = ref<IFormResponse | null>(null);
 
-  private async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.form = (await apiForm.getForm(this.$store.state.main.token, this.uuid)).data;
-      this.form.form_fields.forEach((formField) => {
-        if (formField.field_type.field_type_name === 'text_field') {
-          this.responseFields.set(formField.unique_name, {
-            unique_name: formField.unique_name,
-            field_content: {
-              field_type_name: 'text_response_field',
-              desc: formField.field_type.desc,
-              text: '',
-            },
-          });
-        } else if (formField.field_type.field_type_name === 'single_choice_field') {
-          this.responseFields.set(formField.unique_name, {
-            unique_name: formField.unique_name,
-            field_content: {
-              field_type_name: 'single_choice_response_field',
-              desc: formField.field_type.desc,
-              selected_choice: '',
-            },
-          });
-        } else if (formField.field_type.field_type_name === 'multiple_choices_field') {
-          this.responseFields.set(formField.unique_name, {
-            unique_name: formField.unique_name,
-            field_content: {
-              field_type_name: 'multiple_choices_response_field',
-              desc: formField.field_type.desc,
-              selected_choices: [],
-            },
-          });
-        }
-      });
-      this.formResponseCreate = {
-        form_uuid: this.form.uuid,
-        response_fields: [],
-      };
-      this.loading = false;
+const uuid = computed(() => route.params.uuid as string);
+
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    form.value = (await apiForm.getForm(store.state.main.token, uuid.value)).data;
+    form.value.form_fields.forEach((formField) => {
+      if (formField.field_type.field_type_name === 'text_field') {
+        responseFields.set(formField.unique_name, {
+          unique_name: formField.unique_name,
+          field_content: {
+            field_type_name: 'text_response_field',
+            desc: formField.field_type.desc,
+            text: '',
+          },
+        });
+      } else if (formField.field_type.field_type_name === 'single_choice_field') {
+        responseFields.set(formField.unique_name, {
+          unique_name: formField.unique_name,
+          field_content: {
+            field_type_name: 'single_choice_response_field',
+            desc: formField.field_type.desc,
+            selected_choice: '',
+          },
+        });
+      } else if (formField.field_type.field_type_name === 'multiple_choices_field') {
+        responseFields.set(formField.unique_name, {
+          unique_name: formField.unique_name,
+          field_content: {
+            field_type_name: 'multiple_choices_response_field',
+            desc: formField.field_type.desc,
+            selected_choices: [],
+          },
+        });
+      }
     });
-  }
+    formResponseCreate.value = {
+      form_uuid: form.value.uuid,
+      response_fields: [],
+    };
+    loading.value = false;
+  });
+});
 
-  private async submitResponse() {
-    for (const responseField of this.responseFields.values()) {
-      if (responseField.field_content.field_type_name === 'single_choice_response_field') {
-        if (!responseField.field_content.selected_choice) {
-          commitAddNotification(this.$store, {
-            content: '是否有单选没有选择？',
-            color: 'error',
-          });
-          return;
-        }
+async function submitResponse() {
+  for (const responseField of responseFields.values()) {
+    if (responseField.field_content.field_type_name === 'single_choice_response_field') {
+      if (!responseField.field_content.selected_choice) {
+        commitAddNotification(store, {
+          content: '是否有单选没有选择？',
+          color: 'error',
+        });
+        return;
       }
     }
-    this.formResponseCreate!.response_fields = Array.from(this.responseFields.values());
-    this.formResponse = (
-      await apiForm.submitFormRespnse(this.$store.state.main.token, this.formResponseCreate!)
-    ).data;
-    this.showResponse = true;
   }
+  formResponseCreate.value!.response_fields = Array.from(responseFields.values());
+  formResponse.value = (
+    await apiForm.submitFormRespnse(store.state.main.token, formResponseCreate.value!)
+  ).data;
+  showResponse.value = true;
 }
 </script>

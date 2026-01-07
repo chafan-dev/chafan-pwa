@@ -50,50 +50,52 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import { apiDiscovery } from '@/api/discovery';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
-import { Component } from 'vue-property-decorator';
-import { IAnswerPreview, IQuestionPreview, IUserPreview } from '@/interfaces';
+import { IQuestionPreview, IUserPreview } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import UserGrid from '@/components/UserGrid.vue';
-import { CVue } from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import Answer from '@/components/Answer.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
+import { useAuth } from '@/composables';
 
 const defaultTab = 'featured-answers';
 
-@Component({
-  components: { BaseCard, Answer, DynamicItemList, UserGrid, QuestionPreview, ExploreSitesGrid },
-})
-export default class Explore extends CVue {
-  private interestingQuestions: IQuestionPreview[] | null = null;
-  private interestingUsers: IUserPreview[] | null = null;
-  private featuredAnswers: IAnswerPreview[] | null = null;
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token } = useAuth();
 
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : defaultTab;
-  }
+const interestingQuestions = ref<IQuestionPreview[] | null>(null);
+const interestingUsers = ref<IUserPreview[] | null>(null);
 
-  set currentTabItem(tab) {
+const currentTabItem = computed({
+  get() {
+    return route.query.tab ? route.query.tab : defaultTab;
+  },
+  set(tab) {
     if (tab !== defaultTab) {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
+      router.replace({ query: { ...route.query, tab: tab as string } });
     } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+      router.replace({ query: { ...route.query, tab: undefined } });
     }
-  }
+  },
+});
 
-  private async mounted() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.interestingQuestions = (await apiDiscovery.getInterestingQuestions(this.token)).data;
-      this.interestingUsers = (await apiDiscovery.getInterestingUsers(this.token)).data;
-    });
-  }
+onMounted(async () => {
+  await dispatchCaptureApiError(store, async () => {
+    interestingQuestions.value = (await apiDiscovery.getInterestingQuestions(token.value)).data;
+    interestingUsers.value = (await apiDiscovery.getInterestingUsers(token.value)).data;
+  });
+});
 
-  private async loadFeaturedAnswers(skip: number, limit: number) {
-    return (await apiDiscovery.getFeaturedAnswers(this.token, skip, limit)).data;
-  }
+async function loadFeaturedAnswers(skip: number, limit: number) {
+  return (await apiDiscovery.getFeaturedAnswers(token.value, skip, limit)).data;
 }
 </script>

@@ -23,57 +23,57 @@
   <!-- TODO: 截屏 -->
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { CVue } from '@/common';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import { ISite, ISiteCreate, ITopic } from '@/interfaces';
-import Topic from '@/views/main/Topic.vue';
 import { apiTopic } from '@/api/topic';
 import { apiSite } from '@/api/site';
 import { tryApi } from '@/store/main/actions';
-import TopicChip from '@/components/widgets/TopicChip.vue';
 import { api2 } from '@/api2';
 import { commitAddNotification } from '@/store/main/mutations';
 import SiteBtn from '@/components/SiteBtn.vue';
+import { useAuth } from '@/composables';
 
-@Component({
-  components: { SiteBtn, TopicChip, Topic },
-})
-export default class SiteCreation extends CVue {
-  @Prop() readonly site_creation!: ISiteCreate;
-  @Prop() readonly applicantUuid!: string;
-  private topic: ITopic | null = null;
-  private existingSite: ISite | null = null;
-  private intermediate: boolean = true;
+const props = defineProps<{
+  site_creation: ISiteCreate;
+  applicantUuid: string;
+}>();
 
-  async mounted() {
-    if (this.site_creation.category_topic_uuid) {
-      this.topic = (await apiTopic.getTopic(this.site_creation.category_topic_uuid)).data;
-    }
-    await tryApi(this.$store, async () => {
-      this.existingSite = (await apiSite.getSite(this.site_creation.subdomain)).data;
+const store = useStore();
+const { token, userProfile } = useAuth();
+
+const topic = ref<ITopic | null>(null);
+const existingSite = ref<ISite | null>(null);
+const intermediate = ref(true);
+
+onMounted(async () => {
+  if (props.site_creation.category_topic_uuid) {
+    topic.value = (await apiTopic.getTopic(props.site_creation.category_topic_uuid)).data;
+  }
+  await tryApi(store, async () => {
+    existingSite.value = (await apiSite.getSite(props.site_creation.subdomain)).data;
+  });
+  intermediate.value = false;
+});
+
+async function createSite() {
+  intermediate.value = true;
+  const r = (await apiSite.createSite(token.value, props.site_creation)).data;
+  if (r.created_site) {
+    existingSite.value = r.created_site;
+    await api2.inviteUser(token.value, {
+      site_uuid: r.created_site.uuid,
+      user_uuid: props.applicantUuid,
     });
-    this.intermediate = false;
+    await apiSite.updateSiteConfig(token.value, r.created_site.uuid, {
+      moderator_uuid: props.applicantUuid,
+    });
+    commitAddNotification(store, {
+      color: 'success',
+      content: '创建站点并设置管理员成功',
+    });
   }
-
-  async createSite() {
-    this.intermediate = true;
-    const r = (await apiSite.createSite(this.token, this.site_creation)).data;
-    if (r.created_site) {
-      this.existingSite = r.created_site;
-      await api2.inviteUser(this.token, {
-        site_uuid: r.created_site.uuid,
-        user_uuid: this.applicantUuid,
-      });
-      await apiSite.updateSiteConfig(this.token, r.created_site.uuid, {
-        moderator_uuid: this.applicantUuid,
-      });
-      commitAddNotification(this.$store, {
-        color: 'success',
-        content: '创建站点并设置管理员成功',
-      });
-    }
-    this.intermediate = false;
-  }
+  intermediate.value = false;
 }
 </script>

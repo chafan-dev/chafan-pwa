@@ -194,8 +194,10 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRouter } from '@/router';
 import {
   IAuditLog,
   IUserProfileUpdate,
@@ -213,157 +215,150 @@ import EmailIcon from '@/components/icons/EmailIcon.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { AxiosError } from 'axios';
-import { CVue } from '@/common';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
+import { useAuth, useErrorHandling } from '@/composables';
 
-@Component({
-  components: {
-    VerificationCodeBtn,
-    VerifyCodeIcon,
-    CellphoneIcon,
-    EmailIcon,
-    EditIcon,
-    DeleteIcon,
-  },
-})
-export default class Security extends CVue {
-  private password: string | null = null;
-  private confirmation: string | null = null;
-  private newEmail: string | null = null;
-  private showCodeInput = false;
-  private verificationCodeDisabled = false;
-  private showSecurityLogsDialog = false;
-  private editLoginMode: 'email' | 'add_secondary_email' | null = null;
-  private intermediate = false;
-  private verificationCode: string = '';
-  private readonly auditLogHeaders = [
-    { text: '创建于', value: 'created_at' },
-    { text: 'API', value: 'api' },
-    { text: 'IP', value: 'ipaddr' },
-  ];
-  private auditLogs: IAuditLog[] | null = null;
+const store = useStore();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { commitErrMsg } = useErrorHandling();
 
-  private async sendVerificationCode() {
-    if (!this.editLoginMode) {
-      return;
-    }
-    if (
-      (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') &&
-      !this.newEmail
-    ) {
-      commitAddNotification(this.$store, {
-        content: '电子邮件地址为空',
-        color: 'error',
-      });
-      return;
-    }
+const password = ref<string | null>(null);
+const confirmation = ref<string | null>(null);
+const newEmail = ref<string | null>(null);
+const showCodeInput = ref(false);
+const verificationCodeDisabled = ref(false);
+const showSecurityLogsDialog = ref(false);
+const editLoginMode = ref<'email' | 'add_secondary_email' | null>(null);
+const intermediate = ref(false);
+const verificationCode = ref('');
+const auditLogHeaders = [
+  { text: '创建于', value: 'created_at' },
+  { text: 'API', value: 'api' },
+  { text: 'IP', value: 'ipaddr' },
+];
+const auditLogs = ref<IAuditLog[] | null>(null);
 
-    this.showCodeInput = true;
-
-    return await dispatchCaptureApiError(this.$store, async () => {
-      const payload: IVerificationCodeRequest = {};
-      if (this.editLoginMode === 'email' || this.editLoginMode === 'add_secondary_email') {
-        payload.email = this.newEmail!;
-      }
-      await api.sendVerificationCode(payload);
-      commitAddNotification(this.$store, {
-        content: '验证码已发送到邮箱，请查收',
-        color: 'success',
-      });
-      this.showCodeInput = true;
-      return true;
+async function sendVerificationCode() {
+  if (!editLoginMode.value) {
+    return;
+  }
+  if (
+    (editLoginMode.value === 'email' || editLoginMode.value === 'add_secondary_email') &&
+    !newEmail.value
+  ) {
+    commitAddNotification(store, {
+      content: '电子邮件地址为空',
+      color: 'error',
     });
+    return;
   }
 
-  private async verifyCode() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      let response;
-      if (this.editLoginMode === 'email') {
-        const payload: IUserUpdatePrimaryEmail = {
-          email: this.newEmail!,
-          verification_code: this.verificationCode,
-        };
-        await apiMe
-          .updatePrimaryEmail(this.token, payload)
-          .then((r) => {
-            response = r;
-          })
-          .catch((err: AxiosError) => {
-            this.commitErrMsg(err);
-          });
-      } else if (this.editLoginMode === 'add_secondary_email') {
-        const payload: IUserUpdateSecondaryEmails = {
-          secondary_email: this.newEmail!,
-          action: 'add',
-          verification_code: this.verificationCode,
-        };
-        response = await apiMe.updateSecondaryEmail(this.token, payload);
-      }
-      if (response) {
-        commitAddNotification(this.$store, {
-          content: '更新成功',
-          color: 'success',
-        });
-        commitSetUserProfile(this.$store, response.data);
-        this.editLoginMode = null;
-        this.newEmail = null;
-        this.verificationCode = '';
-        this.verificationCodeDisabled = false;
-      }
-      this.intermediate = false;
-    });
-  }
+  showCodeInput.value = true;
 
-  private async removeSecondaryEmail(email: string) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      const payload: IUserUpdateSecondaryEmails = {
-        secondary_email: email,
-        action: 'remove',
+  return await dispatchCaptureApiError(store, async () => {
+    const payload: IVerificationCodeRequest = {};
+    if (editLoginMode.value === 'email' || editLoginMode.value === 'add_secondary_email') {
+      payload.email = newEmail.value!;
+    }
+    await api.sendVerificationCode(payload);
+    commitAddNotification(store, {
+      content: '验证码已发送到邮箱，请查收',
+      color: 'success',
+    });
+    showCodeInput.value = true;
+    return true;
+  });
+}
+
+async function verifyCode() {
+  await dispatchCaptureApiError(store, async () => {
+    intermediate.value = true;
+    let response;
+    if (editLoginMode.value === 'email') {
+      const payload: IUserUpdatePrimaryEmail = {
+        email: newEmail.value!,
+        verification_code: verificationCode.value,
       };
-      const newProfile = (await apiMe.updateSecondaryEmail(this.token, payload)).data;
-      commitAddNotification(this.$store, {
+      await apiMe
+        .updatePrimaryEmail(token.value, payload)
+        .then((r) => {
+          response = r;
+        })
+        .catch((err: AxiosError) => {
+          commitErrMsg(err);
+        });
+    } else if (editLoginMode.value === 'add_secondary_email') {
+      const payload: IUserUpdateSecondaryEmails = {
+        secondary_email: newEmail.value!,
+        action: 'add',
+        verification_code: verificationCode.value,
+      };
+      response = await apiMe.updateSecondaryEmail(token.value, payload);
+    }
+    if (response) {
+      commitAddNotification(store, {
         content: '更新成功',
         color: 'success',
       });
-      commitSetUserProfile(this.$store, newProfile);
-      this.intermediate = false;
-    });
-  }
-
-  private resetAll() {
-    this.password = '';
-    this.confirmation = '';
-  }
-
-  private cancel() {
-    this.$router.back();
-  }
-
-  private async mounted() {
-    if (!this.userProfile) {
-      await this.$router.push('/');
-      return;
+      commitSetUserProfile(store, response.data);
+      editLoginMode.value = null;
+      newEmail.value = null;
+      verificationCode.value = '';
+      verificationCodeDisabled.value = false;
     }
-  }
+    intermediate.value = false;
+  });
+}
 
-  private async submit() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.intermediate = true;
-      const updatedProfile: IUserProfileUpdate = {};
-      if (this.password) {
-        updatedProfile.password = this.password;
-      }
-      await dispatchUpdateUserProfile(this.$store, updatedProfile);
-      this.resetAll();
-      this.intermediate = false;
+async function removeSecondaryEmail(email: string) {
+  await dispatchCaptureApiError(store, async () => {
+    intermediate.value = true;
+    const payload: IUserUpdateSecondaryEmails = {
+      secondary_email: email,
+      action: 'remove',
+    };
+    const newProfile = (await apiMe.updateSecondaryEmail(token.value, payload)).data;
+    commitAddNotification(store, {
+      content: '更新成功',
+      color: 'success',
     });
-  }
+    commitSetUserProfile(store, newProfile);
+    intermediate.value = false;
+  });
+}
 
-  private async showSecurityLogs() {
-    this.showSecurityLogsDialog = true;
-    this.auditLogs = (await api.getAuditLogs(this.token)).data;
+function resetAll() {
+  password.value = '';
+  confirmation.value = '';
+}
+
+function cancel() {
+  router.back();
+}
+
+onMounted(async () => {
+  if (!userProfile.value) {
+    await router.push('/');
+    return;
   }
+});
+
+async function submit() {
+  await dispatchCaptureApiError(store, async () => {
+    intermediate.value = true;
+    const updatedProfile: IUserProfileUpdate = {};
+    if (password.value) {
+      updatedProfile.password = password.value;
+    }
+    await dispatchUpdateUserProfile(store, updatedProfile);
+    resetAll();
+    intermediate.value = false;
+  });
+}
+
+async function showSecurityLogs() {
+  showSecurityLogsDialog.value = true;
+  auditLogs.value = (await api.getAuditLogs(token.value)).data;
 }
 </script>

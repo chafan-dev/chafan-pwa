@@ -19,8 +19,9 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, getCurrentInstance } from 'vue';
+import { useStore } from 'vuex';
 import { apiSearch } from '@/api/search';
 import { IUserPreview } from '@/interfaces';
 
@@ -35,128 +36,140 @@ import { readToken } from '@/store/main/getters';
 
 declare const renderMathInElement: any;
 
-@Component({
-  components: {
-    TiptapCF,
-  },
-})
-export default class ChafanTiptap extends Vue {
-  @Prop() public readonly onEditorReady: ((contentElem: HTMLElement) => void) | undefined;
-  @Prop() public readonly onEditorChange: ((text: string) => void) | undefined;
-  @Prop() public readonly initialContent: string | undefined;
-  @Prop({ default: true }) private readonly editable!: boolean;
-  @Prop({ default: false }) private readonly commentMode!: boolean;
-  @Prop() private readonly onMentionedHandles: ((handles: string[]) => void) | undefined;
-  @Prop() private readonly placeholder: string | undefined;
-
-  get base() {
-    return this.$refs.base as any;
+const props = withDefaults(
+  defineProps<{
+    onEditorReady?: (contentElem: HTMLElement) => void;
+    onEditorChange?: (text: string) => void;
+    initialContent?: string;
+    editable?: boolean;
+    commentMode?: boolean;
+    onMentionedHandles?: (handles: string[]) => void;
+    placeholder?: string;
+  }>(),
+  {
+    editable: true,
+    commentMode: false,
   }
+);
 
-  public getContent(): string | null {
-    const json = this.base.getJSON();
-    if (json) {
-      return JSON.stringify(json);
-    }
-    return null;
+const store = useStore();
+const instance = getCurrentInstance();
+
+const base = ref<any>(null);
+
+function getContent(): string | null {
+  const json = base.value?.getJSON();
+  if (json) {
+    return JSON.stringify(json);
   }
+  return null;
+}
 
-  public setContent(value: string | null) {
-    if (!value) {
-      this.base.reset();
-      return;
-    }
-    this.base.loadJSON(JSON.parse(value));
+function setContent(value: string | null) {
+  if (!value) {
+    base.value?.reset();
+    return;
   }
+  base.value?.loadJSON(JSON.parse(value));
+}
 
-  public getText(): string | null {
-    return this.base.getText();
+function getText(): string | null {
+  return base.value?.getText();
+}
+
+function getHTML() {
+  return base.value?.getHTML();
+}
+
+function loadHTML(html: string) {
+  return base.value?.loadHTML(html);
+}
+
+function loadJSON(json: any) {
+  return base.value?.loadJSON(json);
+}
+
+function reset() {
+  base.value?.reset();
+}
+
+async function upload(file: Blob) {
+  const resized = await resizeImage({
+    maxSize: 500, // px
+    file,
+  });
+
+  const formData = new FormData();
+  // Upload candidate image and update URL
+  try {
+    formData.append('file', piexif.remove(resized.blob));
+    // Remove EXIF if it is jpeg
+  } catch {
+    formData.append('file', resized.blob);
   }
+  const response = await api2.uploadFile(readToken(store), formData);
+  return response.data.url;
+}
 
-  public getHTML() {
-    return this.base.getHTML();
+onMounted(() => {
+  if (props.initialContent) {
+    loadJSON(JSON.parse(props.initialContent));
   }
+});
 
-  public loadHTML(html: string) {
-    return this.base.loadHTML(html);
-  }
-
-  public loadJSON(json: any) {
-    return this.base.loadJSON(json);
-  }
-
-  public reset() {
-    this.base.reset();
-  }
-
-  async upload(file: Blob) {
-    const resized = await resizeImage({
-      maxSize: 500, // px
-      file,
+function onEditorReadyInternal(contentElem: HTMLElement) {
+  if (!props.editable) {
+    renderMathInElement(contentElem, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true },
+      ],
     });
-
-    const formData = new FormData();
-    // Upload candidate image and update URL
-    try {
-      formData.append('file', piexif.remove(resized.blob));
-      // Remove EXIF if it is jpeg
-    } catch {
-      formData.append('file', resized.blob);
-    }
-    const response = await api2.uploadFile(readToken(this.$store), formData);
-    return response.data.url;
   }
-
-  mounted() {
-    if (this.initialContent) {
-      this.loadJSON(JSON.parse(this.initialContent));
-    }
-  }
-
-  private onEditorReadyInternal(contentElem: HTMLElement) {
-    if (!this.editable) {
-      renderMathInElement(contentElem, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
-          { left: '\\(', right: '\\)', display: false },
-          { left: '\\[', right: '\\]', display: true },
-        ],
-      });
-    }
-    if (this.onEditorReady) {
-      this.onEditorReady(contentElem);
-    }
-  }
-
-  private onChange() {
-    if (this.onMentionedHandles) {
-      const handles: string[] = [];
-      this.$el.querySelectorAll('a.mention').forEach((elem: Element) => {
-        const anchor = elem as HTMLAnchorElement;
-        const url = new URL(anchor.href);
-        const segments = url.pathname.split('/');
-        if (segments.length === 3 && segments[1] === 'users') {
-          handles.push(decodeURI(segments[2]));
-        }
-      });
-      this.onMentionedHandles(handles);
-    }
-    if (this.onEditorChange) {
-      this.onEditorChange(this.getText() || '');
-    }
-  }
-
-  private async searchUsers(query: string) {
-    return (await apiSearch.searchUsers(this.$store.state.main.token, query)).data;
-  }
-
-  private userHref(user: IUserPreview) {
-    return `/users/${user.handle}`;
-  }
-
-  private userLabel(user: IUserPreview) {
-    return user.full_name ? `${user.full_name} (${user.handle})` : user.handle;
+  if (props.onEditorReady) {
+    props.onEditorReady(contentElem);
   }
 }
+
+function onChange() {
+  if (props.onMentionedHandles && instance?.proxy?.$el) {
+    const handles: string[] = [];
+    instance.proxy.$el.querySelectorAll('a.mention').forEach((elem: Element) => {
+      const anchor = elem as HTMLAnchorElement;
+      const url = new URL(anchor.href);
+      const segments = url.pathname.split('/');
+      if (segments.length === 3 && segments[1] === 'users') {
+        handles.push(decodeURI(segments[2]));
+      }
+    });
+    props.onMentionedHandles(handles);
+  }
+  if (props.onEditorChange) {
+    props.onEditorChange(getText() || '');
+  }
+}
+
+async function searchUsers(query: string) {
+  return (await apiSearch.searchUsers(store.state.main.token, query)).data;
+}
+
+function userHref(user: IUserPreview) {
+  return `/users/${user.handle}`;
+}
+
+function userLabel(user: IUserPreview) {
+  return user.full_name ? `${user.full_name} (${user.handle})` : user.handle;
+}
+
+defineExpose({
+  getContent,
+  setContent,
+  getText,
+  getHTML,
+  loadHTML,
+  loadJSON,
+  reset,
+});
 </script>

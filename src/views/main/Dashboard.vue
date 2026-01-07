@@ -363,8 +363,10 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute, useRouter } from '@/router';
 import {
   editor_T,
   IAnswerPreview,
@@ -398,7 +400,7 @@ import Event from '@/components/Event.vue';
 import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
-import { CVue, LABS_TIPTAP_EDITOR_OPTION, themeLocalStorageKey } from '@/common';
+import { LABS_TIPTAP_EDITOR_OPTION, themeLocalStorageKey } from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
@@ -407,307 +409,236 @@ import { apiActivity } from '@/api/activity';
 import { getLocalValue, setLocalValue } from '@/utils';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
+import { useAuth, useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    BaseCard,
-    CreateArticleColumn,
-    SiteName,
-    CloseIcon,
-    EmptyPlaceholder,
-    DynamicItemList,
-    QuestionPreview,
-    Answer,
-    ArticleColumnCard,
-    SubmissionPreview,
-    SiteBtn,
-    ArticlePreview,
-    UserLink,
-    Event,
-    InfoIcon,
-    NewInviteLinkBtn,
-    ChatWindow,
+const store = useStore();
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+
+const coinPayments = ref<ICoinPayment[]>([]);
+const myChannels = ref<IChannel[]>([]);
+const myRewards = ref<IReward[]>([]);
+const myArticleColumns = ref<IArticleColumn[]>([]);
+const channelsIntermediate = ref(true);
+const rewardsIntermediate = ref(true);
+const articleColumnsIntermediate = ref(true);
+const coinPaymentsIntermediate = ref(true);
+const showExportDialog = ref(false);
+const showLabsDialog = ref(false);
+const tiptapEditorOptionOn = ref(false);
+const tabItems = [
+  { text: '我的设置', code: 'settings' },
+  { text: '我的草稿', code: 'drafts' },
+  { text: '我的专栏', code: 'my_columns' },
+  { text: '私信', code: 'joined_channels' },
+  { text: '硬币', code: 'coins' },
+  { text: '收藏的答案', code: 'bookmarked_answers' },
+  { text: '关注的问题', code: 'subscribed_questions' },
+  { text: '收藏的分享', code: 'subscribed_submissions' },
+  { text: '收藏的文章', code: 'bookmarked_articles' },
+];
+const coinPaymentHeaders = [
+  { text: '创建于', value: 'created_at' },
+  { text: '数量', value: 'amount' },
+  { text: '类型', value: 'type' },
+  { text: '参考', value: 'reference' },
+];
+const rewardHeaders = [
+  { text: '创建于', value: 'created_at' },
+  { text: '退回于', value: 'refunded_at' },
+  { text: '过期于', value: 'expired_at' },
+  { text: '找回于', value: 'claimed_at' },
+  { text: '硬币数量', value: 'coin_amount' },
+  { text: '类型', value: 'type' },
+  { text: '条件', value: 'condition' },
+  { text: '', value: 'action' },
+];
+const myAnswerDrafts = ref<IAnswerPreview[] | null>(null);
+const myArticleDrafts = ref<IArticlePreview[] | null>(null);
+const enableEmailNotifications = ref(false);
+const changingMySettings = ref(false);
+const selectedEditorMode = ref<editor_T>('wysiwyg');
+const selectedTheme = ref<ThemeType>('default');
+const editorModeItems = ref<{ text: string; value: string }[] | null>(null);
+const themeItems = ref<{ text: string; value: string }[] | null>(null);
+
+const currentTabItem = computed({
+  get() {
+    return route.query.tab ? route.query.tab : 'settings';
   },
-})
-export default class Dashboard extends CVue {
-  private coinPayments: ICoinPayment[] = [];
-  private myChannels: IChannel[] = [];
-  private myRewards: IReward[] = [];
-  private myArticleColumns: IArticleColumn[] = [];
-  private channelsIntermediate = true;
-  private rewardsIntermediate = true;
-  private articleColumnsIntermediate = true;
-  private coinPaymentsIntermediate = true;
-  private showExportDialog = false;
-  private showLabsDialog = false;
-  private tiptapEditorOptionOn = false;
-  private tabItems = [
-    {
-      text: '我的设置',
-      code: 'settings',
-    },
-    {
-      text: '我的草稿',
-      code: 'drafts',
-    },
-    {
-      text: '我的专栏',
-      code: 'my_columns',
-    },
-    {
-      text: '私信',
-      code: 'joined_channels',
-    },
-    {
-      text: '硬币',
-      code: 'coins',
-    },
-    {
-      text: '收藏的答案',
-      code: 'bookmarked_answers',
-    },
-    {
-      text: '关注的问题',
-      code: 'subscribed_questions',
-    },
-    {
-      text: '收藏的分享',
-      code: 'subscribed_submissions',
-    },
-    {
-      text: '收藏的文章',
-      code: 'bookmarked_articles',
-    },
-  ];
-  private readonly coinPaymentHeaders = [
-    { text: '创建于', value: 'created_at' },
-    { text: '数量', value: 'amount' },
-    { text: '类型', value: 'type' },
-    { text: '参考', value: 'reference' },
-  ];
-  private readonly rewardHeaders = [
-    { text: '创建于', value: 'created_at' },
-    { text: '退回于', value: 'refunded_at' },
-    { text: '过期于', value: 'expired_at' },
-    { text: '找回于', value: 'claimed_at' },
-    { text: '硬币数量', value: 'coin_amount' },
-    { text: '类型', value: 'type' },
-    { text: '条件', value: 'condition' },
-    { text: '', value: 'action' },
-  ];
-  private myAnswerDrafts: IAnswerPreview[] | null = null;
-  private myArticleDrafts: IArticlePreview[] | null = null;
-  private enableEmailNotifications = false;
-  private changingMySettings = false;
-  private selectedEditorMode: editor_T = 'wysiwyg';
-  private selectedTheme: ThemeType = 'default';
-  private editorModeItems: { text: string; value: string }[] | null = null;
-  private themeItems: { text: string; value: string }[] | null = null;
-
-  get currentTabItem() {
-    return this.$route.query.tab ? this.$route.query.tab : 'settings';
-  }
-
-  set currentTabItem(tab) {
+  set(tab) {
     if (tab !== 'settings') {
-      this.$router.replace({ query: { ...this.$route.query, tab } });
+      router.replace({ query: { ...route.query, tab: tab as string } });
     } else {
-      this.$router.replace({ query: { ...this.$route.query, tab: undefined } });
+      router.replace({ query: { ...route.query, tab: undefined } });
     }
+  },
+});
+
+onMounted(async () => {
+  const theme = getLocalValue(themeLocalStorageKey) as ThemeType;
+  if (theme) {
+    selectedTheme.value = theme;
   }
+  await dispatchCaptureApiError(store, async () => {
+    if (userProfile.value) {
+      tiptapEditorOptionOn.value = userProfile.value.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION);
 
-  private async mounted() {
-    const theme = getLocalValue(themeLocalStorageKey) as ThemeType;
-    if (theme) {
-      this.selectedTheme = theme;
-    }
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.userProfile) {
-        this.tiptapEditorOptionOn = this.userProfile.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION);
-
-        const editorModeItems = [
-          {
-            text: '所见即所得',
-            value: 'wysiwyg',
-          },
-          {
-            text: 'Markdown（实时渲染）',
-            value: 'markdown_realtime_rendering',
-          },
-          {
-            text: 'Markdown（分屏渲染）',
-            value: 'markdown_splitview',
-          },
-        ];
-        if (this.tiptapEditorOptionOn) {
-          editorModeItems.push({
-            text: 'Tiptap 编辑器',
-            value: 'tiptap',
-          });
-        }
-        this.editorModeItems = editorModeItems;
-
-        const themeItems = [
-          {
-            text: '默认主题',
-            value: 'default',
-          },
-          {
-            text: '蓝色主题（开发中）',
-            value: 'blue',
-          },
-        ];
-        this.themeItems = themeItems;
-
-        this.selectedEditorMode = this.userProfile.default_editor_mode;
-
-        this.enableEmailNotifications = this.userProfile.enable_deliver_unread_notifications;
-
-        api.getMyArticleColumns(this.token).then((r) => {
-          this.myArticleColumns = r.data;
-          this.articleColumnsIntermediate = false;
-        });
-
-        apiMe.getMyChannels(this.token).then((r) => {
-          this.myChannels = r.data;
-          this.channelsIntermediate = false;
-        });
-
-        api.getRewards(this.token).then((r) => {
-          this.myRewards = r.data;
-          this.rewardsIntermediate = false;
-        });
-
-        api2.getCoinPayments(this.token).then((r) => {
-          this.coinPayments = r.data;
-          this.coinPaymentsIntermediate = false;
-        });
-
-        api.getAnswerDrafts(this.token).then((r) => {
-          this.myAnswerDrafts = r.data;
-        });
-        api.getArticleDrafts(this.token).then((r) => {
-          this.myArticleDrafts = r.data;
-        });
+      const editorItems = [
+        { text: '所见即所得', value: 'wysiwyg' },
+        { text: 'Markdown（实时渲染）', value: 'markdown_realtime_rendering' },
+        { text: 'Markdown（分屏渲染）', value: 'markdown_splitview' },
+      ];
+      if (tiptapEditorOptionOn.value) {
+        editorItems.push({ text: 'Tiptap 编辑器', value: 'tiptap' });
       }
-    });
-  }
+      editorModeItems.value = editorItems;
 
-  private async loadSubscribedQuestions(skip: number, limit: number) {
-    let items: (IQuestionPreview | null)[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getSubscribedQuestions(this.token, skip, limit)).data;
-    });
-    return items;
-  }
+      themeItems.value = [
+        { text: '默认主题', value: 'default' },
+        { text: '蓝色主题（开发中）', value: 'blue' },
+      ];
 
-  private async loadSubscribedSubmissions(skip: number, limit: number) {
-    let items: (ISubmission | null)[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getSubscribedSubmissions(this.token, skip, limit)).data;
-    });
-    return items;
-  }
+      selectedEditorMode.value = userProfile.value.default_editor_mode;
+      enableEmailNotifications.value = userProfile.value.enable_deliver_unread_notifications;
 
-  private async loadBookmarkedAnswers(skip: number, limit: number) {
-    let items: (IAnswerPreview | null)[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getAnswerBookmarks(this.token, skip, limit)).data;
-    });
-    return items;
-  }
-
-  private async loadBookmarkedArticles(skip: number, limit: number) {
-    let items: (IArticlePreview | null)[] | null = null;
-    await dispatchCaptureApiError(this.$store, async () => {
-      items = (await apiMe.getArticleBookmarks(this.token, skip, limit)).data;
-    });
-    return items;
-  }
-
-  private async onChangeEmailNotifications() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.changingMySettings = true;
-      const newProfile = (
-        await apiMe.updateMe(this.token, {
-          enable_deliver_unread_notifications: this.enableEmailNotifications,
-        })
-      ).data;
-      commitSetUserProfile(this.$store, newProfile);
-      this.changingMySettings = false;
-      commitAddNotification(this.$store, {
-        content: '已保存',
-        color: 'info',
+      api.getMyArticleColumns(token.value).then((r) => {
+        myArticleColumns.value = r.data;
+        articleColumnsIntermediate.value = false;
       });
-    });
-  }
 
-  private async onChangeEditorMode() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.changingMySettings = true;
-      const newProfile = (
-        await apiMe.updateMe(this.token, {
-          default_editor_mode: this.selectedEditorMode,
-        })
-      ).data;
-      commitSetUserProfile(this.$store, newProfile);
-      this.changingMySettings = false;
-      commitAddNotification(this.$store, {
-        content: '已保存',
-        color: 'info',
+      apiMe.getMyChannels(token.value).then((r) => {
+        myChannels.value = r.data;
+        channelsIntermediate.value = false;
       });
-    });
-  }
 
-  private async onChangeTheme() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      this.changingMySettings = true;
-      commitSetTheme(this.$store, this.selectedTheme);
-      setLocalValue(themeLocalStorageKey, this.selectedTheme);
-      this.changingMySettings = false;
-      commitAddNotification(this.$store, {
-        content: '已保存',
-        color: 'info',
+      api.getRewards(token.value).then((r) => {
+        myRewards.value = r.data;
+        rewardsIntermediate.value = false;
       });
-    });
-  }
 
-  private async claimReward(reward: IReward) {
-    await dispatchCaptureApiError(this.$store, async () => {
-      const idx = this.myRewards.indexOf(reward);
-      this.myRewards.splice(idx, 1);
-      const newReward = (await api.claimReward(this.token, reward.id)).data;
-      this.myRewards.splice(idx, 0, newReward);
-    });
-  }
+      api2.getCoinPayments(token.value).then((r) => {
+        coinPayments.value = r.data;
+        coinPaymentsIntermediate.value = false;
+      });
 
-  private onDeleteAnswerDraft(uuid: string) {
-    if (this.myAnswerDrafts) {
-      let idx = this.myAnswerDrafts.findIndex((answer) => answer.uuid === uuid);
-      if (idx !== -1) {
-        this.myAnswerDrafts.splice(idx, 1);
-      }
+      api.getAnswerDrafts(token.value).then((r) => {
+        myAnswerDrafts.value = r.data;
+      });
+      api.getArticleDrafts(token.value).then((r) => {
+        myArticleDrafts.value = r.data;
+      });
+    }
+  });
+});
+
+async function loadSubscribedQuestions(skip: number, limit: number) {
+  let items: (IQuestionPreview | null)[] | null = null;
+  await dispatchCaptureApiError(store, async () => {
+    items = (await apiMe.getSubscribedQuestions(token.value, skip, limit)).data;
+  });
+  return items;
+}
+
+async function loadSubscribedSubmissions(skip: number, limit: number) {
+  let items: (ISubmission | null)[] | null = null;
+  await dispatchCaptureApiError(store, async () => {
+    items = (await apiMe.getSubscribedSubmissions(token.value, skip, limit)).data;
+  });
+  return items;
+}
+
+async function loadBookmarkedAnswers(skip: number, limit: number) {
+  let items: (IAnswerPreview | null)[] | null = null;
+  await dispatchCaptureApiError(store, async () => {
+    items = (await apiMe.getAnswerBookmarks(token.value, skip, limit)).data;
+  });
+  return items;
+}
+
+async function loadBookmarkedArticles(skip: number, limit: number) {
+  let items: (IArticlePreview | null)[] | null = null;
+  await dispatchCaptureApiError(store, async () => {
+    items = (await apiMe.getArticleBookmarks(token.value, skip, limit)).data;
+  });
+  return items;
+}
+
+async function onChangeEmailNotifications() {
+  await dispatchCaptureApiError(store, async () => {
+    changingMySettings.value = true;
+    const newProfile = (
+      await apiMe.updateMe(token.value, {
+        enable_deliver_unread_notifications: enableEmailNotifications.value,
+      })
+    ).data;
+    commitSetUserProfile(store, newProfile);
+    changingMySettings.value = false;
+    commitAddNotification(store, { content: '已保存', color: 'info' });
+  });
+}
+
+async function onChangeEditorMode() {
+  await dispatchCaptureApiError(store, async () => {
+    changingMySettings.value = true;
+    const newProfile = (
+      await apiMe.updateMe(token.value, {
+        default_editor_mode: selectedEditorMode.value,
+      })
+    ).data;
+    commitSetUserProfile(store, newProfile);
+    changingMySettings.value = false;
+    commitAddNotification(store, { content: '已保存', color: 'info' });
+  });
+}
+
+async function onChangeTheme() {
+  await dispatchCaptureApiError(store, async () => {
+    changingMySettings.value = true;
+    commitSetTheme(store, selectedTheme.value);
+    setLocalValue(themeLocalStorageKey, selectedTheme.value);
+    changingMySettings.value = false;
+    commitAddNotification(store, { content: '已保存', color: 'info' });
+  });
+}
+
+async function claimReward(reward: IReward) {
+  await dispatchCaptureApiError(store, async () => {
+    const idx = myRewards.value.indexOf(reward);
+    myRewards.value.splice(idx, 1);
+    const newReward = (await api.claimReward(token.value, reward.id)).data;
+    myRewards.value.splice(idx, 0, newReward);
+  });
+}
+
+function onDeleteAnswerDraft(uuid: string) {
+  if (myAnswerDrafts.value) {
+    let idx = myAnswerDrafts.value.findIndex((answer) => answer.uuid === uuid);
+    if (idx !== -1) {
+      myAnswerDrafts.value.splice(idx, 1);
     }
   }
+}
 
-  private async updateLabs() {
-    this.changingMySettings = true;
-    if (this.tiptapEditorOptionOn) {
-      await dispatchAddFlag(this.$store, LABS_TIPTAP_EDITOR_OPTION);
-    } else {
-      await dispatchRemoveFlag(this.$store, LABS_TIPTAP_EDITOR_OPTION);
-    }
-    this.changingMySettings = false;
-    this.$router.go(0);
+async function updateLabs() {
+  changingMySettings.value = true;
+  if (tiptapEditorOptionOn.value) {
+    await dispatchAddFlag(store, LABS_TIPTAP_EDITOR_OPTION);
+  } else {
+    await dispatchRemoveFlag(store, LABS_TIPTAP_EDITOR_OPTION);
   }
+  changingMySettings.value = false;
+  router.go(0);
+}
 
-  private async unblockOrigin(origin: IOrigin) {
-    await apiActivity.updateOrigins(this.token, { action: 'remove', origin });
-    await commitAddNotification(this.$store, {
-      color: 'info',
-      content: '过滤规则更新成功，稍后自动生效',
-    });
-    await this.$router.go(0);
-  }
+async function unblockOrigin(origin: IOrigin) {
+  await apiActivity.updateOrigins(token.value, { action: 'remove', origin });
+  await commitAddNotification(store, {
+    color: 'info',
+    content: '过滤规则更新成功，稍后自动生效',
+  });
+  await router.go(0);
 }
 </script>

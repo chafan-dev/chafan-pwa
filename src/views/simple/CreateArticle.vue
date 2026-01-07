@@ -57,81 +57,71 @@
   </v-main>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { apiArticle } from '@/api/article';
-
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
+import { info } from '@/logging';
+import { useAuth } from '@/composables';
 
-import { CVue } from '@/common';
-import  { info }  from '@/logging'
+const { token, loggedIn } = useAuth();
 
-// TODO: share a parent component with Login.vue
-@Component({
-  components: {
-    DebugSpan,
-  },
-})
-export default class SimpleSubmitArticle extends CVue {
+const article_title = ref('title');
+const column_uuid = ref('uuid');
+const article_content = ref('body');
 
-    private article_title: string = "title";
-    private column_uuid:string = "uuid";
-    private article_content:string = "body";
-    private mounted() {
-        info("mounted");
-        if (!this.loggedIn) {
-            info("not logged");
-        } else {
-            info("logged in");
-        }
-        info(window.location.search);
-        const params = this.parseQueryParams();
-        setTimeout(() => {
-            this.article_title = params.get("article_title")!;
-            this.column_uuid   = params.get("column_uuid")!;
-            this.article_content = params.get("article_content")!;
-        },50);
-    }
+function parseQueryParams(): Map<string, string> {
+  const queryMap = new Map<string, any>([
+    ['article_title', ''],
+    ['column_uuid', ''],
+    ['article_content', ''],
+  ]);
+  const params = new URLSearchParams(window.location.search);
+  for (const [key, value_raw] of params.entries()) {
+    const value = decodeURIComponent(value_raw);
+    queryMap.set(key, value);
+  }
+  return queryMap;
+}
 
-    private parseQueryParams() : Map<string,string> {
-        const queryMap = new Map<string,any> ([
-            ["article_title", ""],
-            ["column_uuid", ""],
-            ["article_content", ""]
-        ]);
-        const params = new URLSearchParams(window.location.search);
-        for (const [key, value_raw] of params.entries()) {
-            const value = decodeURIComponent(value_raw);
-            queryMap.set(key, value);
-        }
-        return queryMap;
-    }
+onMounted(() => {
+  info('mounted');
+  if (!loggedIn.value) {
+    info('not logged');
+  } else {
+    info('logged in');
+  }
+  info(window.location.search);
+  const params = parseQueryParams();
+  setTimeout(() => {
+    article_title.value = params.get('article_title')!;
+    column_uuid.value = params.get('column_uuid')!;
+    article_content.value = params.get('article_content')!;
+  }, 50);
+});
 
-    private async submitArticle() {
-        info("submitArticle");
+async function submitArticle() {
+  info('submitArticle');
 
-        const response = await apiArticle.postArticle(this.token, {
-            title: this.article_title,
-            content: {
-              source: this.article_content,
-              editor: "wysiwyg",
-            },
-            visibility: "anyone",
-            is_published: true,
-            article_column_uuid: this.column_uuid,
-            writing_session_uuid: "simple_editor:" + uuidv4()
-        });
-        if (response.status == 200) {
-            const href = window.location.origin + "/articles/" + response.data.uuid;
-            info("Create Article succeeded. Jumping to such page: " + href);
-            window.open(href, '_blank')!.focus();
-        } else {
-            info("POST article failed!");
-            info(response.toString());
-        }
-    }
-
+  const response = await apiArticle.postArticle(token.value, {
+    title: article_title.value,
+    content: {
+      source: article_content.value,
+      editor: 'wysiwyg',
+    },
+    visibility: 'anyone',
+    is_published: true,
+    article_column_uuid: column_uuid.value,
+    writing_session_uuid: 'simple_editor:' + uuidv4(),
+  });
+  if (response.status == 200) {
+    const href = window.location.origin + '/articles/' + response.data.uuid;
+    info('Create Article succeeded. Jumping to such page: ' + href);
+    window.open(href, '_blank')!.focus();
+  } else {
+    info('POST article failed!');
+    info(response.toString());
+  }
 }
 </script>

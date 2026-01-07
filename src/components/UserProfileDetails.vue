@@ -181,15 +181,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import {
   ISite,
   IUserEducationExperience,
   IUserPublic,
   IUserWorkExperience,
-  IUserSiteProfile,
 } from '@/interfaces';
-import { Component, Prop } from 'vue-property-decorator';
 import SiteBtn from '@/components/SiteBtn.vue';
 import TwitterIcon from '@/components/icons/TwitterIcon.vue';
 import WebIcon from '@/components/icons/WebIcon.vue';
@@ -198,53 +197,46 @@ import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 import { apiPeople } from '@/api/people';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
-import { CVue } from '@/common';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
 import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
+import Viewer from '@/components/Viewer.vue';
+import { useAuth, useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    ContribGraphs,
-    TopicChip,
-    ZhihuIcon,
-    WorkExp,
-    EduExp,
-    SiteBtn,
-    TwitterIcon,
-    WebIcon,
-    GithubIcon,
-    LinkedinIcon,
-  },
-})
-export default class UserProfileDetails extends CVue {
-  @Prop() public readonly userPublic!: IUserPublic;
-  private eduExps: IUserEducationExperience[] | null = null;
-  private workExps: IUserWorkExperience[] | null = null;
-  private sites: ISite[] | null = null;
+const props = defineProps<{
+  userPublic: IUserPublic;
+}>();
 
-  async mounted() {
-    if (this.loggedIn) {
-      this.eduExps = this.userPublic.edu_exps
-        ? this.userPublic.edu_exps
-        : (await apiPeople.getUserEducationExperiences(this.token, this.userPublic.uuid)).data;
-      this.workExps = this.userPublic.work_exps
-        ? this.userPublic.work_exps
-        : (await apiPeople.getUserWorkExperiences(this.token, this.userPublic.uuid)).data;
-      let userSiteProfiles = (await apiPeople.getUserSiteProfiles(this.token, this.userPublic.uuid))
-        .data;
-      this.sites = await Promise.all(userSiteProfiles.map((p) => p.site));
-    }
+const { token, loggedIn } = useAuth();
+const { isDesktop } = useResponsive();
+
+const currentUserId = useAuth().userProfile.value?.uuid;
+
+const eduExps = ref<IUserEducationExperience[] | null>(null);
+const workExps = ref<IUserWorkExperience[] | null>(null);
+const sites = ref<ISite[] | null>(null);
+
+onMounted(async () => {
+  if (loggedIn.value) {
+    eduExps.value = props.userPublic.edu_exps
+      ? props.userPublic.edu_exps
+      : (await apiPeople.getUserEducationExperiences(token.value, props.userPublic.uuid)).data;
+    workExps.value = props.userPublic.work_exps
+      ? props.userPublic.work_exps
+      : (await apiPeople.getUserWorkExperiences(token.value, props.userPublic.uuid)).data;
+    let userSiteProfiles = (await apiPeople.getUserSiteProfiles(token.value, props.userPublic.uuid))
+      .data;
+    sites.value = await Promise.all(userSiteProfiles.map((p) => p.site));
   }
+});
 
-  canonicalURLfromUsername(username: string, domain: string) {
-    if (username.startsWith(domain)) {
-      return 'https://' + username;
-    } else if (username.includes(domain)) {
-      return username;
-    } else {
-      return 'https://' + domain + '/' + username;
-    }
+function canonicalURLfromUsername(username: string, domain: string) {
+  if (username.startsWith(domain)) {
+    return 'https://' + username;
+  } else if (username.includes(domain)) {
+    return username;
+  } else {
+    return 'https://' + domain + '/' + username;
   }
 }
 </script>

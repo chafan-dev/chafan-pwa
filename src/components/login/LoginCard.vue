@@ -130,8 +130,9 @@
   </v-sheet>
 </template>
 
-<script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import PasswordIcon from '@/components/icons/PasswordIcon.vue';
 import JoinChafanIcon from '@/components/icons/JoinChafanIcon.vue';
@@ -139,7 +140,7 @@ import EmailIcon from '@/components/icons/EmailIcon.vue';
 import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
 import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
 
-import { appName, enableCaptcha } from '@/env';
+import { appName, enableCaptcha as enableCaptchaEnv } from '@/env';
 import { readLoginError } from '@/store/main/getters';
 import { dispatchLogIn } from '@/store/main/actions';
 import { commitAddNotification } from '@/store/main/mutations';
@@ -150,74 +151,63 @@ import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
 import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
 import HelpIcon from '@/components/icons/HelpIcon.vue';
-import { CVue } from '@/common';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
+import { useResponsive } from '@/composables';
 
-@Component({
-  components: {
-    VerificationCodeBtn,
-    HelpIcon,
-    EmailEditOutline,
-    HelpCircleOutline,
-    LockOutlineIcon,
-    LockOutline,
-    AccountCircleOutlineIcon,
-    AccountIcon,
-    PasswordIcon,
-    VerifyCodeIcon,
-    JoinChafanIcon,
-    EmailIcon,
-    CellphoneIcon,
-  },
-})
-export default class LoginCard extends CVue {
-  @Prop({ default: true }) public readonly showTopBar!: boolean;
-  private email: string = '';
-  private password: string = '';
-  private appName = appName;
-  private submitIntermediate = false;
-  private verificationCode: string | null = null;
-  private captchaVerified = false;
-  private captchaToken: string | null = null;
-
-  get enableCaptcha() {
-    return enableCaptcha;
+const props = withDefaults(
+  defineProps<{
+    showTopBar?: boolean;
+  }>(),
+  {
+    showTopBar: true,
   }
+);
 
-  private get loginError() {
-    this.submitIntermediate = false;
-    return readLoginError(this.$store);
-  }
+const store = useStore();
+const { isDesktop } = useResponsive();
 
-  private async submit() {
-    this.submitIntermediate = true;
-    try {
-      if (this.enableCaptcha && !this.captchaToken) {
-        this.submitIntermediate = false;
-        return;
-      }
-      await dispatchLogIn(this.$store, {
-        username: this.email,
-        password: this.password,
-        hcaptcha_token: undefined,
-      });
-    } catch (err: any) {
-      if (err.toString() === 'Error: Incorrect email or password') {
-        commitAddNotification(this.$store, {
-          content: '邮箱地址或密码不正确',
-          color: 'error',
-        });
-      } else {
-        captureException(err);
-      }
-    } finally {
-      this.submitIntermediate = false;
+const email = ref('');
+const password = ref('');
+const submitIntermediate = ref(false);
+const verificationCode = ref<string | null>(null);
+const captchaVerified = ref(false);
+const captchaToken = ref<string | null>(null);
+
+const enableCaptcha = computed(() => enableCaptchaEnv);
+
+const loginError = computed(() => {
+  submitIntermediate.value = false;
+  return readLoginError(store);
+});
+
+async function submit() {
+  submitIntermediate.value = true;
+  try {
+    if (enableCaptcha.value && !captchaToken.value) {
+      submitIntermediate.value = false;
+      return;
     }
+    await dispatchLogIn(store, {
+      username: email.value,
+      password: password.value,
+      hcaptcha_token: undefined,
+    });
+  } catch (err: any) {
+    if (err.toString() === 'Error: Incorrect email or password') {
+      commitAddNotification(store, {
+        content: '邮箱地址或密码不正确',
+        color: 'error',
+      });
+    } else {
+      captureException(err);
+    }
+  } finally {
+    submitIntermediate.value = false;
   }
+}
 
-  private verifiedCaptchaToken(token: string) {
-    this.captchaVerified = true;
-    this.captchaToken = token;
-  }
+function verifiedCaptchaToken(token: string) {
+  captchaVerified.value = true;
+  captchaToken.value = token;
 }
 </script>
