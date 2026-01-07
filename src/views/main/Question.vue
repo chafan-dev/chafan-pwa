@@ -151,7 +151,7 @@
                   </p>
                 </div>
                 <v-spacer />
-                <div class="pa-1 text-center" style="float: right">
+                <div class="pa-1 text-center float-right">
                   <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                   <span class="text-caption">查看原问题</span>
                 </div>

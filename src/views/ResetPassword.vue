@@ -44,7 +44,7 @@
                   <b
                     >无效的密码重置链接，可能已过期，<a
                       href="/recover-password"
-                      style="text-decoration: none"
+                      class="text-decoration-none"
                       >请重试。</a
                     ></b
                   >

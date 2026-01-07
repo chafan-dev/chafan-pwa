@@ -267,7 +267,7 @@ export const uuidv4 = () => {
   });
 };
 
-export const rankComments = (dayjs, comments: IComment[]) => {
+export const rankComments = (dayjs: typeof import('dayjs'), comments: IComment[]) => {
   return comments.sort((a, b) => {
     if (a.upvotes_count > b.upvotes_count) {
       return -1;
@@ -279,9 +279,9 @@ export const rankComments = (dayjs, comments: IComment[]) => {
   });
 };
 
-export const getRecentYears = (dayjs) => {
+export const getRecentYears = (dayjs: typeof import('dayjs')) => {
   return range(1950, dayjs().year(), 1)
-    .map((y) => y.toString())
+    .map((y: number) => y.toString())
     .reverse();
 };
 
@@ -296,7 +296,7 @@ export interface IArticleDraft {
 }
 
 export const getArticleDraft = async (
-  dayjs,
+  dayjs: typeof import('dayjs'),
   token: string,
   uuid: string
 ): Promise<IArticleDraft | null> => {
@@ -306,7 +306,7 @@ export const getArticleDraft = async (
   if (
     (draft.title_draft || draft.content_draft) &&
     (localSavedEdit === null ||
-      dayjs.utc(draft.draft_saved_at).isAfter(dayjs(localSavedEdit.createdAt)))
+      dayjs.utc(draft.draft_saved_at).isAfter(dayjs(String(localSavedEdit.createdAt))))
   ) {
     return {
       title: draft.title_draft,

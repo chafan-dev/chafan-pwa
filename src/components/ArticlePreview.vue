@@ -1,7 +1,7 @@
 <template>
   <div class="pa-2">
     <v-chip v-if="!articlePreview.is_published" class="ml-2" small>初稿</v-chip>
-    <div class="title" style="word-break: normal">
+    <div class="title word-break-normal">
       <router-link :to="'/articles/' + articlePreview.uuid" class="text-decoration-none">
         {{ articlePreview.title }}
       </router-link>

@@ -1,6 +1,6 @@
 <template>
   <div :class="theme.feed.submissionPreview.classes">
-    <div class="title" style="word-break: normal">
+    <div class="title word-break-normal">
       <router-link
         :class="theme.feed.submissionPreview.link.classes"
         :to="'/submissions/' + submission.uuid"

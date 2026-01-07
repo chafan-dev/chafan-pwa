@@ -94,7 +94,7 @@
         >
       </div>
       <div v-if="buildInfo" class="caption grey--text">
-        <pre style="cursor: pointer" @click="expandDebugInfo = !expandDebugInfo">
+        <pre class="cursor-pointer" @click="expandDebugInfo = !expandDebugInfo">
 v{{ buildInfo.commitHashShort }}</pre
         >
         <v-expand-transition>

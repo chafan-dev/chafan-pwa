@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row justify="center">
       <!-- Main panel -->
-      <v-col style="max-width: 1000px">
+      <v-col class="max-w-1000">
         <UserProfileCard
           v-if="userPublic || userPublicForVisitor"
           :userPreview="userPublic ? userPublic : userPublicForVisitor"

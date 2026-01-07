@@ -10,9 +10,9 @@
       max-height="600"
       offset-y
     >
-      <div style="min-width: 220px">
+      <div class="min-w-220">
         <SearchResults ref="searchResults" :onReady="onReady" :query="currentQuery" />
-        <div style="background: white">
+        <div class="bg-white">
           <v-divider class="mx-1 mb-1" />
           <div class="d-flex pb-1 pr-1">
             <v-spacer />

@@ -492,15 +492,16 @@ const errorMsgCN = {
   'Delete answer failed': '删除答案失败',
 };
 // TODO remove this function.
-export const translateErrorMsgCN = (s: string) => {
-  if (s in errorMsgCN) {
-    return errorMsgCN[s];
+export const translateErrorMsgCN = (s: string): string => {
+  const msgMap = errorMsgCN as Record<string, string>;
+  if (s in msgMap) {
+    return msgMap[s];
   }
-  if (s + '.' in errorMsgCN) {
-    return errorMsgCN[s + '.'];
+  if (s + '.' in msgMap) {
+    return msgMap[s + '.'];
   }
-  if (s[s.length - 1] === '.' && s.substr(0, s.length - 1) in errorMsgCN) {
-    return errorMsgCN[s.substr(0, s.length - 1)];
+  if (s[s.length - 1] === '.' && s.substring(0, s.length - 1) in msgMap) {
+    return msgMap[s.substring(0, s.length - 1)];
   }
   return s;
 };

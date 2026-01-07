@@ -40,9 +40,10 @@ export const apiMe = {
     data.homepage_url = addSchemeToUrl(data.homepage_url);
     data.linkedin_url = addSchemeToUrl(data.linkedin_url);
     // Empty string should not be sent as part of update data
-    for (const key in data) {
-      if (data[key] === '') {
-        delete data[key];
+    const dataRecord = data as Record<string, unknown>;
+    for (const key of Object.keys(dataRecord)) {
+      if (dataRecord[key] === '') {
+        delete dataRecord[key];
       }
     }
     return axios.put<IUserProfile>(`${apiUrl}/me`, data, authHeaders(token));
