@@ -181,14 +181,14 @@ export const logDebug = (msg: string) => {
 };
 
 export const newArticleHandler = async (
-  vueInstance: any,
+  context: { token: string; store: any; router?: any },
   edit: IRichEditorState,
   writingSessionUUID: string,
   isAutosaved: boolean,
   articleColumnId: string
 ) => {
   if (!edit.title || !edit.body) {
-    commitAddNotification(vueInstance.$store, {
+    commitAddNotification(context.store, {
       content: '文章必须有标题',
       color: 'error',
     });
@@ -196,7 +196,7 @@ export const newArticleHandler = async (
   }
   try {
     const newArticle = (
-      await apiArticle.postArticle(vueInstance.$store.state.main.token, {
+      await apiArticle.postArticle(context.token, {
         title: edit.title,
         content: {
           source: edit.body,
@@ -210,14 +210,14 @@ export const newArticleHandler = async (
       })
     ).data;
     const articleId = newArticle.uuid;
-    if (!isAutosaved) {
-      await vueInstance.$router.push(`/articles/${articleId}`);
+    if (!isAutosaved && context.router) {
+      await context.router.push(`/articles/${articleId}`);
     }
     return newArticle;
   } catch (err: any) {
     if (!isDev) {
       captureException(err);
-      await dispatchCheckApiError(vueInstance.$store, err);
+      await dispatchCheckApiError(context.store, err);
     } else {
       throw err;
     }
