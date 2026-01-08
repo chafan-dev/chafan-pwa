@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import store from '@/store';
-import { useRouter } from '@/router';
+import { useRouter } from 'vue-router/composables';
 import { api } from '@/api';
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';

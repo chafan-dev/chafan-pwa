@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import store from '@/store';
-import { useRoute } from '@/router';
+import { useRoute } from 'vue-router/composables';
 import { apiTopic } from '@/api/topic';
 import { IQuestionPreview, ITopic } from '@/interfaces';
 import TopicCard from '@/components/TopicCard.vue';

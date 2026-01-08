@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import store from '@/store';
-import { useRoute, useRouter } from '@/router';
+import { useRoute, useRouter } from 'vue-router/composables';
 import { apiPeople } from '@/api/people';
 import { info } from '@/logging';
 

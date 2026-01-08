@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import store from '@/store';
-import { useRoute } from '@/router';
+import { useRoute } from 'vue-router/composables';
 import { apiArticle } from '@/api/article';
 import { IArticleColumn, IArticlePreview } from '@/interfaces';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';

@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import store from '@/store';
-import { useRoute, useRouter } from '@/router';
+import { useRoute, useRouter } from 'vue-router/composables';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import HomeSideCard from '@/components/HomeSideCard.vue';
 import HomeFabIcon from '@/components/icons/HomeFabIcon.vue';

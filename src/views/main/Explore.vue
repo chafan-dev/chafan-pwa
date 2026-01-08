@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import store from '@/store';
-import { useRoute, useRouter } from '@/router';
+import { useRoute, useRouter } from 'vue-router/composables';
 import { apiDiscovery } from '@/api/discovery';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 import { IQuestionPreview, IUserPreview } from '@/interfaces';

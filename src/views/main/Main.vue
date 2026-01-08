@@ -254,7 +254,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import store from '@/store';
-import { useRoute, useRouter } from '@/router';
+import { useRoute, useRouter } from 'vue-router/composables';
 
 import { appName, isDev } from '@/env';
 import {

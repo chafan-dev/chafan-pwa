@@ -78,7 +78,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import store from '@/store';
-import { useRoute, useRouter } from '@/router';
+import { useRoute, useRouter } from 'vue-router/composables';
 import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';

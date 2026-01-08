@@ -117,7 +117,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import store from '@/store';
-import { useRouter } from '@/router';
+import { useRouter } from 'vue-router/composables';
 import { IUserFollows, IUserPreview } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';

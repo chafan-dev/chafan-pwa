@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import store from '@/store';
-import { useRoute } from '@/router';
+import { useRoute } from 'vue-router/composables';
 import { api } from '@/api';
 import { IChannel } from '@/interfaces';
 import ChatWindow from '@/components/ChatWindow.vue';

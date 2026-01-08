@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
 import store from '@/store';
-import { useRoute } from '@/router';
+import { useRoute } from 'vue-router/composables';
 import { apiForm } from '@/api/forms';
 import { IForm, IFormResponse, IFormResponseCreate, IFormResponseField } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';

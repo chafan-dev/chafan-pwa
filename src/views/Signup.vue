@@ -131,7 +131,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import store from '@/store';
-import { useRoute, useRouter } from '@/router';
+import { useRoute, useRouter } from 'vue-router/composables';
 import { api } from '@/api';
 import { appName } from '@/env';
 import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
