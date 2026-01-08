@@ -112,7 +112,7 @@ const props = defineProps<{
 }>();
 
 const { token, userProfile } = useAuth();
-const dayjs = useDayjs();
+const { dayjs } = useDayjs();
 
 function fromNow(date: string) {
   return dayjs(date).fromNow();

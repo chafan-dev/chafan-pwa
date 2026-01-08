@@ -220,7 +220,7 @@ const route = useRoute();
 const router = useRouter();
 const { token, userProfile, loggedIn } = useAuth();
 const { isDesktop } = useResponsive();
-const dayjs = useDayjs();
+const { dayjs } = useDayjs();
 const { commitErrMsg } = useErrorHandling();
 
 const viewer = ref<any>(null);

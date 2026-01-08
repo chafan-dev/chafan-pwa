@@ -358,7 +358,7 @@ interface IUserEducationExperienceItem {
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
-const dayjs = useDayjs();
+const { dayjs } = useDayjs();
 
 const valid = ref(true);
 const newResidencyTopicNames = ref<string[]>([]);

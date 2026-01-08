@@ -147,7 +147,7 @@ const props = withDefaults(
 );
 
 const { currentUserId } = useAuth();
-const $dayjs = useDayjs();
+const { dayjs: $dayjs } = useDayjs();
 
 function onClick() {
   if (props.onClickHandler) {

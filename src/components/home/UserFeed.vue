@@ -223,7 +223,7 @@ const props = withDefaults(
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { theme } = useTheme();
-const dayjs = useDayjs();
+const { dayjs } = useDayjs();
 
 function fromNow(date: string) {
   return dayjs(date).fromNow();

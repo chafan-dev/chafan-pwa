@@ -507,7 +507,7 @@ const route = useRoute();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
-const dayjs = useDayjs();
+const { dayjs } = useDayjs();
 const { recursiveCommentsCount } = useErrorHandling();
 
 function fromNow(date: string) {
