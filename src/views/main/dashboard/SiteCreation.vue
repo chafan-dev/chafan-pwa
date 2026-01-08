@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { ISite, ISiteCreate, ITopic } from '@/interfaces';
 import { apiTopic } from '@/api/topic';
 import { apiSite } from '@/api/site';
@@ -40,7 +40,6 @@ const props = defineProps<{
   applicantUuid: string;
 }>();
 
-const store = useStore();
 const { token, userProfile } = useAuth();
 
 const topic = ref<ITopic | null>(null);

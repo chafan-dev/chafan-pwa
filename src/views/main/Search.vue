@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from '@/router';
+import { useRoute } from 'vue-router/composables';
 import SearchResults from '@/components/SearchResults.vue';
 
 const route = useRoute();

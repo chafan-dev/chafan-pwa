@@ -196,8 +196,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from '@/router';
+import store from '@/store';
+import { useRouter } from 'vue-router/composables';
 import {
   IAuditLog,
   IUserProfileUpdate,
@@ -218,7 +218,6 @@ import { AxiosError } from 'axios';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import { useAuth, useErrorHandling } from '@/composables';
 
-const store = useStore();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { commitErrMsg } = useErrorHandling();

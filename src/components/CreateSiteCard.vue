@@ -61,8 +61,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from '@/router';
+import store from '@/store';
+import { useRouter } from 'vue-router/composables';
 import { ISiteCreate, ITopic } from '@/interfaces';
 import { api } from '@/api';
 import { dispatchCaptureApiErrorWithErrorHandler } from '@/store/main/actions';
@@ -70,7 +70,6 @@ import { AxiosError } from 'axios';
 import { apiSite } from '@/api/site';
 import { useAuth, useErrorHandling } from '@/composables';
 
-const store = useStore();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { commitErrMsg } = useErrorHandling();

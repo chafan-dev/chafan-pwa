@@ -9,13 +9,12 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { AppNotification } from '@/store/main/state';
 import { commitRemoveNotification } from '@/store/main/mutations';
 import { readFirstNotification } from '@/store/main/getters';
 import { dispatchRemoveNotification } from '@/store/main/actions';
 
-const store = useStore();
 
 const show = ref(false);
 const showProgress = ref(false);
