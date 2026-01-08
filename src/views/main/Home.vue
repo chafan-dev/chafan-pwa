@@ -68,7 +68,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import HomeSideCard from '@/components/HomeSideCard.vue';
@@ -84,7 +84,6 @@ import UserSubmissionsRankedFeed from '@/components/home/UserSubmissionsRankedFe
 import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import { useAuth, useTheme, useResponsive } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { userProfile } = useAuth();

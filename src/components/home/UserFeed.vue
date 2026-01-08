@@ -185,7 +185,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRouter } from '@/router';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { CombinedActivities } from '@/CombinedActivities';
@@ -220,7 +220,6 @@ const props = withDefaults(
   }
 );
 
-const store = useStore();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { theme } = useTheme();

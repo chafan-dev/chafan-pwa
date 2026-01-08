@@ -253,7 +253,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 
 import { appName, isDev } from '@/env';
@@ -294,7 +294,6 @@ import FeedbackIcon from '@/components/icons/FeedbackIcon.vue';
 import Notifications from '@/components/Notifications.vue';
 import { useAuth } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, userProfile } = useAuth();

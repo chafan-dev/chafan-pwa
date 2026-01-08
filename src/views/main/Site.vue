@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { api } from '@/api';
 import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interfaces';
@@ -126,7 +126,6 @@ import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import { useAuth, useResponsive } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, userProfile } = useAuth();

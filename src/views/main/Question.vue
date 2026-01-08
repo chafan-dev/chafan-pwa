@@ -360,7 +360,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from 'vue-router/composables';
 
 import Answer from '@/components/Answer.vue';
@@ -417,7 +417,6 @@ import TopicChip from '@/components/widgets/TopicChip.vue';
 import { warn, info } from '@/logging';
 import { useAuth, useTheme, useResponsive, useErrorHandling } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, userProfile, loggedIn } = useAuth();

@@ -258,7 +258,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRouter } from '@/router';
 import { IUserFollows, IUserPreview, IUserPublic } from '@/interfaces';
 import { api } from '@/api';
@@ -281,7 +281,6 @@ const props = defineProps<{
   siteKarmas?: number;
 }>();
 
-const store = useStore();
 const router = useRouter();
 const { token, loggedIn } = useAuth();
 const { isDesktop } = useResponsive();

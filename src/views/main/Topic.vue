@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute } from '@/router';
 import { apiTopic } from '@/api/topic';
 import { IQuestionPreview, ITopic } from '@/interfaces';
@@ -63,7 +63,6 @@ import DynamicItemList from '@/components/DynamicItemList.vue';
 import { readNarrowUI } from '@/store/main/getters';
 import { useAuth } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const { token } = useAuth();
 

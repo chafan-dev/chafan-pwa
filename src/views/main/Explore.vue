@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { apiDiscovery } from '@/api/discovery';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
@@ -67,7 +67,6 @@ import { useAuth } from '@/composables';
 
 const defaultTab = 'featured-answers';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();

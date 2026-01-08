@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { apiPeople } from '@/api/people';
 import { info } from '@/logging';
@@ -110,7 +110,6 @@ import UserFeed from '@/components/home/UserFeed.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { useAuth, useResponsive } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, loggedIn, userProfile } = useAuth();

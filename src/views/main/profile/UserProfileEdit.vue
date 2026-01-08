@@ -308,7 +308,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRouter } from 'vue-router/composables';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
@@ -355,7 +355,6 @@ interface IUserEducationExperienceItem {
   graduate_year?: string;
 }
 
-const store = useStore();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();

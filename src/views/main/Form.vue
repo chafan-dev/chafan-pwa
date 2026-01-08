@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute } from '@/router';
 import { apiForm } from '@/api/forms';
 import { IForm, IFormResponse, IFormResponseCreate, IFormResponseField } from '@/interfaces';
@@ -61,7 +61,6 @@ import { dispatchCaptureApiError } from '@/store/main/actions';
 import FormResponseCard from '@/components/FormResponseCard.vue';
 import { commitAddNotification } from '@/store/main/mutations';
 
-const store = useStore();
 const route = useRoute();
 
 const form = ref<IForm | null>(null);

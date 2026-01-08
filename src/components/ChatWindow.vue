@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { api } from '@/api';
 import { IChannel, IMessage, IMessageCreate, IRichText } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
@@ -111,7 +111,6 @@ const props = defineProps<{
   channel: IChannel;
 }>();
 
-const store = useStore();
 const { token, userProfile } = useAuth();
 const dayjs = useDayjs();
 

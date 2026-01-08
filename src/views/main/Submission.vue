@@ -460,7 +460,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from 'vue-router/composables';
 
 import SiteBtn from '@/components/SiteBtn.vue';
@@ -503,7 +503,6 @@ import DiffView from '@/components/widgets/DiffView.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
 import { useAuth, useResponsive, useDayjs, useErrorHandling } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, userProfile } = useAuth();

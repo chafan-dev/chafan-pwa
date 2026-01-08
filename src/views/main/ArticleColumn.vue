@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute } from '@/router';
 import { apiArticle } from '@/api/article';
 import { IArticleColumn, IArticlePreview } from '@/interfaces';
@@ -37,7 +37,6 @@ import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import { useAuth, useResponsive } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const { token, loggedIn } = useAuth();
 const { isDesktop } = useResponsive();

@@ -309,7 +309,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
 import { api } from '@/api';
@@ -335,7 +335,6 @@ const defaultWebhookCreate: IWebhookCreate = {
   callback_url: '',
 };
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token } = useAuth();

@@ -130,7 +130,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { api } from '@/api';
 import { appName } from '@/env';
@@ -145,7 +145,6 @@ import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { email as emailRule } from 'vee-validate/dist/rules';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 

@@ -89,7 +89,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRouter } from '@/router';
 import { api } from '@/api';
 import { ISite } from '@/interfaces';
@@ -128,7 +128,6 @@ const props = withDefaults(
   }
 );
 
-const store = useStore();
 const router = useRouter();
 const { token } = useAuth();
 const { isDesktop } = useResponsive();

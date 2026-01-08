@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRouter } from '@/router';
 import { IArticleColumn, IArticleColumnCreate } from '@/interfaces';
 import { commitAddNotification } from '@/store/main/mutations';
@@ -43,7 +43,6 @@ const props = defineProps<{
   onNewArticleColumn?: (articleColumn: IArticleColumn) => void;
 }>();
 
-const store = useStore();
 const router = useRouter();
 const { token } = useAuth();
 

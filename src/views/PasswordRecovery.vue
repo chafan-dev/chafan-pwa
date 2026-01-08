@@ -55,13 +55,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRouter } from '@/router';
 import { appName } from '@/env';
 import { dispatchPasswordRecovery } from '@/store/main/actions';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 
-const store = useStore();
 const router = useRouter();
 
 const valid = ref(true);

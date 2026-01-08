@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
@@ -88,7 +88,6 @@ import { translateErrorMsgCN } from '@/common';
 import { commitAddNotification } from '@/store/main/mutations';
 import { useAuth } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, loggedIn } = useAuth();

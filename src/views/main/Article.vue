@@ -183,7 +183,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { useRoute, useRouter } from '@/router';
 import { IArticle, IArticleUpvotes, IUserArticleBookmark } from '@/interfaces';
 import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
@@ -216,7 +216,6 @@ import Upvote from '@/components/Upvote.vue';
 import { AxiosError } from 'axios';
 import { useAuth, useResponsive, useDayjs, useErrorHandling } from '@/composables';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const { token, userProfile, loggedIn } = useAuth();
