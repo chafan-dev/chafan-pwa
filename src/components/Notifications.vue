@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 
 import MuteNotificationIcon from '@/components/icons/MuteNotificationIcon.vue';
 import NotificationIcon from '@/components/icons/NotificationIcon.vue';
@@ -118,7 +118,6 @@ import Event from '@/components/Event.vue';
 import { logDebug } from '@/utils';
 import { useAuth } from '@/composables';
 
-const store = useStore();
 const { token, userProfile } = useAuth();
 
 const notifications = ref<INotification[]>([]);

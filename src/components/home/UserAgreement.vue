@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { dispatchAddFlag } from '@/store/main/actions';
 import { YES_FLAG } from '@/common';
@@ -27,7 +27,6 @@ const props = defineProps<{
   userProfile: IUserProfile;
 }>();
 
-const store = useStore();
 const overlay = ref(false);
 const showUserAgreement = ref(false);
 

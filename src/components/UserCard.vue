@@ -116,8 +116,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from '@/router';
+import store from '@/store';
+import { useRouter } from 'vue-router/composables';
 import { IUserFollows, IUserPreview } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
@@ -141,7 +141,6 @@ const props = withDefaults(
   }
 );
 
-const store = useStore();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { theme } = useTheme();

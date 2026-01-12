@@ -17,9 +17,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
-import { useStore } from 'vuex';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
+import store from '@/store';
 import { readShowLoginPrompt } from '@/store/main/getters';
 import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { getLocalValue, setAppLocale } from '@/utils';
@@ -31,8 +31,6 @@ import {
 import { getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
 import { ThemeType } from '@/interfaces';
 import { useTheme } from '@/composables';
-
-const store = useStore();
 const { theme } = useTheme();
 
 const registration = ref<ServiceWorkerRegistration | null>(null);

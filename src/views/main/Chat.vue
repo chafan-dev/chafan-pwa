@@ -11,14 +11,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useStore } from 'vuex';
-import { useRoute } from '@/router';
+import store from '@/store';
+import { useRoute } from 'vue-router/composables';
 import { api } from '@/api';
 import { IChannel } from '@/interfaces';
 import ChatWindow from '@/components/ChatWindow.vue';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 
-const store = useStore();
 const route = useRoute();
 
 const channel = ref<IChannel | null>(null);

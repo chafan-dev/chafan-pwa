@@ -12,14 +12,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { ISubmission } from '@/interfaces';
 import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSubmission } from '@/api/submission';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import { useAuth } from '@/composables';
 
-const store = useStore();
 const { token } = useAuth();
 
 const loadingSubmissions = ref(false);

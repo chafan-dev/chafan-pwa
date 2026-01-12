@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import AccountIcon from '@/components/icons/AccountIcon.vue';
 import PasswordIcon from '@/components/icons/PasswordIcon.vue';
 import JoinChafanIcon from '@/components/icons/JoinChafanIcon.vue';
@@ -163,7 +163,6 @@ const props = withDefaults(
   }
 );
 
-const store = useStore();
 const { isDesktop } = useResponsive();
 
 const email = ref('');

@@ -74,14 +74,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import { useRoute, useRouter } from '@/router';
+import store from '@/store';
+import { useRoute, useRouter } from 'vue-router/composables';
 import { appName } from '@/env';
 import { dispatchResetPassword } from '@/store/main/actions';
 import { api } from '@/api';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 
-const store = useStore();
 const route = useRoute();
 const router = useRouter();
 

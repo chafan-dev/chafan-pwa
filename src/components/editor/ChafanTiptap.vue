@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
-import { useStore } from 'vuex';
+import store from '@/store';
 import { apiSearch } from '@/api/search';
 import { IUserPreview } from '@/interfaces';
 
@@ -52,7 +52,6 @@ const props = withDefaults(
   }
 );
 
-const store = useStore();
 const instance = getCurrentInstance();
 
 const base = ref<any>(null);

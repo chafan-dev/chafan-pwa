@@ -185,8 +185,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from '@/router';
+import store from '@/store';
+import { useRouter } from 'vue-router/composables';
 import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
 import { CombinedActivities } from '@/CombinedActivities';
 import { IActivity, IOrigin, IUserPreview } from '@/interfaces';
@@ -220,11 +220,10 @@ const props = withDefaults(
   }
 );
 
-const store = useStore();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { theme } = useTheme();
-const dayjs = useDayjs();
+const { dayjs } = useDayjs();
 
 function fromNow(date: string) {
   return dayjs(date).fromNow();
