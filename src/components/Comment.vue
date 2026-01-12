@@ -82,7 +82,7 @@
       <!-- Part I -->
       <template v-if="upvotes && !comment.is_deleted">
         <UpvoteStat v-if="currentUserIsAuthor" :count="upvotes.count" class="mr-2" />
-        <span v-else class="d-flex align-center mr-2" style="cursor: pointer" @click="toggleUpvote">
+        <span v-else class="d-flex align-center mr-2 cursor-pointer" @click="toggleUpvote">
           <UpvotedIcon v-if="upvotes.upvoted" />
           <UpvoteIcon v-else />
           <span class="text-caption">{{ upvotes.count }}</span>
@@ -94,8 +94,7 @@
           <div
             v-bind="attrs"
             v-on="on"
-            class="pr-3"
-            style="cursor: pointer"
+            class="pr-3 cursor-pointer"
             @click="childCommentsExpanded = !childCommentsExpanded"
           >
             <DebugSpan>{{ childCommentsExpanded }}</DebugSpan>
@@ -109,8 +108,7 @@
       <template v-if="!comment.is_deleted && !currentUserIsAuthor">
         <span
           v-if="writable && !showEditor"
-          class="text-caption d-flex align-center"
-          style="cursor: pointer"
+          class="text-caption d-flex align-center cursor-pointer"
           @click="showEditor = true"
         >
           <ReplyIcon /> 回复

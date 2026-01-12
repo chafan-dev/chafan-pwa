@@ -1,6 +1,6 @@
 <template>
   <div :class="theme.feed.questionPreview.classes">
-    <div class="title" style="word-break: normal">
+    <div class="title word-break-normal">
       <router-link
         :class="theme.feed.questionPreview.link.classes"
         :to="'/questions/' + questionPreview.uuid"

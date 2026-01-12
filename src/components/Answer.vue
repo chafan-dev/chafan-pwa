@@ -9,7 +9,7 @@
       </div>
       <v-progress-linear indeterminate v-if="loading" height="2" class="mb-2" />
       <template>
-        <div v-if="preview || !answer" style="cursor: pointer" @click="expandDown">
+        <div v-if="preview || !answer" class="cursor-pointer" @click="expandDown">
           <span v-show="!inAnswerQuestionFeedCard">
             <UserLink :showAvatar="true" :userPreview="answerPreview.author" />:
           </span>
@@ -124,7 +124,7 @@
                         <div class="pt-2 d-flex">
                           <div>
                             <div class="text--primary text-body-1">
-                              <div class="pa-1 text-center" style="float: right">
+                              <div class="pa-1 text-center float-right">
                                 <v-img
                                   v-if="shareQrCodeUrl"
                                   :src="shareQrCodeUrl"
@@ -132,7 +132,7 @@
                                 />
                                 <span class="text-caption">查看原文</span>
                               </div>
-                              <p style="overflow-wrap: anywhere" v-if="answerPreview">
+                              <p class="overflow-wrap-anywhere" v-if="answerPreview">
                                 {{ answerPreview.body }}
                               </p>
                             </div>

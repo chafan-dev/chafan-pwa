@@ -1,6 +1,77 @@
 @import '~vuetify/src/styles/styles.sass';
 @import 'variables';
 
+// ============================================
+// Utility Classes
+// ============================================
+
+// Cursor utilities
+.cursor-pointer {
+  cursor: pointer;
+}
+
+// Float utilities
+.float-right {
+  float: right;
+}
+
+// Text wrapping utilities
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.word-break-normal {
+  word-break: normal;
+}
+
+// Overflow utilities
+.overflow-auto {
+  overflow: auto;
+}
+
+// Max-height utilities (common values)
+.max-h-300 {
+  max-height: 300px;
+}
+
+// Max-width utilities (common values)
+.max-w-80 {
+  max-width: 80px;
+}
+
+.max-w-100 {
+  max-width: 100px;
+}
+
+.max-w-1000 {
+  max-width: 1000px;
+}
+
+// Min-width utilities (common values)
+.min-w-100 {
+  min-width: 100px;
+}
+
+.min-w-220 {
+  min-width: 220px;
+}
+
+// Background utilities
+.bg-white {
+  background: $color-white;
+}
+
+// Debug highlight
+.debug-highlight {
+  background: #ffffa2;
+}
+
+// Flexbox utilities
+.justify-start {
+  justify-content: flex-start;
+}
+
+// ============================================
 // General
 .bottom-btn {
   box-shadow: $shadow-bottom-btn;

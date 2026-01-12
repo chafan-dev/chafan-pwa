@@ -3,7 +3,7 @@ import { isDev } from '@/utils';
 </script>
 
 <template>
-  <span style="background: #ffffa2">
+  <span class="debug-highlight">
     <template v-if="isDev || $route.query.debug_mode">
       <slot />
     </template>

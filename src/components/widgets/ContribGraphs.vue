@@ -7,7 +7,7 @@
       v-show="year === pair.year"
     />
     <v-select
-      style="max-width: 80px"
+      class="max-w-80"
       v-model="year"
       :items="data.map((p) => p.year)"
       dense

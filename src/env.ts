@@ -2,8 +2,24 @@ import dayjs from 'dayjs';
 
 export const env = process.env.VUE_APP_ENV;
 
-const envApi = `https://${process.env.VUE_APP_API}`;
-const envWs = `wss://${process.env.VUE_APP_API}`;
+// Allowed API host patterns for security validation
+const ALLOWED_HOST_PATTERNS = [
+  /^api[_-]?\w*\.cha\.fan$/, // api.cha.fan, api_dev.cha.fan, etc.
+  /^localhost(:\d+)?$/, // localhost with optional port for dev
+  /^127\.0\.0\.1(:\d+)?$/, // 127.0.0.1 with optional port for dev
+];
+
+function validateApiHost(host: string): string {
+  const isAllowed = ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(host));
+  if (!isAllowed) {
+    throw new Error(`Invalid API host: ${host}. Must match allowed patterns.`);
+  }
+  return host;
+}
+
+const apiHost = validateApiHost(process.env.VUE_APP_API || '');
+const envApi = `https://${apiHost}`;
+const envWs = `wss://${apiHost}`;
 
 const apiVersionSuffix = '/api/v1';
 

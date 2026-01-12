@@ -14,35 +14,34 @@
   "dependencies": {
     "@sentry/tracing": "^7.119.2",
     "@sentry/vue": "^7.119.2",
-    "axios": "^1.12.2",
+    "axios": "^1.13.2",
     "chafan-vue-editors": "^0.9.4",
-    "core-js": "^3.40.0",
-    "dayjs": "^1.11.13",
+    "core-js": "^3.47.0",
+    "dayjs": "^1.11.19",
     "diff": "^5.2.0",
-    "dompurify": "^3.2.6",
+    "dompurify": "^3.3.1",
     "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "piexifjs": "^1.0.6",
     "qrious": "^4.0.2",
     "register-service-worker": "^1.7.2",
-    "sass": "^1.85.0",
+    "sass": "^1.97.2",
     "typesafe-vuex": "^3.1.1",
     "uuid": "^11.0.3",
     "vee-validate": "^3.4.15",
     "vue": "^2.7.16",
-    "vue-class-component": "^7.2.6",
     "vue-i18n": "^8.28.2",
-    "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.6.5",
     "vuetify": "^2.7.2",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "^7.28.5",
     "@mdi/js": "^7.4.47",
     "@types/diff": "^5.2.3",
     "@types/jest": "^27.5.2",
+    "@types/lodash": "^4.17.21",
     "@types/node": "^17.0.45",
     "@types/sanitize-html": "^2.13.0",
     "@vue/cli-plugin-babel": "~5.0.8",
@@ -52,22 +51,22 @@
     "@vue/cli-service": "~5.0.8",
     "@vue/cli-shared-utils": "~5.0.8",
     "@vue/test-utils": "^1.3.6",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.23",
     "babel-core": "^7.0.0-bridge.0",
-    "body-parser": "^1.20.3",
+    "body-parser": "^1.20.4",
     "command-line-args": "^6.0.0",
     "css-select": "^5.1.0",
     "css-what": "^6.1.0",
-    "express": "^4.21.1",
+    "express": "^4.22.1",
     "express-ws": "^5.0.2",
     "jest": "^27.5.1",
     "lint-staged": "^15.2.10",
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.7.4",
     "sass-loader": "^10.5.2",
     "source-map-explorer": "^2.5.3",
-    "stylelint": "^16.25.0",
+    "stylelint": "^16.26.1",
     "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard-scss": "^14.0.0",
     "ts-jest": "^27.1.5",
@@ -75,7 +74,7 @@
     "vue-cli-plugin-vuetify": "^2.5.8",
     "vue-template-compiler": "^2.7.16",
     "vuetify-loader": "^1.9.2",
-    "webpack": "^5.96.1"
+    "webpack": "^5.104.1"
   },
   "resolutions": {
     "node-forge": "^1.3.3",
@@ -104,12 +103,16 @@
     ],
     "transform": {
       ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.jsx?$": "babel-jest"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(axios)/)"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     },
-    "testURL": "http://localhost/"
+    "testEnvironment": "jsdom"
   },
   "packageManager": "yarn@4.9.1"
 }

@@ -98,8 +98,9 @@ const errorMsg = ref<string | null>(null);
 const uuid = computed(() => route.params.uuid as string);
 
 onMounted(async () => {
-  await api.getInvitationLink({ $store: store }, uuid.value, (link) => {
-    invitationLink.value = link;
+  await dispatchCaptureApiError(store, async () => {
+    const response = await api.getInvitationLink(token.value, uuid.value);
+    invitationLink.value = response.data;
     if (!invitationLink.value?.valid) {
       commitAddNotification(store, {
         content: translateErrorMsgCN('Invalid invitation link'),

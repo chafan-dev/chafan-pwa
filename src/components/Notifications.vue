@@ -43,7 +43,7 @@
           </div>
         </v-sheet>
 
-        <div style="max-height: 300px; overflow: auto">
+        <div class="max-h-300 overflow-auto">
           <v-list class="py-0">
             <template v-for="(notif, idx) in notifications">
               <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />

@@ -181,14 +181,14 @@ export const logDebug = (msg: string) => {
 };
 
 export const newArticleHandler = async (
-  vueInstance: any,
+  context: { token: string; store: any; router?: any },
   edit: IRichEditorState,
   writingSessionUUID: string,
   isAutosaved: boolean,
   articleColumnId: string
 ) => {
   if (!edit.title || !edit.body) {
-    commitAddNotification(vueInstance.$store, {
+    commitAddNotification(context.store, {
       content: '文章必须有标题',
       color: 'error',
     });
@@ -196,7 +196,7 @@ export const newArticleHandler = async (
   }
   try {
     const newArticle = (
-      await apiArticle.postArticle(vueInstance.$store.state.main.token, {
+      await apiArticle.postArticle(context.token, {
         title: edit.title,
         content: {
           source: edit.body,
@@ -210,14 +210,14 @@ export const newArticleHandler = async (
       })
     ).data;
     const articleId = newArticle.uuid;
-    if (!isAutosaved) {
-      await vueInstance.$router.push(`/articles/${articleId}`);
+    if (!isAutosaved && context.router) {
+      await context.router.push(`/articles/${articleId}`);
     }
     return newArticle;
   } catch (err: any) {
     if (!isDev) {
       captureException(err);
-      await dispatchCheckApiError(vueInstance.$store, err);
+      await dispatchCheckApiError(context.store, err);
     } else {
       throw err;
     }
@@ -259,15 +259,10 @@ export const authHeadersWithParams = (token: string, params: URLSearchParams) =>
   };
 };
 
-export const uuidv4 = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
+// Re-export cryptographically secure UUID from uuid package
+export { v4 as uuidv4 } from 'uuid';
 
-export const rankComments = (dayjs, comments: IComment[]) => {
+export const rankComments = (dayjs: typeof import('dayjs'), comments: IComment[]) => {
   return comments.sort((a, b) => {
     if (a.upvotes_count > b.upvotes_count) {
       return -1;
@@ -279,9 +274,9 @@ export const rankComments = (dayjs, comments: IComment[]) => {
   });
 };
 
-export const getRecentYears = (dayjs) => {
+export const getRecentYears = (dayjs: typeof import('dayjs')) => {
   return range(1950, dayjs().year(), 1)
-    .map((y) => y.toString())
+    .map((y: number) => y.toString())
     .reverse();
 };
 
@@ -296,7 +291,7 @@ export interface IArticleDraft {
 }
 
 export const getArticleDraft = async (
-  dayjs,
+  dayjs: typeof import('dayjs'),
   token: string,
   uuid: string
 ): Promise<IArticleDraft | null> => {
@@ -306,7 +301,7 @@ export const getArticleDraft = async (
   if (
     (draft.title_draft || draft.content_draft) &&
     (localSavedEdit === null ||
-      dayjs.utc(draft.draft_saved_at).isAfter(dayjs(localSavedEdit.createdAt)))
+      dayjs.utc(draft.draft_saved_at).isAfter(dayjs(String(localSavedEdit.createdAt))))
   ) {
     return {
       title: draft.title_draft,

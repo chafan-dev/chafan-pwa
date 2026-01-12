@@ -6,13 +6,13 @@
     class="pa-3"
   >
     <v-row justify="center">
-      <v-col v-if="avatarURL" align-self="center" style="max-width: 100px">
+      <v-col v-if="avatarURL" align-self="center" class="max-w-100">
         <router-link :to="`/users/${userPreview.handle}`">
           <Avatar :avatar-url="avatarURL" size="85" />
         </router-link>
       </v-col>
       <v-col align-self="center">
-        <div class="mb-1 mt-1" style="min-width: 100px">
+        <div class="mb-1 mt-1 min-w-100">
           <router-link :to="'/users/' + userPreview.handle" class="text-decoration-none">
             <span v-if="userPreview.full_name">
               {{ shortName(userPreview.full_name) }}

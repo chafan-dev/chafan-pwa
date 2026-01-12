@@ -91,11 +91,11 @@
                   <div class="pt-2 d-flex">
                     <div>
                       <div class="text--primary text-body-1">
-                        <div class="pa-1 text-center" style="float: right">
+                        <div class="pa-1 text-center float-right">
                           <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                           <span class="text-caption">查看原文</span>
                         </div>
-                        <p style="overflow-wrap: anywhere">{{ articlePreviewBody }}</p>
+                        <p class="overflow-wrap-anywhere">{{ articlePreviewBody }}</p>
                       </div>
                       <div>
                         <UserLink :showAvatar="true" :userPreview="article.author" />
@@ -139,7 +139,7 @@
               <template v-if="token">
                 <span
                   v-if="userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                  style="cursor: pointer"
+                  class="cursor-pointer"
                   @click="unbookmark"
                 >
                   <BookmarkedIcon :disabled="unbookmarkIntermediate" />
@@ -147,7 +147,7 @@
                 </span>
                 <span
                   v-if="!userBookmark.bookmarked_by_me && !currentUserIsAuthor"
-                  style="cursor: pointer"
+                  class="cursor-pointer"
                   @click="bookmark"
                 >
                   <ToBookmarkIcon :disabled="bookmarkIntermediate" />

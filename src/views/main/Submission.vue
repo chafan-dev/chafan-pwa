@@ -161,7 +161,7 @@
                     </p>
                   </div>
                   <v-spacer />
-                  <div class="pa-1 text-center" style="float: right">
+                  <div class="pa-1 text-center float-right">
                     <v-img v-if="shareQrCodeUrl" :src="shareQrCodeUrl" max-width="100" />
                     <span class="text-caption">查看原文</span>
                   </div>
@@ -417,8 +417,7 @@
           <div>
             <div class="text-center">
               <span
-                class="grey--text text-caption"
-                style="cursor: pointer"
+                class="grey--text text-caption cursor-pointer"
                 @click="showHelp = !showHelp"
               >
                 帮助文档：什么是分享?

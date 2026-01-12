@@ -161,7 +161,7 @@
                 <v-tab
                   v-for="channel in myChannels"
                   :key="channel.id"
-                  style="justify-content: left"
+                  class="justify-start"
                 >
                   <UserLink
                     :clickable="false"

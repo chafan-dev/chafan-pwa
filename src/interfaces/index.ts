@@ -804,7 +804,7 @@ export interface IArticleUpdate {
 
 export interface IArticleDraft {
   title_draft?: string;
-  draft_saved_at?: number[];
+  draft_saved_at?: string;
   content_draft?: IRichText;
 }
 

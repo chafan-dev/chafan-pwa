@@ -7,10 +7,10 @@
             <v-progress-circular indeterminate />
           </v-overlay>
           <div class="d-flex justify-end">
-            <v-btn class="mr-2" depressed small :href="`/article-columns/${this.articleColumnId}`">
+            <v-btn class="mr-2" depressed small :href="`/article-columns/${articleColumnId}`">
               返回专栏
             </v-btn>
-            <v-btn class="mr-2" depressed small :href="`/articles/${this.articleId}`">
+            <v-btn class="mr-2" depressed small :href="`/articles/${articleId}`">
               返回文章
             </v-btn>
           </div>
@@ -28,7 +28,7 @@
           <!-- Editor of body -->
           <ChafanTiptap
             v-show="topLevelEditor === 'tiptap'"
-            ref="tiptap"
+            ref="tiptapRef"
             :onEditorChange="onEditorChange"
             class="mb-2 mt-2"
             placeholder="开始写作"
@@ -36,7 +36,7 @@
           <VditorCF
             v-if="editor !== null && body !== null"
             v-show="topLevelEditor === 'vditor'"
-            ref="vditor"
+            ref="vditorRef"
             :editor-mode="editor"
             :initial-content="body"
             :isMobile="!isDesktop"
@@ -81,7 +81,7 @@
             <span v-if="isDesktop" class="mr-2 text-caption grey--text">
               <template v-if="lastAutoSavedAt">
                 自动保存于
-                {{ $dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
+                {{ dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
               </template>
             </span>
 
@@ -180,8 +180,10 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute, useRouter } from 'vue-router/composables';
+import { onBeforeRouteLeave } from 'vue-router/composables';
 import {
   clearLocalEdit,
   getArticleDraft,
@@ -203,462 +205,443 @@ import { VditorCF } from 'chafan-vue-editors';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
-import { readToken, readUserProfile } from '@/store/main/getters';
-import { CVue, getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
-import { Route } from 'vue-router';
+import Viewer from '@/components/Viewer.vue';
+import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { useAuth, useResponsive, useDayjs } from '@/composables';
+import store from '@/store';
 
-@Component({
-  components: {
-    EditorHelp,
-    ChafanTiptap,
-    EditIcon,
-    VditorCF,
-    HistoryIcon,
-    DeleteIcon,
-    SettingsIcon,
-  },
-})
-export default class ArticleEditor extends CVue {
-  private newArticleId: string | null = null;
-  private handlingNewEdit = false;
+// Composables
+const route = useRoute();
+const router = useRouter();
+const { token, userProfile } = useAuth();
+const { isDesktop } = useResponsive();
+const { dayjs, fromNow } = useDayjs();
 
-  private showHelp = false;
-  private historyDialog = false;
-  private overlay = false;
-  private articleTitle: string | null = null;
-  private archivePage = 1;
-  private archivePagesLength = 1;
-  private readonly archivePageLimit = 10;
+// Template refs
+const tiptapRef = ref<InstanceType<typeof ChafanTiptap> | null>(null);
+const vditorRef = ref<any>(null);
 
-  // prevent double-posting
-  private writingSessionUUID = uuidv4();
+// State
+const newArticleId = ref<string | null>(null);
+const handlingNewEdit = ref(false);
+const showHelp = ref(false);
+const historyDialog = ref(false);
+const overlay = ref(false);
+const articleTitle = ref<string | null>(null);
+const archivePage = ref(1);
+const archivePagesLength = ref(1);
+const archivePageLimit = 10;
+const writingSessionUUID = uuidv4();
+const lastAutoSavedAt = ref<string | null>(null);
+const lastSaveLength = ref(0);
+const lastSaveIntermediate = ref(false);
+const lastSaveTimerId = ref<any>(null);
+const articleArchives = ref<IArticleArchive[]>([]);
+const showDeleteDraftDialog = ref(false);
+const savingIntermediate = ref(false);
+const archivesCount = ref<number | undefined>(undefined);
+const editor = ref<editor_T | null>(null);
+const body = ref<string | null>(null);
+const topLevelEditor = ref<'vditor' | 'tiptap'>('vditor');
+const topLevelEditorItems = ref<{ text: string; value: string }[] | null>(null);
+const formIsDirty = ref(true);
 
-  private lastAutoSavedAt: string | null = null;
-  private lastSaveLength = 0;
-  private lastSaveIntermediate = false;
-  private lastSaveTimerId: any = null;
-  private articleArchives: IArticleArchive[] = [];
-  private showDeleteDraftDialog = false;
-  private savingIntermediate: boolean = false;
-  private archivesCount: number | undefined = undefined;
-  private editor: editor_T | null = null;
-  private body: string | null = null;
-  private topLevelEditor: 'vditor' | 'tiptap' = 'vditor';
-  private topLevelEditorItems: { text: string; value: string }[] | null = null;
+// Computed
+const articleColumnId = computed(() => {
+  const id = route.query.articleColumnId;
+  if (id) {
+    return id.toString();
+  }
+  return null;
+});
 
-  get articleColumnId() {
-    const id = this.$route.query.articleColumnId;
-    if (id) {
-      return id.toString();
+const articleId = computed(() => {
+  const id = route.query.articleId;
+  if (id) {
+    return id.toString();
+  }
+  if (newArticleId.value) {
+    return newArticleId.value;
+  }
+  return null;
+});
+
+const vditorUploadConfig = computed(() => {
+  return getVditorUploadConfig(token.value);
+});
+
+// Methods
+function getEditorMode(): editor_T {
+  if (topLevelEditor.value === 'tiptap') {
+    return 'tiptap';
+  } else if (topLevelEditor.value === 'vditor') {
+    return vditorRef.value?.getMode() ?? 'wysiwyg';
+  }
+  commitAddNotification(store, {
+    content: '编辑器错误',
+    color: 'error',
+  });
+  return 'wysiwyg';
+}
+
+function getContent(): string | null {
+  if (topLevelEditor.value === 'tiptap') {
+    return tiptapRef.value?.getContent() ?? null;
+  } else if (topLevelEditor.value === 'vditor') {
+    return vditorRef.value?.getContent() ?? null;
+  }
+  commitAddNotification(store, {
+    content: '编辑器错误',
+    color: 'error',
+  });
+  return '';
+}
+
+function getTextContent(): string | null {
+  if (topLevelEditor.value === 'tiptap') {
+    return tiptapRef.value?.getText() ?? null;
+  } else if (topLevelEditor.value === 'vditor') {
+    return vditorRef.value?.getText() ?? null;
+  }
+  commitAddNotification(store, {
+    content: '编辑器错误',
+    color: 'error',
+  });
+  return null;
+}
+
+function readState(isPublished: boolean): IRichEditorState {
+  return {
+    title: articleTitle.value || '',
+    body: getContent(),
+    rendered_body_text: getTextContent(),
+    is_draft: !isPublished,
+    visibility: 'anyone',
+    editor: getEditorMode(),
+  };
+}
+
+function initEditor(bodyContent: string | null, editorMode: editor_T) {
+  logDebug(`initEditor(${bodyContent}, ${editorMode}})`);
+  if (editorMode === 'tiptap') {
+    topLevelEditor.value = 'tiptap';
+    if (bodyContent && tiptapRef.value) {
+      tiptapRef.value.loadJSON(JSON.parse(bodyContent));
     }
-    return null;
   }
+  editor.value = editorMode;
+  body.value = bodyContent || '';
+}
 
-  get articleId() {
-    const id = this.$route.query.articleId;
-    if (id) {
-      return id.toString();
-    }
-    if (this.newArticleId) {
-      return this.newArticleId;
-    }
-    return null;
+async function newEditHandler(payload: {
+  edit: IRichEditorState;
+  isAutosaved: boolean;
+  articleId?: string;
+  writingSessionUUID: string;
+  saveArticleCallback: (article: IArticle) => void;
+}) {
+  if (handlingNewEdit.value) {
+    return;
   }
-
-  get chafanTiptap() {
-    return this.$refs.tiptap as any;
-  }
-
-  get vditorComponent() {
-    return this.$refs.vditor as any;
-  }
-
-  get vditorUploadConfig() {
-    return getVditorUploadConfig(readToken(this.$store));
-  }
-
-  public async mounted() {
-    let workingDraft: IRichEditorState | null = null;
-    if (this.articleId) {
-      const article: IArticle = (await apiArticle.getArticle(this.token, this.articleId)).data;
-      this.archivesCount = article.archives_count;
-      const articleDraft = await getArticleDraft(this.$dayjs, this.token, article.uuid);
-      if (articleDraft) {
-        logDebug('载入最近的草稿');
-        commitAddNotification(this.$store, {
-          content: '载入最近的草稿',
-          color: 'success',
+  handlingNewEdit.value = true;
+  await dispatchCaptureApiError(store, async () => {
+    if (!payload.edit.title || payload.edit.title.length < 5) {
+      if (!payload.isAutosaved) {
+        commitAddNotification(store, {
+          content: '文章标题太短了，不得少于5个字。',
+          color: 'error',
         });
-        article.title = articleDraft.title || '';
-        article.content.source = articleDraft.body || '';
-        article.content.editor = articleDraft.editor;
       }
-      workingDraft = {
-        title: article.title,
-        body: article.content.source,
-        rendered_body_text: article.content.rendered_text || null,
-        editor: article.content.editor,
-        visibility: article.visibility,
-        is_draft: true,
-      };
-    }
-
-    logDebug(`mounted workingDraft: ${JSON.stringify(workingDraft)}`);
-    if (workingDraft && workingDraft.body !== null) {
-      this.articleTitle = workingDraft.title || '';
-      this.initEditor(workingDraft.body, workingDraft.editor);
-      this.lastSaveLength = workingDraft.body.length;
-    } else {
-      this.initEditor(null, 'wysiwyg');
-    }
-
-    if (this.archivesCount !== undefined) {
-      this.archivePagesLength = Math.ceil(this.archivesCount / this.archivePageLimit);
-    }
-
-    const topLevelEditorItems = [
-      {
-        text: 'Vditor 编辑器',
-        value: 'vditor',
-      },
-    ];
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile!.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
-      topLevelEditorItems.push({
-        text: 'Tiptap 编辑器',
-        value: 'tiptap',
-      });
-    }
-    this.topLevelEditorItems = topLevelEditorItems;
-  }
-
-  public async newEditHandler(payload: {
-    edit: IRichEditorState;
-    isAutosaved: boolean;
-    articleId?: string;
-    writingSessionUUID: string;
-    saveArticleCallback: (article: IArticle) => void;
-  }) {
-    if (this.handlingNewEdit) {
+      handlingNewEdit.value = false;
+      savingIntermediate.value = false;
+      formIsDirty.value = false;
       return;
     }
-    this.handlingNewEdit = true;
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (!payload.edit.title || payload.edit.title.length < 5) {
+    if (
+      !payload.edit.rendered_body_text ||
+      payload.edit.rendered_body_text.length < 1 ||
+      !payload.edit.body
+    ) {
+      if (!payload.isAutosaved) {
+        commitAddNotification(store, {
+          content: '文章内容太短了，不得少于5个字。',
+          color: 'error',
+        });
+      }
+      handlingNewEdit.value = false;
+      savingIntermediate.value = false;
+      formIsDirty.value = false;
+      return;
+    }
+    if (articleColumnId.value !== null && !articleId.value && !payload.articleId) {
+      // new article to question
+      const article = await newArticleHandler(
+        { token: token.value, store, router },
+        payload.edit,
+        payload.writingSessionUUID,
+        payload.isAutosaved,
+        articleColumnId.value
+      );
+      if (article) {
+        payload.saveArticleCallback(article);
+        clearLocalEdit('article', article.uuid);
+        newArticleId.value = article.uuid;
         if (!payload.isAutosaved) {
-          commitAddNotification(this.$store, {
-            content: '文章标题太短了，不得少于5个字。',
-            color: 'error',
+          commitAddNotification(store, {
+            content: payload.edit.is_draft ? '草稿已保存' : '已发表',
+            color: 'success',
           });
         }
-        this.handlingNewEdit = false;
-        this.savingIntermediate = false;
-        this.formIsDirty = false;
-        return;
       }
-      if (
-        !payload.edit.rendered_body_text ||
-        payload.edit.rendered_body_text.length < 1 ||
-        !payload.edit.body
-      ) {
+    } else if (
+      articleColumnId.value !== null &&
+      (articleId.value || payload.articleId) &&
+      payload.edit.title
+    ) {
+      const currentArticleId = articleId.value ? articleId.value : payload.articleId;
+      if (currentArticleId) {
+        newArticleId.value = currentArticleId;
+        const response = await apiArticle.updateArticle(token.value, currentArticleId, {
+          updated_title: payload.edit.title,
+          visibility: payload.edit.visibility,
+          is_draft: payload.edit.is_draft,
+          updated_content: {
+            source: payload.edit.body,
+            rendered_text: payload.edit.rendered_body_text || undefined,
+            editor: payload.edit.editor,
+          },
+        });
+        payload.saveArticleCallback(response.data);
+        clearLocalEdit('article', response.data.uuid);
         if (!payload.isAutosaved) {
-          commitAddNotification(this.$store, {
-            content: '文章内容太短了，不得少于5个字。',
-            color: 'error',
-          });
-        }
-        this.handlingNewEdit = false;
-        this.savingIntermediate = false;
-        this.formIsDirty = false;
-        return;
-      }
-      if (this.articleColumnId !== null && !this.articleId && !payload.articleId) {
-        // FIXME: RichEditor has a local articleId state -- is there a way to prevent this?
-
-        // new article to question
-        const article = await newArticleHandler(
-          this,
-          payload.edit,
-          payload.writingSessionUUID,
-          payload.isAutosaved,
-          this.articleColumnId
-        );
-        if (article) {
-          payload.saveArticleCallback(article);
-          clearLocalEdit('article', article.uuid);
-          this.newArticleId = article.uuid;
-          if (!payload.isAutosaved) {
-            commitAddNotification(this.$store, {
-              content: payload.edit.is_draft ? '草稿已保存' : '已发表',
-              color: 'success',
-            });
-          }
-        }
-      } else if (
-        this.articleColumnId !== null &&
-        (this.articleId || payload.articleId) &&
-        payload.edit.title
-      ) {
-        const articleId = this.articleId ? this.articleId : payload.articleId;
-        if (articleId) {
-          this.newArticleId = articleId;
-          const response = await apiArticle.updateArticle(this.token, articleId, {
-            updated_title: payload.edit.title,
-            visibility: payload.edit.visibility,
-            is_draft: payload.edit.is_draft,
-            updated_content: {
-              source: payload.edit.body,
-              rendered_text: payload.edit.rendered_body_text || undefined,
-              editor: payload.edit.editor,
-            },
-          });
-          payload.saveArticleCallback(response.data);
-          clearLocalEdit('article', response.data.uuid);
-          if (!payload.isAutosaved) {
-            commitAddNotification(this.$store, {
-              content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
-              color: 'success',
-            });
-          }
-        }
-      }
-      this.handlingNewEdit = false;
-    });
-    this.savingIntermediate = false;
-  }
-
-  private getEditorMode(): editor_T {
-    if (this.topLevelEditor === 'tiptap') {
-      return 'tiptap';
-    } else if (this.topLevelEditor === 'vditor') {
-      return this.vditorComponent.getMode();
-    }
-    commitAddNotification(this.$store, {
-      content: '编辑器错误',
-      color: 'error',
-    });
-    return 'wysiwyg';
-  }
-
-  private getContent(): string | null {
-    if (this.topLevelEditor === 'tiptap') {
-      return (this.$refs.tiptap as any).getContent();
-    } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as any).getContent();
-    }
-    commitAddNotification(this.$store, {
-      content: '编辑器错误',
-      color: 'error',
-    });
-    return '';
-  }
-
-  private getTextContent(): string | null {
-    if (this.topLevelEditor === 'tiptap') {
-      return (this.$refs.tiptap as any).getText();
-    } else if (this.topLevelEditor === 'vditor') {
-      return (this.$refs.vditor as any).getText();
-    }
-    commitAddNotification(this.$store, {
-      content: '编辑器错误',
-      color: 'error',
-    });
-    return null;
-  }
-
-  private readState(isPublished: boolean): IRichEditorState {
-    return {
-      title: this.articleTitle || '',
-      body: this.getContent(),
-      rendered_body_text: this.getTextContent(),
-      is_draft: !isPublished,
-      visibility: 'anyone',
-      editor: this.getEditorMode(),
-    };
-  }
-
-  private initEditor(body: string | null, editor: editor_T) {
-    logDebug(`initEditor(${body}, ${editor}})`);
-    if (editor === 'tiptap') {
-      this.topLevelEditor = 'tiptap';
-      if (body) {
-        (this.$refs.tiptap as any).loadJSON(JSON.parse(body));
-      }
-    }
-    this.editor = editor;
-    this.body = body || '';
-  }
-
-  private autoSaveEdit() {
-    this.newEditHandler({
-      isAutosaved: true,
-      articleId: this.articleId ? this.articleId : undefined,
-      edit: this.readState(false),
-      writingSessionUUID: this.writingSessionUUID,
-      saveArticleCallback: (article: IArticle) => {
-        logDebug('autoSaveEdit saveCallback');
-        this.newArticleId = article.uuid;
-        if (article.draft_saved_at) {
-          this.lastAutoSavedAt = article.draft_saved_at;
-        } else {
-          this.lastAutoSavedAt = article.updated_at;
-        }
-      },
-    });
-  }
-
-  private submitEdit(isPublished: boolean) {
-    this.savingIntermediate = true;
-    return this.newEditHandler({
-      isAutosaved: false,
-      edit: this.readState(isPublished),
-      articleId: this.articleId ? this.articleId : undefined,
-      writingSessionUUID: this.writingSessionUUID,
-      saveArticleCallback: (article: IArticle) => {
-        this.lastAutoSavedAt = article.updated_at;
-        if (isPublished) {
-          this.formIsDirty = false;
-        }
-      },
-    });
-  }
-
-  private doAutoSave(textContent: string) {
-    if (!this.lastSaveIntermediate) {
-      this.lastSaveIntermediate = true;
-      this.lastSaveLength = textContent.length;
-      this.autoSaveEdit();
-      if (this.lastSaveTimerId !== null) {
-        clearTimeout(this.lastSaveTimerId);
-      }
-      this.lastSaveTimerId = setTimeout(() => {
-        this.lastSaveIntermediate = false;
-      }, 5000);
-    }
-  }
-
-  private trackingChangesButNotSaving = false;
-  private onEditorChange(textContent: string) {
-    // Auto save if changed a lot
-    if (Math.abs(textContent.length - this.lastSaveLength) > 50) {
-      this.doAutoSave(textContent);
-    } else {
-      // Auto save if not changing for a while
-      this.lastSaveTimerId = setTimeout(() => {
-        this.doAutoSave(textContent);
-      }, 3000);
-    }
-    if (Math.abs(textContent.length - this.lastSaveLength) > 10) {
-      // More frequent local backup
-      saveLocalEdit('article', this.articleId, this.readState(false));
-    }
-  }
-
-  private async showHistoryDialog() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.articleId) {
-        this.articleArchives = (
-          await apiArticle.getArticleArchives(this.token, this.articleId, 0, this.archivePageLimit)
-        ).data;
-        if (this.articleArchives.length > 0) {
-          this.historyDialog = true;
-        } else {
-          commitAddNotification(this.$store, {
-            content: '尚无历史发表存档',
-            color: 'info',
+          commitAddNotification(store, {
+            content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
+            color: 'success',
           });
         }
       }
-    });
-  }
-
-  private loadArticleArchive(archive: IArticleArchive) {
-    this.articleTitle = archive.title;
-    this.initEditor(archive.content.source, this.getEditorMode());
-    this.historyDialog = false;
-  }
-
-  private async changeArchivePage() {
-    await dispatchCaptureApiError(this.$store, async () => {
-      if (this.articleId) {
-        this.articleArchives = (
-          await apiArticle.getArticleArchives(
-            this.token,
-            this.articleId,
-            (this.archivePage - 1) * this.archivePageLimit,
-            this.archivePageLimit
-          )
-        ).data;
-      }
-    });
-  }
-
-  private async deleteDraft() {
-    this.showDeleteDraftDialog = false;
-    if (this.articleId) {
-      await apiArticle.deleteArticleDraft(this.token, this.articleId);
-      clearLocalEdit('article', this.articleId);
-      commitAddNotification(this.$store, {
-        content: '草稿已删除',
-        color: 'success',
-      });
-      await this.$router.push(`/articles/${this.articleId}`);
-    } else {
-      commitAddNotification(this.$store, {
-        content: '无法删除草稿',
-        color: 'success',
-      });
     }
-  }
+    handlingNewEdit.value = false;
+  });
+  savingIntermediate.value = false;
+}
 
-  private onChangeTopLevelEditor() {
-    if (this.vditorComponent && this.chafanTiptap) {
-      if (this.topLevelEditor === 'tiptap') {
-        const oldContent = this.vditorComponent.getHTML();
-        this.chafanTiptap.loadHTML(oldContent);
+function autoSaveEdit() {
+  newEditHandler({
+    isAutosaved: true,
+    articleId: articleId.value ? articleId.value : undefined,
+    edit: readState(false),
+    writingSessionUUID: writingSessionUUID,
+    saveArticleCallback: (article: IArticle) => {
+      logDebug('autoSaveEdit saveCallback');
+      newArticleId.value = article.uuid;
+      if (article.draft_saved_at) {
+        lastAutoSavedAt.value = article.draft_saved_at;
       } else {
-        const oldContent = this.chafanTiptap.getHTML();
-        this.vditorComponent.init('wysiwyg', undefined, oldContent);
+        lastAutoSavedAt.value = article.updated_at;
+      }
+    },
+  });
+}
+
+function submitEdit(isPublished: boolean) {
+  savingIntermediate.value = true;
+  return newEditHandler({
+    isAutosaved: false,
+    edit: readState(isPublished),
+    articleId: articleId.value ? articleId.value : undefined,
+    writingSessionUUID: writingSessionUUID,
+    saveArticleCallback: (article: IArticle) => {
+      lastAutoSavedAt.value = article.updated_at;
+      if (isPublished) {
+        formIsDirty.value = false;
+      }
+    },
+  });
+}
+
+function doAutoSave(textContent: string) {
+  if (!lastSaveIntermediate.value) {
+    lastSaveIntermediate.value = true;
+    lastSaveLength.value = textContent.length;
+    autoSaveEdit();
+    if (lastSaveTimerId.value !== null) {
+      clearTimeout(lastSaveTimerId.value);
+    }
+    lastSaveTimerId.value = setTimeout(() => {
+      lastSaveIntermediate.value = false;
+    }, 5000);
+  }
+}
+
+function onEditorChange(textContent: string) {
+  // Auto save if changed a lot
+  if (Math.abs(textContent.length - lastSaveLength.value) > 50) {
+    doAutoSave(textContent);
+  } else {
+    // Auto save if not changing for a while
+    lastSaveTimerId.value = setTimeout(() => {
+      doAutoSave(textContent);
+    }, 3000);
+  }
+  if (Math.abs(textContent.length - lastSaveLength.value) > 10) {
+    // More frequent local backup
+    saveLocalEdit('article', articleId.value, readState(false));
+  }
+}
+
+async function showHistoryDialog() {
+  await dispatchCaptureApiError(store, async () => {
+    if (articleId.value) {
+      articleArchives.value = (
+        await apiArticle.getArticleArchives(token.value, articleId.value, 0, archivePageLimit)
+      ).data;
+      if (articleArchives.value.length > 0) {
+        historyDialog.value = true;
+      } else {
+        commitAddNotification(store, {
+          content: '尚无历史发表存档',
+          color: 'info',
+        });
       }
     }
-  }
+  });
+}
 
-  private formIsDirty = true;
-  // duplicated in answer editor
-  beforeRouteLeave(to: Route, from: Route, next: (boolean?) => void) {
-    // If the form is dirty and the user did not confirm leave,
-    // prevent losing unsaved changes by canceling navigation
-    if (this.formIsDirty && this.confirmStayInDirtyForm()) {
-      next(false);
-    } else {
-      // Navigate to next view
-      next();
+function loadArticleArchive(archive: IArticleArchive) {
+  articleTitle.value = archive.title;
+  initEditor(archive.content.source, getEditorMode());
+  historyDialog.value = false;
+}
+
+async function changeArchivePage() {
+  await dispatchCaptureApiError(store, async () => {
+    if (articleId.value) {
+      articleArchives.value = (
+        await apiArticle.getArticleArchives(
+          token.value,
+          articleId.value,
+          (archivePage.value - 1) * archivePageLimit,
+          archivePageLimit
+        )
+      ).data;
     }
-  }
+  });
+}
 
-  created() {
-    window.addEventListener('beforeunload', this.beforeWindowUnload);
+async function deleteDraft() {
+  showDeleteDraftDialog.value = false;
+  if (articleId.value) {
+    await apiArticle.deleteArticleDraft(token.value, articleId.value);
+    clearLocalEdit('article', articleId.value);
+    commitAddNotification(store, {
+      content: '草稿已删除',
+      color: 'success',
+    });
+    await router.push(`/articles/${articleId.value}`);
+  } else {
+    commitAddNotification(store, {
+      content: '无法删除草稿',
+      color: 'success',
+    });
   }
+}
 
-  beforeDestroy() {
-    window.removeEventListener('beforeunload', this.beforeWindowUnload);
-  }
-
-  confirmLeave() {
-    return window.confirm('确认离开？');
-  }
-
-  confirmStayInDirtyForm() {
-    return this.formIsDirty && !this.confirmLeave();
-  }
-
-  beforeWindowUnload(e) {
-    if (this.confirmStayInDirtyForm()) {
-      // Cancel the event
-      e.preventDefault();
-      // Chrome requires returnValue to be set
-      e.returnValue = '';
+function onChangeTopLevelEditor() {
+  if (vditorRef.value && tiptapRef.value) {
+    if (topLevelEditor.value === 'tiptap') {
+      const oldContent = vditorRef.value.getHTML();
+      tiptapRef.value.loadHTML(oldContent);
+    } else {
+      const oldContent = tiptapRef.value.getHTML();
+      vditorRef.value.init('wysiwyg', undefined, oldContent);
     }
   }
 }
+
+// Navigation guard helpers
+function confirmLeave() {
+  return window.confirm('确认离开？');
+}
+
+function confirmStayInDirtyForm() {
+  return formIsDirty.value && !confirmLeave();
+}
+
+function beforeWindowUnload(e: BeforeUnloadEvent) {
+  if (confirmStayInDirtyForm()) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+}
+
+// Lifecycle
+onMounted(async () => {
+  let workingDraft: IRichEditorState | null = null;
+  if (articleId.value) {
+    const article: IArticle = (await apiArticle.getArticle(token.value, articleId.value)).data;
+    archivesCount.value = article.archives_count;
+    const articleDraft = await getArticleDraft(dayjs, token.value, article.uuid);
+    if (articleDraft) {
+      logDebug('载入最近的草稿');
+      commitAddNotification(store, {
+        content: '载入最近的草稿',
+        color: 'success',
+      });
+      article.title = articleDraft.title || '';
+      article.content.source = articleDraft.body || '';
+      article.content.editor = articleDraft.editor;
+    }
+    workingDraft = {
+      title: article.title,
+      body: article.content.source,
+      rendered_body_text: article.content.rendered_text || null,
+      editor: article.content.editor,
+      visibility: article.visibility,
+      is_draft: true,
+    };
+  }
+
+  logDebug(`mounted workingDraft: ${JSON.stringify(workingDraft)}`);
+  if (workingDraft && workingDraft.body !== null) {
+    articleTitle.value = workingDraft.title || '';
+    initEditor(workingDraft.body, workingDraft.editor);
+    lastSaveLength.value = workingDraft.body.length;
+  } else {
+    initEditor(null, 'wysiwyg');
+  }
+
+  if (archivesCount.value !== undefined) {
+    archivePagesLength.value = Math.ceil(archivesCount.value / archivePageLimit);
+  }
+
+  const editorItems = [
+    {
+      text: 'Vditor 编辑器',
+      value: 'vditor',
+    },
+  ];
+  if (userProfile.value?.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION)) {
+    editorItems.push({
+      text: 'Tiptap 编辑器',
+      value: 'tiptap',
+    });
+  }
+  topLevelEditorItems.value = editorItems;
+
+  window.addEventListener('beforeunload', beforeWindowUnload);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', beforeWindowUnload);
+});
+
+// Route leave guard
+onBeforeRouteLeave((to, from, next) => {
+  if (formIsDirty.value && confirmStayInDirtyForm()) {
+    next(false);
+  } else {
+    next();
+  }
+});
 </script>
