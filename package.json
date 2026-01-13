@@ -15,7 +15,6 @@
     "@sentry/tracing": "^7.119.2",
     "@sentry/vue": "^7.119.2",
     "axios": "^1.13.2",
-    "chafan-vue-editors": "^0.9.4",
     "core-js": "^3.47.0",
     "dayjs": "^1.11.19",
     "diff": "^5.2.0",

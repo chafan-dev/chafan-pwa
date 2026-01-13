@@ -28,7 +28,7 @@ import { IUserPreview } from '@/interfaces';
 import 'tippy.js/dist/tippy.css';
 import 'highlight.js/styles/github.css';
 
-import { TiptapCF } from 'chafan-vue-editors';
+import TiptapCF from '@/editors/lib-components/TiptapCF.vue';
 import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
 import { api2 } from '@/api2';

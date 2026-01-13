@@ -201,7 +201,7 @@ import HistoryIcon from '@/components/icons/HistoryIcon.vue';
 import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 
-import { VditorCF } from 'chafan-vue-editors';
+import VditorCF from '@/editors/lib-components/VditorCF.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';

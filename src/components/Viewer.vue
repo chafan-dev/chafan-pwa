@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { VditorViewerCF } from 'chafan-vue-editors';
+import VditorViewerCF from '@/editors/lib-components/VditorViewerCF.vue';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { postProcessViewerDOM } from '@/common';
 import { IRichText } from '@/interfaces';

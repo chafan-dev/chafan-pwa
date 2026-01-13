@@ -10,7 +10,6 @@ import './styles/app.scss';
 import vuetify from './plugins/vuetify';
 import './plugins/vee-validate';
 
-import ChafanVueEditors from 'chafan-vue-editors';
 import Dayjs from '@/dayjsPlugin';
 import editorPlugins from '@/editorPlugins';
 import VueI18n from 'vue-i18n';
@@ -22,8 +21,6 @@ import router from './router';
 import store from '@/store';
 import './registerServiceWorker';
 import 'vuetify/dist/vuetify.min.css';
-
-Vue.use(ChafanVueEditors);
 
 Vue.use(Dayjs);
 
