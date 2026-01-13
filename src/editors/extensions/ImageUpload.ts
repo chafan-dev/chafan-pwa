@@ -177,10 +177,13 @@ export const Image = Node.create<ImageOptions>({
 
   addInputRules() {
     return [
-      nodeInputRule(inputRegex, this.type, (match) => {
-        const [, alt, src, title] = match;
-
-        return { src, alt, title };
+      nodeInputRule({
+        find: inputRegex,
+        type: this.type,
+        getAttributes: (match: RegExpMatchArray) => {
+          const [, alt, src, title] = match;
+          return { src, alt, title };
+        },
       }),
     ];
   },

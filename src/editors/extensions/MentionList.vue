@@ -28,7 +28,7 @@ export default class MentionList extends Vue {
     this.selectedIndex = 0;
   }
 
-  onKeyDown({ event }) {
+  onKeyDown({ event }: { event: KeyboardEvent }) {
     if (event.key === 'ArrowUp') {
       this.upHandler();
       return true;
@@ -57,7 +57,7 @@ export default class MentionList extends Vue {
     this.selectItem(this.selectedIndex);
   }
 
-  selectItem(index) {
+  selectItem(index: number) {
     const item = this.items[index];
 
     if (item) {

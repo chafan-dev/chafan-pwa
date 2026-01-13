@@ -5,7 +5,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import Vditor from '@chafan/vditor';
+import Vditor from 'vditor';
 import { vditorCDN } from '../common';
 
 @Component

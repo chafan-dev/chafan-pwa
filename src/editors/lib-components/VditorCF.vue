@@ -5,14 +5,14 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
-import Vditor from '@chafan/vditor';
+import Vditor from 'vditor';
 import { vditorCDN, editor_T, getOS } from '../common';
 
 // Emits:
 // - shortcutSubmit: ctrl-Enter or cmd-Enter
 @Component
 export default class VditorCF extends Vue {
-  @Prop() public readonly onEditorChange: ((string) => void) | undefined;
+  @Prop() public readonly onEditorChange: ((value: string) => void) | undefined;
   @Prop({ default: undefined }) public readonly vditorUploadConfig: any;
   @Prop({ default: false }) public readonly isMobile!: boolean;
   @Prop() public readonly initialContent: string | undefined;

@@ -1,4 +1,4 @@
-export const vditorCDN = 'https://cdn.jsdelivr.net/npm/@chafan/vditor@3.8.8-chafan.2';
+export const vditorCDN = 'https://cdn.jsdelivr.net/npm/vditor@3.11.2';
 
 export type editor_T =
   | 'tiptap'

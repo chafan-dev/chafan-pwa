@@ -170,14 +170,14 @@ import { Extension, mergeAttributes } from '@tiptap/core';
 import { BubbleMenu, Editor, EditorContent, VueRenderer } from '@tiptap/vue-2';
 import MentionList from '../extensions/MentionList.vue';
 
-import { defaultExtensions } from '@tiptap/starter-kit';
+import StarterKit from '@tiptap/starter-kit';
 import { Link, pasteRegex } from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Mention from '@tiptap/extension-mention';
 
-import lowlight from 'lowlight/lib/core';
+import { lowlight } from 'lowlight';
 import ImageUpload from '../extensions/ImageUpload';
 import Iframe from '../extensions/Iframe';
 
@@ -218,7 +218,7 @@ lowlight.registerLanguage('php', php);
 lowlight.registerLanguage('rust', rust);
 lowlight.registerLanguage('swift', swift);
 lowlight.registerLanguage('yaml', yaml);
-lowlight.registerLanguage('markdow', markdown);
+lowlight.registerLanguage('markdown', markdown);
 
 const EMPTY_DOCUMENT = {
   type: 'doc',
@@ -327,7 +327,7 @@ export default class TiptapCF extends Vue {
     }
   }
 
-  detectLink({ editor }) {
+  detectLink({ editor }: { editor: any }) {
     const firstChildInSelection = editor.state.selection.content().content.firstChild;
     if (firstChildInSelection) {
       const text = firstChildInSelection.textContent.trim();
@@ -396,10 +396,10 @@ export default class TiptapCF extends Vue {
             class: 'mention',
           },
           suggestion: {
-            items: this.searchUsers,
+            items: this.searchUsers as any,
             render: () => {
-              let component;
-              let popup;
+              let component: any;
+              let popup: any;
 
               return {
                 onStart: (props) => {
@@ -409,8 +409,8 @@ export default class TiptapCF extends Vue {
                     propsData: props,
                   });
 
-                  popup = tippy('body', {
-                    getReferenceClientRect: props.clientRect,
+                  popup = tippy(document.body, {
+                    getReferenceClientRect: props.clientRect as any,
                     appendTo: () => document.body,
                     content: component.element,
                     showOnCreate: true,
@@ -450,7 +450,7 @@ export default class TiptapCF extends Vue {
             return '@' + userLabel(node.attrs.id);
           },
         }),
-        ...defaultExtensions(),
+        StarterKit,
         SubmitShortCut,
       ],
       onUpdate: () => {
