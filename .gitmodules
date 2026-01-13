@@ -1,0 +1,3 @@
+[submodule "chafan-vue-editors"]
+	path = chafan-vue-editors
+	url = https://github.com/chafan-dev/chafan-vue-editors.git
