@@ -322,7 +322,7 @@ import { deepCopy, getRecentYears } from '@/utils';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
-import { VditorCF } from 'chafan-vue-editors';
+import VditorCF from '@/editors/lib-components/VditorCF.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { getVditorUploadConfig } from '@/common';
 import UpIcon from '@/components/icons/UpIcon.vue';

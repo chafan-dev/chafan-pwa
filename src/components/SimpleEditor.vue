@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { LiteVditorCF } from 'chafan-vue-editors';
+import LiteVditorCF from '@/editors/lib-components/LiteVditorCF.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { editor_T } from '@/interfaces';
 import { getVditorUploadConfig } from '@/common';

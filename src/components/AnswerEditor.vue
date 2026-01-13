@@ -194,7 +194,7 @@ import {
 } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import { dispatchCaptureApiError } from '@/store/main/actions';
-import { VditorCF } from 'chafan-vue-editors';
+import VditorCF from '@/editors/lib-components/VditorCF.vue';
 import EditIcon from '@/components/icons/EditIcon.vue';
 import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
