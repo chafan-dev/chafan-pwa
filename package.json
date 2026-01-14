@@ -28,7 +28,7 @@
     "axios": "^1.13.2",
     "core-js": "^3.47.0",
     "dayjs": "^1.11.19",
-    "diff": "^5.2.0",
+    "diff": "^8.0.3",
     "dompurify": "^3.3.1",
     "get-youtube-id": "^1.0.1",
     "highlight.js": "^11.11.1",
