@@ -33,7 +33,7 @@
     "get-youtube-id": "^1.0.1",
     "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lowlight": "^2.9.0",
     "piexifjs": "^1.0.6",
     "prosemirror-state": "^1.4.3",
