@@ -1,39 +1,25 @@
 import 'core-js/stable';
-//import 'regenerator-runtime/runtime';
-
-import Vue from 'vue';
 
 // styles
 import './styles/app.scss';
+
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
 // plugins
 import vuetify from './plugins/vuetify';
 import './plugins/vee-validate';
 
-import Dayjs from '@/dayjsPlugin';
-import editorPlugins from '@/editorPlugins';
-import VueI18n from 'vue-i18n';
+import { createI18n } from 'vue-i18n';
 import * as Sentry from '@sentry/vue';
-import { Integrations } from '@sentry/tracing';
 import { sentryDSN } from '@/env';
 import App from './App.vue';
 import router from './router';
-import store from '@/store';
-import './registerServiceWorker';
-import 'vuetify/dist/vuetify.min.css';
+import dayjsPlugin from './dayjsPlugin';
 
-Vue.use(Dayjs);
 
-Vue.use(editorPlugins);
-
-declare module 'vue/types/vue' {
-  interface Vue {
-    $dayjs: any;
-  }
-}
-
-Vue.use(VueI18n);
-const i18n = new VueI18n({
+const i18n = createI18n({
+  legacy: false,
   locale: 'zh',
   messages: {
     zh: {
@@ -79,15 +65,14 @@ const i18n = new VueI18n({
   },
 });
 
+const app = createApp(App);
+
 if (sentryDSN) {
   Sentry.init({
-    Vue,
+    app,
     dsn: sentryDSN,
-    autoSessionTracking: true,
-    integrations: [new Integrations.BrowserTracing()],
-
+    integrations: [Sentry.browserTracingIntegration({ router })],
     tracesSampleRate: 0.2,
-
     tracingOptions: {
       trackComponents: true,
     },
@@ -95,12 +80,10 @@ if (sentryDSN) {
   });
 }
 
-Vue.config.productionTip = false;
+app.use(createPinia());
+app.use(router);
+app.use(vuetify);
+app.use(i18n);
+app.use(dayjsPlugin);
 
-new Vue({
-  vuetify,
-  router,
-  store,
-  i18n,
-  render: (h) => h(App),
-}).$mount('#app');
+app.mount('#app');
