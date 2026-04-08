@@ -5,3 +5,6 @@ export { useDayjs } from './useDayjs';
 export { useNotification } from './useNotification';
 export { useEnv } from './useEnv';
 export { useErrorHandling } from './useErrorHandling';
+export { AnswerEditHandler, newAnswerHandler } from './useAnswerEditor';
+export type { IVueInstance } from './useAnswerEditor';
+export { newArticleHandler } from './useArticleEditor';

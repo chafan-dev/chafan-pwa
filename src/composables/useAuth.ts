@@ -1,16 +1,15 @@
 import { computed } from 'vue';
-import { readToken, readUserProfile, readIsLoggedIn } from '@/store/main/getters';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
 
 /**
  * Composable for authentication-related state.
- * Replaces CVue's token, loggedIn, currentUserId, and userProfile properties.
  */
 export function useAuth() {
-  const token = computed(() => readToken(store));
-  const loggedIn = computed(() => readIsLoggedIn(store));
-  const currentUserId = computed(() => readUserProfile(store)?.uuid);
-  const userProfile = computed(() => readUserProfile(store));
+  const store = useMainStore();
+  const token = computed(() => store.token);
+  const loggedIn = computed(() => store.isLoggedIn);
+  const currentUserId = computed(() => store.userProfile?.uuid);
+  const userProfile = computed(() => store.userProfile);
 
   return {
     token,

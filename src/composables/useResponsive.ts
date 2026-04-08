@@ -1,21 +1,15 @@
-import { computed } from 'vue';
-import vuetify from '@/plugins/vuetify';
+import { useDisplay } from 'vuetify';
 
 /**
  * Composable for responsive breakpoint checks.
- * Replaces CVue's isDesktop property.
- *
- * Note: In Vue 2.7 with Vuetify 2, we access the breakpoint through
- * the vuetify instance. In Vue 3 with Vuetify 3, this will use useDisplay().
+ * Uses Vuetify 3's useDisplay() composable.
  */
 export function useResponsive() {
-  const isDesktop = computed(() => vuetify.framework.breakpoint.mdAndUp);
-  const isMobile = computed(() => vuetify.framework.breakpoint.smAndDown);
-  const breakpoint = computed(() => vuetify.framework.breakpoint);
+  const display = useDisplay();
 
   return {
-    isDesktop,
-    isMobile,
-    breakpoint,
+    isDesktop: display.mdAndUp,
+    isMobile: display.smAndDown,
+    breakpoint: display,
   };
 }
