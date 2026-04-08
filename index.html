@@ -5,12 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; style-src 'self' 'unsafe-inline' <%= process.env.VUE_APP_CDN_DOMAIN %>; script-src 'self' 'unsafe-inline' <%= process.env.VUE_APP_CDN_DOMAIN %>; font-src <%= process.env.VUE_APP_CDN_DOMAIN %>; connect-src 'self' <%= process.env.VUE_APP_CDN_DOMAIN %>  *.<%= process.env.VUE_APP_HOST %>  wss://*.<%= process.env.VUE_APP_HOST %>; img-src *;"
-    />
-
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <link rel="icon" href="/favicon.ico" />
 
     <link
       rel="stylesheet"
@@ -48,14 +43,14 @@
 
     <meta property="description" content="Chafan 茶饭 - 有深度的社交问答网站" />
     <meta property="og.title" content="Chafan 茶饭" />
-    <meta property="og.site_name" content="<%= VUE_APP_NAME %>" />
+    <meta property="og.site_name" content="%VITE_APP_NAME%" />
     <meta property="og.description" content="Chafan 茶饭 - 有深度的社交问答网站" />
     <meta property="og.type" content="article" />
     <meta property="og.url" content="https://cha.fan" />
 
     <meta name="theme-color" content="#1976d2" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="<%= VUE_APP_NAME %>" />
+    <meta name="apple-mobile-web-app-title" content="%VITE_APP_NAME%" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="msapplication-navbutton-color" content="#1976d2" />
@@ -67,16 +62,16 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/vditor@3.11.2/dist/index.css"
     />
-    <title><%= VUE_APP_NAME %></title>
+    <title>%VITE_APP_NAME%</title>
   </head>
   <body>
     <noscript>
       <strong
-        >We're sorry but <%= VUE_APP_NAME %> doesn't work properly without JavaScript enabled.
+        >We're sorry but %VITE_APP_NAME% doesn't work properly without JavaScript enabled.
         Please enable it to continue.</strong
       >
     </noscript>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

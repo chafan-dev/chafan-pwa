@@ -30,6 +30,13 @@ if [ -z "${VUE_APP_ENV-}" ]; then
    exit 1
 fi
 
+# Map VUE_APP_* (Cloudflare env vars) to VITE_APP_* (Vite convention)
+export VITE_APP_NAME="${VUE_APP_NAME}"
+export VITE_APP_API="${VUE_APP_API}"
+export VITE_APP_ENV="${VUE_APP_ENV}"
+export VITE_APP_SENTRY_DSN="${VUE_APP_SENTRY_DSN:-}"
+export VITE_APP_LAMBDA="${VUE_APP_LAMBDA:-}"
+
 
 
 
