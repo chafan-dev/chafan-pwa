@@ -1,5 +1,5 @@
 <template>
-  <span aria-hidden="true" class="v-icon notranslate theme--light">
+  <span aria-hidden="true" class="v-icon notranslate">
     <svg
       fill="#000000"
       xmlns="http://www.w3.org/2000/svg"
