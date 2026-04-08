@@ -1,11 +1,12 @@
-import { VueConstructor } from 'vue';
+import type { App } from 'vue';
+import { defineAsyncComponent } from 'vue';
 
-const Viewer = () => import('@/components/Viewer.vue');
-const AnswerEditor = () => import('@/components/AnswerEditor.vue');
+const Viewer = defineAsyncComponent(() => import('@/components/Viewer.vue'));
+const AnswerEditor = defineAsyncComponent(() => import('@/components/AnswerEditor.vue'));
 
 export default {
-  install: (Vue: VueConstructor) => {
-    Vue.component('Viewer', Viewer);
-    Vue.component('AnswerEditor', AnswerEditor);
+  install: (app: App) => {
+    app.component('Viewer', Viewer);
+    app.component('AnswerEditor', AnswerEditor);
   },
 };
