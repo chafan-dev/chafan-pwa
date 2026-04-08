@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-export const env = process.env.VUE_APP_ENV;
+export const env = import.meta.env.VITE_APP_ENV;
 
 // Allowed API host patterns for security validation
 const ALLOWED_HOST_PATTERNS = [
@@ -17,7 +17,7 @@ function validateApiHost(host: string): string {
   return host;
 }
 
-const apiHost = validateApiHost(process.env.VUE_APP_API || '');
+const apiHost = validateApiHost(import.meta.env.VITE_APP_API || '');
 const envApi = `https://${apiHost}`;
 const envWs = `wss://${apiHost}`;
 
@@ -25,10 +25,10 @@ const apiVersionSuffix = '/api/v1';
 
 export const apiUrl = envApi + apiVersionSuffix;
 export const wsUrl = envWs + apiVersionSuffix;
-export const appName = process.env.VUE_APP_NAME;
-export const sentryDSN = process.env.VUE_APP_SENTRY_DSN;
+export const appName = import.meta.env.VITE_APP_NAME;
+export const sentryDSN = import.meta.env.VITE_APP_SENTRY_DSN;
 export const enableCaptcha = false; // Turn off front end rate control - 2024 Dec 06
-export const lambdaUrlBase = process.env.VUE_APP_LAMBDA;
+export const lambdaUrlBase = import.meta.env.VITE_APP_LAMBDA;
 
 export const defaultSiteUuid = '377cjuUDLMMdpH7dWutU';
 
@@ -37,15 +37,15 @@ export const defaultSiteUuid = '377cjuUDLMMdpH7dWutU';
  */
 export const buildInfo = {
   /** Git commit ID */
-  commitHash: process.env.VUE_APP_GIT_COMMIT as string,
+  commitHash: import.meta.env.VITE_GIT_COMMIT as string,
   /** Git commit short ID */
-  commitHashShort: (process.env.VUE_APP_GIT_COMMIT as string).substring(0, 8),
+  commitHashShort: (import.meta.env.VITE_GIT_COMMIT as string).substring(0, 8),
   /** Git branch */
-  branch: process.env.VUE_APP_GIT_BRANCH as string,
+  branch: import.meta.env.VITE_GIT_BRANCH as string,
   /** Git commit time, undefined if not available */
-  commitTime: process.env.VUE_APP_GIT_COMMIT_TIME
-    ? dayjs(process.env.VUE_APP_GIT_COMMIT_TIME)
+  commitTime: import.meta.env.VITE_GIT_COMMIT_TIME
+    ? dayjs(import.meta.env.VITE_GIT_COMMIT_TIME as string)
     : undefined,
   /** Git tags applied to this commit */
-  tags: (process.env.VUE_APP_GIT_TAGS as string).split('\n'),
+  tags: (import.meta.env.VITE_GIT_TAGS as string).split('\n'),
 };
