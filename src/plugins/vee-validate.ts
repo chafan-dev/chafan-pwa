@@ -1,74 +1,63 @@
-import Vue from 'vue';
-import { extend, localize, ValidationObserver, ValidationProvider } from 'vee-validate';
-import { email, min, required } from 'vee-validate/dist/rules';
-import en from 'vee-validate/dist/locale/en.json';
-import zh_CN from 'vee-validate/dist/locale/zh_CN.json';
+import { defineRule, configure } from 'vee-validate';
+import { required, email, min } from '@vee-validate/rules';
+import { localize, setLocale } from '@vee-validate/i18n';
+import en from '@vee-validate/i18n/dist/locale/en.json';
+import zh_CN from '@vee-validate/i18n/dist/locale/zh_CN.json';
 import { URLRegex, PasswordRegex, PhoneNumberRegex } from '@/common';
 
-extend('password1', {
-  params: ['target'],
-  validate(value, args: Record<string, any>) {
-    return value === args.target;
-  },
-  message: '密码不一致',
+// Built-in rules
+defineRule('required', required);
+defineRule('email', email);
+defineRule('min', min);
+
+// Custom rules
+defineRule('password1', (value: string, [target]: string[]) => {
+  if (value === target) return true;
+  return '密码不一致';
 });
 
-extend('password', {
-  validate(value: string) {
-    return value.match(PasswordRegex) !== null;
-  },
-  message: '密码必须至少8位，由数字、字母或者特殊符号组成',
+defineRule('password', (value: string) => {
+  if (value.match(PasswordRegex) !== null) return true;
+  return '密码必须至少8位，由数字、字母或者特殊符号组成';
 });
 
-extend('url', {
-  validate(value: string) {
-    return value.match(URLRegex) !== null;
-  },
-  message: '无效的 URL',
+defineRule('url', (value: string) => {
+  if (value.match(URLRegex) !== null) return true;
+  return '无效的 URL';
 });
 
-extend('phone_number_e164', {
-  validate(value: string) {
-    return value.match(PhoneNumberRegex) !== null;
-  },
-  message: '无效格式，有效格式的例子：+1222333444, +8611122223333',
+defineRule('phone_number_e164', (value: string) => {
+  if (value.match(PhoneNumberRegex) !== null) return true;
+  return '无效格式，有效格式的例子：+1222333444, +8611122223333';
 });
 
-extend('id', {
-  validate(value: string) {
-    return value.match(/^[\w-]+$/g) !== null;
-  },
-  message: 'id 中仅允许使用字母数字、下划线和"-"，区分大小写',
+defineRule('id', (value: string) => {
+  if (value.match(/^[\w-]+$/g) !== null) return true;
+  return 'id 中仅允许使用字母数字、下划线和"-"，区分大小写';
 });
 
-// No message specified.
-extend('email', email);
-extend('required', required);
-extend('min', min);
-
-Vue.component('ValidationProvider', ValidationProvider);
-Vue.component('ValidationObserver', ValidationObserver);
-
-localize({
-  en,
-  zh_CN,
-});
-
-localize({
-  en: {
-    names: {
-      password: 'Password',
-      email: 'Email',
-      phonenumber: 'Phone number',
-      confirm: 'Password confirmation',
+// Configure i18n
+configure({
+  generateMessage: localize({
+    en: {
+      ...en,
+      names: {
+        password: 'Password',
+        email: 'Email',
+        phonenumber: 'Phone number',
+        confirm: 'Password confirmation',
+      },
     },
-  },
-  zh_CN: {
-    names: {
-      password: '密码',
-      email: '电子邮件地址',
-      phonenumber: '电话号',
-      confirm: '密码确认',
+    zh_CN: {
+      ...zh_CN,
+      names: {
+        password: '密码',
+        email: '电子邮件地址',
+        phonenumber: '电话号',
+        confirm: '密码确认',
+      },
     },
-  },
+  }),
 });
+
+setLocale('zh_CN');
