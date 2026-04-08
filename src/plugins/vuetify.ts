@@ -1,19 +1,54 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
-
-import zh from 'vuetify/es5/locale/zh-Hans';
-import en from 'vuetify/es5/locale/en';
-
+import 'vuetify/styles';
+import { createVuetify } from 'vuetify';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
 import { getBrowserLocale } from '@/utils';
 
-Vue.use(Vuetify);
+// Vuetify 3 locale messages
+import { zhHans as zh } from 'vuetify/locale';
+import { en } from 'vuetify/locale';
 
-export default new Vuetify({
-  lang: {
-    locales: { zh, en },
-    current: getBrowserLocale(),
-  },
+const locale = getBrowserLocale();
+
+export default createVuetify({
+  components,
+  directives,
   icons: {
-    iconfont: 'mdiSvg',
+    defaultSet: 'mdi',
+    aliases,
+    sets: { mdi },
+  },
+  locale: {
+    locale: locale === 'zh' ? 'zhHans' : 'en',
+    fallback: 'en',
+    messages: { zhHans: zh, en },
+  },
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: {
+        colors: {
+          primary: '#1976D2',
+          secondary: '#424242',
+          accent: '#82B1FF',
+          error: '#FF5252',
+          info: '#2196F3',
+          success: '#4CAF50',
+          warning: '#FFC107',
+        },
+      },
+      dark: {
+        colors: {
+          primary: '#2196F3',
+          secondary: '#424242',
+          accent: '#FF4081',
+          error: '#FF5252',
+          info: '#2196F3',
+          success: '#4CAF50',
+          warning: '#FFC107',
+        },
+      },
+    },
   },
 });
