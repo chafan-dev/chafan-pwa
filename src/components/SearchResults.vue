@@ -1,31 +1,33 @@
 <template>
-  <v-tabs show-arrows>
-    <template v-for="config in d">
-      <v-tab v-if="config.items.length" :key="config.type">
+  <v-tabs v-model="searchTab" show-arrows>
+    <template v-for="config in d" :key="config.type">
+      <v-tab v-if="config.items.length" :value="config.type">
         {{ configTypeText[config.type] }} ({{ config.items.length }})
       </v-tab>
     </template>
-
-    <template v-for="config in d">
-      <v-tab-item v-if="config.items.length" :key="config.type">
+  </v-tabs>
+  <v-window v-model="searchTab">
+    <template v-for="config in d" :key="'panel-' + config.type">
+      <v-window-item v-if="config.items.length" :value="config.type">
         <v-list>
-          <template v-for="(item, index) in config.items">
-            <v-divider v-if="index" :key="index" class="mx-1" />
-            <v-list-item :key="item.type + item.id" :to="getItemLink(item)" link target="_blank">
+          <template v-for="(item, index) in config.items" :key="item.type + item.id">
+            <v-divider v-if="index" class="mx-1" />
+            <v-list-item :to="getItemLink(item)" link target="_blank">
               {{ getItemText(item) }}
             </v-list-item>
           </template>
         </v-list>
-      </v-tab-item>
+      </v-window-item>
     </template>
-  </v-tabs>
+  </v-window>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { apiSearch } from '@/api/search';
-import { readToken } from '@/store/main/getters';
-import store from '@/store';
+import { AxiosResponse } from 'axios';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = defineProps<{
   query?: string;
@@ -41,16 +43,29 @@ const configTypeText: Record<string, string> = {
   article: '文章',
 };
 
-const d = ref<{ type: string; api: any; items: any[] }[]>([
-  { type: 'user', api: apiSearch.searchUsers, items: [] },
-  { type: 'question', api: apiSearch.searchQuestions, items: [] },
-  { type: 'site', api: apiSearch.searchSites, items: [] },
-  { type: 'submission', api: apiSearch.searchSubmissions, items: [] },
-  { type: 'answer', api: apiSearch.searchAnswers, items: [] },
-  { type: 'article', api: apiSearch.searchArticles, items: [] },
+interface SearchResultItem {
+  id: string;
+  type: string;
+  data: Record<string, unknown>;
+}
+
+interface SearchConfig {
+  type: string;
+  api: (token: string, query: string) => Promise<AxiosResponse<Record<string, unknown>[]>>;
+  items: SearchResultItem[];
+}
+
+const searchTab = ref('user');
+const d = ref<SearchConfig[]>([
+  { type: 'user', api: apiSearch.searchUsers as SearchConfig['api'], items: [] },
+  { type: 'question', api: apiSearch.searchQuestions as SearchConfig['api'], items: [] },
+  { type: 'site', api: apiSearch.searchSites as SearchConfig['api'], items: [] },
+  { type: 'submission', api: apiSearch.searchSubmissions as SearchConfig['api'], items: [] },
+  { type: 'answer', api: apiSearch.searchAnswers as SearchConfig['api'], items: [] },
+  { type: 'article', api: apiSearch.searchArticles as SearchConfig['api'], items: [] },
 ]);
 
-const token = computed(() => readToken(store));
+const token = computed(() => store.token);
 
 async function doSearch(v: string) {
   for (const config of d.value) {
@@ -59,9 +74,9 @@ async function doSearch(v: string) {
 
   for (const config of d.value) {
     const results = (await config.api(token.value, v)).data;
-    results.forEach((o: any) => {
+    results.forEach((o: Record<string, unknown>) => {
       config.items.push({
-        id: o.uuid,
+        id: o.uuid as string,
         type: config.type,
         data: o,
       });
@@ -78,7 +93,7 @@ onMounted(async () => {
   }
 });
 
-function getItemFullText(item: any) {
+function getItemFullText(item: SearchResultItem) {
   if (item.type === 'user') {
     let name = `@${item.data.handle}`;
     if (item.data.full_name) {
@@ -87,24 +102,24 @@ function getItemFullText(item: any) {
     return name;
   }
   if (item.type === 'question') {
-    return item.data.title;
+    return item.data.title as string;
   }
   if (item.type === 'article') {
-    return item.data.title;
+    return item.data.title as string;
   }
   if (item.type === 'site') {
     return `${item.data.name} (${item.data.subdomain})`;
   }
   if (item.type === 'submission') {
-    return item.data.title;
+    return item.data.title as string;
   }
   if (item.type === 'answer') {
-    return item.data.body;
+    return item.data.body as string;
   }
   return '';
 }
 
-function getItemText(item: any) {
+function getItemText(item: SearchResultItem) {
   const fullText = getItemFullText(item);
   if (fullText.length > 20) {
     return fullText.substr(0, 40) + '...';
@@ -113,7 +128,7 @@ function getItemText(item: any) {
   }
 }
 
-function getItemLink(item: any) {
+function getItemLink(item: SearchResultItem) {
   if (item.type === 'user') {
     return `/users/${item.data.handle}`;
   }
@@ -130,7 +145,8 @@ function getItemLink(item: any) {
     return `/sites/${item.data.subdomain}`;
   }
   if (item.type === 'answer') {
-    return `/questions/${item.data.question.uuid}/answers/${item.data.uuid}`;
+    const question = item.data.question as Record<string, unknown>;
+    return `/questions/${question.uuid}/answers/${item.data.uuid}`;
   }
   return '';
 }

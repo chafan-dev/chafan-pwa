@@ -1,6 +1,6 @@
 <template>
   <div ref="rootEl">
-    <v-menu
+    <v-menu location="bottom"
       v-model="showSearchResults"
       :close-on-content-click="false"
       :position-x="menuX"
@@ -8,7 +8,6 @@
       absolute
       allow-overflow
       max-height="600"
-      offset-y
     >
       <div class="min-w-220">
         <SearchResults ref="searchResults" :onReady="onReady" :query="currentQuery" />
@@ -16,7 +15,7 @@
           <v-divider class="mx-1 mb-1" />
           <div class="d-flex pb-1 pr-1">
             <v-spacer />
-            <v-btn color="secondary" depressed outlined small @click="openInNew">
+            <v-btn color="secondary" variant="outlined" size="small" @click="openInNew">
               新页面打开
             </v-btn>
           </div>
@@ -25,17 +24,17 @@
     </v-menu>
     <v-text-field
       v-model="searchInput"
-      dense
+      density="compact"
       filled
       hide-details
-      outlined
+      variant="outlined"
       placeholder="搜索"
       @input="searchDebounced"
       @keydown.enter="search"
     >
       <template v-slot:append>
         <v-progress-circular v-if="loading" indeterminate size="25" width="2" />
-        <SearchIcon v-else @click="search" />
+        <AppIcon name="Search" v-else @click="search"  />
       </template>
     </v-text-field>
   </div>
@@ -43,9 +42,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router/composables';
-import SearchIcon from '@/components/icons/SearchIcon.vue';
+import { useRouter } from 'vue-router';
 import SearchResults from '@/components/SearchResults.vue';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 const router = useRouter();
 

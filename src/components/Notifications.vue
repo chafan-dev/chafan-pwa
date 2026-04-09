@@ -1,20 +1,17 @@
 <template>
   <span>
-    <v-menu
+    <v-menu location="start"
       v-if="userProfile"
       v-model="showNotifications"
       :close-on-content-click="false"
-      :max-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
-      :min-width="Math.min($vuetify.breakpoint.width * 0.9, 600)"
-      left
-      offset-y
+      :max-width="Math.min(display.width * 0.9, 600)"
+      :min-width="Math.min(display.width * 0.9, 600)"
       transition="slide-x-transition"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template v-slot:activator="{ props }">
         <v-btn
-          v-bind="attrs"
-          v-on="on"
-          :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+          v-bind="props"
+          :class="{ 'thin-btn': !display.mdAndUp }"
           dark
           icon
         >
@@ -23,9 +20,9 @@
             :content="unreadNotificationsCount"
             color="green"
           >
-            <NotificationIcon />
+            <AppIcon name="Notification"  />
           </v-badge>
-          <NotificationIcon v-else />
+          <AppIcon name="Notification" v-else  />
         </v-btn>
       </template>
 
@@ -33,11 +30,11 @@
         <v-sheet
           class="h-sticky d-flex align-center justify-space-between elevation-1 rounded-t mb-1"
         >
-          <v-subheader class="font-weight-bold">通知</v-subheader>
+          <v-list-subheader class="font-weight-bold">通知</v-list-subheader>
 
           <div class="mr-1">
-            <v-btn class="slim-btn" depressed small @click="readAllNotifs">
-              <MuteNotificationIcon />
+            <v-btn class="slim-btn" variant="tonal" size="small" @click="readAllNotifs">
+              <AppIcon name="MuteNotification"  />
               全部已读
             </v-btn>
           </div>
@@ -45,11 +42,11 @@
 
         <div class="max-h-300 overflow-auto">
           <v-list class="py-0">
-            <template v-for="(notif, idx) in notifications">
-              <v-divider v-if="idx" :key="'divider-' + notif.id" class="mx-1" />
+            <template v-for="(notif, idx) in notifications" :key="notif.id">
+              <v-divider v-if="idx" class="mx-1" />
 
               <template v-if="notif.is_read">
-                <v-list-item :key="notif.id" class="grey lighten-4" color="grey">
+                <v-list-item class="grey lighten-4" color="grey">
                   <Event
                     v-if="notif.event"
                     :enable-user-link-popup="false"
@@ -64,7 +61,7 @@
                 </v-list-item>
               </template>
               <template v-else>
-                <v-list-item :key="notif.id">
+                <v-list-item>
                   <Event
                     v-if="notif.event"
                     :enable-user-link-popup="false"
@@ -78,7 +75,7 @@
                     class="my-2"
                   />
                   <v-spacer />
-                  <MuteNotificationIcon class="ml-2" @click="readNotif(notif)" />
+                  <AppIcon name="MuteNotification" class="ml-2" @click="readNotif(notif)"  />
                 </v-list-item>
               </template>
             </template>
@@ -92,8 +89,8 @@
 
     <v-dialog v-model="showReadNotifications">
       <v-list>
-        <v-card-title primary-title>
-          <div class="headline primary--text">已读通知</div>
+        <v-card-title>
+          <div class="text-h5 text-primary">已读通知</div>
         </v-card-title>
         <v-list-item v-for="notif in notifications" :key="notif.id">
           <Event v-if="notif.event" :event="notif.event" />
@@ -105,20 +102,21 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import store from '@/store';
+import { useDisplay } from 'vuetify';
 
-import MuteNotificationIcon from '@/components/icons/MuteNotificationIcon.vue';
-import NotificationIcon from '@/components/icons/NotificationIcon.vue';
 import { INotification, IWsUserMsg } from '@/interfaces';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import { useMainStore } from '@/stores/main';
 import { api } from '@/api';
 import { api2 } from '@/api2';
 import { wsUrl } from '@/env';
 import Event from '@/components/Event.vue';
 import { logDebug } from '@/utils';
 import { useAuth } from '@/composables';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const display = useDisplay();
 
 const { token, userProfile } = useAuth();
+const store = useMainStore();
 
 const notifications = ref<INotification[]>([]);
 const loadNotifsIntermediate = ref(true);
@@ -131,8 +129,8 @@ const unreadNotificationsCount = computed(() => {
 });
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
-    const notifs = (await api.getUnreadNotifications(store.state.main.token)).data;
+  await store.captureApiError(async () => {
+    const notifs = (await api.getUnreadNotifications(token.value)).data;
     if (notifs) {
       notifs.forEach((notif) => {
         if (notif !== null) {
@@ -171,7 +169,7 @@ function handleWsMsg(msg: IWsUserMsg) {
 
 function readNotif(notif: INotification) {
   notif.is_read = true;
-  api.updateNotification(store.state.main.token, notif.id, {
+  api.updateNotification(token.value, notif.id, {
     is_read: true,
   });
 }

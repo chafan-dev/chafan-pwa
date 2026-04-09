@@ -5,21 +5,21 @@
   <div v-else>
     <div v-if="channel && channel.private_with_user">
       <template v-if="channel.feedback_subject">
-        <h1 class="title">关于反馈</h1>
-        <v-card flat outlined class="pa-2 my-1">
+        <h1 class="text-h6">关于反馈</h1>
+        <v-card flat variant="outlined" class="pa-2 my-1">
           <Feedback :feedback="channel.feedback_subject" />
         </v-card>
       </template>
       <template v-if="channel.site_creation_subject">
-        <h1 class="title">关于创建圈子申请</h1>
-        <v-card flat outlined class="pa-2 my-1">
+        <h1 class="text-h6">关于创建圈子申请</h1>
+        <v-card flat variant="outlined" class="pa-2 my-1">
           <SiteCreation
             :applicant-uuid="channel.admin.uuid"
             :site_creation="channel.site_creation_subject"
           />
         </v-card>
       </template>
-      <span class="title" v-else>
+      <span class="text-h6" v-else>
         和<UserLink
           :user-preview="
             channel.admin.uuid === currentUserId ? channel.private_with_user : channel.admin
@@ -42,7 +42,7 @@
           <UserLink v-if="message.author.uuid !== userProfile.uuid" :userPreview="message.author" />
           <span v-else>我</span>:
           <Viewer :content="plainTextContent(message.body)" />
-          <span class="ml-2 float-right text-caption grey--text">
+          <span class="ml-2 float-right text-caption text-grey">
             {{ fromNow(message.created_at) }}
           </span>
         </v-sheet>
@@ -54,16 +54,16 @@
         :disabled="sendMsgIntermediate"
         hide-details
         label="新消息"
-        outlined
+        variant="outlined"
       />
       <div class="d-flex py-2">
-        <HelpIcon @click="showTips = true" />
+        <AppIcon name="Help" @click="showTips = true"  />
         <v-spacer />
         <v-btn
           :disabled="sendMsgIntermediate || !messageCreate.body"
           color="primary"
-          depressed
-          small
+          variant="flat"
+          size="small"
           @click="commitNewMessage"
         >
           发送
@@ -76,7 +76,7 @@
         <v-card-title>
           关于聊天功能的提示
           <v-spacer />
-          <CloseIcon @click="showTips = false" />
+          <AppIcon name="Close" @click="showTips = false"  />
         </v-card-title>
         <v-card-text>
           「茶饭」对聊天功能的支持有限，并且将长期保持有限的功能。如果你需要更多的聊天功能的话，
@@ -91,21 +91,17 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import store from '@/store';
 import { api } from '@/api';
 import { IChannel, IMessage, IMessageCreate, IRichText } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
-import {
-  dispatchCaptureApiError,
-  dispatchCaptureApiErrorWithErrorHandler,
-} from '@/store/main/actions';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import Feedback from '@/views/main/dashboard/Feedback.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
-import HelpIcon from '@/components/icons/HelpIcon.vue';
 import SiteCreation from '@/views/main/dashboard/SiteCreation.vue';
 import { useAuth, useDayjs } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = defineProps<{
   channel: IChannel;
@@ -139,14 +135,14 @@ function plainTextContent(text: string): IRichText {
 
 onMounted(async () => {
   messageCreate.channel_id = props.channel.id;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     messages.value = (await api.getChannelMessages(token.value, props.channel.id)).data;
     loading.value = false;
   });
 });
 
 async function commitNewMessage() {
-  await dispatchCaptureApiErrorWithErrorHandler(store, {
+  await store.captureApiErrorWithErrorHandler({
     action: async () => {
       sendMsgIntermediate.value = true;
       const response = await api.createMessage(token.value, messageCreate);

@@ -7,7 +7,7 @@
       :items="sites"
       :label="label"
       :loading="loading"
-      :search-input.sync="search"
+      v-model:search="search"
       cache-items
       hide-details
       hide-no-data

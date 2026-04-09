@@ -3,24 +3,22 @@
     <v-snackbar v-model="show" :color="currentNotificationColor">
       <v-progress-circular v-show="showProgress" class="ma-2" indeterminate></v-progress-circular>
       {{ currentNotificationContent }}
-      <v-btn text @click.native="close">关闭</v-btn>
+      <v-btn variant="text" @click.native="close">关闭</v-btn>
     </v-snackbar>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import store from '@/store';
-import { AppNotification } from '@/store/main/state';
-import { commitRemoveNotification } from '@/store/main/mutations';
-import { readFirstNotification } from '@/store/main/getters';
-import { dispatchRemoveNotification } from '@/store/main/actions';
+import { useMainStore, type AppNotification } from '@/stores/main';
+
+const store = useMainStore();
 
 
 const show = ref(false);
 const showProgress = ref(false);
 const currentNotification = ref<AppNotification | false>(false);
 
-const firstNotification = computed(() => readFirstNotification(store));
+const firstNotification = computed(() => store.firstNotification);
 
 const currentNotificationContent = computed(() => {
   return (currentNotification.value && currentNotification.value.content) || '';
@@ -42,7 +40,7 @@ async function close() {
 
 async function removeCurrentNotification() {
   if (currentNotification.value) {
-    commitRemoveNotification(store, currentNotification.value);
+    store.notifications = store.notifications.filter((n) => n !== currentNotification.value);
   }
 }
 
@@ -63,10 +61,7 @@ watch(firstNotification, async (newNotification) => {
   if (newNotification !== currentNotification.value) {
     await setNotification(newNotification);
     if (newNotification) {
-      dispatchRemoveNotification(store, {
-        notification: newNotification,
-        timeout: 6500,
-      });
+      store.removeNotificationAfter(newNotification, 6500);
     }
   }
 });

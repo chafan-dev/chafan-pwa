@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'viewer-desktop': $vuetify.breakpoint.mdAndUp }" class="viewer">
+  <div :class="{ 'viewer-desktop': display.mdAndUp }" class="viewer">
     <template v-if="content.editor === 'tiptap'">
       <ChafanTiptap :body="content.source" :editable="false" :on-editor-ready="onViewerReady" />
     </template>
@@ -15,12 +15,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useDisplay } from 'vuetify';
 import VditorViewerCF from '@/editors/lib-components/VditorViewerCF.vue';
 import LightboxGroup from '@/components/image/LightboxGroup.vue';
 import { postProcessViewerDOM } from '@/common';
 import { IRichText } from '@/interfaces';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { useAuth } from '@/composables';
+const display = useDisplay();
 
 const props = defineProps<{
   content: IRichText;

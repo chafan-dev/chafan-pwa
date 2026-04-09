@@ -1,8 +1,8 @@
 <template>
   <v-row v-if="!loading">
-    <v-col v-for="(blocks, idx) in allBlocks" :key="idx" class="pb-2">
-      <base-card v-for="(block, idx) in blocks" :key="idx" class="px-2 py-4">
-        <h3 class="body-1">{{ block.topicName }}</h3>
+    <v-col v-for="(blocks, idx) in allBlocks" :key="'col-' + idx" class="pb-2">
+      <base-card v-for="block in blocks" :key="block.topicName" class="px-2 py-4">
+        <h3 class="text-body-1">{{ block.topicName }}</h3>
         <div class="mt-2">
           <SiteBtn v-for="site in block.sites" :key="site.uuid" :showHotness="true" :site="site" />
         </div>
@@ -16,10 +16,10 @@ import { ref, computed, onMounted } from 'vue';
 import { api } from '@/api';
 import { ISite, ISiteMap } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import BaseCard from '@/components/base/BaseCard.vue';
-import store from '@/store';
 import 'core-js/features/array/flat-map';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 function uniqBy<T>(a: T[], key: (item: T) => unknown): T[] {
   const seen = new Set();
@@ -46,7 +46,7 @@ function sitesFromSiteMap(siteMap: ISiteMap): ISite[] {
 
 onMounted(async () => {
   // TODO I need to simplify this file 2025-06-09
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const siteMaps = (await api.getSiteMaps()).data;
 
     for (const rootSiteMap of siteMaps.site_maps) {

@@ -1,7 +1,7 @@
 <template>
   <v-sheet @click="close">
-    <template v-for="(imgObject, idx) in imgObjects">
-      <v-overlay v-if="imgObject === openedImgObject" :key="idx">
+    <template v-for="imgObject in imgObjects" :key="imgObject.url">
+      <v-overlay v-if="imgObject === openedImgObject">
         <v-img :src="imgObject.url" contain max-height="90vh" max-width="90vw" @click="close">
           <template v-slot:placeholder>
             <v-row align="center" class="fill-height ma-0" justify="center">

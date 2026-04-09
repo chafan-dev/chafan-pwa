@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="d-flex">
-      <span class="font-weight-bold subtitle-1">{{ title }}</span>
+      <span class="font-weight-bold text-subtitle-1">{{ title }}</span>
       <v-spacer />
-      <v-btn color="secondary" outlined small @click="rotate" v-if="items.length > PAGE_SIZE">
+      <v-btn color="secondary" variant="outlined" size="small" @click="rotate" v-if="items.length > PAGE_SIZE">
         <span class="mr-1">换一批</span>
-        <RefreshIcon />
+        <AppIcon name="Refresh"  />
       </v-btn>
     </div>
     <div v-for="item in itemsSubset" :key="item.uuid" class="pt-1">
@@ -16,15 +16,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import RefreshIcon from '@/components/icons/RefreshIcon.vue';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 const props = defineProps<{
   title: string;
-  items: any[];
+  items: unknown[];
 }>();
 
 const PAGE_SIZE = 5;
-const itemsSubset = ref<any[]>([]);
+const itemsSubset = ref<unknown[]>([]);
 const subsetIndex = ref(0);
 
 onMounted(() => {

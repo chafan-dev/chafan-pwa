@@ -7,7 +7,7 @@
       :items="userPreviews"
       label="用户名"
       :loading="loading"
-      :search-input.sync="search"
+      v-model:search="search"
       cache-items
       hide-details
       hide-no-data
@@ -15,7 +15,7 @@
       item-value="uuid"
       @input="$emit('input', selectedUserUUID)"
     ></v-autocomplete>
-    <div class="tw-w-full" v-else>
+    <div class="w-100" v-else>
       <div class="d-flex align-end">
         <v-text-field
           placeholder="输入关键字..."
@@ -23,7 +23,7 @@
           v-model="query"
           @keydown.enter="doManualSearch"
         />
-        <SearchIcon @click="doManualSearch" />
+        <AppIcon name="Search" @click="doManualSearch"  />
       </div>
       <v-select
         v-if="showInputSelections"
@@ -37,11 +37,11 @@
         @input="$emit('input', selectedUserUUID)"
       />
     </div>
-    <v-menu offset-y>
-      <template v-slot:activator="{ on, attrs }">
-        <SettingsIcon v-bind="attrs" v-on="on" />
+    <v-menu location="bottom">
+      <template v-slot:activator="{ props }">
+        <AppIcon name="Settings" v-bind="props"  />
       </template>
-      <v-list dense>
+      <v-list density="compact">
         <v-list-item v-if="enableAutoComplete" @click="setEnableAutoComplete(false)">
           停用自动补全
         </v-list-item>
@@ -54,11 +54,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { apiSearch } from '@/api/search';
-import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { getLocalValue, setLocalValue } from '@/utils';
-import SearchIcon from '@/components/icons/SearchIcon.vue';
 import { IUserPreview } from '@/interfaces';
 import { useAuth } from '@/composables';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 const ENABLE_USER_SEARCH_AUTO_COMPLETE_KEY = 'chafan.enable-user-search-auto-complete';
 

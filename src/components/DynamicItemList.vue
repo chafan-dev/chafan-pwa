@@ -1,6 +1,5 @@
 <template>
   <div>
-    <DebugSpan>noMore={{ noMore }}, emptyItems={{ emptyItems }}, loading={{ loading }}</DebugSpan>
     <div v-if="items !== null && items.length > 0">
       <div v-for="item in items" :key="item.uuid" class="ma-3">
         <slot :item="item" class="my-4"></slot>
@@ -21,17 +20,20 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
-import DebugSpan from '@/components/base/DebugSpan.vue';
 import { info } from '@/logging';
+
+interface DynamicItem {
+  uuid: string;
+}
 
 const props = withDefaults(defineProps<{
   pageLimit?: number;
-  loadItems: (skip: number, limit: number) => Promise<(any | null)[] | null>;
+  loadItems: (skip: number, limit: number) => Promise<(DynamicItem | null)[] | null>;
 }>(), {
   pageLimit: 20,
 });
 
-const items = ref<any[] | null>(null);
+const items = ref<DynamicItem[] | null>(null);
 const currentPage = ref(0);
 const noMore = ref(false);
 const emptyItems = ref(false);
@@ -54,7 +56,7 @@ async function tryLoadMore(ignoreScroll?: boolean) {
     props.pageLimit
   );
   if (newItems) {
-    const newNotNullItems: any[] = newItems.filter((x) => x !== null) as any[];
+    const newNotNullItems: DynamicItem[] = newItems.filter((x): x is DynamicItem => x !== null);
     if (!items.value) {
       items.value = newNotNullItems;
     } else {
