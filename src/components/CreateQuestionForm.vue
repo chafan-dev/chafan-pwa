@@ -1,6 +1,6 @@
 <template>
-  <v-card outlined>
-    <v-card-title v-if="showTitle" class="primary--text headline"> 提问 </v-card-title>
+  <v-card variant="outlined">
+    <v-card-title v-if="showTitle" class="text-primary text-h5"> 提问 </v-card-title>
     <v-card-text>
       <debug-span>SiteSearch loading: {{ siteSearchLoading }}</debug-span>
       <SiteSearch
@@ -14,14 +14,14 @@
         class="mt-4"
         v-model="newQuestionTitle"
         auto-grow
-        dense
+        density="compact"
         label="标题"
         rows="3"
         hide-details
       />
       <div class="d-flex">
         <v-spacer />
-        <span class="text-caption grey--text"> 创建后添加细节 </span>
+        <span class="text-caption text-grey"> 创建后添加细节 </span>
       </div>
     </v-card-text>
     <v-card-actions>
@@ -29,8 +29,8 @@
       <v-btn
         :disabled="intermediate || siteSearchLoading"
         color="primary"
-        depressed
-        small
+        variant="flat"
+        size="small"
         @click="postNewQuestion"
       >
         提交新问题
@@ -42,16 +42,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router/composables';
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
+import { useRouter } from 'vue-router';
 import { ISite } from '@/interfaces';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiQuestion } from '@/api/question';
 import SiteSearch from '@/components/SiteSearch.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { defaultSiteUuid } from '@/env';
 import { useAuth } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = withDefaults(defineProps<{
   site?: ISite;
@@ -78,7 +77,7 @@ function onSearchComplete() {
 
 async function postNewQuestion() {
   if (!token.value) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   let siteUUID;
@@ -90,13 +89,13 @@ async function postNewQuestion() {
     siteUUID = defaultSiteUuid;
   }
   if (newQuestionTitle.value.length < 5) {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '标题太短了',
       color: 'error',
     });
     return;
   }
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     intermediate.value = true;
     const response = await apiQuestion.postQuestion(token.value!, {
       site_uuid: siteUUID,
@@ -106,7 +105,7 @@ async function postNewQuestion() {
     if (response) {
       try {
         localStorage.setItem('new-question', 'true');
-      } catch (e) {}
+      } catch (e) { console.warn('Failed to set new-question flag in localStorage', e); }
       await router.push(`/questions/${response.data.uuid}`);
     }
   });

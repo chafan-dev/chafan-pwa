@@ -1,10 +1,10 @@
 <template>
   <div>
-    <v-btn color="primary" depressed small @click="showDialog = true"> 生成邀请链接 </v-btn>
+    <v-btn color="primary" variant="flat" size="small" @click="showDialog = true"> 生成邀请链接 </v-btn>
     <v-dialog v-model="showDialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="headline"
+          <span class="text-h5"
             >生成<span v-if="site">{{ site.name }}圈子的</span>邀请链接</span
           >
         </v-card-title>
@@ -13,8 +13,8 @@
             <SiteSearch v-model="invitedSite" label="圈子（可选）" />
           </div>
         </v-card-text>
-        <div v-if="invitationLinkHref" class="body-1 mx-6">
-          <p class="black--text">✅ 未注册用户可直接通过以下链接进入注册界面：</p>
+        <div v-if="invitationLinkHref" class="text-body-1 mx-6">
+          <p class="text-black">✅ 未注册用户可直接通过以下链接进入注册界面：</p>
           <a :href="invitationLinkHref" class="text-decoration-none ml-1" target="_blank">
             https://cha.fan{{ invitationLinkHref }}
           </a>
@@ -25,8 +25,8 @@
             v-if="!invitationLinkHref"
             :disabled="intermediate"
             color="primary"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="createInvitationLink"
           >
             生成邀请链接

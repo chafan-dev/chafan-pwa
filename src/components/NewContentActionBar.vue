@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex">
     <div>
-      <v-btn class="primary darken-2 mr-1" depressed small @click="showAskActionDialog = true">
+      <v-btn class="primary darken-2 mr-1" variant="tonal" size="small" @click="showAskActionDialog = true">
         提问
       </v-btn>
 
@@ -10,13 +10,13 @@
       </v-dialog>
     </div>
 
-    <v-btn class="mr-1" depressed small @click="showArticleActionDialog = true">写文章</v-btn>
+    <v-btn class="mr-1" variant="tonal" size="small" @click="showArticleActionDialog = true">写文章</v-btn>
     <v-dialog v-model="showArticleActionDialog" max-width="500">
       <v-card>
-        <v-card-title primary-title>
-          <div class="headline primary--text">写文章</div>
+        <v-card-title>
+          <div class="text-h5 text-primary">写文章</div>
           <v-spacer />
-          <CloseIcon @click="showArticleActionDialog = false" />
+          <AppIcon name="Close" @click="showArticleActionDialog = false"  />
         </v-card-title>
         <v-card-text>
           <v-select
@@ -39,12 +39,12 @@
               }
             "
           />
-          <v-btn color="primary" depressed small @click="postNewArticle">开始写作</v-btn>
+          <v-btn color="primary" variant="flat" size="small" @click="postNewArticle">开始写作</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small @click="showAnswerActionDialog = true"> 回答</v-btn>
+    <v-btn class="mr-1" variant="tonal" size="small" @click="showAnswerActionDialog = true"> 回答</v-btn>
     <v-dialog v-model="showAnswerActionDialog" max-width="500">
       <v-sheet class="pa-4">
         <RotationList v-slot="{ item }" :items="questionsToAnswer" title="等待回答的问题">
@@ -53,31 +53,30 @@
       </v-sheet>
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true">新分享</v-btn>
+    <v-btn class="mr-1" variant="tonal" size="small" @click="showSubmissionActionDialog = true">新分享</v-btn>
     <v-dialog v-model="showSubmissionActionDialog" max-width="500">
       <CreateSubmissionForm :showTitle="true" />
     </v-dialog>
 
-    <v-btn class="mr-1" depressed small to="/explore"> 探索</v-btn>
+    <v-btn class="mr-1" variant="tonal" size="small" to="/explore"> 探索</v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router/composables';
+import { useRouter } from 'vue-router';
 import { api } from '@/api';
 import { apiDiscovery } from '@/api/discovery';
 import { IArticleColumn, IQuestionPreview } from '@/interfaces';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
-import { commitAddNotification } from '@/store/main/mutations';
 import RotationList from '@/components/base/RotationList.vue';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { useAuth } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const router = useRouter();
 const { token } = useAuth();
@@ -91,7 +90,7 @@ const myArticleColumns = ref<IArticleColumn[]>([]);
 const newArticleColumnUUID = ref<string | null>(null);
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (token.value) {
       myArticleColumns.value = (await api.getMyArticleColumns(token.value)).data;
       questionsToAnswer.value = (await apiDiscovery.getPendingQuestions(token.value)).data;
@@ -103,7 +102,7 @@ async function postNewArticle() {
   if (newArticleColumnUUID.value) {
     await router.push(`/article-editor?articleColumnId=${newArticleColumnUUID.value}`);
   } else {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '请选择一个专栏发布文章，在「用户中心」中可以创建专栏',
       color: 'info',
     });

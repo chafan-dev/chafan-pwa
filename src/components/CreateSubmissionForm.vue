@@ -1,52 +1,51 @@
 <template>
-  <v-card outlined>
-    <ValidationObserver v-slot="{ handleSubmit }">
-      <v-card-title v-if="showTitle" class="primary--text headline"> 分享 </v-card-title>
+  <v-card variant="outlined">
+    <Form v-slot="{ handleSubmit }">
+      <v-card-title v-if="showTitle" class="text-primary text-h5"> 分享 </v-card-title>
       <v-card-text>
         <SiteSearch v-if="site === undefined" v-model="selectedSite" label="圈子（默认：大广场）" />
         <v-textarea
           class="mt-4"
           v-model="newSubmissionTitle"
           auto-grow
-          dense
+          density="compact"
           label="标题"
           rows="1"
           hide-details
         />
-        <ValidationProvider v-slot="{ errors }" name="URL" rules="url">
-          <v-text-field v-model="newSubmissionURL" label="URL（可选）" hide-details clearable />
-          <span class="error--text">{{ errors[0] }}</span>
-        </ValidationProvider>
+        <Field v-slot="{ errors }" name="url" rules="url" v-model="newSubmissionURL">
+          <v-text-field v-model="newSubmissionURL" label="URL（可选）" :error-messages="errors" clearable />
+        </Field>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn
           :disabled="postNewSubmissionIntermediate"
           color="primary"
-          depressed
-          small
+          variant="flat"
+          size="small"
           @click="handleSubmit(postNewSubmission)"
         >
           提交
           <v-progress-circular v-if="postNewSubmissionIntermediate" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
-    </ValidationObserver>
+    </Form>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router/composables';
+import { Form, Field } from 'vee-validate';
+import { useRouter } from 'vue-router';
 import { apiSubmission } from '@/api/submission';
-import { commitAddNotification, commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { ISite } from '@/interfaces';
-import { dispatchCaptureApiErrorWithErrorHandler } from '@/store/main/actions';
 import SiteSearch from '@/components/SiteSearch.vue';
 import { defaultSiteUuid } from '@/env';
 import { AxiosError } from 'axios';
 import { useAuth } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = withDefaults(defineProps<{
   site?: ISite;
@@ -65,7 +64,7 @@ const selectedSite = ref<ISite | null>(null);
 
 async function postNewSubmission() {
   if (!token.value) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   let siteUUID;
@@ -77,13 +76,13 @@ async function postNewSubmission() {
     siteUUID = defaultSiteUuid;
   }
   if (newSubmissionTitle.value.length < 5) {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '标题太短了',
       color: 'error',
     });
     return;
   }
-  await dispatchCaptureApiErrorWithErrorHandler(store, {
+  await store.captureApiErrorWithErrorHandler({
     action: async () => {
       postNewSubmissionIntermediate.value = true;
       const response = await apiSubmission.postSubmission(token.value!, {
@@ -95,7 +94,7 @@ async function postNewSubmission() {
       if (response) {
         try {
           localStorage.setItem('new-submission', 'true');
-        } catch (e) {}
+        } catch (e) { console.warn('Failed to set new-submission flag in localStorage', e); }
         await router.push(`/submissions/${response.data.uuid}`);
       }
     },

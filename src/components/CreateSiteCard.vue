@@ -1,20 +1,17 @@
 <template>
   <v-card>
-    <ValidationObserver v-slot="{ handleSubmit, reset, valid }">
-      <v-card-title primary-title>
-        <div class="headline primary--text">创建圈子</div>
+    <Form v-slot="{ handleSubmit, resetForm, meta }">
+      <v-card-title>
+        <div class="text-h5 text-primary">创建圈子</div>
       </v-card-title>
       <v-card-text>
-        <template>
           <v-form v-if="categoryTopics !== null">
-            <ValidationProvider v-slot="{ errors }" name="显示名" rules="required">
-              <v-text-field v-model="siteCreate.name" label="显示名*" />
-              <span class="error--text">{{ errors[0] }}</span>
-            </ValidationProvider>
-            <ValidationProvider v-slot="{ errors }" name="唯一域名" rules="required|id">
-              <v-text-field v-model="siteCreate.subdomain" label="唯一域名*" required />
-              <span class="error--text">{{ errors[0] }}</span>
-            </ValidationProvider>
+            <Field v-slot="{ errors }" name="显示名" rules="required" v-model="siteCreate.name">
+              <v-text-field v-model="siteCreate.name" label="显示名*" :error-messages="errors" />
+            </Field>
+            <Field v-slot="{ errors }" name="唯一域名" rules="required|id" v-model="siteCreate.subdomain">
+              <v-text-field v-model="siteCreate.subdomain" label="唯一域名*" required :error-messages="errors" />
+            </Field>
             <v-select
               v-model="siteCreate.permission_type"
               :items="permissionTypeItems"
@@ -22,12 +19,12 @@
               item-value="value"
               label="圈子类型*"
             />
-            <div v-if="siteCreate.permission_type === 'public'" class="text-caption grey--text">
+            <div v-if="siteCreate.permission_type === 'public'" class="text-caption text-grey">
               提示：内容对所有人可见
             </div>
             <div
               v-else-if="siteCreate.permission_type === 'private'"
-              class="text-caption grey--text"
+              class="text-caption text-grey"
             >
               提示：Deprecated
             </div>
@@ -36,18 +33,17 @@
             <v-textarea v-model="siteCreate.description" hide-details label="描述*" />
           </v-form>
           <v-skeleton-loader type="list-item-three-line" v-else />
-        </template>
       </v-card-text>
       <v-card-actions>
-        <span v-if="!valid" class="text-caption pl-2">提示：表格未填写完</span>
+        <span v-if="!meta.valid" class="text-caption pl-2">提示：表格未填写完</span>
         <v-spacer />
-        <v-btn depressed small @click="cancel">取消</v-btn>
-        <v-btn depressed small @click="resetAll(reset)">重置</v-btn>
+        <v-btn variant="tonal" size="small" @click="cancel">取消</v-btn>
+        <v-btn variant="tonal" size="small" @click="resetAll(resetForm)">重置</v-btn>
         <v-btn
-          :disabled="intermediate || !valid"
+          :disabled="intermediate || !meta.valid"
           color="primary"
-          depressed
-          small
+          variant="flat"
+          size="small"
           @click="handleSubmit(submit)"
         >
           <template v-if="canCreateSite"> 创建</template>
@@ -55,20 +51,21 @@
           <v-progress-circular v-if="intermediate" color="primary" indeterminate size="20" />
         </v-btn>
       </v-card-actions>
-    </ValidationObserver>
+    </Form>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { Form, Field } from 'vee-validate';
+import { useRouter } from 'vue-router';
 import { ISiteCreate, ITopic } from '@/interfaces';
 import { api } from '@/api';
-import { dispatchCaptureApiErrorWithErrorHandler } from '@/store/main/actions';
 import { AxiosError } from 'axios';
 import { apiSite } from '@/api/site';
 import { useAuth, useErrorHandling } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const router = useRouter();
 const { token, userProfile } = useAuth();
@@ -92,12 +89,12 @@ onMounted(async () => {
   categoryTopics.value = (await api.getCategoryTopics()).data;
 });
 
-function resetAll(reset: (() => void) | undefined) {
+function resetAll(resetForm?: () => void) {
   siteCreate.name = '';
   siteCreate.subdomain = '';
   siteCreate.permission_type = 'public';
-  if (reset) {
-    reset();
+  if (resetForm) {
+    resetForm();
   }
 }
 
@@ -116,7 +113,7 @@ const canCreateSite = computed(() => {
 
 async function submit() {
   intermediate.value = true;
-  await dispatchCaptureApiErrorWithErrorHandler(store, {
+  await store.captureApiErrorWithErrorHandler({
     action: async () => {
       const r = (await apiSite.createSite(token.value, siteCreate)).data;
       if (r.created_site) {
