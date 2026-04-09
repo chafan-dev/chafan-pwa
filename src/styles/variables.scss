@@ -8,19 +8,19 @@
 
 // Base colors
 $color-white: #fff;
-$color-black: rgb(0, 0, 0);
+$color-black: rgb(0 0 0);
 $color-black-transparent-20: rgb(0 0 0 / 20%);
 
 // Border and divider colors
 $color-border-light: lightgrey;
 
 // Text colors
-$rich-text-color: rgb(18, 18, 18);
+$rich-text-color: rgb(18 18 18);
 
 // Shadow colors (for card shadows)
-$shadow-color-light: rgba(85, 85, 85, 0.08);
-$shadow-color-medium: rgba(85, 85, 85, 0.06);
-$shadow-color-faint: rgba(85, 85, 85, 0.03);
+$shadow-color-light: rgb(85 85 85 / 8%);
+$shadow-color-medium: rgb(85 85 85 / 6%);
+$shadow-color-faint: rgb(85 85 85 / 3%);
 
 // ============================================
 // Typography
@@ -29,12 +29,14 @@ $shadow-color-faint: rgba(85, 85, 85, 0.03);
 // Font families
 $body-font-family: '-apple-system', 'Roboto', 'BlinkMacSystemFont', 'Helvetica Neue', 'PingFang SC',
   sans-serif, 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei';
-
 $code-font-family: mononoki, Consolas, Liberation Mono, Menlo, Courier, monospace, Apple Color Emoji,
   Segoe UI Emoji, Noto Color Emoji, Segoe UI Symbol, Android Emoji, EmojiSymbols;
 
 // Line heights
 $rich-text-line-height: 1.7;
+
+// Font sizes
+$font-size-root: 14px;
 
 // Font weights
 $font-weight-normal: 400;
@@ -80,7 +82,6 @@ $max-height-viewer-image: 500px;
 
 $border-width-thin: 1px;
 $border-width-medium: 2px;
-
 $border-radius-small: 5px;
 $border-radius-medium: 10px;
 

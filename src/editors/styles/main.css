@@ -1,2 +1,118 @@
-@tailwind components;
-@tailwind utilities;
+/* Editor component styles — replaces former Tailwind utility classes */
+
+/* Layout */
+.editor-fixed { position: fixed; }
+.editor-inset-0 { inset: 0; }
+.editor-z-10 { z-index: 10; }
+.editor-overflow-y-auto { overflow-y: auto; }
+.editor-overflow-hidden { overflow: hidden; }
+.editor-hidden { display: none; }
+
+/* Flexbox */
+.editor-flex { display: flex; }
+.editor-inline-flex { display: inline-flex; }
+.editor-inline-block { display: inline-block; }
+.editor-items-end { align-items: flex-end; }
+.editor-justify-center { justify-content: center; }
+.editor-flex-row-reverse { flex-direction: row-reverse; }
+.editor-align-bottom { vertical-align: bottom; }
+.editor-align-middle { vertical-align: middle; }
+.editor-w-full { width: 100%; }
+.editor-min-h-screen { min-height: 100vh; }
+.editor-h-screen { height: 100vh; }
+
+/* Spacing */
+.editor-p-0 { padding: 0; }
+.editor-p-1 { padding: 0.25rem; }
+.editor-p-2 { padding: 0.5rem; }
+.editor-px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.editor-px-4 { padding-left: 1rem; padding-right: 1rem; }
+.editor-py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.editor-py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.editor-pt-4 { padding-top: 1rem; }
+.editor-pt-5 { padding-top: 1.25rem; }
+.editor-pb-4 { padding-bottom: 1rem; }
+.editor-pb-20 { padding-bottom: 5rem; }
+.editor-pr-0 { padding-right: 0; }
+.editor-mt-2 { margin-top: 0.5rem; }
+.editor-mt-3 { margin-top: 0.75rem; }
+.editor-my-8 { margin-top: 2rem; margin-bottom: 2rem; }
+.editor-ml-3 { margin-left: 0.75rem; }
+.editor-space-y-3 > * + * { margin-top: 0.75rem; }
+.editor-space-x-0\.5 > * + * { margin-left: 0.125rem; }
+
+/* Typography */
+.editor-text-center { text-align: center; }
+.editor-text-left { text-align: left; }
+.editor-text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.editor-text-base { font-size: 1rem; line-height: 1.5rem; }
+.editor-text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.editor-leading-6 { line-height: 1.5rem; }
+.editor-leading-tight { line-height: 1.25; }
+.editor-font-medium { font-weight: 500; }
+
+/* Colors */
+.editor-text-white { color: #fff; }
+.editor-text-black { color: #000; }
+.editor-text-gray-700 { color: #374151; }
+.editor-text-gray-900 { color: #111827; }
+.editor-bg-white { background-color: #fff; }
+.editor-bg-gray-50 { background-color: #f9fafb; }
+.editor-bg-gray-500 { background-color: #6b7280; }
+.editor-bg-blue-600 { background-color: #2563eb; }
+.editor-bg-opacity-75 { opacity: 0.75; }
+.editor-bg-tippydark { background-color: #333; }
+
+/* Border */
+.editor-border { border-width: 1px; border-style: solid; }
+.editor-border-0 { border-width: 0; }
+.editor-border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+.editor-border-solid { border-style: solid; }
+.editor-border-transparent { border-color: transparent; }
+.editor-border-gray-300 { border-color: #d1d5db; }
+.editor-rounded { border-radius: 0.25rem; }
+.editor-rounded-lg { border-radius: 0.5rem; }
+.editor-rounded-md { border-radius: 0.375rem; }
+
+/* Shadow & Effects */
+.editor-shadow { box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%); }
+.editor-shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%); }
+.editor-shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%); }
+.editor-shadow-outline:focus { box-shadow: 0 0 0 3px rgb(66 153 225 / 50%); }
+.editor-transition-opacity { transition-property: opacity; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.editor-transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+.editor-transform { transform: translateZ(0); }
+.editor-appearance-none { appearance: none; }
+
+/* Focus */
+.editor-outline-none:focus { outline: 2px solid transparent; outline-offset: 2px; }
+.editor-ring-2:focus { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6366f1; }
+.editor-ring-offset-2:focus { --ring-offset: 2px; }
+.editor-ring-red-500:focus { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ef4444; }
+.editor-ring-indigo-500:focus { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #6366f1; }
+
+/* Hover */
+.editor-bg-blue-700:hover { background-color: #1d4ed8; }
+.editor-bg-gray-50:hover { background-color: #f9fafb; }
+
+/* Responsive (sm = 640px+) */
+@media (width >= 640px) {
+  .sm\:editor-block { display: block; }
+  .sm\:editor-inline-block { display: inline-block; }
+  .sm\:editor-flex { display: flex; }
+  .sm\:editor-flex-row-reverse { flex-direction: row-reverse; }
+  .sm\:editor-align-middle { vertical-align: middle; }
+  .sm\:editor-h-screen { height: 100vh; }
+  .sm\:editor-w-auto { width: auto; }
+  .sm\:editor-max-w-lg { max-width: 32rem; }
+  .sm\:editor-w-full { width: 100%; }
+  .sm\:editor-p-0 { padding: 0; }
+  .sm\:editor-p-6 { padding: 1.5rem; }
+  .sm\:editor-pb-4 { padding-bottom: 1rem; }
+  .sm\:editor-px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .sm\:editor-mt-0 { margin-top: 0; }
+  .sm\:editor-my-8 { margin-top: 2rem; margin-bottom: 2rem; }
+  .sm\:editor-ml-3 { margin-left: 0.75rem; }
+  .sm\:editor-text-left { text-align: left; }
+  .sm\:editor-text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+}

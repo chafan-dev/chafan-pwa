@@ -1,4 +1,3 @@
-@import '~vuetify/src/styles/styles.sass';
 @import 'variables';
 
 // ============================================
@@ -115,6 +114,7 @@
 
 .shadow-card {
   @extend %c-card-base;
+
   padding: $space-3;
 }
 
@@ -128,6 +128,7 @@
 
 .shadow-card-blue {
   @extend %c-card-base;
+
   padding: $space-3;
   background: $color-white;
 
@@ -151,6 +152,7 @@
 
 .v-col.fixed-narrow-sidecol {
   max-width: $max-width-sidebar;
+  flex: 0 0 $max-width-sidebar;
 }
 
 // Editor/Preview
@@ -283,7 +285,7 @@
 }
 
 .vditor {
-  --textarea-background-color: $color-white;
+  --textarea-background-color: #{$color-white};
 }
 
 .vditor-sv {
@@ -332,11 +334,15 @@
   max-width: $width-search-box-max;
 }
 
+.v-toolbar__content {
+  padding: 4px 16px;
+}
+
 .app-bar-inner {
   width: $width-full;
 }
 
-.opacity-none:before {
+.opacity-none::before {
   opacity: $opacity-transparent;
 }
 
