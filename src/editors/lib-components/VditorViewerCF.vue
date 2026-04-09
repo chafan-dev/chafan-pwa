@@ -1,32 +1,38 @@
 <template>
-  <div />
+  <div ref="rootEl" />
 </template>
 
-<script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import Vditor from 'vditor';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { vditorCDN } from '../common';
 
-@Component
-export default class Viewer extends Vue {
-  @Prop() private readonly body!: string;
-  @Prop() public readonly onViewerReady!: (elem: HTMLDivElement) => void | undefined;
+let vditorImportPromise: Promise<typeof import('vditor')> | null = null;
 
-  mounted() {
-    const vditorElem = this.$el as HTMLDivElement;
-    Vditor.preview(vditorElem, this.body, {
-      mode: 'light',
-      cdn: vditorCDN,
-      after: () => {
-        if (this.onViewerReady) {
-          this.onViewerReady(vditorElem);
-        }
-      },
-      math: {
-        inlineDigit: true,
-        engine: 'KaTeX',
-      },
-    });
+const props = defineProps<{
+  body: string;
+  onViewerReady?: (elem: HTMLDivElement) => void;
+}>();
+
+const rootEl = ref<HTMLDivElement>();
+
+onMounted(async () => {
+  if (!vditorImportPromise) {
+    vditorImportPromise = import('vditor');
   }
-}
+  const { default: Vditor } = await vditorImportPromise;
+  const vditorElem = rootEl.value!;
+  Vditor.preview(vditorElem, props.body, {
+    mode: 'light',
+    cdn: vditorCDN,
+    after: () => {
+      if (props.onViewerReady) {
+        props.onViewerReady(vditorElem);
+      }
+    },
+    math: {
+      inlineDigit: true,
+      engine: 'KaTeX',
+    },
+  });
+});
 </script>

@@ -1,92 +1,88 @@
 <template>
-  <div :class="{ 'vditor-without-menu': !showMenu }" class="lite-vditor" />
+  <div ref="rootEl" :class="{ 'vditor-without-menu': !showMenu }" class="lite-vditor" />
 </template>
 
-<script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-
-import Vditor from 'vditor';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { vditorCDN } from '../common';
 
-@Component
-export default class SimpleVditor extends Vue {
-  @Prop() public readonly initialValue: string | undefined;
-  @Prop() public readonly placeholder: string | undefined;
-  @Prop({ default: false }) public readonly showMenu!: boolean;
-  @Prop() public readonly vditorUploadConfig!: any;
-
-  private vditor: Vditor | null = null;
-
-  get content() {
-    return this.vditor?.getValue() || '';
+const props = withDefaults(
+  defineProps<{
+    initialValue?: string;
+    placeholder?: string;
+    showMenu?: boolean;
+    vditorUploadConfig?: any;
+  }>(),
+  {
+    showMenu: false,
   }
+);
 
-  set content(value: string) {
-    if (this.vditor) {
-      this.vditor.setValue(value);
-    }
+const rootEl = ref<HTMLDivElement>();
+let vditor: any = null;
+
+async function initVditor() {
+  const { default: Vditor } = await import('vditor');
+  if (vditor !== null) {
+    vditor.destroy();
   }
-
-  public initVditor() {
-    if (this.vditor !== null) {
-      this.vditor.destroy();
-    }
-    this.vditor = new Vditor(this.$el as HTMLElement, {
-      cdn: vditorCDN,
-      placeholder: this.placeholder ? this.placeholder : '',
-      value: this.initialValue,
-      mode: 'wysiwyg',
-      toolbar: [
-        'bold',
-        'italic',
-        'link',
-        'list',
-        'line',
-        'strike',
-        'undo',
-        'redo',
-        {
-          name: 'upload',
-          tip: '上传图片',
-        },
-      ],
-      cache: {
-        enable: false,
+  vditor = new Vditor(rootEl.value!, {
+    cdn: vditorCDN,
+    placeholder: props.placeholder ? props.placeholder : '',
+    value: props.initialValue,
+    mode: 'wysiwyg',
+    toolbar: [
+      'bold',
+      'italic',
+      'link',
+      'list',
+      'line',
+      'strike',
+      'undo',
+      'redo',
+      {
+        name: 'upload',
+        tip: '上传图片',
       },
-      upload: this.vditorUploadConfig,
-      counter: {
-        enable: false,
-      },
-    });
-  }
-
-  public getText() {
-    let text = (this.$el.getElementsByClassName('vditor-wysiwyg')[0] as HTMLElement).innerText;
-    const hasImg = this.getHTML().includes('<img ');
-    if (hasImg) {
-      text += '[图片]';
-    }
-    return text || '';
-  }
-
-  public getHTML() {
-    return this.vditor!.getHTML();
-  }
-
-  public reset() {
-    this.initVditor();
-  }
-
-  mounted() {
-    this.initVditor();
-  }
+    ],
+    cache: {
+      enable: false,
+    },
+    upload: props.vditorUploadConfig,
+    counter: {
+      enable: false,
+    },
+  });
 }
+
+function getText() {
+  let text = (rootEl.value!.getElementsByClassName('vditor-wysiwyg')[0] as HTMLElement).innerText;
+  const hasImg = getHTML().includes('<img ');
+  if (hasImg) {
+    text += '[图片]';
+  }
+  return text || '';
+}
+
+function getHTML() {
+  return vditor!.getHTML();
+}
+
+function reset() {
+  initVditor();
+}
+
+onMounted(async () => {
+  await initVditor();
+});
+
+defineExpose({ getText, getHTML, reset });
 </script>
 
 <style>
-.lite-vditor .vditor-reset {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
+.lite-vditor .vditor-reset.vditor-reset {
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .lite-vditor h1::before,
@@ -96,7 +92,7 @@ export default class SimpleVditor extends Vue {
 }
 
 .vditor-without-menu .vditor-toolbar {
-  height: 0px;
-  border-bottom: 0px;
+  height: 0;
+  border-bottom: 0;
 }
 </style>

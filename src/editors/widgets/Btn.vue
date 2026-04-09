@@ -1,11 +1,11 @@
 <template>
   <button
-    v-on="$listeners"
-    class="tw-p-1"
+
+    class="editor-p-1"
     :class="{
-      'tw-bg-tippydark tw-text-white tw-rounded':
+      'editor-bg-tippydark editor-text-white editor-rounded':
         (active && color === 'light') || (!active && color === 'dark'),
-      'tw-bg-white tw-text-black tw-rounded':
+      'editor-bg-white editor-text-black editor-rounded':
         (active && color === 'dark') || (!active && color === 'light'),
     }"
   >
@@ -13,16 +13,18 @@
   </button>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
+<script setup lang="ts">
 import '../styles/main.css';
 
-@Component
-export default class Btn extends Vue {
-  @Prop() public readonly active!: boolean;
-  @Prop({ default: 'light' }) public readonly color!: 'light' | 'dark';
-}
+withDefaults(
+  defineProps<{
+    active: boolean;
+    color?: 'light' | 'dark';
+  }>(),
+  {
+    color: 'light',
+  }
+);
 </script>
 
 <style scoped>

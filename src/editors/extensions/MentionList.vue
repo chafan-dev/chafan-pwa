@@ -1,10 +1,10 @@
 <template>
   <div class="items">
     <button
+      v-for="(item, index) in items"
+      :key="item.handle"
       class="item"
       :class="{ 'is-selected': index === selectedIndex }"
-      v-for="(item, index) in items"
-      :key="index"
       @click="selectItem(index)"
     >
       {{ userLabel(item) }}
@@ -12,59 +12,61 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { IUserPreview } from '@/interfaces';
 
-@Component
-export default class MentionList extends Vue {
-  @Prop() public readonly items!: any[];
-  @Prop() public readonly command!: any;
-  @Prop() public readonly userLabel!: (userItem: any) => string;
+const props = defineProps<{
+  items: IUserPreview[];
+  command: (payload: { id: IUserPreview }) => void;
+  userLabel: (userItem: IUserPreview) => string;
+}>();
 
-  private selectedIndex = 0;
+const selectedIndex = ref(0);
 
-  @Watch('items')
-  watchItems() {
-    this.selectedIndex = 0;
+watch(
+  () => props.items,
+  () => {
+    selectedIndex.value = 0;
   }
+);
 
-  onKeyDown({ event }: { event: KeyboardEvent }) {
-    if (event.key === 'ArrowUp') {
-      this.upHandler();
-      return true;
-    }
-
-    if (event.key === 'ArrowDown') {
-      this.downHandler();
-      return true;
-    }
-
-    if (event.key === 'Enter') {
-      this.enterHandler();
-      return true;
-    }
-
-    return false;
+function onKeyDown({ event }: { event: KeyboardEvent }) {
+  if (event.key === 'ArrowUp') {
+    upHandler();
+    return true;
   }
-  upHandler() {
-    this.selectedIndex = (this.selectedIndex + this.items.length - 1) % this.items.length;
+  if (event.key === 'ArrowDown') {
+    downHandler();
+    return true;
   }
-  downHandler() {
-    this.selectedIndex = (this.selectedIndex + 1) % this.items.length;
+  if (event.key === 'Enter') {
+    enterHandler();
+    return true;
   }
+  return false;
+}
 
-  enterHandler() {
-    this.selectItem(this.selectedIndex);
-  }
+function upHandler() {
+  selectedIndex.value = (selectedIndex.value + props.items.length - 1) % props.items.length;
+}
 
-  selectItem(index: number) {
-    const item = this.items[index];
+function downHandler() {
+  selectedIndex.value = (selectedIndex.value + 1) % props.items.length;
+}
 
-    if (item) {
-      this.command({ id: item });
-    }
+function enterHandler() {
+  selectItem(selectedIndex.value);
+}
+
+function selectItem(index: number) {
+  const item = props.items[index];
+  if (item) {
+    props.command({ id: item });
   }
 }
+
+defineExpose({ onKeyDown });
 </script>
 
 <style lang="scss" scoped>
