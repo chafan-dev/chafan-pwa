@@ -1,0 +1,3 @@
+- `preview` branch is used to migrate, test and debug Vue 3. It's deployed to preview.cha.fan
+- `master` branch is the production one, and it's deployed to cha.fan
+- The goal is to make `preview` branch to have the same behavior, including layout to the prod one
