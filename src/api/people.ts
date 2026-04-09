@@ -45,40 +45,40 @@ export const apiPeople = {
   async getRelatedUsers(token: string, userUUID: string) {
     return axios.get<IUserPreview[]>(`${apiUrl}/people/${userUUID}/related/`, authHeaders(token));
   },
-  async getQuestionsByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
+  async getQuestionsByAuthor(userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IQuestionPreview[]>(
       `${apiUrl}/people/${userUUID}/questions/`,
-      { params: params }
+      { params }
     );
   },
-  async getSubmissionsByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
+  async getSubmissionsByAuthor(userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<ISubmission[]>(
       `${apiUrl}/people/${userUUID}/submissions/`,
-      { params: params }
+      { params }
     );
   },
-  async getArticlesByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
+  async getArticlesByAuthor(userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IArticlePreview[]>(
       `${apiUrl}/people/${userUUID}/articles/`,
-      { params: params }
+      { params }
     );
   },
-  async getAnswersByAuthor(_token: string, userUUID: string, skip: number, limit: number) {
+  async getAnswersByAuthor(userUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
     return axios.get<IAnswerPreview[]>(
       `${apiUrl}/people/${userUUID}/answers/`,
-      { params: params }
+      { params }
     );
   },
   async getUserEducationExperiences(token: string, userUUID: string) {

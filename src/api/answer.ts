@@ -15,10 +15,10 @@ import {
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiAnswer = {
-  async getAnswer(_token: string, answerUUID: string) {
+  async getAnswer(answerUUID: string) {
     return axios.get<IAnswer>(`${apiUrl}/answers/${answerUUID}`);
   },
-  async getAnswerUpvotes(_token: string, answerUUID: string) {
+  async getAnswerUpvotes(answerUUID: string) {
     return axios.get<IAnswerUpvotes>(`${apiUrl}/answers/${answerUUID}/upvotes/`);
   },
   async upvoteAnswer(token: string, answerUUID: string) {
