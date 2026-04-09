@@ -12,8 +12,8 @@
       <v-btn
         v-if="feedback.has_screenshot"
         class="ml-1"
-        small
-        depressed
+        size="small"
+        variant="tonal"
         @click="showScreenshot = !showScreenshot"
         >查看截屏</v-btn
       >

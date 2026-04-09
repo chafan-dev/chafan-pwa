@@ -13,7 +13,7 @@
     <!-- I should set this to necessary manually -->
     <div v-if="site_creation.description"><b>描述*</b>：{{ site_creation.description }}</div>
     <div v-if="userProfile.is_superuser && !existingSite && !intermediate" class="mt-1">
-      <v-btn depressed small @click="createSite">
+      <v-btn variant="tonal" size="small" @click="createSite">
         创建圈子
         <v-progress-circular class="ml-1" size="3" indeterminate />
       </v-btn>
@@ -25,15 +25,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import store from '@/store';
 import { ISite, ISiteCreate, ITopic } from '@/interfaces';
 import { apiTopic } from '@/api/topic';
 import { apiSite } from '@/api/site';
-import { tryApi } from '@/store/main/actions';
 import { api2 } from '@/api2';
-import { commitAddNotification } from '@/store/main/mutations';
 import SiteBtn from '@/components/SiteBtn.vue';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = defineProps<{
   site_creation: ISiteCreate;
@@ -50,7 +49,7 @@ onMounted(async () => {
   if (props.site_creation.category_topic_uuid) {
     topic.value = (await apiTopic.getTopic(props.site_creation.category_topic_uuid)).data;
   }
-  await tryApi(store, async () => {
+  await store.tryApi(async () => {
     existingSite.value = (await apiSite.getSite(props.site_creation.subdomain)).data;
   });
   intermediate.value = false;
@@ -68,7 +67,7 @@ async function createSite() {
     await apiSite.updateSiteConfig(token.value, r.created_site.uuid, {
       moderator_uuid: props.applicantUuid,
     });
-    commitAddNotification(store, {
+    store.notifications.push({
       color: 'success',
       content: '创建站点并设置管理员成功',
     });

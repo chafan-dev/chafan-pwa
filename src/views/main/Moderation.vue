@@ -7,22 +7,22 @@
         :items="moderatedSites"
         class="mt-2"
         clearable
-        dense
+        density="compact"
         item-text="name"
         item-value="uuid"
         label="圈子"
-        outlined
+        variant="outlined"
         @change="onSiteSelected"
         hide-details
       />
-      <v-tabs show-arrows>
-        <v-tabs-slider />
-        <v-tab>成员管理</v-tab>
-        <v-tab>圈子设置</v-tab>
-        <v-tab>圈子运营</v-tab>
-
+      <v-tabs v-model="moderationTab" show-arrows>
+        <v-tab value="members">成员管理</v-tab>
+        <v-tab value="config">圈子设置</v-tab>
+        <v-tab value="operation">圈子运营</v-tab>
+      </v-tabs>
+      <v-window v-model="moderationTab">
         <!-- Applications -->
-        <v-tab-item>
+        <v-window-item value="members">
           <v-data-table :headers="applicationHeaders" :items="applications" item-key="id">
             <template v-slot:top>
               <v-toolbar flat>
@@ -39,25 +39,25 @@
             </template>
 
             <template v-slot:item.actions="{ item }">
-              <v-btn color="primary" depressed small @click="approveApplication(item)"
+              <v-btn color="primary" variant="flat" size="small" @click="approveApplication(item)"
                 >Approve</v-btn
               >
             </template>
           </v-data-table>
-        </v-tab-item>
+        </v-window-item>
 
         <!-- Config -->
-        <v-tab-item>
+        <v-window-item value="config">
           <template v-if="selectedSite !== null">
             <v-card class="ma-3">
               <v-card-title>基本信息</v-card-title>
               <v-card-text>
                 <div>
-                  <span class="black--text mr-1">链接：</span>
+                  <span class="text-black mr-1">链接：</span>
                   <SiteBtn :site="selectedSite" />
                 </div>
                 <div>
-                  <span class="black--text mr-1">类型：</span>
+                  <span class="text-black mr-1">类型：</span>
                   {{ selectedSite.permission_type === 'public' ? '公开' : '私有' }}
                 </div>
               </v-card-text>
@@ -68,7 +68,7 @@
               <v-card-text>
                 <div>
                   <template v-if="!showSiteConfigEditor">
-                    <span class="black--text mr-1">名字：</span>
+                    <span class="text-black mr-1">名字：</span>
                     <span>{{ selectedSite.name }}</span>
                   </template>
                   <v-text-field v-else v-model="siteConfigUpdate.name" label="名字" />
@@ -76,7 +76,7 @@
 
                 <div>
                   <template v-if="!showSiteConfigEditor">
-                    <span v-if="!showSiteConfigEditor" class="black--text mr-1">描述：</span>
+                    <span v-if="!showSiteConfigEditor" class="text-black mr-1">描述：</span>
                     <span>{{ selectedSite.description }}</span>
                   </template>
                   <v-text-field
@@ -97,19 +97,19 @@
                     label="类别"
                   />
                   <template v-else-if="selectedSite.category_topic">
-                    <span v-if="!showSiteConfigEditor" class="black--text mr-1">类别：</span>
+                    <span v-if="!showSiteConfigEditor" class="text-black mr-1">类别：</span>
                     <span>{{ selectedSite.category_topic.name }}</span>
                   </template>
                 </div>
 
                 <div>
                   <v-chip-group v-if="!showSiteConfigEditor">
-                    <span class="black--text mr-1">话题：</span>
+                    <span class="text-black mr-1">话题：</span>
                     <v-chip
                       v-for="topic in siteTopics"
                       :key="topic.uuid"
                       :to="'/topics/' + topic.uuid"
-                      small
+                      size="small"
                     >
                       {{ topic.name }}
                     </v-chip>
@@ -127,23 +127,23 @@
                 </div>
 
                 <div v-if="showSiteConfigEditor">
-                  <span class="black--text mr-1">加入申请处理方式：</span>
+                  <span class="text-black mr-1">加入申请处理方式：</span>
                   <v-radio-group v-model="autoApproval">
                     <v-radio :value="true" label="自动审核" />
                     <v-radio :value="false" label="人工审核" />
                   </v-radio-group>
                 </div>
                 <div v-else>
-                  <span class="black--text mr-1">加入申请处理方式：</span>
+                  <span class="text-black mr-1">加入申请处理方式：</span>
                   <span v-if="selectedSite.auto_approval">自动审核</span>
                   <span v-else>人工审核</span>
                 </div>
 
                 <div>
-                  <span v-if="autoApproval" class="black--text mr-1">
+                  <span v-if="autoApproval" class="text-black mr-1">
                     自动通过应满足的所有条件：
                   </span>
-                  <span v-else class="black--text mr-1">
+                  <span v-else class="text-black mr-1">
                     提交申请给人工审核前应满足的所有条件
                   </span>
                   <div class="ma-2">
@@ -193,8 +193,8 @@
                   v-show="!showSiteConfigEditor"
                   class="mr-2"
                   color="primary"
-                  depressed
-                  small
+                  variant="flat"
+                  size="small"
                   @click="showSiteConfigEditor = true"
                   >编辑
                 </v-btn>
@@ -202,16 +202,16 @@
                   v-show="showSiteConfigEditor"
                   class="mr-2"
                   color="primary"
-                  depressed
-                  small
+                  variant="flat"
+                  size="small"
                   @click="commitSiteConfig"
                   >提交
                 </v-btn>
                 <v-btn
                   v-show="showSiteConfigEditor"
                   class="mr-2"
-                  depressed
-                  small
+                  variant="tonal"
+                  size="small"
                   @click="showSiteConfigEditor = false"
                   >取消
                 </v-btn>
@@ -226,7 +226,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
-                <v-btn color="warning" depressed small @click="submitTransferToNewAdmin"
+                <v-btn color="warning" variant="flat" size="small" @click="submitTransferToNewAdmin"
                   >确认（不可撤销）
                 </v-btn>
               </v-card-actions>
@@ -247,15 +247,15 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn depressed small @click="resetNewWebhook">取消</v-btn>
-                    <v-btn color="primary" depressed small @click="addNewWebhook">添加</v-btn>
+                    <v-btn variant="tonal" size="small" @click="resetNewWebhook">取消</v-btn>
+                    <v-btn color="primary" variant="flat" size="small" @click="addNewWebhook">添加</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
               <v-card-title>
                 Webhook 配置 (beta)
                 <v-spacer />
-                <v-btn color="primary" depressed small @click="showNewWebhookDialog = true"
+                <v-btn color="primary" variant="flat" size="small" @click="showNewWebhookDialog = true"
                   >添加新 Webhook
                 </v-btn>
               </v-card-title>
@@ -276,17 +276,17 @@
                   </template>
 
                   <template v-slot:item.update_action="{ item }">
-                    <v-btn depressed small @click="disableWebhook(item)">禁用</v-btn>
+                    <v-btn variant="tonal" size="small" @click="disableWebhook(item)">禁用</v-btn>
                   </template>
                 </v-data-table>
               </v-card-text>
             </v-card>
           </template>
           <div v-else class="mt-2 text-center">请选择一个圈子</div>
-        </v-tab-item>
+        </v-window-item>
 
         <!-- Operation -->
-        <v-tab-item>
+        <v-window-item value="operation">
           <v-card class="ma-2">
             <v-card-title> 广播通知</v-card-title>
             <v-card-text v-if="selectedSite !== null">
@@ -301,30 +301,29 @@
               <v-btn color="primary" @click="submitNewSubmissionBroadcast">发送</v-btn>
             </v-card-actions>
           </v-card>
-        </v-tab-item>
-      </v-tabs>
+        </v-window-item>
+      </v-window>
     </template>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useRoute, useRouter } from 'vue-router';
 import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
 import { api } from '@/api';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import UserSearch from '@/components/UserSearch.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiTopic } from '@/api/topic';
-import { commitAddNotification } from '@/store/main/mutations';
 import { apiSite } from '@/api/site';
 import { deepCopy } from '@/utils';
 import { apiWebhook } from '@/api/webhook';
 import { apiMe } from '@/api/me';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const defaultWebhookCreate: IWebhookCreate = {
   site_uuid: '',
@@ -379,6 +378,7 @@ const webhooks = ref<IWebhook[]>([]);
 const broadcastSubmissionLink = ref('');
 const transferToNewAdminUUID = ref<string | null>(null);
 const loading = ref(true);
+const moderationTab = ref('members');
 const moderatedSites = ref<ISite[] | null>(null);
 const categoryTopics = ref<ITopic[] | null>(null);
 const webhookCreate = ref<IWebhookCreate>(deepCopy(defaultWebhookCreate));
@@ -435,7 +435,7 @@ function resetSiteConfig(site: ISite) {
 }
 
 async function onSiteSelected() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (moderatedSites.value) {
       if (selectedSiteUUID.value !== null) {
         selectedSite.value = moderatedSites.value.filter(
@@ -456,11 +456,11 @@ async function onSiteSelected() {
 }
 
 async function commitSiteConfig() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (selectedSite.value) {
       const responses = await Promise.all(
         newSiteTopicNames.value.map((name) =>
-          apiTopic.createTopic(store.state.main.token, { name })
+          apiTopic.createTopic(token.value, { name })
         )
       );
       const topicsIds = responses.map((r) => r.data.uuid);
@@ -484,10 +484,10 @@ async function commitSiteConfig() {
 }
 
 async function approveApplication(application: IApplication) {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const updatedApplication = (await api.approveApplication(token.value, application.id)).data;
     if (updatedApplication.pending) {
-      commitAddNotification(store, {
+      store.notifications.push({
         color: 'error',
         content: 'Failed to approve',
       });
@@ -498,9 +498,9 @@ async function approveApplication(application: IApplication) {
 }
 
 async function submitNewSubmissionBroadcast() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (!selectedSite.value) {
-      commitAddNotification(store, {
+      store.notifications.push({
         color: 'error',
         content: 'Site is not selected',
       });
@@ -516,7 +516,7 @@ async function submitNewSubmissionBroadcast() {
         throw new Error('Invalid sharing link');
       }
     } catch (e: any) {
-      commitAddNotification(store, { color: 'error', content: e });
+      store.notifications.push({ color: 'error', content: e });
       return;
     }
     await api.createTask(token.value, {
@@ -524,7 +524,7 @@ async function submitNewSubmissionBroadcast() {
       submission_uuid: submissionUUID,
       to_members_of_site_uuid: selectedSite.value!.uuid,
     });
-    commitAddNotification(store, {
+    store.notifications.push({
       color: 'success',
       content: '通知创建成功，即将发送',
     });

@@ -1,16 +1,17 @@
 <template>
   <v-container fluid>
     <v-row fluid justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
+      <v-col :class="{ 'col-8': display.mdAndUp }">
         <div class="mb-1">
-          <div class="headline primary--text mb-3">探索</div>
+          <div class="text-h5 text-primary mb-3">探索</div>
           <v-tabs v-model="currentTabItem">
-            <v-tab href="#featured-answers"> 精选回答 </v-tab>
-            <v-tab href="#questions"> 发现问题 </v-tab>
-            <v-tab href="#sites"> 所有圈子 </v-tab>
-            <v-tab href="#users"> 关注更多用户 </v-tab>
-
-            <v-tab-item class="mt-2" eager value="featured-answers">
+            <v-tab value="featured-answers"> 精选回答 </v-tab>
+            <v-tab value="questions"> 发现问题 </v-tab>
+            <v-tab value="sites"> 所有圈子 </v-tab>
+            <v-tab value="users"> 关注更多用户 </v-tab>
+          </v-tabs>
+          <v-window v-model="currentTabItem">
+            <v-window-item class="mt-2" eager value="featured-answers">
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadFeaturedAnswers"
@@ -20,9 +21,9 @@
                   <Answer :answer-preview="item" />
                 </BaseCard>
               </DynamicItemList>
-            </v-tab-item>
+            </v-window-item>
 
-            <v-tab-item class="mt-2" eager value="questions">
+            <v-window-item class="mt-2" eager value="questions">
               <div v-if="interestingQuestions !== null" class="pb-2">
                 <QuestionPreview
                   v-for="questionPreview in interestingQuestions"
@@ -32,18 +33,18 @@
               </div>
               <v-skeleton-loader v-else type="paragraph" />
               <p class="mt-2 text-center">不定期更新</p>
-            </v-tab-item>
-            <v-tab-item class="mt-2" eager value="sites">
+            </v-window-item>
+            <v-window-item class="mt-2" eager value="sites">
               <ExploreSitesGrid />
-            </v-tab-item>
-            <v-tab-item class="mt-2" eager value="users">
+            </v-window-item>
+            <v-window-item class="mt-2" eager value="users">
               <div v-if="interestingUsers !== null">
                 <UserGrid :users="interestingUsers" />
               </div>
               <v-skeleton-loader v-else type="paragraph" />
               <p class="mt-2 text-center">不定期更新</p>
-            </v-tab-item>
-          </v-tabs>
+            </v-window-item>
+          </v-window>
         </div>
       </v-col>
     </v-row>
@@ -52,18 +53,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useDisplay } from 'vuetify';
+import { useRoute, useRouter } from 'vue-router';
 import { apiDiscovery } from '@/api/discovery';
 import ExploreSitesGrid from '@/components/ExploreSitesGrid.vue';
 import { IQuestionPreview, IUserPreview } from '@/interfaces';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import Answer from '@/components/Answer.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
+const display = useDisplay();
 
 const defaultTab = 'featured-answers';
 
@@ -88,7 +91,7 @@ const currentTabItem = computed({
 });
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     interestingQuestions.value = (await apiDiscovery.getInterestingQuestions(token.value)).data;
     interestingUsers.value = (await apiDiscovery.getInterestingUsers(token.value)).data;
   });

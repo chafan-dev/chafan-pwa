@@ -8,83 +8,71 @@
       fixed
       temporary
     >
-      <v-layout column fill-height>
+      <v-row class="d-flex flex-column fill-height">
         <v-list>
-          <v-subheader> 主菜单 </v-subheader>
+          <v-list-subheader> 主菜单 </v-list-subheader>
           <v-list-item to="/">
-            <v-list-item-action>
-              <HomeIcon />
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>首页</v-list-item-title>
-            </v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Home"  />
+            </template>
+            <v-list-item-title>首页</v-list-item-title>
           </v-list-item>
           <v-list-item to="/dashboard">
-            <v-list-item-action>
-              <DashboardIcon />
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>用户中心</v-list-item-title>
-            </v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Dashboard"  />
+            </template>
+            <v-list-item-title>用户中心</v-list-item-title>
           </v-list-item>
           <v-list-item to="/profile/edit">
-            <v-list-item-action>
-              <EditIcon />
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>编辑我的主页</v-list-item-title>
-            </v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Edit"  />
+            </template>
+            <v-list-item-title>编辑我的主页</v-list-item-title>
           </v-list-item>
           <v-list-item to="/security">
-            <v-list-item-action>
-              <PasswordIcon />
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>安全中心</v-list-item-title>
-            </v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Password"  />
+            </template>
+            <v-list-item-title>安全中心</v-list-item-title>
           </v-list-item>
         </v-list>
 
         <v-divider />
 
-        <v-list v-show="hasModeratedSites" subheader>
-          <v-subheader>管理</v-subheader>
+        <v-list v-show="hasModeratedSites">
+          <v-list-subheader>管理</v-list-subheader>
           <v-list-item to="/moderation">
-            <v-list-item-content>
-              <v-list-item-title>圈子管理</v-list-item-title>
-            </v-list-item-content>
+            <v-list-item-title>圈子管理</v-list-item-title>
           </v-list-item>
         </v-list>
 
         <v-spacer />
         <v-list>
           <v-list-item @click="logout">
-            <v-list-item-action>
-              <LogoutIcon />
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>登出</v-list-item-title>
-            </v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Logout"  />
+            </template>
+            <v-list-item-title>登出</v-list-item-title>
           </v-list-item>
         </v-list>
-      </v-layout>
+      </v-row>
     </v-navigation-drawer>
     <v-app-bar color="primary" dark height="55">
       <div class="d-flex justify-space-between app-bar-inner">
         <div class="d-flex align-center">
           <v-app-bar-nav-icon
             v-if="userProfile"
-            :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+            :class="{ 'thin-btn': !display.mdAndUp }"
             @click="switchShowDrawer"
           />
-          <div v-if="$vuetify.breakpoint.mdAndUp">
-            <router-link class="white--text title text-decoration-none" to="/"
+          <div v-if="display.mdAndUp">
+            <router-link class="text-white text-h6 text-decoration-none" to="/"
               >{{ appName }}
             </router-link>
           </div>
 
           <v-btn v-else active-class="opacity-none" icon to="/">
-            <HomeIcon />
+            <AppIcon name="Home"  />
           </v-btn>
         </div>
 
@@ -96,33 +84,30 @@
           <Notifications v-if="userProfile" :user-profile="userProfile" />
 
           <template v-if="!userProfile">
-            <FeedbackIcon class="ml-1" @click="prepareFeedbackForm" />
-            <v-btn class="ml-2" depressed outlined @click="showLoginPrompt"> 登录</v-btn>
+            <AppIcon name="Feedback" class="ml-1" @click="prepareFeedbackForm"  />
+            <v-btn class="ml-2" variant="outlined" @click="showLoginPrompt"> 登录</v-btn>
           </template>
 
           <v-dialog v-model="showFeedbackForm" max-width="500">
-            <ValidationObserver v-slot="{ handleSubmit, valid, reset }">
+            <Form v-slot="{ handleSubmit, meta, resetForm }">
               <v-card>
                 <v-card-title> 你的反馈会让「茶饭」变得更好！</v-card-title>
                 <v-card-text>
                   <div>
                     <div v-if="feedbackScreenshotUrl">
-                      <ValidationProvider v-slot="{ errors }" name="description" rules="required">
-                        <v-textarea v-model="feedbackText" label="问题/建议描述（必填）" rows="3" />
-                        <span class="error--text">{{ errors[0] }}</span>
-                      </ValidationProvider>
+                      <Field v-slot="{ errors }" name="description" rules="required" v-model="feedbackText">
+                        <v-textarea v-model="feedbackText" label="问题/建议描述（必填）" rows="3" :error-messages="errors" />
+                      </Field>
                       <template v-if="userProfile === null">
-                        <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
-                          <v-text-field v-model="feedbackEmail" label="Email（必填）" />
-                          <span class="error--text">{{ errors[0] }}</span>
-                        </ValidationProvider>
+                        <Field v-slot="{ errors }" name="email" rules="required|email" v-model="feedbackEmail">
+                          <v-text-field v-model="feedbackEmail" label="Email（必填）" :error-messages="errors" />
+                        </Field>
                       </template>
                       <v-switch v-model="feedbackIncludesScreenshot" label="包含截图？" />
                       <v-btn
-                        depressed
-                        info
-                        outlined
-                        small
+                        color="info"
+                        variant="outlined"
+                        size="small"
                         @click="showFeedbackScreenshot = !showFeedbackScreenshot"
                       >
                         截图预览
@@ -150,12 +135,12 @@
                     常见问题及解决方法
                   </a>
                   <v-spacer />
-                  <v-btn depressed small @click="cancelFeedbackForm(reset)"> 取消</v-btn>
+                  <v-btn variant="tonal" size="small" @click="cancelFeedbackForm(resetForm)"> 取消</v-btn>
                   <v-btn
-                    :disabled="!valid || sendingFeedback"
+                    :disabled="!meta.valid || sendingFeedback"
                     color="primary"
-                    depressed
-                    small
+                    variant="flat"
+                    size="small"
                     @click="handleSubmit(submitFeedbackForm)"
                   >
                     提交
@@ -168,22 +153,19 @@
                   </v-btn>
                 </v-card-actions>
               </v-card>
-            </ValidationObserver>
+            </Form>
           </v-dialog>
 
-          <v-menu
+          <v-menu location="start"
             v-if="userProfile"
             v-model="showTopMenu"
-            left
-            offset-y
             transition="slide-x-transition"
           >
-            <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ props }">
               <v-btn
                 id="main-menu-avatar-btn"
-                v-bind="attrs"
-                v-on="on"
-                :class="{ 'thin-btn': !$vuetify.breakpoint.mdAndUp }"
+                v-bind="props"
+                :class="{ 'thin-btn': !display.mdAndUp }"
                 icon
               >
                 <Avatar
@@ -191,54 +173,45 @@
                   :userPreview="userProfile"
                   color="primary"
                 />
-                <AccountIcon v-else />
+                <AppIcon name="Account" v-else  />
               </v-btn>
             </template>
 
-            <v-list dense min-width="48" nav id="main-menu">
+            <v-list density="compact" min-width="48" nav id="main-menu">
               <v-list-item
                 v-for="item in accountItems"
                 :key="item.text"
                 :to="item.toRequiresUserProfile ? item.to(userProfile) : item.to"
                 link
               >
-                <v-list-item-icon>
+                <template v-slot:prepend>
                   <component v-bind:is="item.icon" />
-                </v-list-item-icon>
-
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ item.text }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                </template>
+                <v-list-item-title>
+                  {{ item.text }}
+                </v-list-item-title>
               </v-list-item>
 
               <v-list-item @click="prepareFeedbackForm">
-                <v-list-item-icon>
+                <template v-slot:prepend>
                   <v-progress-circular
                     size="20"
                     v-if="prepareFeedbackFormIntermediate"
                     color="primary"
                     indeterminate
                   />
-                  <FeedbackIcon v-else />
-                </v-list-item-icon>
-
-                <v-list-item-content>
-                  <v-list-item-title> 问题反馈 </v-list-item-title>
-                </v-list-item-content>
+                  <AppIcon name="Feedback" v-else  />
+                </template>
+                <v-list-item-title> 问题反馈 </v-list-item-title>
               </v-list-item>
 
               <v-divider />
 
               <v-list-item @click="logout">
-                <v-list-item-icon>
-                  <LogoutIcon />
-                </v-list-item-icon>
-
-                <v-list-item-content>
-                  <v-list-item-title>登出</v-list-item-title>
-                </v-list-item-content>
+                <template v-slot:prepend>
+                  <AppIcon name="Logout"  />
+                </template>
+                <v-list-item-title>登出</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -253,46 +226,27 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { Form, Field } from 'vee-validate';
+import { useDisplay } from 'vuetify';
+import { useRoute, useRouter } from 'vue-router';
 
-import { appName, isDev } from '@/env';
-import {
-  readDashboardMiniDrawer,
-  readDashboardShowDrawer,
-  readHasModeratedSites,
-} from '@/store/main/getters';
-import {
-  commitAddNotification,
-  commitSetDashboardMiniDrawer,
-  commitSetDashboardShowDrawer,
-  commitSetShowLoginPrompt,
-} from '@/store/main/mutations';
-import { dispatchUserLogOut } from '@/store/main/actions';
-
-import ProfileIcon from '@/components/icons/ProfileIcon.vue';
-import MenuIcon from '@/components/icons/MenuIcon.vue';
-import MuteNotificationIcon from '@/components/icons/MuteNotificationIcon.vue';
-import NotificationIcon from '@/components/icons/NotificationIcon.vue';
-import EmailIcon from '@/components/icons/EmailIcon.vue';
-import LogoutIcon from '@/components/icons/LogoutIcon.vue';
-import DashboardIcon from '@/components/icons/DashboardIcon.vue';
-import HomeIcon from '@/components/icons/HomeIcon.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import PasswordIcon from '@/components/icons/PasswordIcon.vue';
+import { appName } from '@/env';
+import { isDev } from '@/utils';
+import { useMainStore } from '@/stores/main';
 
 import Avatar from '@/components/Avatar.vue';
 import Event from '@/components/Event.vue';
 import SearchBox from '@/components/SearchBox.vue';
 import { IUserProfile } from '@/interfaces';
 import { api2 } from '@/api2';
-import AccountIcon from '@/components/icons/AccountIcon.vue';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import html2canvas from 'html2canvas';
-import FeedbackIcon from '@/components/icons/FeedbackIcon.vue';
 import Notifications from '@/components/Notifications.vue';
 import { useAuth } from '@/composables';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const display = useDisplay();
+const store = useMainStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -322,18 +276,18 @@ const feedbackEmail = ref('');
 const sendingFeedback = ref(false);
 const prepareFeedbackFormIntermediate = ref(false);
 
-const miniDrawer = computed(() => readDashboardMiniDrawer(store));
+const miniDrawer = computed(() => store.dashboardMiniDrawer);
 
 const showDrawer = computed({
   get() {
-    return readDashboardShowDrawer(store);
+    return store.dashboardShowDrawer;
   },
   set(value: boolean) {
-    commitSetDashboardShowDrawer(store, value);
+    store.dashboardShowDrawer = value;
   },
 });
 
-const hasModeratedSites = computed(() => readHasModeratedSites(store));
+const hasModeratedSites = computed(() => store.hasModeratedSites);
 
 // Watch for route changes to update title
 watch(
@@ -341,28 +295,28 @@ watch(
   () => {
     if (route.meta && route.meta.title) {
       document.title = route.meta.title as string;
-    } else if (process.env.VUE_APP_NAME) {
-      document.title = process.env.VUE_APP_NAME;
+    } else if (import.meta.env.VITE_APP_NAME) {
+      document.title = import.meta.env.VITE_APP_NAME;
     }
   },
   { immediate: true }
 );
 
 function showLoginPrompt() {
-  commitSetShowLoginPrompt(store, true);
+  store.showLoginPrompt = true;
 }
 
 function switchShowDrawer() {
-  commitSetDashboardShowDrawer(store, !readDashboardShowDrawer(store));
+  store.dashboardShowDrawer = !store.dashboardShowDrawer;
 }
 
 function switchMiniDrawer() {
-  commitSetDashboardMiniDrawer(store, !readDashboardMiniDrawer(store));
+  store.dashboardMiniDrawer = !store.dashboardMiniDrawer;
 }
 
 async function logout() {
   showDrawer.value = false;
-  await dispatchUserLogOut(store);
+  await store.userLogOut();
   router.go(0);
 }
 
@@ -391,7 +345,7 @@ async function submitFeedbackForm() {
   }
   formData.append('location_url', route.fullPath);
   await api2.uploadFeedback(token.value, formData);
-  commitAddNotification(store, {
+  store.notifications.push({
     color: 'success',
     content: '反馈已成功提交',
   });
@@ -399,8 +353,8 @@ async function submitFeedbackForm() {
   showFeedbackForm.value = false;
 }
 
-function cancelFeedbackForm(reset: () => void) {
+function cancelFeedbackForm(resetForm: () => void) {
   showFeedbackForm.value = false;
-  reset();
+  resetForm();
 }
 </script>

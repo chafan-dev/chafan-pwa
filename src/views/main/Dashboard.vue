@@ -1,32 +1,32 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-col :class="{ 'col-10': $vuetify.breakpoint.mdAndUp }">
+      <v-col :class="{ 'col-10': display.mdAndUp }">
         <div class="ma-3 d-flex">
-          <span class="headline primary--text">用户中心</span>
+          <span class="text-h5 text-primary">用户中心</span>
           <v-spacer />
-          <span class="text-caption grey--text">本页中的信息只有自己可见</span>
+          <span class="text-caption text-grey">本页中的信息只有自己可见</span>
         </div>
 
-        <v-tabs v-model="currentTabItem" :vertical="$vuetify.breakpoint.mdAndUp" show-arrows>
-          <v-tabs-slider />
-          <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
+        <v-tabs v-model="currentTabItem" :vertical="display.mdAndUp" show-arrows>
+          <v-tab v-for="item in tabItems" :key="item.code" :value="item.code">
             {{ item.text }}
           </v-tab>
-
-          <v-tab-item value="settings">
-            <v-card-title primary-title>
-              <div class="headline primary--text">我的设置</div>
+        </v-tabs>
+        <v-window v-model="currentTabItem">
+          <v-window-item value="settings">
+            <v-card-title>
+              <div class="text-h5 text-primary">我的设置</div>
               <v-spacer />
               <NewInviteLinkBtn />
               <!-- Extra div wrapper to align the buttons -->
               <div v-if="userProfile">
-                <v-btn :to="`/users/${userProfile.handle}`" class="ml-2" depressed small
+                <v-btn :to="`/users/${userProfile.handle}`" class="ml-2" variant="tonal" size="small"
                   >个人资料
                 </v-btn>
               </div>
               <div v-if="userProfile">
-                <v-btn class="ml-2" depressed small to="/security">安全中心</v-btn>
+                <v-btn class="ml-2" variant="tonal" size="small" to="/security">安全中心</v-btn>
               </div>
             </v-card-title>
             <div class="ma-3">
@@ -62,12 +62,12 @@
                     >动态中过滤的内容：
                     <v-chip
                       v-for="(origin, idx) in userProfile.feed_settings.blocked_origins"
-                      :key="idx"
-                      small
+                      :key="origin.subdomain"
+                      size="small"
                     >
                       <template v-if="origin.origin_type === 'site'">
                         <SiteName :subdomain="origin.subdomain" />
-                        <CloseIcon class="ml-1" @click="unblockOrigin(origin)" />
+                        <AppIcon name="Close" class="ml-1" @click="unblockOrigin(origin)"  />
                       </template>
                     </v-chip>
                   </span>
@@ -75,8 +75,8 @@
               </div>
               <div>
                 <div class="d-flex">
-                  <v-btn class="mr-2" depressed small @click="showExportDialog = true">导出</v-btn>
-                  <v-btn class="mr-2" depressed small @click="showLabsDialog = true">实验室</v-btn>
+                  <v-btn class="mr-2" variant="tonal" size="small" @click="showExportDialog = true">导出</v-btn>
+                  <v-btn class="mr-2" variant="tonal" size="small" @click="showLabsDialog = true">实验室</v-btn>
                 </div>
 
                 <v-dialog v-model="showExportDialog" max-width="500px">
@@ -106,11 +106,11 @@
                 </v-dialog>
               </div>
             </div>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="drafts">
-            <v-card-title primary-title>
-              <div class="headline primary--text">我的草稿</div>
+          <v-window-item value="drafts">
+            <v-card-title>
+              <div class="text-h5 text-primary">我的草稿</div>
               <v-spacer />
             </v-card-title>
             <div v-if="myAnswerDrafts !== null && myArticleDrafts !== null">
@@ -130,11 +130,11 @@
               />
             </div>
             <v-progress-linear v-else indeterminate />
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="my_columns">
-            <v-card-title primary-title>
-              <div class="headline primary--text">我的专栏</div>
+          <v-window-item value="my_columns">
+            <v-card-title>
+              <div class="text-h5 text-primary">我的专栏</div>
               <v-spacer />
               <CreateArticleColumn />
             </v-card-title>
@@ -148,19 +148,19 @@
               />
             </div>
             <v-progress-linear v-else indeterminate />
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="joined_channels">
-            <v-card-title primary-title>
-              <div class="headline primary--text">私信</div>
+          <v-window-item value="joined_channels">
+            <v-card-title>
+              <div class="text-h5 text-primary">私信</div>
             </v-card-title>
             <div v-if="!channelsIntermediate">
               <EmptyPlaceholder v-if="myChannels.length === 0" />
-              <v-tabs :vertical="isDesktop" v-else>
-                <v-tabs-slider />
+              <v-tabs v-model="selectedChannelTab" :vertical="isDesktop" v-else>
                 <v-tab
-                  v-for="channel in myChannels"
+                  v-for="(channel, idx) in myChannels"
                   :key="channel.id"
+                  :value="idx"
                   class="justify-start"
                 >
                   <UserLink
@@ -174,22 +174,24 @@
                     "
                   />
                 </v-tab>
-                <v-tab-item v-for="channel in myChannels" :key="channel.id">
-                  <ChatWindow :channel="channel" />
-                </v-tab-item>
               </v-tabs>
+              <v-window v-model="selectedChannelTab" v-if="myChannels.length > 0">
+                <v-window-item v-for="(channel, idx) in myChannels" :key="channel.id" :value="idx">
+                  <ChatWindow :channel="channel" />
+                </v-window-item>
+              </v-window>
             </div>
             <v-progress-linear v-else indeterminate />
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="coins">
+          <v-window-item value="coins">
             <div class="d-flex my-2 ml-4">
               <div>
-                <span class="subheading secondary--text text--lighten-3">我的硬币</span>：
-                <span v-if="userProfile" class="title primary--text">{{
+                <span class="text-subtitle-1 text-secondary">我的硬币</span>：
+                <span v-if="userProfile" class="text-h6 text-primary">{{
                   userProfile.remaining_coins
                 }}</span>
-                <span v-else class="title primary--text text--darken-2">-----</span>
+                <span v-else class="text-h6 text-primary">-----</span>
               </div>
             </div>
 
@@ -294,17 +296,17 @@
                 <template v-else>
                   <span v-if="item.claimed_at"> 已领取 </span>
                   <span v-else-if="item.refunded_at"> 已被取消 </span>
-                  <v-btn v-else color="primary" depressed small @click="claimReward(item)">
+                  <v-btn v-else color="primary" variant="flat" size="small" @click="claimReward(item)">
                     领取
                   </v-btn>
                 </template>
               </template>
             </v-data-table>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="bookmarked_answers">
-            <v-card-title primary-title>
-              <div class="headline primary--text">收藏的答案</div>
+          <v-window-item value="bookmarked_answers">
+            <v-card-title>
+              <div class="text-h5 text-primary">收藏的答案</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -314,11 +316,11 @@
             >
               <Answer :answer-preview="item" />
             </DynamicItemList>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="subscribed_questions">
-            <v-card-title primary-title>
-              <div class="headline primary--text">关注的问题</div>
+          <v-window-item value="subscribed_questions">
+            <v-card-title>
+              <div class="text-h5 text-primary">关注的问题</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -328,11 +330,11 @@
             >
               <QuestionPreview :question-preview="item" />
             </DynamicItemList>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="subscribed_submissions">
-            <v-card-title primary-title>
-              <div class="headline primary--text">收藏的分享</div>
+          <v-window-item value="subscribed_submissions">
+            <v-card-title>
+              <div class="text-h5 text-primary">收藏的分享</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -342,11 +344,11 @@
             >
               <SubmissionPreview :submission="item" />
             </DynamicItemList>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="bookmarked_articles">
-            <v-card-title primary-title>
-              <div class="headline primary--text">收藏的文章</div>
+          <v-window-item value="bookmarked_articles">
+            <v-card-title>
+              <div class="text-h5 text-primary">收藏的文章</div>
             </v-card-title>
             <DynamicItemList
               v-slot="{ item }"
@@ -356,8 +358,8 @@
             >
               <ArticlePreview :article-preview="item" />
             </DynamicItemList>
-          </v-tab-item>
-        </v-tabs>
+          </v-window-item>
+        </v-window>
       </v-col>
     </v-row>
   </v-container>
@@ -365,8 +367,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useDisplay } from 'vuetify';
+import { useRoute, useRouter } from 'vue-router';
 import {
   editor_T,
   IAnswerPreview,
@@ -382,11 +384,7 @@ import {
 } from '@/interfaces';
 import { api } from '@/api';
 import { api2 } from '@/api2';
-import {
-  commitAddNotification,
-  commitSetTheme,
-  commitSetUserProfile,
-} from '@/store/main/mutations';
+import { useMainStore } from '@/stores/main';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import ChatWindow from '@/components/ChatWindow.vue';
@@ -395,21 +393,21 @@ import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
-import InfoIcon from '@/components/icons/InfoIcon.vue';
 import Event from '@/components/Event.vue';
-import { dispatchAddFlag, dispatchCaptureApiError, dispatchRemoveFlag } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 import { LABS_TIPTAP_EDITOR_OPTION, themeLocalStorageKey } from '@/common';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SiteName from '@/components/SiteName.vue';
 import { apiActivity } from '@/api/activity';
 import { getLocalValue, setLocalValue } from '@/utils';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import { useAuth, useResponsive } from '@/composables';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const display = useDisplay();
+const store = useMainStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -421,6 +419,7 @@ const myChannels = ref<IChannel[]>([]);
 const myRewards = ref<IReward[]>([]);
 const myArticleColumns = ref<IArticleColumn[]>([]);
 const channelsIntermediate = ref(true);
+const selectedChannelTab = ref(0);
 const rewardsIntermediate = ref(true);
 const articleColumnsIntermediate = ref(true);
 const coinPaymentsIntermediate = ref(true);
@@ -481,7 +480,7 @@ onMounted(async () => {
   if (theme) {
     selectedTheme.value = theme;
   }
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (userProfile.value) {
       tiptapEditorOptionOn.value = userProfile.value.flag_list.includes(LABS_TIPTAP_EDITOR_OPTION);
 
@@ -535,7 +534,7 @@ onMounted(async () => {
 
 async function loadSubscribedQuestions(skip: number, limit: number) {
   let items: (IQuestionPreview | null)[] | null = null;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     items = (await apiMe.getSubscribedQuestions(token.value, skip, limit)).data;
   });
   return items;
@@ -543,7 +542,7 @@ async function loadSubscribedQuestions(skip: number, limit: number) {
 
 async function loadSubscribedSubmissions(skip: number, limit: number) {
   let items: (ISubmission | null)[] | null = null;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     items = (await apiMe.getSubscribedSubmissions(token.value, skip, limit)).data;
   });
   return items;
@@ -551,7 +550,7 @@ async function loadSubscribedSubmissions(skip: number, limit: number) {
 
 async function loadBookmarkedAnswers(skip: number, limit: number) {
   let items: (IAnswerPreview | null)[] | null = null;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     items = (await apiMe.getAnswerBookmarks(token.value, skip, limit)).data;
   });
   return items;
@@ -559,52 +558,52 @@ async function loadBookmarkedAnswers(skip: number, limit: number) {
 
 async function loadBookmarkedArticles(skip: number, limit: number) {
   let items: (IArticlePreview | null)[] | null = null;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     items = (await apiMe.getArticleBookmarks(token.value, skip, limit)).data;
   });
   return items;
 }
 
 async function onChangeEmailNotifications() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     changingMySettings.value = true;
     const newProfile = (
       await apiMe.updateMe(token.value, {
         enable_deliver_unread_notifications: enableEmailNotifications.value,
       })
     ).data;
-    commitSetUserProfile(store, newProfile);
+    store.userProfile = newProfile;
     changingMySettings.value = false;
-    commitAddNotification(store, { content: '已保存', color: 'info' });
+    store.notifications.push({ content: '已保存', color: 'info' });
   });
 }
 
 async function onChangeEditorMode() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     changingMySettings.value = true;
     const newProfile = (
       await apiMe.updateMe(token.value, {
         default_editor_mode: selectedEditorMode.value,
       })
     ).data;
-    commitSetUserProfile(store, newProfile);
+    store.userProfile = newProfile;
     changingMySettings.value = false;
-    commitAddNotification(store, { content: '已保存', color: 'info' });
+    store.notifications.push({ content: '已保存', color: 'info' });
   });
 }
 
 async function onChangeTheme() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     changingMySettings.value = true;
-    commitSetTheme(store, selectedTheme.value);
+    store.theme = selectedTheme.value;
     setLocalValue(themeLocalStorageKey, selectedTheme.value);
     changingMySettings.value = false;
-    commitAddNotification(store, { content: '已保存', color: 'info' });
+    store.notifications.push({ content: '已保存', color: 'info' });
   });
 }
 
 async function claimReward(reward: IReward) {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const idx = myRewards.value.indexOf(reward);
     myRewards.value.splice(idx, 1);
     const newReward = (await api.claimReward(token.value, reward.id)).data;
@@ -624,9 +623,9 @@ function onDeleteAnswerDraft(uuid: string) {
 async function updateLabs() {
   changingMySettings.value = true;
   if (tiptapEditorOptionOn.value) {
-    await dispatchAddFlag(store, LABS_TIPTAP_EDITOR_OPTION);
+    await store.addFlag(LABS_TIPTAP_EDITOR_OPTION);
   } else {
-    await dispatchRemoveFlag(store, LABS_TIPTAP_EDITOR_OPTION);
+    await store.removeFlag(LABS_TIPTAP_EDITOR_OPTION);
   }
   changingMySettings.value = false;
   router.go(0);
@@ -634,7 +633,7 @@ async function updateLabs() {
 
 async function unblockOrigin(origin: IOrigin) {
   await apiActivity.updateOrigins(token.value, { action: 'remove', origin });
-  await commitAddNotification(store, {
+  store.notifications.push({
     color: 'info',
     content: '过滤规则更新成功，稍后自动生效',
   });
