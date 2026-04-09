@@ -1,21 +1,19 @@
+import { vi } from 'vitest';
 import { useEnv } from '@/composables/useEnv';
 import { useErrorHandling } from '@/composables/useErrorHandling';
 
 // Mock the utils module for useEnv
-jest.mock('@/utils', () => ({
+vi.mock('@/utils', () => ({
   isDev: true,
   isProdDev: false,
 }));
 
-// Mock the store for useErrorHandling
-jest.mock('@/store', () => ({
-  default: {
-    commit: jest.fn(),
-  },
-}));
-
-jest.mock('@/store/main/mutations', () => ({
-  commitAddNotification: jest.fn(),
+// Mock the Pinia store for useErrorHandling
+const mockNotifications: any[] = [];
+vi.mock('@/stores/main', () => ({
+  useMainStore: () => ({
+    notifications: mockNotifications,
+  }),
 }));
 
 describe('Composables', () => {
@@ -30,7 +28,7 @@ describe('Composables', () => {
 
   describe('useErrorHandling', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
+      mockNotifications.length = 0;
     });
 
     describe('recursiveCommentsCount', () => {
@@ -69,7 +67,7 @@ describe('Composables', () => {
 
     describe('commitErrMsg', () => {
       it('returns error message when response and message exist', () => {
-        const { commitAddNotification } = require('@/store/main/mutations');
+        mockNotifications.length = 0;
         const { commitErrMsg } = useErrorHandling();
 
         const error = {
@@ -80,13 +78,10 @@ describe('Composables', () => {
         const result = commitErrMsg(error);
 
         expect(result).toBe('Bad Request');
-        expect(commitAddNotification).toHaveBeenCalledWith(
-          expect.anything(),
-          {
-            content: 'Bad Request',
-            color: 'warning',
-          }
-        );
+        expect(mockNotifications).toContainEqual({
+          content: 'Bad Request',
+          color: 'warning',
+        });
       });
 
       it('returns null when response is missing', () => {

@@ -1,14 +1,20 @@
+import { vi } from 'vitest';
+
 // Mock dependencies before imports
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   apiUrl: 'https://api.test.cha.fan/api/v1',
   wsUrl: 'wss://api.test.cha.fan/api/v1',
   env: 'test',
 }));
-jest.mock('@/store/main/actions', () => ({}));
-jest.mock('@/store/main/mutations', () => ({ commitAddNotification: jest.fn() }));
-jest.mock('@/api/article', () => ({}));
-jest.mock('@/api/answer', () => ({}));
-jest.mock('@sentry/vue', () => ({ captureException: jest.fn() }));
+vi.mock('@/stores/main', () => ({
+  useMainStore: () => ({
+    notifications: [],
+    checkApiError: vi.fn(),
+  }),
+}));
+vi.mock('@/api/article', () => ({}));
+vi.mock('@/api/answer', () => ({}));
+vi.mock('@sentry/vue', () => ({ captureException: vi.fn() }));
 
 import {
   getLocalValue,
@@ -30,14 +36,14 @@ import {
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
       store[key] = value;
     }),
-    removeItem: jest.fn((key: string) => {
+    removeItem: vi.fn((key: string) => {
       delete store[key];
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
   };
@@ -48,7 +54,7 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 describe('utils.ts', () => {
   beforeEach(() => {
     localStorageMock.clear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getLocalValue', () => {

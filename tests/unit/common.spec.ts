@@ -1,14 +1,16 @@
+import { vi } from 'vitest';
+
 // Mock dependencies before imports to avoid Vue file parsing
-jest.mock('@/env', () => ({
+vi.mock('@/env', () => ({
   apiUrl: 'https://api.test.cha.fan/api/v1',
   wsUrl: 'wss://api.test.cha.fan/api/v1',
   env: 'test',
 }));
-jest.mock('@/api/question', () => ({}));
-jest.mock('@/api/article', () => ({}));
-jest.mock('@/api/answer', () => ({}));
-jest.mock('@/utils', () => ({
-  getLocalValue: jest.fn(),
+vi.mock('@/api/question', () => ({}));
+vi.mock('@/api/article', () => ({}));
+vi.mock('@/api/answer', () => ({}));
+vi.mock('@/utils', () => ({
+  getLocalValue: vi.fn(),
 }));
 
 import {
@@ -24,11 +26,11 @@ import {
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
-    getItem: jest.fn((key: string) => store[key] || null),
-    setItem: jest.fn((key: string, value: string) => {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
       store[key] = value;
     }),
-    clear: jest.fn(() => {
+    clear: vi.fn(() => {
       store = {};
     }),
   };
@@ -39,7 +41,7 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 describe('common.ts', () => {
   beforeEach(() => {
     localStorageMock.clear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('translateErrorMsgCN', () => {
