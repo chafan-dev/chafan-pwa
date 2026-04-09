@@ -6,7 +6,7 @@
       <NotificationsManager />
       <v-snackbar :timeout="-1" :value="updateExists" bottom color="primary" right>
         PWA 有新的更新
-        <v-btn v-if="pwaWaiting" text @click="refreshApp"> 升级</v-btn>
+        <v-btn v-if="pwaWaiting" variant="text" @click="refreshApp"> 升级</v-btn>
       </v-snackbar>
       <v-dialog v-model="showLoginPrompt" max-width="600">
         <LoginCard :showTopBar="false" class="py-10" />
@@ -19,19 +19,13 @@
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
-import store from '@/store';
-import { readShowLoginPrompt } from '@/store/main/getters';
-import { dispatchCheckLoggedIn } from '@/store/main/actions';
 import { getLocalValue, setAppLocale } from '@/utils';
-import {
-  commitSetNarrowUI,
-  commitSetShowLoginPrompt,
-  commitSetTheme,
-} from './store/main/mutations';
 import { getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
 import { ThemeType } from '@/interfaces';
 import { useTheme } from '@/composables';
+import { useMainStore } from '@/stores/main';
 const { theme } = useTheme();
+const store = useMainStore();
 
 const registration = ref<ServiceWorkerRegistration | null>(null);
 const updateExists = ref(false);
@@ -40,10 +34,10 @@ const loading = ref(true);
 
 const showLoginPrompt = computed({
   get() {
-    return readShowLoginPrompt(store);
+    return store.showLoginPrompt;
   },
   set(value: boolean) {
-    commitSetShowLoginPrompt(store, value);
+    store.showLoginPrompt = value;
   },
 });
 
@@ -70,16 +64,16 @@ onMounted(async () => {
       window.location.reload();
     });
   }
-  await dispatchCheckLoggedIn(store);
+  await store.checkLoggedIn();
   loading.value = false;
   const instance = getCurrentInstance();
   if (instance) {
     setAppLocale(instance.proxy);
   }
-  commitSetNarrowUI(store, getDefaultNarrowFeedUI());
+  store.narrowUI = getDefaultNarrowFeedUI();
   const savedTheme = getLocalValue(themeLocalStorageKey) as ThemeType;
   if (savedTheme) {
-    commitSetTheme(store, savedTheme);
+    store.theme = savedTheme;
   }
 });
 
