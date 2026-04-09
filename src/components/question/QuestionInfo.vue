@@ -1,6 +1,6 @@
 <template>
   <div class="pb-2">
-    <div class="headline primary--text">问题信息</div>
+    <div class="text-h5 text-primary">问题信息</div>
     <div class="my-2">
       提问者：
       <UserLink :userPreview="question.author"></UserLink>
@@ -9,14 +9,14 @@
       关注人数：{{ questionSubscription.subscription_count }}
     </div>
     <div v-if="userProfile" class="my-2">
-      <v-btn color="primary" depressed small @click="showInviteToAnswerDialog = true">
+      <v-btn color="primary" variant="flat" size="small" @click="showInviteToAnswerDialog = true">
         邀请回答
       </v-btn>
 
       <v-dialog v-model="showInviteToAnswerDialog" max-width="500">
         <v-card>
-          <v-card-title primary-title>
-            <div class="headline primary--text">邀请回答</div>
+          <v-card-title>
+            <div class="text-h5 text-primary">邀请回答</div>
           </v-card-title>
           <v-card-text>
             <UserSearch v-model="invitedUserId" :return-self="false" />
@@ -31,7 +31,7 @@
               thumb-label
               ticks="always"
             />
-            <div class="text-caption grey--text">
+            <div class="text-caption text-grey">
               当你邀请的用户回答问题后，该用户会收到指定数额的硬币作为奖励，
               这部分硬币会先从你的账户扣除。如果被邀请的用户没有在奖励失效前（一周）回答问题的话，你可以将预扣取的硬币拿回。
               <router-link class="text-decoration-none" to="/dashboard?tab=coins"
@@ -42,12 +42,12 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" depressed small @click="inviteAnswer">确认</v-btn>
+            <v-btn color="primary" variant="flat" size="small" @click="inviteAnswer">确认</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </div>
-    <span v-if="question.view_times" class="text-caption grey--text">
+    <span v-if="question.view_times" class="text-caption text-grey">
       问题已经被浏览{{ question.view_times }}次
     </span>
     <template v-if="relatedQuestions">
@@ -65,12 +65,12 @@ import { IQuestion, IQuestionPreview, IUserQuestionSubscription } from '@/interf
 import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
 import { api } from '@/api';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiSearch } from '@/api/search';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import RotationList from '@/components/base/RotationList.vue';
 import { useAuth, useNotification } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = defineProps<{
   question: IQuestion;
@@ -96,7 +96,7 @@ onMounted(async () => {
 });
 
 async function inviteAnswer() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (invitedUserId.value !== null) {
       const response = await api.inviteAnswer(token.value, props.question.uuid, invitedUserId.value);
       if (inviteToAnswerRewardCoinAmount.value > 0) {

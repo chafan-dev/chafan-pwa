@@ -1,11 +1,11 @@
 <template>
   <div>
-    <span v-if="initialContent === '[DELETED]'" class="grey--text"> 已删除 </span>
+    <span v-if="initialContent === '[DELETED]'" class="text-grey"> 已删除 </span>
     <TiptapCF
       v-else
       ref="base"
       v-bind="$attrs"
-      v-on="$listeners"
+     
       :comment-mode="commentMode"
       :editable="editable"
       :on-editor-change="onChange"
@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, getCurrentInstance } from 'vue';
-import store from '@/store';
 import { apiSearch } from '@/api/search';
 import { IUserPreview } from '@/interfaces';
 
@@ -30,11 +29,10 @@ import 'highlight.js/styles/github.css';
 
 import TiptapCF from '@/editors/lib-components/TiptapCF.vue';
 import { resizeImage } from '@/imagelib';
-import piexif from 'piexifjs';
 import { api2 } from '@/api2';
-import { readToken } from '@/store/main/getters';
+import { useAuth } from '@/composables';
 
-declare const renderMathInElement: any;
+declare const renderMathInElement: (element: HTMLElement, options: Record<string, unknown>) => void;
 
 const props = withDefaults(
   defineProps<{
@@ -53,8 +51,9 @@ const props = withDefaults(
 );
 
 const instance = getCurrentInstance();
+const { token } = useAuth();
 
-const base = ref<any>(null);
+const base = ref<InstanceType<typeof TiptapCF> | null>(null);
 
 function getContent(): string | null {
   const json = base.value?.getJSON();
@@ -84,7 +83,7 @@ function loadHTML(html: string) {
   return base.value?.loadHTML(html);
 }
 
-function loadJSON(json: any) {
+function loadJSON(json: Record<string, unknown>) {
   return base.value?.loadJSON(json);
 }
 
@@ -101,12 +100,13 @@ async function upload(file: Blob) {
   const formData = new FormData();
   // Upload candidate image and update URL
   try {
+    const { default: piexif } = await import('piexifjs');
     formData.append('file', piexif.remove(resized.blob));
     // Remove EXIF if it is jpeg
   } catch {
     formData.append('file', resized.blob);
   }
-  const response = await api2.uploadFile(readToken(store), formData);
+  const response = await api2.uploadFile(token.value, formData);
   return response.data.url;
 }
 
@@ -151,7 +151,7 @@ function onChange() {
 }
 
 async function searchUsers(query: string) {
-  return (await apiSearch.searchUsers(store.state.main.token, query)).data;
+  return (await apiSearch.searchUsers(token.value, query)).data;
 }
 
 function userHref(user: IUserPreview) {

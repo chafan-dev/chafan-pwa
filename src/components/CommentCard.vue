@@ -3,9 +3,9 @@
     <!-- Comment -->
     <div class="d-flex mb-2">
       <Viewer v-if="!comment.is_deleted" :content="comment.content" />
-      <div v-else class="grey--text">已删除</div>
+      <div v-else class="text-grey">已删除</div>
       <router-link :to="comment.root_route + `/comments/${comment.uuid}`" class="ml-1">
-        <OpenInNewIcon small />
+        <AppIcon name="OpenInNew" size="small"  />
       </router-link>
     </div>
 
@@ -34,7 +34,7 @@ import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import Answer from '@/components/Answer.vue';
 import Viewer from '@/components/Viewer.vue';
-import OpenInNewIcon from '@/components/icons/OpenInNewIcon.vue';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 defineProps<{
   comment: IComment;

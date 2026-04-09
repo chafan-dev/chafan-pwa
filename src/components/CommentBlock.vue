@@ -1,13 +1,13 @@
 <template>
   <div v-if="comments.length > 0 || loggedIn" class="mt-3">
     <v-divider v-if="comments.length" />
-    <span v-if="showTitle" class="pt-1 pl-1 grey--text"
+    <span v-if="showTitle" class="pt-1 pl-1 text-grey"
       >共{{ recursiveCommentsCount(comments) }}条评论</span
     >
     <v-list-item v-for="comment in comments" :key="comment.uuid" class="comment-item">
-      <v-list-item-content>
+      <div>
         <Comment :comment="comment" :siteId="siteId" :writable="writable" />
-      </v-list-item-content>
+      </div>
     </v-list-item>
     <div v-if="writable" class="pb-1">
       <SimpleEditor
@@ -17,15 +17,15 @@
         placeholder="评论"
       />
       <div class="d-flex pt-1">
-        <span v-if="mentioned.length" class="grey--text caption">
-          将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{ handle }}</v-chip>
+        <span v-if="mentioned.length" class="text-grey caption">
+          将通知用户：<v-chip v-for="handle in mentioned" :key="handle" size="small">{{ handle }}</v-chip>
         </span>
         <v-spacer />
         <v-btn
           :disabled="commentSubmitIntermediate"
           color="primary"
-          depressed
-          small
+          variant="flat"
+          size="small"
           @click="submitNewComment"
         >
           提交评论
@@ -33,7 +33,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-else-if="loggedIn" class="text-caption grey--text pl-2">仅圈子成员可评论</div>
+    <div v-else-if="loggedIn" class="text-caption text-grey pl-2">仅圈子成员可评论</div>
   </div>
 </template>
 

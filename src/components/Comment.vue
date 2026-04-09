@@ -3,13 +3,13 @@
     <div class="d-flex">
       <UserLink :userPreview="comment.author" />
       <v-spacer />
-      <span class="text-caption grey--text">{{ fromNow(comment.updated_at) }}</span>
+      <span class="text-caption text-grey">{{ fromNow(comment.updated_at) }}</span>
     </div>
 
     <!-- Comment body -->
     <div v-if="!showUpdateEditor" class="ml-1">
       <Viewer v-if="!comment.is_deleted" :content="comment.content" />
-      <div v-else class="grey--text">已删除</div>
+      <div v-else class="text-grey">已删除</div>
     </div>
 
     <!-- New comment editor -->
@@ -22,8 +22,8 @@
           placeholder="回复"
         />
         <div class="d-flex">
-          <span v-if="mentioned.length" class="grey--text caption">
-            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
+          <span v-if="mentioned.length" class="text-grey caption">
+            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" size="small">{{
               handle
             }}</v-chip>
           </span>
@@ -32,14 +32,14 @@
             :disabled="submitIntermediate"
             class="mr-2"
             color="primary"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="submitNewReplyBody"
           >
             发送回复
             <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
           </v-btn>
-          <v-btn depressed small @click="showEditor = false"> 取消</v-btn>
+          <v-btn variant="tonal" size="small" @click="showEditor = false"> 取消</v-btn>
         </div>
       </div>
     </v-expand-transition>
@@ -56,7 +56,7 @@
         />
         <div class="d-flex">
           <span v-if="mentioned.length">
-            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" small>{{
+            将通知用户：<v-chip v-for="handle in mentioned" :key="handle" size="small">{{
               handle
             }}</v-chip>
           </span>
@@ -65,14 +65,14 @@
             :disabled="submitIntermediate"
             class="mr-2"
             color="primary"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="submitUpdateCommentBody"
           >
             提交
             <v-progress-circular v-show="submitIntermediate" :size="20" indeterminate />
           </v-btn>
-          <v-btn depressed small @click="showUpdateEditor = false"> 取消</v-btn>
+          <v-btn variant="tonal" size="small" @click="showUpdateEditor = false"> 取消</v-btn>
         </div>
       </div>
     </div>
@@ -83,22 +83,21 @@
       <template v-if="upvotes && !comment.is_deleted">
         <UpvoteStat v-if="currentUserIsAuthor" :count="upvotes.count" class="mr-2" />
         <span v-else class="d-flex align-center mr-2 cursor-pointer" @click="toggleUpvote">
-          <UpvotedIcon v-if="upvotes.upvoted" />
-          <UpvoteIcon v-else />
+          <AppIcon name="Upvoted" v-if="upvotes.upvoted"  />
+          <AppIcon name="Upvote" v-else  />
           <span class="text-caption">{{ upvotes.count }}</span>
         </span>
       </template>
 
       <v-tooltip v-if="childComments && childComments.length > 0" bottom>
-        <template v-slot:activator="{ on, attrs }">
+        <template v-slot:activator="{ props }">
           <div
-            v-bind="attrs"
-            v-on="on"
+            v-bind="props"
             class="pr-3 cursor-pointer"
             @click="childCommentsExpanded = !childCommentsExpanded"
           >
             <DebugSpan>{{ childCommentsExpanded }}</DebugSpan>
-            <CommentsIcon :color="childCommentsExpanded ? undefined : 'primary'" />
+            <AppIcon name="Comments" :color="childCommentsExpanded ? undefined : 'primary'"  />
             <span class="ml-1 text-caption">{{ recursiveCommentsCount(childComments) }}</span>
           </div>
         </template>
@@ -111,7 +110,7 @@
           class="text-caption d-flex align-center cursor-pointer"
           @click="showEditor = true"
         >
-          <ReplyIcon /> 回复
+          <AppIcon name="Reply"  /> 回复
         </span>
         <v-spacer />
       </template>
@@ -120,42 +119,42 @@
       <template v-if="!comment.is_deleted && currentUserIsAuthor && !showUpdateEditor">
         <v-divider v-if="childComments && childComments.length > 0" class="mr-2" vertical />
 
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <div v-bind="attrs" v-on="on">
-              <EditIcon class="mr-2" @click="showUpdateEditor = true" />
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <div v-bind="props">
+              <AppIcon name="Edit" class="mr-2" @click="showUpdateEditor = true"  />
             </div>
           </template>
           <span>编辑</span>
         </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <div v-bind="attrs" v-on="on">
-              <BroadcastIcon
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <div v-bind="props">
+              <AppIcon name="Broadcast"
                 :color="sharedToTimeline ? 'primary' : undefined"
                 class="mr-2"
                 @click="broadcastComment"
-              />
+               />
             </div>
           </template>
           <span>转发给我的关注者</span>
         </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <div v-bind="attrs" v-on="on">
-              <DeleteIcon class="mr-2" @click="showDeleteConfirm = true" />
+        <v-tooltip location="bottom">
+          <template v-slot:activator="{ props }">
+            <div v-bind="props">
+              <AppIcon name="Delete" class="mr-2" @click="showDeleteConfirm = true"  />
             </div>
           </template>
           <span>删除</span>
         </v-tooltip>
         <v-dialog v-model="showDeleteConfirm" max-width="300">
           <v-card>
-            <v-card-title primary-title>
-              <div class="headline primary--text">确定删除？</div>
+            <v-card-title>
+              <div class="text-h5 text-primary">确定删除？</div>
             </v-card-title>
             <v-card-actions>
               <v-spacer />
-              <v-btn color="warning" depressed small @click="deleteComment">确认</v-btn>
+              <v-btn color="warning" variant="flat" size="small" @click="deleteComment">确认</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -170,21 +169,21 @@
           :key="childComment.uuid"
           class="reply-item"
         >
-          <v-list-item-content class="comment-reply mb-3 pl-3">
+          <div class="comment-reply mb-3 pl-3">
             <Comment
               :comment="childComment"
               :depth="depth + 1"
               :siteId="siteId"
               :writable="writable"
             />
-          </v-list-item-content>
+          </div>
         </v-list-item>
       </div>
     </v-expand-transition>
 
     <div
       v-else-if="!writable && !comment.is_deleted && loggedIn"
-      class="pl-2 text-caption grey--text"
+      class="pl-2 text-caption text-grey"
     >
       仅圈子成员可以评论
     </div>
@@ -193,25 +192,19 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router/composables';
+import { useRoute } from 'vue-router';
 import UserLink from '@/components/UserLink.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import Viewer from '@/components/Viewer.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import BroadcastIcon from '@/components/icons/BroadcastIcon.vue';
-import ReplyIcon from '@/components/icons/ReplyIcon.vue';
-import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import CommentsIcon from '@/components/icons/CommentsIcon.vue';
-import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
 import { IComment, ICommentUpvotes } from '@/interfaces';
 import { apiComment } from '@/api/comment';
 import { rankComments } from '@/utils';
-import { dispatchCaptureApiError } from '@/store/main/actions';
-import UpvotedIcon from '@/components/icons/UpvotedIcon.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { useAuth, useDayjs, useNotification } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 defineOptions({
   name: 'Comment',
@@ -300,7 +293,7 @@ async function submitNewReplyBody() {
     notifyError('评论内容不能为空');
     return;
   }
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     submitIntermediate.value = true;
     const response = await apiComment.postComment(token.value, {
       site_uuid: props.siteId,
@@ -330,7 +323,7 @@ async function submitUpdateCommentBody() {
     notifyError('评论内容不能为空');
     return;
   }
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     submitIntermediate.value = true;
     await apiComment.updateComment(token.value, props.comment.uuid, {
       content: {
@@ -368,7 +361,7 @@ async function deleteComment() {
 
 async function upvote() {
   upvoteIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     upvotes.value = (await apiComment.upvote(token.value, props.comment.uuid)).data;
     upvoteIntermediate.value = false;
   });
@@ -376,7 +369,7 @@ async function upvote() {
 
 async function cancelUpvote() {
   cancelUpvoteIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (props.comment) {
       upvotes.value = (await apiComment.cancelUpvote(token.value, props.comment.uuid)).data;
       cancelUpvoteIntermediate.value = false;
@@ -386,7 +379,6 @@ async function cancelUpvote() {
 }
 
 function onMentionedHandles(handles: string[]) {
-  console.log(handles);
   mentioned.value = handles;
 }
 

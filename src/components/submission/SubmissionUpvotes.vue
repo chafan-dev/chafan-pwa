@@ -15,11 +15,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Upvote from '@/components/Upvote.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { ISubmissionUpvotes } from '@/interfaces';
 import { useAuth } from '@/composables';
 import { apiSubmission } from '@/api/submission';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = defineProps<{
   uuid: string;
@@ -39,13 +39,13 @@ onMounted(async () => {
 });
 
 async function upvote() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     upvotes.value = (await apiSubmission.upvote(token.value, props.uuid)).data;
   });
 }
 
 async function cancelUpvote() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     upvotes.value = (await apiSubmission.cancelUpvote(token.value, props.uuid)).data;
   });
 }

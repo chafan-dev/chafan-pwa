@@ -31,8 +31,8 @@
       <v-btn
         :disabled="savingIntermediate"
         color="primary"
-        depressed
-        small
+        variant="flat"
+        size="small"
         @click="submitEdit(true)"
       >
         <template v-if="isAuthor"> 发表答案 </template>
@@ -44,16 +44,16 @@
         <v-btn
           :disabled="savingIntermediate"
           color="info"
-          depressed
-          small
+          variant="flat"
+          size="small"
           @click="submitEdit(false)"
         >
           保存草稿
         </v-btn>
       </span>
 
-      <v-btn class="ml-2" depressed small @click="emit('cancel-edit')">取消</v-btn>
-      <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
+      <v-btn class="ml-2" variant="tonal" size="small" @click="emit('cancel-edit')">取消</v-btn>
+      <v-btn class="ml-2" variant="tonal" size="small" @click="showHelp = !showHelp">帮助</v-btn>
       <v-progress-circular
         v-if="savingIntermediate"
         class="ml-2"
@@ -62,68 +62,68 @@
         size="20"
       />
       <v-spacer />
-      <span v-if="lastAutoSavedAt && isDesktop && isAuthor" class="mr-2 text-caption grey--text">
+      <span v-if="lastAutoSavedAt && isDesktop && isAuthor" class="mr-2 text-caption text-grey">
         自动保存于
         {{ dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
       </span>
       <DebugSpan>formIsDirty={{ formIsDirty }}</DebugSpan>
 
-      <v-tooltip v-if="answerId && isAuthor" bottom>
-        <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" class="d-flex">
-            <HistoryIcon class="ml-2" @click="showHistoryDialog" />
+      <v-tooltip v-if="answerId && isAuthor" location="bottom">
+        <template v-slot:activator="{ props }">
+          <div v-bind="props" class="d-flex">
+            <AppIcon name="History" class="ml-2" @click="showHistoryDialog"  />
           </div>
         </template>
         <span>版本历史</span>
       </v-tooltip>
 
-      <v-menu :close-on-content-click="false" offset-y top v-if="isAuthor">
-        <template v-slot:activator="{ on, attrs }">
-          <SettingsIcon v-bind="attrs" v-on="on" class="ml-1" />
+      <v-menu :close-on-content-click="false" location="top" v-if="isAuthor">
+        <template v-slot:activator="{ props }">
+          <AppIcon name="Settings" v-bind="props" class="ml-1"  />
         </template>
-        <v-list dense>
+        <v-list density="compact">
           <v-list-item @click="showDeleteDraftDialog = true">
-            <v-list-item-icon>
-              <DeleteIcon />
-            </v-list-item-icon>
-            <v-list-item-content>删除</v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Delete"  />
+            </template>
+            <div>删除</div>
           </v-list-item>
           <v-list-item>
-            <v-list-item-icon class="pl-1 pt-2">
-              <RegisteredVisibilityIcon v-if="visibility === 'registered'" />
-              <AnyoneVisibilityIcon v-else-if="visibility === 'anyone'" />
-            </v-list-item-icon>
-            <v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="RegisteredVisibility" v-if="visibility === 'registered'"  />
+              <AppIcon name="AnyoneVisibility" v-else-if="visibility === 'anyone'"  />
+            </template>
+            <div>
               <v-select
                 v-model="visibility"
                 :items="visibilityItems"
-                dense
+                density="compact"
                 item-text="text"
                 item-value="value"
               />
-            </v-list-item-content>
+            </div>
           </v-list-item>
           <v-list-item v-if="topLevelEditorItems !== null">
-            <v-list-item-icon>
-              <EditIcon />
-            </v-list-item-icon>
-            <v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Edit"  />
+            </template>
+            <div>
               <v-select
                 v-model="topLevelEditor"
                 :items="topLevelEditorItems"
-                dense
+                density="compact"
                 item-text="text"
                 item-value="value"
                 @change="onChangeTopLevelEditor"
               />
-            </v-list-item-content>
+            </div>
           </v-list-item>
         </v-list>
       </v-menu>
 
       <v-dialog v-model="showDeleteDraftDialog" max-width="400">
         <v-card>
-          <v-card-title primary-title> 删除当前草稿？</v-card-title>
+          <v-card-title> 删除当前草稿？</v-card-title>
           <v-card-text> 不影响已发表版本</v-card-text>
           <v-card-actions>
             <v-spacer />
@@ -134,16 +134,16 @@
 
       <v-dialog v-model="historyDialog" max-width="900">
         <v-card>
-          <v-card-title primary-title>
-            <div class="headline primary--text">版本历史</div>
+          <v-card-title>
+            <div class="text-h5 text-primary">版本历史</div>
             <v-spacer />
-            <span class="text-caption grey--text">点击展开</span>
+            <span class="text-caption text-grey">点击展开</span>
           </v-card-title>
 
           <v-expansion-panels v-if="archives">
             <v-expansion-panel v-for="archive in archives" :key="archive.id">
               <v-expansion-panel-header>
-                <v-btn class="mr-4" depressed max-width="100px" small @click="loadArchive(archive)">
+                <v-btn class="mr-4" variant="tonal" max-width="100px" size="small" @click="loadArchive(archive)">
                   加载该版本
                 </v-btn>
                 {{ fromNow(archive.created_at) }}
@@ -176,14 +176,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { onBeforeRouteLeave } from 'vue-router/composables';
-import { commitAddNotification } from '@/store/main/mutations';
-import HistoryIcon from '@/components/icons/HistoryIcon.vue';
-import SettingsIcon from '@/components/icons/SettingsIcon.vue';
-import AnyoneVisibilityIcon from '@/components/icons/AnyoneVisibilityIcon.vue';
-import RegisteredVisibilityIcon from '@/components/icons/RegisteredVisibilityIcon.vue';
-import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import { readWorkingDraft } from '@/store/main/getters';
+import { onBeforeRouteLeave } from 'vue-router';
 import { clearLocalEdit, logDebug, saveLocalEdit, uuidv4 } from '@/utils';
 import {
   editor_T,
@@ -193,9 +186,7 @@ import {
   IRichEditorState,
 } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import VditorCF from '@/editors/lib-components/VditorCF.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
 import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { AnswerEditHandler } from '@/handlers';
@@ -203,7 +194,9 @@ import EditorHelp from '@/components/editor/EditorHelp.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import Viewer from '@/components/Viewer.vue';
 import { useAuth, useResponsive, useDayjs } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = withDefaults(defineProps<{
   focusMode?: boolean;
@@ -290,10 +283,10 @@ function updatedAnswerCallback(answer: IAnswer, isAutoSaved: boolean) {
 async function deleteDraft() {
   showDeleteDraftDialog.value = false;
   clearLocalEdit('answer', contentId.value);
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (answerId.value) {
       await apiAnswer.deleteAnswerDraft(token.value, answerId.value);
-      commitAddNotification(store, {
+      store.notifications.push({
         content: '草稿已删除',
         color: 'success',
       });
@@ -304,7 +297,7 @@ async function deleteDraft() {
 
 onMounted(() => {
   answerEditHandler.value = new AnswerEditHandler(
-    { token, userProfile, $store: store, $router: null } as any,
+    { token, userProfile, $router: null } as any,
     answerId.value,
     props.questionIdProp,
     updatedAnswerCallback,
@@ -312,7 +305,7 @@ onMounted(() => {
     invalidAnswerCallback
   );
 
-  const workingDraft = readWorkingDraft(store);
+  const workingDraft = store.workingDraft;
   if (workingDraft && workingDraft.body) {
     visibility.value = workingDraft.visibility;
     initEditor(workingDraft.body, workingDraft.editor);
@@ -346,7 +339,7 @@ function getEditorMode(): editor_T {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getMode() || 'wysiwyg';
   }
-  commitAddNotification(store, {
+  store.notifications.push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -359,7 +352,7 @@ function getContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getContent() || null;
   }
-  commitAddNotification(store, {
+  store.notifications.push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -372,7 +365,7 @@ function getTextContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getText() || null;
   }
-  commitAddNotification(store, {
+  store.notifications.push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -489,7 +482,7 @@ function onEditorChange(textContent: string) {
 }
 
 async function showHistoryDialog() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (answerId.value) {
       archives.value = (
         await apiAnswer.getAnswerArchives(token.value, answerId.value, 0, archivePageLimit)
@@ -497,7 +490,7 @@ async function showHistoryDialog() {
       if (archives.value.length > 0) {
         historyDialog.value = true;
       } else {
-        commitAddNotification(store, {
+        store.notifications.push({
           content: '尚无历史发表存档',
           color: 'info',
         });
@@ -512,7 +505,7 @@ function loadArchive(archive: IAnswerArchive) {
 }
 
 async function changeArchivePage() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (answerId.value) {
       archives.value = (
         await apiAnswer.getAnswerArchives(
