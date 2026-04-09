@@ -7,10 +7,10 @@
             <v-progress-circular indeterminate />
           </v-overlay>
           <div class="d-flex justify-end">
-            <v-btn class="mr-2" depressed small :href="`/article-columns/${articleColumnId}`">
+            <v-btn class="mr-2" variant="tonal" size="small" :href="`/article-columns/${articleColumnId}`">
               返回专栏
             </v-btn>
-            <v-btn class="mr-2" depressed small :href="`/articles/${articleId}`">
+            <v-btn class="mr-2" variant="tonal" size="small" :href="`/articles/${articleId}`">
               返回文章
             </v-btn>
           </div>
@@ -18,8 +18,8 @@
           <v-textarea
             v-model="articleTitle"
             auto-grow
-            class="headline my-4"
-            dense
+            class="text-h5 my-4"
+            density="compact"
             label="标题"
             rows="1"
             hide-details
@@ -51,8 +51,8 @@
             <v-btn
               :disabled="savingIntermediate"
               color="primary"
-              depressed
-              small
+              variant="flat"
+              size="small"
               @click="submitEdit(true)"
             >
               发表
@@ -62,14 +62,14 @@
               <v-btn
                 :disabled="savingIntermediate"
                 color="info"
-                depressed
-                small
+                variant="flat"
+                size="small"
                 @click="submitEdit(false)"
               >
                 保存草稿
               </v-btn>
             </span>
-            <v-btn class="ml-2" depressed small @click="showHelp = !showHelp">帮助</v-btn>
+            <v-btn class="ml-2" variant="tonal" size="small" @click="showHelp = !showHelp">帮助</v-btn>
             <v-progress-circular
               v-if="savingIntermediate"
               class="ml-2"
@@ -78,54 +78,54 @@
               size="20"
             />
             <v-spacer />
-            <span v-if="isDesktop" class="mr-2 text-caption grey--text">
+            <span v-if="isDesktop" class="mr-2 text-caption text-grey">
               <template v-if="lastAutoSavedAt">
                 自动保存于
                 {{ dayjs.utc(lastAutoSavedAt).local().format('HH:mm:ss') }}
               </template>
             </span>
 
-            <v-tooltip v-if="articleId" bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <div v-bind="attrs" v-on="on" class="d-flex">
-                  <HistoryIcon class="ml-2" @click="showHistoryDialog" />
+            <v-tooltip v-if="articleId" location="bottom">
+              <template v-slot:activator="{ props }">
+                <div v-bind="props" class="d-flex">
+                  <AppIcon name="History" class="ml-2" @click="showHistoryDialog"  />
                 </div>
               </template>
               <span>版本历史</span>
             </v-tooltip>
 
-            <v-menu :close-on-content-click="false" offset-y top>
-              <template v-slot:activator="{ on, attrs }">
-                <SettingsIcon v-bind="attrs" v-on="on" class="ml-1" />
+            <v-menu :close-on-content-click="false" location="top">
+              <template v-slot:activator="{ props }">
+                <AppIcon name="Settings" v-bind="props" class="ml-1"  />
               </template>
-              <v-list dense>
+              <v-list density="compact">
                 <v-list-item @click="showDeleteDraftDialog = true">
-                  <v-list-item-icon>
-                    <DeleteIcon />
-                  </v-list-item-icon>
-                  <v-list-item-content>删除</v-list-item-content>
+                  <template v-slot:prepend>
+                    <AppIcon name="Delete"  />
+                  </template>
+                  <div>删除</div>
                 </v-list-item>
                 <v-list-item v-if="topLevelEditorItems">
-                  <v-list-item-icon>
-                    <EditIcon />
-                  </v-list-item-icon>
-                  <v-list-item-content>
+                  <template v-slot:prepend>
+                    <AppIcon name="Edit"  />
+                  </template>
+                  <div>
                     <v-select
                       v-model="topLevelEditor"
                       :items="topLevelEditorItems"
-                      dense
+                      density="compact"
                       item-text="text"
                       item-value="value"
                       @change="onChangeTopLevelEditor"
                     />
-                  </v-list-item-content>
+                  </div>
                 </v-list-item>
               </v-list>
             </v-menu>
 
             <v-dialog v-model="showDeleteDraftDialog" max-width="400">
               <v-card>
-                <v-card-title primary-title> 删除当前草稿？</v-card-title>
+                <v-card-title> 删除当前草稿？</v-card-title>
                 <v-card-text> 不影响已发表版本</v-card-text>
                 <v-card-actions>
                   <v-spacer />
@@ -134,44 +134,15 @@
               </v-card>
             </v-dialog>
 
-            <v-dialog v-model="historyDialog" max-width="900">
-              <v-card>
-                <v-card-title primary-title>
-                  <div class="headline primary--text">版本历史</div>
-                  <v-spacer />
-                  <span class="text-caption grey--text">点击展开</span>
-                </v-card-title>
-
-                <v-expansion-panels v-if="articleArchives">
-                  <v-expansion-panel v-for="archive in articleArchives" :key="archive.id">
-                    <v-expansion-panel-header>
-                      <v-btn
-                        class="mr-4"
-                        depressed
-                        max-width="100px"
-                        small
-                        @click="loadArticleArchive(archive)"
-                        >加载该版本
-                      </v-btn>
-                      {{ fromNow(archive.created_at) }}
-                      <v-spacer />
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                      <div class="title">
-                        {{ archive.title }}
-                      </div>
-                      <Viewer :content="archive.content" />
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
-
-                <v-pagination
-                  v-model="archivePage"
-                  :length="archivePagesLength"
-                  @input="changeArchivePage"
-                />
-              </v-card>
-            </v-dialog>
+            <ArticleHistoryDialog
+              :visible="historyDialog"
+              :archives="articleArchives"
+              :pages-length="archivePagesLength"
+              :page="archivePage"
+              @update:visible="historyDialog = $event"
+              @load-archive="loadArticleArchive"
+              @change-page="changeArchivePage"
+            />
           </div>
           <EditorHelp :show-help="showHelp" />
         </div>
@@ -182,33 +153,28 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRoute, useRouter } from 'vue-router/composables';
-import { onBeforeRouteLeave } from 'vue-router/composables';
+import { useRoute, useRouter } from 'vue-router';
+import { onBeforeRouteLeave } from 'vue-router';
 import {
   clearLocalEdit,
-  getArticleDraft,
   logDebug,
-  newArticleHandler,
   saveLocalEdit,
   uuidv4,
 } from '@/utils';
-import { dispatchCaptureApiError } from '@/store/main/actions';
+import { getArticleDraft } from '@/utils/drafts';
+import { newArticleHandler } from '@/composables/useArticleEditor';
 import { editor_T, IArticle, IArticleArchive, IRichEditorState } from '@/interfaces';
 import { apiArticle } from '@/api/article';
-import { commitAddNotification } from '@/store/main/mutations';
-
-import HistoryIcon from '@/components/icons/HistoryIcon.vue';
-import SettingsIcon from '@/components/icons/SettingsIcon.vue';
-import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 
 import VditorCF from '@/editors/lib-components/VditorCF.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
-import Viewer from '@/components/Viewer.vue';
+import ArticleHistoryDialog from '@/components/editor/ArticleHistoryDialog.vue';
 import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import { useAuth, useResponsive, useDayjs } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 // Composables
 const route = useRoute();
@@ -277,7 +243,7 @@ function getEditorMode(): editor_T {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getMode() ?? 'wysiwyg';
   }
-  commitAddNotification(store, {
+  store.notifications.push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -290,7 +256,7 @@ function getContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getContent() ?? null;
   }
-  commitAddNotification(store, {
+  store.notifications.push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -303,7 +269,7 @@ function getTextContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getText() ?? null;
   }
-  commitAddNotification(store, {
+  store.notifications.push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -344,10 +310,10 @@ async function newEditHandler(payload: {
     return;
   }
   handlingNewEdit.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (!payload.edit.title || payload.edit.title.length < 5) {
       if (!payload.isAutosaved) {
-        commitAddNotification(store, {
+        store.notifications.push({
           content: '文章标题太短了，不得少于5个字。',
           color: 'error',
         });
@@ -363,7 +329,7 @@ async function newEditHandler(payload: {
       !payload.edit.body
     ) {
       if (!payload.isAutosaved) {
-        commitAddNotification(store, {
+        store.notifications.push({
           content: '文章内容太短了，不得少于5个字。',
           color: 'error',
         });
@@ -376,7 +342,7 @@ async function newEditHandler(payload: {
     if (articleColumnId.value !== null && !articleId.value && !payload.articleId) {
       // new article to question
       const article = await newArticleHandler(
-        { token: token.value, store, router },
+        { token: token.value, router },
         payload.edit,
         payload.writingSessionUUID,
         payload.isAutosaved,
@@ -387,7 +353,7 @@ async function newEditHandler(payload: {
         clearLocalEdit('article', article.uuid);
         newArticleId.value = article.uuid;
         if (!payload.isAutosaved) {
-          commitAddNotification(store, {
+          store.notifications.push({
             content: payload.edit.is_draft ? '草稿已保存' : '已发表',
             color: 'success',
           });
@@ -414,7 +380,7 @@ async function newEditHandler(payload: {
         payload.saveArticleCallback(response.data);
         clearLocalEdit('article', response.data.uuid);
         if (!payload.isAutosaved) {
-          commitAddNotification(store, {
+          store.notifications.push({
             content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
             color: 'success',
           });
@@ -491,7 +457,7 @@ function onEditorChange(textContent: string) {
 }
 
 async function showHistoryDialog() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (articleId.value) {
       articleArchives.value = (
         await apiArticle.getArticleArchives(token.value, articleId.value, 0, archivePageLimit)
@@ -499,7 +465,7 @@ async function showHistoryDialog() {
       if (articleArchives.value.length > 0) {
         historyDialog.value = true;
       } else {
-        commitAddNotification(store, {
+        store.notifications.push({
           content: '尚无历史发表存档',
           color: 'info',
         });
@@ -514,8 +480,9 @@ function loadArticleArchive(archive: IArticleArchive) {
   historyDialog.value = false;
 }
 
-async function changeArchivePage() {
-  await dispatchCaptureApiError(store, async () => {
+async function changeArchivePage(page: number) {
+  archivePage.value = page;
+  await store.captureApiError(async () => {
     if (articleId.value) {
       articleArchives.value = (
         await apiArticle.getArticleArchives(
@@ -534,13 +501,13 @@ async function deleteDraft() {
   if (articleId.value) {
     await apiArticle.deleteArticleDraft(token.value, articleId.value);
     clearLocalEdit('article', articleId.value);
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '草稿已删除',
       color: 'success',
     });
     await router.push(`/articles/${articleId.value}`);
   } else {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '无法删除草稿',
       color: 'success',
     });
@@ -584,7 +551,7 @@ onMounted(async () => {
     const articleDraft = await getArticleDraft(dayjs, token.value, article.uuid);
     if (articleDraft) {
       logDebug('载入最近的草稿');
-      commitAddNotification(store, {
+      store.notifications.push({
         content: '载入最近的草稿',
         color: 'success',
       });

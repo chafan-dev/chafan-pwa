@@ -8,14 +8,16 @@
     <v-row v-else class="mb-12" justify="center">
       <v-col
         :class="{
-          'col-8': $vuetify.breakpoint.mdAndUp && !isNarrowFeedUI,
+          'col-8': display.mdAndUp && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
-          'less-left-right-padding': !$vuetify.breakpoint.mdAndUp,
+          'less-left-right-padding': !display.mdAndUp,
         }"
       >
-        <v-tabs>
-          <v-tab>问题</v-tab>
-          <v-tab-item>
+        <v-tabs model-value="questions">
+          <v-tab value="questions">问题</v-tab>
+        </v-tabs>
+        <v-window model-value="questions">
+          <v-window-item value="questions">
             <DynamicItemList
               v-slot="{ item }"
               :loadItems="loadQuestions"
@@ -24,21 +26,21 @@
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
-          </v-tab-item>
-        </v-tabs>
+          </v-window-item>
+        </v-window>
       </v-col>
 
       <v-col
-        v-if="$vuetify.breakpoint.mdAndUp"
+        v-if="display.mdAndUp"
         :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
       >
         <TopicCard :topic="topic" />
       </v-col>
       <v-bottom-sheet v-else>
-        <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" class="bottom-btn">
-            <InfoIcon />
-            <span class="ml-1 grey--text">话题信息</span>
+        <template v-slot:activator="{ props }">
+          <div v-bind="props" class="bottom-btn">
+            <AppIcon name="Info"  />
+            <span class="ml-1 text-grey">话题信息</span>
           </div>
         </template>
         <v-sheet class="pa-2">
@@ -51,17 +53,18 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import store from '@/store';
-import { useRoute } from 'vue-router/composables';
+import { useDisplay } from 'vuetify';
+import { useRoute } from 'vue-router';
 import { apiTopic } from '@/api/topic';
 import { IQuestionPreview, ITopic } from '@/interfaces';
 import TopicCard from '@/components/TopicCard.vue';
-import InfoIcon from '@/components/icons/InfoIcon.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
-import { readNarrowUI } from '@/store/main/getters';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
+const display = useDisplay();
 
 const route = useRoute();
 const { token } = useAuth();
@@ -72,10 +75,10 @@ const loading = ref(true);
 const loadingProgress = ref(0);
 
 const id = computed(() => route.params.id as string);
-const isNarrowFeedUI = computed(() => readNarrowUI(store));
+const isNarrowFeedUI = computed(() => store.narrowUI);
 
 async function load() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const response = await apiTopic.getTopic(id.value);
     loadingProgress.value = 33;
     if (response) {
@@ -106,7 +109,7 @@ async function loadQuestions(skip: number, limit: number) {
     return [];
   }
   let items: IQuestionPreview[] | null = null;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (topic.value !== null) {
       items = (await apiTopic.getQuestionsOfTopic(token.value, topic.value.uuid)).data;
     }

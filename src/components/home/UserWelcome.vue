@@ -1,16 +1,16 @@
 <template>
   <v-sheet>
-    <base-card :flat="true" :no-gutter="true" outlined>
+    <base-card :flat="true" :no-gutter="true" variant="outlined">
       <v-alert type="info">
         <template v-slot:prepend>
           <v-btn icon>
-            <InfoIcon />
+            <AppIcon name="Info"  />
           </v-btn>
         </template>
         刚刚加入？
         <template v-slot:close>
           <v-btn icon @click="$emit('on-close-explore-sites')">
-            <CloseIcon />
+            <AppIcon name="Close"  />
           </v-btn>
         </template>
       </v-alert>
@@ -58,8 +58,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import BaseCard from '@/components/base/BaseCard.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
-import InfoIcon from '@/components/icons/InfoIcon.vue';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 const stepperValue = ref(1);
 </script>

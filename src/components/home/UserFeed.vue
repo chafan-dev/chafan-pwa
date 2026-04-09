@@ -26,7 +26,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn depressed primary small @click="usersDialog = false">隐藏</v-btn>
+            <v-btn variant="tonal" color="primary" size="small" @click="usersDialog = false">隐藏</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -47,24 +47,23 @@
             </span>
           </div>
           <div>
-            <span class="text-caption grey--text mr-1">{{ fromNow(activity.created_at) }}</span>
-            <v-menu v-if="activity.origins && activity.origins.length" offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <DotsIcon v-bind="attrs" v-on="on" small />
+            <span class="text-caption text-grey mr-1">{{ fromNow(activity.created_at) }}</span>
+            <v-menu location="bottom" v-if="activity.origins && activity.origins.length">
+              <template v-slot:activator="{ props }">
+                <AppIcon name="Dots" v-bind="props" size="small"  />
               </template>
               <v-list>
                 <!-- block origin actions -->
                 <template v-if="activity.origins">
                   <v-list-item
                     v-for="(origin, idx) in activity.origins"
-                    :key="idx"
-                    dense
+                    :key="origin.subdomain" density="compact"
                     @click="blockOrigin(origin)"
                   >
-                    <v-list-item-icon>
-                      <CloseIcon />
-                    </v-list-item-icon>
-                    <v-list-item-content class="text-caption">
+                    <template v-slot:prepend>
+                      <AppIcon name="Close"  />
+                    </template>
+                    <div class="text-caption">
                       <span
                         >减少
                         <template v-if="origin.origin_type === 'site'">
@@ -72,7 +71,7 @@
                         </template>
                         的推送
                       </span>
-                    </v-list-item-content>
+                    </div>
                   </v-list-item>
                 </template>
               </v-list>
@@ -185,9 +184,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
-import { dispatchAddFlag, dispatchCaptureApiError } from '@/store/main/actions';
+import { useRouter } from 'vue-router';
 import { CombinedActivities } from '@/CombinedActivities';
 import { IActivity, IOrigin, IUserPreview } from '@/interfaces';
 import UserWelcome from '@/components/home/UserWelcome.vue';
@@ -199,16 +196,16 @@ import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
 import CommentCard from '@/components/CommentCard.vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import UserGrid from '@/components/UserGrid.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { EXPLORE_SITES } from '@/common';
 import ActivitySubject from '@/components/ActivitySubject.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { apiActivity } from '@/api/activity';
-import DotsIcon from '@/components/icons/DotsIcon.vue';
 import SiteName from '@/components/SiteName.vue';
-import { commitAddNotification } from '@/store/main/mutations';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { useAuth, useTheme, useDayjs } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = withDefaults(
   defineProps<{
@@ -279,7 +276,7 @@ const usersInDialog = ref<IUserPreview[]>([]);
 const isRandomActivities = ref(false);
 
 async function loadNewActivities() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     loadingActivities.value = true;
     let before_activity_id: number | undefined = undefined;
     const newActivities: IActivity[] = [];
@@ -315,7 +312,7 @@ async function loadNewActivities() {
 }
 
 async function loadActivities() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const response = await apiActivity.getFeedSequence(token.value, {
       limit: loadingLimit,
       subjectUserUUID: props.subjectUserUuid,
@@ -349,7 +346,7 @@ onMounted(async () => {
 
 async function onCloseExploreSites() {
   showExploreSites.value = false;
-  await dispatchAddFlag(store, EXPLORE_SITES);
+  await store.addFlag(EXPLORE_SITES);
 }
 
 async function preloadMoreActivities() {
@@ -367,7 +364,7 @@ async function preloadMoreActivities() {
   }
   const minActivityId = combinedActivities.minActivityId;
   if (minActivityId !== null) {
-    await dispatchCaptureApiError(store, async () => {
+    await store.captureApiError(async () => {
       const response = await apiActivity.getFeedSequence(token.value, {
         random: isRandomActivities.value,
         limit: loadingLimit,
@@ -394,7 +391,7 @@ function showUsersDialogFn(users: IUserPreview[]) {
 
 async function blockOrigin(origin: IOrigin) {
   await apiActivity.updateOrigins(token.value, { action: 'add', origin });
-  await commitAddNotification(store, {
+  store.notifications.push({
     color: 'info',
     content: '过滤规则更新成功，稍后自动生效',
   });

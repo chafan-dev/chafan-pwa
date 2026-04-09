@@ -43,7 +43,7 @@
             <div v-if="!showQuestionEditor" class="text-h5">
               {{ question.title }}
             </div>
-            <v-textarea v-else v-model="newQuestionTitle" auto-grow dense label="标题" rows="1" />
+            <v-textarea v-else v-model="newQuestionTitle" auto-grow density="compact" label="标题" rows="1" />
           </div>
 
           <!-- Question description display/editor -->
@@ -61,79 +61,36 @@
         </div>
 
         <!-- Question control -->
-        <v-slide-group v-if="!showQuestionEditor" class="d-flex mt-3 mb-1">
-          <v-btn
-            v-if="savedLocalEdit"
-            class="mr-1 slim-btn"
-            color="primary"
-            depressed
-            small
-            @click="loadSavedLocalEdit"
-          >
-            载入本地草稿
-          </v-btn>
-
-          <v-btn
-            v-else-if="questionPage.flags.answer_writable && !answeredBefore"
-            class="mr-1 slim-btn"
-            color="primary"
-            depressed
-            small
-            @click="showEditor = !showEditor"
-          >
-            写回答
-          </v-btn>
-
-          <v-tooltip v-else bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-bind="attrs"
-                v-on="on"
-                :ripple="false"
-                class="mr-1 slim-btn grey--text"
-                depressed
-                elevation="0"
-                plain
-                small
-              >
-                写回答
-              </v-btn>
-            </template>
-            <span v-if="answeredBefore">已回答过</span>
-            <span v-else>该圈子仅会员可以写回答</span>
-          </v-tooltip>
-
-          <CommentBtn
-            :count="recursiveCommentsCount(question.comments)"
-            class="mr-1"
-            @click="toggleShowComments"
-          />
-
-          <QuestionUpvotes
-            :disabled="!userProfile || userProfile.uuid === question.author.uuid"
-            :uuid="question.uuid"
-            :upvotes-placeholder="questionPage.question.upvotes"
-            class="mr-1"
-          />
-
-          <v-btn
-            v-if="questionPage.flags.editable"
-            @click="showQuestionEditor = true"
-            class="mr-1 slim-btn"
-            depressed
-            elevation="0"
-            small
-          >
-            <EditIcon />
-            <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">编辑</span>
-          </v-btn>
-
-          <ShareCardButton
-            v-slot="{ shareQrCodeUrl }"
-            :link="`/questions/${question.uuid}`"
-            :link-text="question.title"
-            class="mr-1"
-          >
+        <QuestionActionBar
+          v-if="!showQuestionEditor"
+          :saved-local-edit="savedLocalEdit"
+          :answer-writable="questionPage.flags.answer_writable"
+          :answered-before="answeredBefore"
+          :comments-count="recursiveCommentsCount(question.comments)"
+          :upvote-disabled="!userProfile || userProfile.uuid === question.author.uuid"
+          :question-uuid="question.uuid"
+          :upvotes-placeholder="questionPage.question.upvotes"
+          :editable="questionPage.flags.editable"
+          :share-link="`/questions/${question.uuid}`"
+          :share-link-text="question.title"
+          :question-subscription="questionPage.question_subscription"
+          :cancel-subscription-intermediate="cancelSubscriptionIntermediate"
+          :subscribe-intermediate="subscribeIntermediate"
+          :hideable="questionPage.flags.hideable"
+          :history-dialog-visible="historyDialog"
+          :archives="archives"
+          @load-saved-edit="loadSavedLocalEdit"
+          @toggle-editor="showEditor = !showEditor"
+          @toggle-comments="toggleShowComments"
+          @edit-question="showQuestionEditor = true"
+          @cancel-subscription="cancelSubscription"
+          @subscribe="subscribe"
+          @show-history="showHistoryDialog"
+          @transfer-question="transferQuestion"
+          @confirm-hide="confirmHideQuestion"
+          @update:history-dialog="historyDialog = $event"
+        >
+          <template #share-card="{ shareQrCodeUrl }">
             <v-card-title>
               {{ question.title }}
             </v-card-title>
@@ -142,11 +99,11 @@
                 <div class="text--primary text-body-1">
                   <Viewer v-if="question.desc" :content="question.desc" />
                   <p>
-                    <CommentsIcon class="mr-1" small />
+                    <AppIcon name="Comments" class="mr-1" size="small" />
                     <span class="text-caption"> {{ question.comments.length }}条评论 </span>
                   </p>
                   <p>
-                    <AnswerIcon class="mr-1" small />
+                    <AppIcon name="Answer" class="mr-1" size="small" />
                     <span class="text-caption"> {{ question.answers_count }}个回答 </span>
                   </p>
                 </div>
@@ -157,110 +114,8 @@
                 </div>
               </div>
             </v-card-text>
-          </ShareCardButton>
-
-          <v-menu offset-y>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" class="slim-btn" small depressed>
-                <DotsIcon small />
-                <span v-if="$vuetify.breakpoint.mdAndUp" class="ml-1">更多</span>
-              </v-btn>
-            </template>
-            <v-list dense>
-              <template v-if="questionPage.question_subscription">
-                <v-list-item
-                  v-if="questionPage.question_subscription.subscribed_by_me"
-                  :disabled="cancelSubscriptionIntermediate"
-                  dense
-                  @click="cancelSubscription"
-                >
-                  <BookmarkedIcon class="mr-1" />
-                  取消关注
-                </v-list-item>
-                <v-list-item v-else :disabled="subscribeIntermediate" dense @click="subscribe">
-                  <ToBookmarkIcon class="mr-1" />
-                  关注
-                </v-list-item>
-              </template>
-              <v-list-item dense @click="showHistoryDialog">
-                <HistoryIcon class="mr-1" />
-                问题历史
-              </v-list-item>
-              <v-list-item dense @click="transferQuestionDialog = true">
-                <TransferIcon class="mr-1" />
-                转移问题
-              </v-list-item>
-              <v-list-item
-                dense
-                v-if="questionPage.flags.hideable"
-                @click="showConfirmHideQuestionDialog = true"
-              >
-                <LockOutlineIcon class="mr-1" />
-                隐藏问题
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <v-dialog v-model="transferQuestionDialog" max-width="600">
-            <v-card>
-              <v-card-title> 转移问题 </v-card-title>
-              <v-card-text>
-                <SiteSearch v-model="transferToSite" />
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn small depressed color="primary" @click="transferQuestion">申请转移</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="historyDialog" max-width="900">
-            <v-card>
-              <v-card-title primary-title>
-                <div class="headline primary--text">编辑历史</div>
-                <v-spacer />
-                <span class="text-caption grey--text">点击展开</span>
-              </v-card-title>
-              <v-expansion-panels>
-                <v-expansion-panel v-for="archive in archives" :key="archive.id">
-                  <v-expansion-panel-header>
-                    {{ $dayjs.utc(archive.created_at).local().fromNow() }}
-                    <span v-if="archive.editor"> - <UserLink :userPreview="archive.editor" /></span>
-                    <v-spacer />
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content>
-                    <v-chip-group>
-                      <v-chip
-                        v-for="topic in archive.topics"
-                        :key="topic.uuid"
-                        :to="'/topics/' + topic.uuid"
-                        >{{ topic.name }}
-                      </v-chip>
-                    </v-chip-group>
-                    <div class="headline primary--text">
-                      {{ archive.title }}
-                    </div>
-                    <Viewer v-if="archive.desc" :content="archive.desc" />
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-            </v-card>
-          </v-dialog>
-          <v-dialog v-model="showConfirmHideQuestionDialog" max-width="600">
-            <v-card>
-              <v-card-title primary-title>
-                <div class="headline primary--text">确认隐藏问题</div>
-              </v-card-title>
-              <v-card-text>隐藏后问题仍可通过地址访问，但是会从问题列表中隐藏。</v-card-text>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn color="warning" depressed small @click="confirmHideQuestion"
-                  >确认隐藏
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-slide-group>
+          </template>
+        </QuestionActionBar>
 
         <!-- Question editor control -->
         <div v-if="showQuestionEditor && userProfile" class="d-flex">
@@ -269,16 +124,16 @@
             :disabled="commitQuestionEditIntermediate"
             class="ma-1 slim-btn"
             color="primary"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="commitQuestionEdit"
             >保存
           </v-btn>
           <v-btn
             v-show="questionPage.flags.editable"
             class="ma-1 slim-btn"
-            depressed
-            small
+            variant="tonal"
+            size="small"
             @click="cancelQuestionUpdate"
             >取消
           </v-btn>
@@ -299,8 +154,8 @@
         </v-expand-transition>
 
         <div class="ml-2 text-center">
-          <span v-if="showEditor && userProfile" class="text-caption grey--text">编辑答案</span>
-          <span v-else-if="answers.length === 0" class="text-caption grey--text">暂无答案</span>
+          <span v-if="showEditor && userProfile" class="text-caption text-grey">编辑答案</span>
+          <span v-else-if="answers.length === 0" class="text-caption text-grey">暂无答案</span>
         </div>
 
         <!-- Answer editor -->
@@ -341,10 +196,10 @@
         />
       </v-col>
       <v-bottom-sheet v-else>
-        <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" class="bottom-btn">
-            <InfoIcon />
-            <span class="ml-1 grey--text">问题信息</span>
+        <template v-slot:activator="{ props }">
+          <div v-bind="props" class="bottom-btn">
+            <AppIcon name="Info"  />
+            <span class="ml-1 text-grey">问题信息</span>
           </div>
         </template>
         <v-sheet class="pa-2">
@@ -360,32 +215,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useDisplay } from 'vuetify';
+import { useRoute, useRouter } from 'vue-router';
 
 import Answer from '@/components/Answer.vue';
 import QuestionInfo from '@/components/question/QuestionInfo.vue';
+import QuestionActionBar from '@/components/question/QuestionActionBar.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import CommentBlock from '@/components/CommentBlock.vue';
 import UserLink from '@/components/UserLink.vue';
 import AnswerEditor from '@/components/AnswerEditor.vue';
 
-import BookmarkedIcon from '@/components/icons/BookmarkedIcon.vue';
-import ToBookmarkIcon from '@/components/icons/ToBookmarkIcon.vue';
-import HistoryIcon from '@/components/icons/HistoryIcon.vue';
-import InfoIcon from '@/components/icons/InfoIcon.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import CommentsIcon from '@/components/icons/CommentsIcon.vue';
-
-import {
-  commitAddNotification,
-  commitSetShowLoginPrompt,
-  commitSetWorkingDraft,
-} from '@/store/main/mutations';
-
-import { readNarrowUI } from '@/store/main/getters';
 import {
   IAnswer,
+  INewCommentInternal,
   IQuestionArchive,
   IQuestionPage,
   IRichEditorState,
@@ -394,10 +237,6 @@ import {
 } from '@/interfaces';
 import Viewer from '@/components/Viewer.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
-import {
-  dispatchCaptureApiError,
-  dispatchCaptureApiErrorWithErrorHandler,
-} from '@/store/main/actions';
 import { apiQuestion } from '@/api/question';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
@@ -405,17 +244,13 @@ import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
 import { isEqual, updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
-import AnswerIcon from '@/components/icons/AnswerIcon.vue';
-import ShareCardButton from '@/components/ShareCardButton.vue';
-import CommentBtn from '@/components/widgets/CommentBtn.vue';
-import DotsIcon from '@/components/icons/DotsIcon.vue';
-import QuestionUpvotes from '@/components/question/QuestionUpvotes.vue';
-import TransferIcon from '@/components/icons/TransferIcon.vue';
-import SiteSearch from '@/components/SiteSearch.vue';
-import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
 import { warn, info } from '@/logging';
 import { useAuth, useTheme, useResponsive, useErrorHandling } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
+const display = useDisplay();
 
 const route = useRoute();
 const router = useRouter();
@@ -431,7 +266,6 @@ const showQuestionEditor = ref(false);
 const showComments = ref(false);
 const newQuestionTopicNames = ref<string[]>([]);
 const hintTopicNames = ref<string[]>([]); // TODO
-const showConfirmHideQuestionDialog = ref(false);
 const commitQuestionEditIntermediate = ref(false);
 const cancelSubscriptionIntermediate = ref(false);
 const subscribeIntermediate = ref(false);
@@ -443,11 +277,9 @@ const commentSubmitIntermediate = ref(false);
 const savedLocalEdit = ref<LocalEdit | null>(null);
 const answers = ref<IAnswer[]>([]);
 const answeredBefore = ref(false);
-const transferToSite = ref<ISite | null>(null);
-const transferQuestionDialog = ref(false);
 const descEditor = ref<any>(null);
 
-const isNarrowFeedUI = computed(() => readNarrowUI(store));
+const isNarrowFeedUI = computed(() => store.narrowUI);
 
 const id = computed(() => route.params.id);
 
@@ -499,7 +331,7 @@ async function loadQuestion() {
   } else {
     info('loading question when not logged in');
   }
-  await dispatchCaptureApiErrorWithErrorHandler(store, {
+  await store.captureApiErrorWithErrorHandler({
     action: async () => {
       const response = await apiQuestion.getQuestionPage(tokenValue, id.value);
       questionPage.value = response.data;
@@ -513,11 +345,12 @@ async function loadQuestion() {
     },
   });
 
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (questionPage.value) {
       const questionVal = questionPage.value.question;
-      const _response = await apiQuestion.bumpViewsCounter(token.value, questionVal.uuid);
-      // TODO put it in another place, don't block the whole function 2025-07-03
+      if (token.value) {
+        apiQuestion.bumpViewsCounter(token.value, questionVal.uuid);
+      }
       if (questionCommentId.value !== null) {
         showComments.value = true;
       }
@@ -529,7 +362,7 @@ async function loadQuestion() {
       if (answerUUID.value !== null) {
         // TODO: Fix when there is continuation
         if (!answersData.find((preview) => preview.uuid === answerUUID.value)) {
-          commitAddNotification(store, {
+          store.notifications.push({
             content: '答案不存在',
             color: 'error',
           });
@@ -567,13 +400,13 @@ async function loadQuestion() {
 onMounted(async () => {
   try {
     if (localStorage.getItem('new-question')) {
-      commitAddNotification(store, {
+      store.notifications.push({
         content: '点击「编辑」加入更多细节',
         color: 'info',
       });
       localStorage.removeItem('new-question');
     }
-  } catch (e) {} // FIXME: is there a better way than just ignoring disabled localStorage?
+  } catch (e) { console.warn('localStorage is not available', e); }
 
   await loadQuestion();
 });
@@ -592,8 +425,8 @@ function updatedAnswerCallback(event: { answer: IAnswer; isAutoSaved: boolean })
   handlingNewEdit.value = false;
 }
 
-async function submitNewQuestionCommentBody({ body, body_text, editor, mentioned }: any) {
-  await dispatchCaptureApiError(store, async () => {
+async function submitNewQuestionCommentBody({ body, body_text, editor, mentioned }: INewCommentInternal) {
+  await store.captureApiError(async () => {
     if (questionPage.value) {
       commentSubmitIntermediate.value = true;
       const response = await apiComment.postComment(token.value, {
@@ -615,7 +448,7 @@ async function submitNewQuestionCommentBody({ body, body_text, editor, mentioned
 
 async function commitQuestionEdit() {
   commitQuestionEditIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const descEditorRef = descEditor.value as any;
     if (questionPage.value && (newQuestionTitle.value || descEditorRef.getContent())) {
       const responses = await Promise.all(
@@ -646,7 +479,7 @@ async function commitQuestionEdit() {
 }
 
 async function cancelSubscription() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (questionPage.value) {
       cancelSubscriptionIntermediate.value = true;
       questionPage.value.question_subscription = (
@@ -659,10 +492,10 @@ async function cancelSubscription() {
 
 async function subscribe() {
   if (!userProfile.value) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (questionPage.value) {
       subscribeIntermediate.value = true;
       questionPage.value.question_subscription = (
@@ -692,7 +525,7 @@ async function showHistoryDialog() {
     if (archives.value.length > 0) {
       historyDialog.value = true;
     } else {
-      commitAddNotification(store, {
+      store.notifications.push({
         content: '尚无历史存档',
         color: 'info',
       });
@@ -722,9 +555,9 @@ function deleteHandler(answerUUID: string) {
 }
 
 async function confirmHideQuestion() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     await apiQuestion.hideQuestion(token.value, question.value!.uuid);
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '已隐藏',
       color: 'info',
     });
@@ -734,14 +567,14 @@ async function confirmHideQuestion() {
 
 function toggleShowComments() {
   if (!userProfile.value && question.value!.comments.length === 0) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   showComments.value = !showComments.value;
 }
 
 function loadSavedLocalEdit() {
-  commitSetWorkingDraft(store, savedLocalEdit.value!.edit as IRichEditorState);
+  store.workingDraft = savedLocalEdit.value!.edit as IRichEditorState;
   showEditor.value = true;
 }
 
@@ -749,8 +582,8 @@ async function cancelQuestionUpdate() {
   showQuestionEditor.value = false;
 }
 
-async function transferQuestion() {
-  if (transferToSite.value) {
+async function transferQuestion(site: ISite | null) {
+  if (site) {
     warn('This function is turned off during dev. TODO');
   }
   return null;

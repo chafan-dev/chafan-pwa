@@ -18,7 +18,7 @@
             </div>
             <EmptyPlaceholder v-else />
           </template>
-          <div v-if="!loggedIn" class="text-center grey--text">登录后查看更多</div>
+          <div v-if="!loggedIn" class="text-center text-grey">登录后查看更多</div>
         </div>
       </v-col>
     </v-row>
@@ -27,15 +27,15 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import store from '@/store';
-import { useRoute } from 'vue-router/composables';
+import { useRoute } from 'vue-router';
 import { apiArticle } from '@/api/article';
 import { IArticleColumn, IArticlePreview } from '@/interfaces';
 import ArticleColumnCard from '@/components/ArticleColumnCard.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import { useAuth, useResponsive } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const route = useRoute();
 const { token, loggedIn } = useAuth();
@@ -48,7 +48,7 @@ const loading = ref(true);
 const id = computed(() => route.params.id as string);
 
 async function load() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     articleColumn.value = (await apiArticle.getArticleColumn(token.value, id.value)).data;
     articles.value = (await apiArticle.getArticlesOfColumn(token.value, id.value)).data;
     loading.value = false;

@@ -2,7 +2,7 @@
   <v-main>
     <v-container fill-height fluid>
       <v-row justify="center">
-        <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
+        <v-col :class="{ 'col-8': display.mdAndUp }">
           <v-card>
             <v-card-text>
               <ContribGraphs />
@@ -39,7 +39,7 @@
           <v-divider class="my-4" />
           <v-card>
             <v-card-text>
-              <v-sheet outlined>
+              <v-sheet variant="outlined">
                 <QuestionPreview
                   :question-preview="mockData.exampleQuestionPreview"
                   :upvotes-placeholder="mockData.exampleQuestionUpvotes"
@@ -55,7 +55,7 @@
           <v-divider class="my-4" />
           <v-card>
             <v-card-text>
-              <v-sheet outlined>
+              <v-sheet variant="outlined">
                 <UserGrid :users="mockData.randomUserPreviews" />
               </v-sheet>
             </v-card-text>
@@ -79,6 +79,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useDisplay } from 'vuetify';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import * as mockData from '@/mock/data';
 import UserGrid from '@/components/UserGrid.vue';
@@ -87,6 +88,7 @@ import RotationCard from '@/components/base/RotationCard.vue';
 import SiteCard from '@/components/SiteCard.vue';
 import Answer from '@/components/Answer.vue';
 import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
+const display = useDisplay();
 
 const questionPreviewDisabled = ref(false);
 const answerExample = ref(0);

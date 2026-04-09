@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row v-if="!loading" class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
+      <v-col :class="{ 'col-8': display.mdAndUp }">
         <div v-if="!showResponse">
           <h2 class="ml-2">{{ form.title }}</h2>
           <div>
@@ -10,7 +10,7 @@
               :key="field.unique_name"
               class="ma-2 pa-4"
               flat
-              outlined
+              variant="outlined"
             >
               <span>{{ field.field_type.desc }}</span>
               <div v-if="field.field_type.field_type_name === 'text_field'">
@@ -42,7 +42,7 @@
             </v-card>
           </div>
           <div class="ma-2 text-center">
-            <v-btn color="primary" depressed @click="submitResponse">提交</v-btn>
+            <v-btn color="primary" variant="flat" @click="submitResponse">提交</v-btn>
           </div>
         </div>
         <FormResponseCard v-else :formResponse="formResponse" />
@@ -53,15 +53,18 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import store from '@/store';
-import { useRoute } from 'vue-router/composables';
+import { useDisplay } from 'vuetify';
+import { useRoute } from 'vue-router';
 import { apiForm } from '@/api/forms';
 import { IForm, IFormResponse, IFormResponseCreate, IFormResponseField } from '@/interfaces';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import FormResponseCard from '@/components/FormResponseCard.vue';
-import { commitAddNotification } from '@/store/main/mutations';
+import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
+const display = useDisplay();
 
 const route = useRoute();
+const { token } = useAuth();
 
 const form = ref<IForm | null>(null);
 const formResponseCreate = ref<IFormResponseCreate | null>(null);
@@ -73,8 +76,8 @@ const formResponse = ref<IFormResponse | null>(null);
 const uuid = computed(() => route.params.uuid as string);
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
-    form.value = (await apiForm.getForm(store.state.main.token, uuid.value)).data;
+  await store.captureApiError(async () => {
+    form.value = (await apiForm.getForm(token.value, uuid.value)).data;
     form.value.form_fields.forEach((formField) => {
       if (formField.field_type.field_type_name === 'text_field') {
         responseFields.set(formField.unique_name, {
@@ -117,7 +120,7 @@ async function submitResponse() {
   for (const responseField of responseFields.values()) {
     if (responseField.field_content.field_type_name === 'single_choice_response_field') {
       if (!responseField.field_content.selected_choice) {
-        commitAddNotification(store, {
+        store.notifications.push({
           content: '是否有单选没有选择？',
           color: 'error',
         });
@@ -127,7 +130,7 @@ async function submitResponse() {
   }
   formResponseCreate.value!.response_fields = Array.from(responseFields.values());
   formResponse.value = (
-    await apiForm.submitFormRespnse(store.state.main.token, formResponseCreate.value!)
+    await apiForm.submitFormResponse(token.value, formResponseCreate.value!)
   ).data;
   showResponse.value = true;
 }

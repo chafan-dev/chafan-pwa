@@ -1,9 +1,9 @@
 <template>
   <v-container fluid>
     <v-row fluid justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
+      <v-col :class="{ 'col-8': display.mdAndUp }">
         <div class="mb-1">
-          <div class="headline primary--text mb-3">
+          <div class="text-h5 text-primary mb-3">
             搜索结果：{{ q }}
             <v-progress-circular v-if="loading" class="mb-1" indeterminate size="20" />
           </div>
@@ -16,8 +16,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router/composables';
+import { useDisplay } from 'vuetify';
+import { useRoute } from 'vue-router';
 import SearchResults from '@/components/SearchResults.vue';
+const display = useDisplay();
 
 const route = useRoute();
 

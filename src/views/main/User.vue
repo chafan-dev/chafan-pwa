@@ -11,24 +11,25 @@
         />
         <v-skeleton-loader v-else type="card" />
 
-          <v-tabs v-model="currentTabItem" :fixed-tabs="isDesktop" show-arrows>
-            <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
+          <v-tabs v-model="currentTabItem" :fixed-tabs="isDesktop" show-arrows color="primary">
+            <v-tab v-for="item in tabItems" :key="item.code" :value="item.code">
               {{ item.text }}
               <span v-if="item.tabExtraCount && userPublic" class="ml-1">
                 ({{ item.tabExtraCount(userPublic) }})
               </span>
             </v-tab>
-
-            <v-tab-item class="pt-2" value="recent">
+          </v-tabs>
+          <v-window v-model="currentTabItem">
+            <v-window-item class="pt-2" value="recent">
               <UserFeed
                 v-if="userPublic"
                 :enable-show-explore-sites="false"
                 :subject-user-uuid="userPublic.uuid"
                 :user-profile="userProfile"
               />
-            </v-tab-item>
+            </v-window-item>
 
-            <v-tab-item class="pt-2" value="answers">
+            <v-window-item class="pt-2" value="answers">
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadAnswers"
@@ -37,9 +38,9 @@
               >
                 <Answer :answerPreview="item" />
               </DynamicItemList>
-            </v-tab-item>
+            </v-window-item>
 
-            <v-tab-item class="pt-2" value="questions">
+            <v-window-item class="pt-2" value="questions">
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadQuestions"
@@ -48,9 +49,9 @@
               >
                 <QuestionPreview :questionPreview="item" />
               </DynamicItemList>
-            </v-tab-item>
+            </v-window-item>
 
-            <v-tab-item class="pt-2" value="articles">
+            <v-window-item class="pt-2" value="articles">
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadArticles"
@@ -59,9 +60,9 @@
               >
                 <ArticlePreview :articlePreview="item" />
               </DynamicItemList>
-            </v-tab-item>
+            </v-window-item>
 
-            <v-tab-item class="pt-2" value="submissions">
+            <v-window-item class="pt-2" value="submissions">
               <DynamicItemList
                 v-slot="{ item }"
                 :loadItems="loadSubmissions"
@@ -70,8 +71,8 @@
               >
                 <SubmissionPreview :submission="item" />
               </DynamicItemList>
-            </v-tab-item>
-          </v-tabs>
+            </v-window-item>
+          </v-window>
       </v-col>
     </v-row>
   </v-container>
@@ -79,8 +80,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useRoute, useRouter } from 'vue-router';
 import { apiPeople } from '@/api/people';
 import { info } from '@/logging';
 
@@ -103,12 +103,13 @@ import UserLink from '@/components/UserLink.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 
-import { dispatchCaptureApiError } from '@/store/main/actions';
-import RegisteredUserOnlyIcon from '@/components/icons/RegisteredUserOnlyIcon.vue';
 import { isEqual, updateHead } from '@/common';
 import UserFeed from '@/components/home/UserFeed.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { useAuth, useResponsive } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -177,7 +178,7 @@ onMounted(async () => {
 });
 
 async function load() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (loggedIn.value) {
       userPublic.value = (await apiPeople.getUserPublic(token.value, handle.value)).data;
       let title = userPublic.value!.full_name || userPublic.value!.handle;
@@ -206,7 +207,7 @@ async function loadAnswers(skip: number, limit: number) {
   let uuid = await getUserUuid();
   if (uuid !== null) {
     info('load answers, uuid = ' + uuid + ' skip = ' + skip.toString());
-    items = (await apiPeople.getAnswersByAuthor(token.value, uuid, skip, limit)).data;
+    items = (await apiPeople.getAnswersByAuthor(uuid, skip, limit)).data;
     info('loadAnswers items length = ' + items.length.toString());
   }
   return items;
@@ -217,17 +218,17 @@ async function loadQuestions(skip: number, limit: number) {
   let uuid = await getUserUuid();
   if (uuid !== null) {
     info('load questions, uuid = ' + uuid + ' skip = ' + skip.toString());
-    items = (await apiPeople.getQuestionsByAuthor(token.value, uuid, skip, limit)).data;
+    items = (await apiPeople.getQuestionsByAuthor(uuid, skip, limit)).data;
   }
   return items;
 }
 
 async function loadSubmissions(skip: number, limit: number) {
   let items: ISubmission[] | null = null;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (userPublic.value !== null) {
       items = (
-        await apiPeople.getSubmissionsByAuthor(token.value, userPublic.value.uuid, skip, limit)
+        await apiPeople.getSubmissionsByAuthor(userPublic.value.uuid, skip, limit)
       ).data;
     }
   });
@@ -240,7 +241,7 @@ async function loadArticles(skip: number, limit: number) {
   let uuid = await getUserUuid();
   if (uuid !== null) {
     info('load articles, uuid = ' + uuid + ' skip = ' + skip.toString());
-    items = (await apiPeople.getArticlesByAuthor(token.value, uuid, skip, limit)).data;
+    items = (await apiPeople.getArticlesByAuthor(uuid, skip, limit)).data;
   }
   return items;
 }

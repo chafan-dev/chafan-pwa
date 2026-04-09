@@ -1,12 +1,12 @@
 <template>
   <v-main>
     <v-container fill-height fluid>
-      <v-layout align-center justify-center>
-        <v-flex >
+      <v-row align="center" justify="center">
+        <v-col>
 
-          <ValidationObserver v-slot="{ handleSubmit, valid }">
+          <Form v-slot="{ handleSubmit, meta }">
 
-            <DebugSpan>valid: {{ valid }}</DebugSpan>
+            <DebugSpan>valid: {{ meta.valid }}</DebugSpan>
 
             <v-card>
 
@@ -17,7 +17,7 @@
                 <v-spacer />
                 <v-btn
                   color="primary"
-                  depressed
+                  variant="flat"
                   @click="handleSubmit(submitArticle)"
                 >
                   提交专栏文章
@@ -50,15 +50,16 @@
                 </v-form>
               </v-card-text>
             </v-card>
-          </ValidationObserver>
-        </v-flex>
-      </v-layout>
+          </Form>
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { Form } from 'vee-validate';
 import { apiArticle } from '@/api/article';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { v4 as uuidv4 } from 'uuid';

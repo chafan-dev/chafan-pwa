@@ -14,8 +14,8 @@
           <div v-if="enableQuestionEditor">
             <v-btn
               class="primary darken-2 mr-1"
-              depressed
-              small
+              variant="tonal"
+              size="small"
               @click="showAskActionDialog = true"
             >
               提问
@@ -25,7 +25,7 @@
             </v-dialog>
           </div>
           <div v-if="enableSubmissionEditor">
-            <v-btn class="mr-1" depressed small @click="showSubmissionActionDialog = true"
+            <v-btn class="mr-1" variant="tonal" size="small" @click="showSubmissionActionDialog = true"
               >新分享</v-btn
             >
             <v-dialog v-model="showSubmissionActionDialog" max-width="500">
@@ -39,15 +39,15 @@
           :fixed-tabs="isDesktop"
           show-arrows
         >
-          <v-tabs-slider />
-          <v-tab v-for="item in tabItems" :key="item.code" :href="'#' + item.code">
+          <v-tab v-for="item in tabItems" :key="item.code" :value="item.code">
             {{ item.text }}
             <span v-if="item.tabExtraCount && site" class="ml-1">
               ({{ item.tabExtraCount(site) }})
             </span>
           </v-tab>
-
-          <v-tab-item value="questions">
+        </v-tabs>
+        <v-window v-model="currentTabItem">
+          <v-window-item value="questions">
             <DynamicItemList
               v-if="readable"
               v-slot="{ item }"
@@ -56,9 +56,9 @@
             >
               <QuestionPreview :questionPreview="item" />
             </DynamicItemList>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="submissions">
+          <v-window-item value="submissions">
             <DynamicItemList
               v-if="readable"
               v-slot="{ item }"
@@ -67,9 +67,9 @@
             >
               <SubmissionPreview :submission="item" />
             </DynamicItemList>
-          </v-tab-item>
+          </v-window-item>
 
-          <v-tab-item value="members">
+          <v-window-item value="members">
             <div v-if="siteProfiles !== null" class="pa-4">
               <v-lazy v-for="profile in siteProfiles" :key="profile.owner.uuid">
                 <UserCard
@@ -81,18 +81,18 @@
               </v-lazy>
             </div>
             <div v-else class="my-4 text-center">仅圈子成员可以查看该内容</div>
-          </v-tab-item>
-        </v-tabs>
+          </v-window-item>
+        </v-window>
       </v-col>
 
       <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'">
         <SiteCard :compactMode="false" :isMember="siteProfile !== null" :site="site" />
       </v-col>
       <v-bottom-sheet v-else>
-        <template v-slot:activator="{ on, attrs }">
-          <div v-bind="attrs" v-on="on" class="bottom-btn">
-            <InfoIcon />
-            <span class="ml-1 grey--text">圈子信息</span>
+        <template v-slot:activator="{ props }">
+          <div v-bind="props" class="bottom-btn">
+            <AppIcon name="Info"  />
+            <span class="ml-1 text-grey">圈子信息</span>
           </div>
         </template>
         <v-sheet class="pa-2">
@@ -105,8 +105,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useRoute, useRouter } from 'vue-router';
 import { api } from '@/api';
 import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interfaces';
 
@@ -116,15 +115,14 @@ import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import SubmissionPreview from '@/components/SubmissionPreview.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 
-import InfoIcon from '@/components/icons/InfoIcon.vue';
-
-import { readNarrowUI } from '@/store/main/getters';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { isEqual, updateHead } from '@/common';
 import { apiSite } from '@/api/site';
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import { useAuth, useResponsive } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -157,7 +155,7 @@ const tabItems = [
   },
 ];
 
-const isNarrowFeedUI = computed(() => readNarrowUI(store));
+const isNarrowFeedUI = computed(() => store.narrowUI);
 
 const readable = computed(() => {
   return site.value && (siteProfile.value !== null || site.value.public_readable);
@@ -197,7 +195,7 @@ onMounted(async () => {
 });
 
 async function load() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     site.value = (await apiSite.getSite(subdomain.value)).data;
     updateHead(route.path, site.value.name, site.value?.description);
 
@@ -232,9 +230,9 @@ async function load() {
 async function loadQuestions(skip: number, limit: number) {
   let items: IQuestionPreview[] | null = null;
   if (siteProfile.value !== null || (site.value && site.value.public_readable)) {
-    await dispatchCaptureApiError(store, async () => {
+    await store.captureApiError(async () => {
       if (site.value) {
-        items = (await apiSite.getSiteQuestions(token.value, site.value.uuid, skip, limit)).data;
+        items = (await apiSite.getSiteQuestions(site.value.uuid, skip, limit)).data;
       }
     });
   }
@@ -244,7 +242,7 @@ async function loadQuestions(skip: number, limit: number) {
 async function loadSubmissions(skip: number, limit: number) {
   let items: ISubmission[] | null = null;
   if (siteProfile.value !== null || (site.value && site.value.public_readable)) {
-    await dispatchCaptureApiError(store, async () => {
+    await store.captureApiError(async () => {
       if (site.value) {
         items = (await apiSite.getSiteSubmissions(token.value, site.value.uuid, skip, limit)).data;
       }

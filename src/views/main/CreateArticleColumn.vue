@@ -1,12 +1,12 @@
 <template>
   <span>
-    <v-btn depressed small @click="dialogNewArticleColumn = true"> 创建新专栏 </v-btn>
+    <v-btn variant="tonal" size="small" @click="dialogNewArticleColumn = true"> 创建新专栏 </v-btn>
     <v-dialog v-model="dialogNewArticleColumn" max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="headline">创建新专栏</span>
+          <span class="text-h5">创建新专栏</span>
           <v-spacer />
-          <CloseIcon @click="dialogNewArticleColumn = false" />
+          <AppIcon name="Close" @click="dialogNewArticleColumn = false"  />
         </v-card-title>
         <v-card-text>
           <v-text-field v-model="newArticleColumn.name" label="专栏名称" required />
@@ -17,8 +17,8 @@
           <v-btn
             :disabled="commitNewArticleColumnIntermediate"
             color="primary"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="commitNewArticleColumn"
             >创建
           </v-btn>
@@ -30,14 +30,13 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { useRouter } from 'vue-router';
 import { IArticleColumn, IArticleColumnCreate } from '@/interfaces';
-import { commitAddNotification } from '@/store/main/mutations';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiArticle } from '@/api/article';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = defineProps<{
   onNewArticleColumn?: (articleColumn: IArticleColumn) => void;
@@ -52,13 +51,13 @@ const commitNewArticleColumnIntermediate = ref(false);
 
 async function commitNewArticleColumn() {
   if (newArticleColumn.name.length === 0) {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '专栏名不能为空',
       color: 'error',
     });
     return;
   }
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     commitNewArticleColumnIntermediate.value = true;
     const response = await apiArticle.createArticleColumn(token.value, newArticleColumn);
     if (props.onNewArticleColumn) {
