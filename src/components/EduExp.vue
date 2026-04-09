@@ -15,9 +15,9 @@ withDefaults(defineProps<{
   <div>
     <template v-if="compact">
       {{ schoolName }} · {{ levelName }}
-      <span v-if="major || enrollYear || graduateYear" class="grey--text">
+      <span v-if="major || enrollYear || graduateYear" class="text-grey">
         (<span v-if="major">{{ major }}</span>
-        <span class="grey--text" v-if="enrollYear || graduateYear">
+        <span class="text-grey" v-if="enrollYear || graduateYear">
           <span v-if="major">, </span>
           <span v-if="enrollYear">{{ enrollYear }} - </span>
           <span v-if="graduateYear">{{ graduateYear }}</span>
@@ -30,7 +30,7 @@ withDefaults(defineProps<{
       <div>
         {{ levelName }} <span v-if="major"> - {{ major }}</span>
       </div>
-      <div class="grey--text" v-if="enrollYear || graduateYear">
+      <div class="text-grey" v-if="enrollYear || graduateYear">
         <span v-if="enrollYear">{{ enrollYear }} - </span>
         <span v-if="graduateYear">{{ graduateYear }}</span
         ><span v-else>在读</span>

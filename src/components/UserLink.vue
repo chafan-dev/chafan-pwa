@@ -1,15 +1,12 @@
 <template>
-  <v-menu
+  <v-menu location="bottom end"
     v-if="clickable"
     :disabled="!enablePopup"
     :open-on-hover="!breakpoint.mobile"
-    bottom
-    offset-y
     open-delay="400"
-    right
   >
-    <template v-slot:activator="{ on, attrs }">
-      <span v-bind="attrs" v-on="on">
+    <template v-slot:activator="{ props }">
+      <span v-bind="props">
         <router-link
           v-if="userPreview"
           :class="theme.userLink.link.classes"

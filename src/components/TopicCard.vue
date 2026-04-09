@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-card-title primary-title>
-      <div class="headline primary--text">话题：{{ topic.name }}</div>
+    <v-card-title>
+      <div class="text-h5 text-primary">话题：{{ topic.name }}</div>
     </v-card-title>
     <v-card-text v-if="topicSubscription">
       <div v-if="parentTopic">
@@ -12,8 +12,8 @@
         <v-btn
           v-if="topicSubscription.subscribed_by_me"
           :disabled="cancelSubscriptionIntermediate"
-          depressed
-          small
+          variant="tonal"
+          size="small"
           @click="cancelSubscription"
         >
           已关注 ({{ topicSubscription.subscription_count }})
@@ -22,8 +22,8 @@
           v-else
           :disabled="subscribeIntermediate"
           color="primary"
-          depressed
-          small
+          variant="flat"
+          size="small"
           @click="subscribe"
         >
           关注 ({{ topicSubscription.subscription_count }})
@@ -37,10 +37,10 @@
 import { ref, onMounted } from 'vue';
 import { apiMe } from '@/api/me';
 import { ITopic, IUserTopicSubscription } from '@/interfaces';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiTopic } from '@/api/topic';
 import { useAuth } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = defineProps<{
   topic: ITopic;
@@ -54,7 +54,7 @@ const subscribeIntermediate = ref(false);
 const parentTopic = ref<ITopic | null>(null);
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const response3 = await apiMe.getTopicSubscription(token.value, props.topic.uuid);
     topicSubscription.value = response3.data;
   });
@@ -64,7 +64,7 @@ onMounted(async () => {
 });
 
 async function cancelSubscription() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (props.topic) {
       cancelSubscriptionIntermediate.value = true;
       const r = await apiMe.unsubscribeTopic(token.value, props.topic.uuid);
@@ -75,7 +75,7 @@ async function cancelSubscription() {
 }
 
 async function subscribe() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (props.topic) {
       subscribeIntermediate.value = true;
       const r = await apiMe.subscribeTopic(token.value, props.topic.uuid);

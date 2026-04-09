@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useDisplay } from 'vuetify';
 import { ISite } from '@/interfaces';
-import PrivateSiteIcon from '@/components/icons/PrivateSiteIcon.vue';
 import SiteCard from '@/components/SiteCard.vue';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const display = useDisplay();
 
 function hashCode(str: string) {
   let hash = 0,
@@ -35,37 +37,37 @@ const hotness = computed(() =>
 );
 
 const color = computed(() => {
+  // Material Design lighten-5 hex values (matching Vuetify 2 behavior)
   const colors = [
-    'brown',
-    'grey',
-    'yellow',
-    'blue',
-    'green',
-    'purple',
-    'indigo',
-    'cyan',
-    'teal',
-    'amber',
-    'blue-grey',
+    '#EFEBE9', // brown lighten-5
+    '#FAFAFA', // grey lighten-5
+    '#FFFDE7', // yellow lighten-5
+    '#E3F2FD', // blue lighten-5
+    '#E8F5E9', // green lighten-5
+    '#F3E5F5', // purple lighten-5
+    '#E8EAF6', // indigo lighten-5
+    '#E0F7FA', // cyan lighten-5
+    '#E0F2F1', // teal lighten-5
+    '#FFF8E1', // amber lighten-5
+    '#ECEFF1', // blue-grey lighten-5
   ];
-  return colors[hashCode(props.site.name) % colors.length] + ' lighten-5';
+  return colors[Math.abs(hashCode(props.site.name)) % colors.length];
 });
 </script>
 
 <template>
-  <v-menu :open-on-hover="!$vuetify.breakpoint.mobile" offset-y open-delay="600" right top>
-    <template v-slot:activator="{ on, attrs }">
+  <v-menu location="top end" :open-on-hover="!display.mobile" open-delay="600">
+    <template v-slot:activator="{ props }">
       <v-btn
-        v-bind="attrs"
-        v-on="on"
+        v-bind="props"
         :color="color"
         :to="'/sites/' + site.subdomain"
         class="mr-1 mt-1"
-        depressed
-        small
+        variant="flat"
+        size="small"
       >
         {{ site.name }}
-        <PrivateSiteIcon v-if="site.permission_type === 'private'" class="ml-1" />
+        <AppIcon name="PrivateSite" v-if="site.permission_type === 'private'" class="ml-1"  />
         <span v-if="showHotness" class="ml-1">({{ hotness }})</span>
       </v-btn>
     </template>

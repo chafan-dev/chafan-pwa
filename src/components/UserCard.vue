@@ -21,14 +21,14 @@
           </router-link>
         </div>
 
-        <div v-if="userPreview.personal_introduction" class="secondary--text text-caption">
+        <div v-if="userPreview.personal_introduction" class="text-secondary text-caption">
           <span>{{ shortIntro(userPreview.personal_introduction) }}</span>
         </div>
 
         <div v-if="follows">
           <v-row class="compact-row">
             <v-col class="compact-col">
-              <span v-if="follows.followers_count" class="text-caption mr-2 grey--text"
+              <span v-if="follows.followers_count" class="text-caption mr-2 text-grey"
                 >{{ follows.followers_count }}关注者
               </span>
             </v-col>
@@ -36,7 +36,7 @@
 
           <v-row class="compact-row" v-if="userPreview.social_annotations.follow_follows">
             <v-col class="compact-col text-caption">
-              <v-chip color="green lighten-5" x-small label>
+              <v-chip color="green lighten-5" size="x-small" label>
                 我关注的人中有{{ userPreview.social_annotations.follow_follows }}人也关注了TA
               </v-chip>
             </v-col>
@@ -48,8 +48,8 @@
                 v-if="follows.followed_by_me"
                 :disabled="cancelFollowIntermediate"
                 class="mt-1 mr-1"
-                depressed
-                small
+                variant="tonal"
+                size="small"
                 @click="cancelFollow"
               >
                 取消关注
@@ -60,8 +60,8 @@
                 :disabled="followIntermediate"
                 class="mt-1 mr-1"
                 color="primary"
-                depressed
-                small
+                variant="flat"
+                size="small"
                 @click="follow"
               >
                 关注
@@ -76,8 +76,8 @@
               <v-btn
                 :disabled="privateMessageIntermediate"
                 class="mt-1 mr-1"
-                depressed
-                small
+                variant="tonal"
+                size="small"
                 @click="privateMessage"
               >
                 私信
@@ -95,7 +95,7 @@
         <div class="d-flex">
           <span>关注更多类似用户：</span>
           <v-spacer />
-          <CloseIcon @click="recommendedUsers = []" />
+          <AppIcon name="Close" @click="recommendedUsers = []"  />
         </div>
         <v-row class="mt-1">
           <v-col v-if="recommendedUsers[0]">
@@ -116,17 +116,16 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { useRouter } from 'vue-router';
 import { IUserFollows, IUserPreview } from '@/interfaces';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
-import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { apiPeople } from '@/api/people';
 import { api } from '@/api';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import Avatar from '@/components/Avatar.vue';
 import { useAuth, useTheme } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = withDefaults(
   defineProps<{
@@ -182,7 +181,7 @@ onMounted(async () => {
   if (props.userPreview.follows) {
     follows.value = props.userPreview.follows;
   } else {
-    await dispatchCaptureApiError(store, async () => {
+    await store.captureApiError(async () => {
       follows.value = (await apiMe.getUserFollows(token.value, props.userPreview.uuid)).data;
     });
   }
@@ -191,7 +190,7 @@ onMounted(async () => {
 
 async function follow() {
   if (!currentUserId) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   followIntermediate.value = true;
@@ -205,7 +204,7 @@ async function follow() {
 
 async function cancelFollow() {
   cancelFollowIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     follows.value = (await apiMe.cancelFollowUser(token.value, props.userPreview.uuid)).data;
     cancelFollowIntermediate.value = false;
   });
@@ -213,11 +212,11 @@ async function cancelFollow() {
 
 async function privateMessage() {
   if (!currentUserId) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   privateMessageIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const r0 = await api.createChannel(token.value, {
       private_with_user_uuid: props.userPreview.uuid,
     });

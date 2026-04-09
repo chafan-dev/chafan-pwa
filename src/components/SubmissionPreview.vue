@@ -1,6 +1,6 @@
 <template>
   <div :class="theme.feed.submissionPreview.classes">
-    <div class="title word-break-normal">
+    <div class="text-h6 word-break-normal">
       <router-link
         :class="theme.feed.submissionPreview.link.classes"
         :to="'/submissions/' + submission.uuid"
@@ -8,7 +8,7 @@
         {{ submission.title }}
       </router-link>
     </div>
-    <div v-if="shortDesc" class="grey--text text-body-2">
+    <div v-if="shortDesc" class="text-grey text-body-2">
       {{ shortDesc }}
     </div>
     <div :class="theme.feed.submissionPreview.stats.classes">
@@ -22,15 +22,15 @@
       <div class="align-self-center pl-2">
         <router-link
           :to="'/submissions/' + submission.uuid"
-          class="d-flex align-center black--text text-caption text-decoration-none"
+          class="d-flex align-center text-black text-caption text-decoration-none"
         >
-          <CommentsIcon class="mr-1 mt-1" small />
+          <AppIcon name="Comments" class="mr-1 mt-1" size="small"  />
           {{ recursiveCommentsCount(submission.comments) }}
         </router-link>
       </div>
       <v-spacer />
       <div v-if="submission.url">
-        <LinkIcon small />
+        <AppIcon name="Link" size="small"  />
         <a :href="submission.url" class="text-decoration-none text-caption" target="_blank">
           {{ shortUrl(submission.url) }}
         </a>
@@ -43,13 +43,11 @@
 import { computed } from 'vue';
 import { ISubmission, ISubmissionUpvotes, IComment } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
-import LinkIcon from '@/components/icons/LinkIcon.vue';
-import UpvoteIcon from '@/components/icons/UpvoteIcon.vue';
-import CommentsIcon from '@/components/icons/CommentsIcon.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 import SubmissionUpvotes from '@/components/submission/SubmissionUpvotes.vue';
 import { useAuth, useTheme, useResponsive } from '@/composables';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 const props = defineProps<{
   submission: ISubmission;

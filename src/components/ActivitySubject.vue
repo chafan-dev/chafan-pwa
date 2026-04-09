@@ -2,7 +2,7 @@
   <span>
     <template v-if="activity.event.content.subjects">
       <UserLink :userPreview="activity.event.content.subjects[0]" />
-      <a class="text-decoration-none grey--text text--darken-2" @click="usersDialog = true">
+      <a class="text-decoration-none text-grey" @click="usersDialog = true">
         等{{ uniqueSubjects.length }}人
       </a>
     </template>
@@ -16,7 +16,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn depressed primary small @click="usersDialog = false">隐藏</v-btn>
+          <v-btn variant="tonal" primary size="small" @click="usersDialog = false">隐藏</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

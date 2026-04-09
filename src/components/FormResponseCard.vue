@@ -1,7 +1,6 @@
 <template>
   <v-card flat>
-    <v-card-title
-      >表格：
+    <v-card-title>表格：
       <a :href="`/forms/${formResponse.form.uuid}`" class="text-decoration-none">
         {{ formResponse.form.title }}
       </a>
@@ -9,7 +8,7 @@
     <div v-if="welcomeTestFormUUID === formResponse.form.uuid" class="ma-2">
       <div class="ml-2">
         感谢你花时间回答「新手上路问卷」！
-        <v-btn color="primary" depressed small @click="checkWelcomeTestScoreAndClaimRewards">
+        <v-btn color="primary" variant="flat" size="small" @click="checkWelcomeTestScoreAndClaimRewards">
           查看成绩和领取奖励
         </v-btn>
       </div>
@@ -19,11 +18,11 @@
         max-width="300"
       >
         <v-card>
-          <v-card-title primary-title>
-            <div v-if="claimWelcomeTestScoreMsg.success" class="headline primary--text">
+          <v-card-title>
+            <div v-if="claimWelcomeTestScoreMsg.success" class="text-h5 text-primary">
               考试及格，发放奖励
             </div>
-            <div v-else class="headline primary--text">考试不及格，请继续尝试</div>
+            <div v-else class="text-h5 text-primary">考试不及格，请继续尝试</div>
           </v-card-title>
           <v-card-text>
             <div class="ma-2">
@@ -38,8 +37,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn v-if="claimWelcomeTestScoreMsg.success" depressed small to="/"> 回到首页</v-btn>
-            <v-btn v-else depressed small @click="retryWelcomeTest">重试</v-btn>
+            <v-btn v-if="claimWelcomeTestScoreMsg.success" variant="tonal" size="small" to="/"> 回到首页</v-btn>
+            <v-btn v-else variant="tonal" size="small" @click="retryWelcomeTest">重试</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -50,7 +49,7 @@
         :key="field.unique_name"
         class="ma-2 pa-4"
         flat
-        outlined
+        variant="outlined"
       >
         <span>{{ field.field_content.desc }}</span>
         <div v-if="field.field_content.field_type_name === 'text_response_field'">
@@ -64,7 +63,7 @@
             v-for="choice in field.field_content.selected_choices"
             :key="choice"
             class="ma-1"
-            small
+            size="small"
             >{{ choice }}
           </v-chip>
         </div>
@@ -75,7 +74,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router/composables';
+import { useRouter } from 'vue-router';
 import { api } from '@/api';
 import { IClaimWelcomeTestScoreMsg, IFormResponse } from '@/interfaces';
 import { useAuth, useEnv } from '@/composables';

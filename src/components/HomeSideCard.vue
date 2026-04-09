@@ -2,12 +2,12 @@
   <div>
     <div class="mb-2">
       <div class="d-flex align-center justify-space-between mb-4">
-        <div class="headline">
-          <div class="headline primary--text">我的圈子</div>
+        <div class="text-h5">
+          <div class="text-h5 text-primary">我的圈子</div>
         </div>
 
         <div class="d-flex mt-1">
-          <v-btn depressed small @click="showCreateSiteDialog = true">创建圈子</v-btn>
+          <v-btn variant="tonal" size="small" @click="showCreateSiteDialog = true">创建圈子</v-btn>
 
           <v-dialog v-model="showCreateSiteDialog" max-width="500">
             <CreateSiteCard />
@@ -28,14 +28,14 @@
             v-if="showAllSiteProfilesDialogButton"
             class="mt-1 mr-1"
             color="info"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="showAllSiteProfilesDialog = true"
           >
-            <MoreIcon />
+            <AppIcon name="More"  />
             更多
           </v-btn>
-          <v-btn class="mt-1" color="info" depressed outlined small to="/explore?tab=sites">
+          <v-btn class="mt-1" color="info" variant="outlined" size="small" to="/explore?tab=sites">
             所有圈子
           </v-btn>
         </div>
@@ -56,7 +56,7 @@
 
     <v-divider />
     <div class="my-3">
-      <div class="headline">置顶问题</div>
+      <div class="text-h5">置顶问题</div>
       <v-skeleton-loader v-if="loadingPinnedQuestions" type="paragraph" />
       <ul v-else class="my-3">
         <li v-for="question in questions" :key="question.uuid">
@@ -93,7 +93,7 @@
           >Discord 闲聊群</a
         >
       </div>
-      <div v-if="buildInfo" class="caption grey--text">
+      <div v-if="buildInfo" class="caption text-grey">
         <pre class="cursor-pointer" @click="expandDebugInfo = !expandDebugInfo">
 v{{ buildInfo.commitHashShort }}</pre
         >
@@ -113,13 +113,13 @@ import { IQuestionPreview, IUserSiteProfile } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSiteCard from '@/components/CreateSiteCard.vue';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiDiscovery } from '@/api/discovery';
 import { apiMe } from '@/api/me';
-import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { buildInfo } from '@/env';
 import { useAuth, useResponsive } from '@/composables';
-import store from '@/store';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const { token } = useAuth();
 const { isDesktop } = useResponsive();
@@ -135,7 +135,7 @@ const expandDebugInfo = ref(false);
 const showCreateSiteDialog = ref(false);
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     questions.value = (await apiDiscovery.getPinnedQuestions()).data;
     loadingPinnedQuestions.value = false;
     if (token.value) {

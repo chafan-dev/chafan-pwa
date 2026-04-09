@@ -1,6 +1,6 @@
 <template>
   <div v-if="site">
-    <div class="primary--text" :class="{ headline: !compactMode, title: compactMode }">
+    <div class="text-primary" :class="{ 'text-h5': !compactMode, 'text-h6': compactMode }">
       <a :href="`/sites/${site.subdomain}`" target="_blank" class="text-decoration-none">{{
         site.name
       }}</a>
@@ -33,13 +33,13 @@
       <div v-if="notMember" class="mt-2">
         <v-skeleton-loader v-if="loading" type="button" />
         <template v-else>
-          <v-btn v-if="siteApplied" depressed disabled small>申请审核中</v-btn>
+          <v-btn v-if="siteApplied" variant="tonal" disabled size="small">申请审核中</v-btn>
           <v-btn
             v-else
             :disabled="applyToJoinIntermediate"
             color="primary"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="applyToJoin"
           >
             加入
@@ -51,19 +51,19 @@
     <div v-if="!notMember" class="d-flex mt-1 mb-1">
       <Invite :site="site" />
       <NewInviteLinkBtn :site="site" class="ml-2" />
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" class="ml-2" depressed small>
-            <SettingsIcon small />
+      <v-menu location="bottom">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" class="ml-2" variant="tonal" size="small">
+            <AppIcon name="Settings" size="small"  />
             <span v-if="isDesktop" class="ml-1">设置</span>
           </v-btn>
         </template>
         <v-list>
           <v-list-item :disabled="intermediate" @click="leaveSite">
-            <v-list-item-icon>
-              <DoorIcon />
-            </v-list-item-icon>
-            <v-list-item-content>离开</v-list-item-content>
+            <template v-slot:prepend>
+              <AppIcon name="Door"  />
+            </template>
+            <div>离开</div>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -89,8 +89,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { useRouter } from 'vue-router';
 import { api } from '@/api';
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
@@ -100,22 +99,16 @@ import Invite from '@/components/Invite.vue';
 import NewInviteLinkBtn from '@/components/NewInviteLinkBtn.vue';
 import SiteJoinConditions from '@/components/SiteJoinConditions.vue';
 import Viewer from '@/components/Viewer.vue';
-import {
-  dispatchCaptureApiError,
-  dispatchCaptureApiErrorWithErrorHandler,
-} from '@/store/main/actions';
-import { readUserProfile } from '@/store/main/getters';
-import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import { AxiosError } from 'axios';
 
-import DoorIcon from '@/components/icons/DoorIcon.vue';
-import SettingsIcon from '@/components/icons/SettingsIcon.vue';
 import { apiSite } from '@/api/site';
 import { INSUFFICIENT_KARMA_TO_JOIN_SITE, MISSING_REQUIRED_SECONDARY_EMAIL } from '@/common';
 import SiteBtn from '@/components/SiteBtn.vue';
-import RefreshIcon from '@/components/icons/RefreshIcon.vue';
 import RotationCard from '@/components/base/RotationCard.vue';
 import { useAuth, useResponsive, useErrorHandling } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = withDefaults(
   defineProps<{
@@ -142,10 +135,10 @@ const intermediate = ref(false);
 const relatedSites = ref<ISite[]>([]);
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     if (props.site && props.site.moderator !== undefined && props.site.moderator.handle) {
       if (props.isMember === undefined) {
-        const userProfile = readUserProfile(store);
+        const userProfile = store.userProfile;
         if (userProfile) {
           const siteProfile = (
             await api.getUserSiteProfile(token.value, props.site.uuid, userProfile.uuid)
@@ -176,10 +169,10 @@ onMounted(async () => {
 
 async function applyToJoin() {
   if (!token.value) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
-  await dispatchCaptureApiErrorWithErrorHandler(store, {
+  await store.captureApiErrorWithErrorHandler({
     action: async () => {
       if (props.site !== null && props.site.moderator && !props.isMember) {
         applyToJoinIntermediate.value = true;
@@ -209,7 +202,7 @@ async function applyToJoin() {
 }
 
 async function leaveSite() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     intermediate.value = true;
     await apiSite.leaveSite(token.value, props.site.uuid);
     intermediate.value = false;

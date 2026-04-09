@@ -1,8 +1,7 @@
 <template>
   <div>
-    <template>
       <div v-if="userPublic.about_content">
-        <span class="subheading secondary--text text--lighten-3">关于我：</span>
+        <span class="text-subtitle-1 text-secondary">关于我：</span>
         <Viewer :content="userPublic.about_content" />
       </div>
 
@@ -16,14 +15,14 @@
         "
         class="my-3"
       >
-        <span class="subheading secondary--text text--lighten-3"> 链接： </span>
+        <span class="text-subtitle-1 text-secondary"> 链接： </span>
         <a
           v-if="userPublic.homepage_url"
           :href="userPublic.homepage_url"
           class="text-decoration-none"
           target="_blank"
         >
-          <WebIcon />
+          <AppIcon name="Web"  />
           个人主页
         </a>
         <a
@@ -32,7 +31,7 @@
           class="text-decoration-none"
           target="_blank"
         >
-          <GithubIcon />
+          <AppIcon name="Github"  />
           Github
         </a>
         <a
@@ -41,7 +40,7 @@
           class="text-decoration-none"
           target="_blank"
         >
-          <TwitterIcon />
+          <AppIcon name="Twitter"  />
           Twitter
         </a>
         <a
@@ -50,7 +49,7 @@
           class="text-decoration-none"
           target="_blank"
         >
-          <LinkedinIcon />
+          <AppIcon name="Linkedin"  />
           Linkedin
         </a>
         <a
@@ -66,7 +65,7 @@
 
       <template v-if="userPublic.profession_topics && userPublic.profession_topics.length > 0">
         <div class="my-3">
-          <div class="subheading secondary--text text--lighten-3">所在行业</div>
+          <div class="text-subtitle-1 text-secondary">所在行业</div>
           <div>
             <v-chip-group :column="!isDesktop">
               <TopicChip
@@ -81,10 +80,10 @@
 
       <template v-if="eduExps && eduExps.length > 0">
         <div class="my-3">
-          <div class="subheading secondary--text text--lighten-3">教育经历</div>
+          <div class="text-subtitle-1 text-secondary">教育经历</div>
           <EduExp
             v-for="(eduExp, index) in eduExps"
-            :key="'edu-' + index"
+            :key="'edu-' + eduExp.school_topic.uuid"
             :compact="true"
             :major="eduExp.major"
             :graduate-year="eduExp.graduate_year"
@@ -98,10 +97,10 @@
 
       <template v-if="workExps && workExps.length > 0">
         <div class="my-3">
-          <div class="subheading secondary--text text--lighten-3">工作经历</div>
+          <div class="text-subtitle-1 text-secondary">工作经历</div>
           <WorkExp
             v-for="(workExp, index) in workExps"
-            :key="'work-' + index"
+            :key="'work-' + workExp.company_topic.uuid"
             :compact="true"
             :position-name="workExp.position_topic.name"
             :company-name="workExp.company_topic.name"
@@ -114,7 +113,7 @@
         v-if="userPublic.residency_topics && userPublic.residency_topics.length > 0"
         class="my-3"
       >
-        <div class="subheading secondary--text text--lighten-3">居住过的地方</div>
+        <div class="text-subtitle-1 text-secondary">居住过的地方</div>
         <div>
           <v-chip-group :column="!isDesktop">
             <TopicChip
@@ -129,7 +128,7 @@
       <template v-if="sites !== null">
         <div v-if="sites.length > 0" class="my-3">
           <div>
-            <div class="subheading secondary--text text--lighten-3 mr-2">加入的圈子：</div>
+            <div class="text-subtitle-1 text-secondary mr-2">加入的圈子：</div>
             <SiteBtn v-for="site in sites" :key="site.uuid" :site="site" />
           </div>
         </div>
@@ -140,7 +139,7 @@
         v-if="userPublic.subscribed_topics && userPublic.subscribed_topics.length > 0"
         class="my-3"
       >
-        <div class="subheading secondary--text text--lighten-3">关注的话题：</div>
+        <div class="text-subtitle-1 text-secondary">关注的话题：</div>
         <v-chip-group>
           <TopicChip
             v-for="topic in userPublic.subscribed_topics"
@@ -152,13 +151,12 @@
       </div>
 
       <div class="pt-2">
-        <span class="subheading secondary--text text--lighten-3">加入茶饭的日子：</span>
+        <span class="text-subtitle-1 text-secondary">加入茶饭的日子：</span>
         <span>{{ $dayjs.utc(userPublic.created_at).local().format('YYYY-MM-DD') }}</span>
       </div>
       <div class="my-2" v-if="userPublic.contributions && userPublic.contributions.length > 0">
         <ContribGraphs :data="userPublic.contributions" />
       </div>
-    </template>
 
     <div
       :class="{
@@ -171,8 +169,8 @@
       <v-btn
         v-if="currentUserId === userPublic.uuid"
         color="primary"
-        depressed
-        small
+        variant="flat"
+        size="small"
         to="/profile/edit"
       >
         编辑
@@ -190,10 +188,6 @@ import {
   IUserWorkExperience,
 } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
-import TwitterIcon from '@/components/icons/TwitterIcon.vue';
-import WebIcon from '@/components/icons/WebIcon.vue';
-import GithubIcon from '@/components/icons/GithubIcon.vue';
-import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
 import { apiPeople } from '@/api/people';
 import EduExp from '@/components/EduExp.vue';
 import WorkExp from '@/components/WorkExp.vue';
@@ -202,6 +196,7 @@ import TopicChip from '@/components/widgets/TopicChip.vue';
 import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
 import Viewer from '@/components/Viewer.vue';
 import { useAuth, useResponsive } from '@/composables';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 const props = defineProps<{
   userPublic: IUserPublic;

@@ -1,19 +1,19 @@
 <template>
   <div class="pa-2">
-    <v-chip v-if="!articlePreview.is_published" class="ml-2" small>初稿</v-chip>
-    <div class="title word-break-normal">
+    <v-chip v-if="!articlePreview.is_published" class="ml-2" size="small">初稿</v-chip>
+    <div class="text-h6 word-break-normal">
       <router-link :to="'/articles/' + articlePreview.uuid" class="text-decoration-none">
         {{ articlePreview.title }}
       </router-link>
     </div>
     <div
       v-if="articlePreview.body_text && articlePreview.body_text.trim()"
-      class="grey--text text-body-2 mb-1"
+      class="text-grey text-body-2 mb-1"
     >
       {{ shortBodyText }}
     </div>
     <div v-if="showColumnName" class="d-flex">
-      <span class="grey--text text-caption">
+      <span class="text-grey text-caption">
         发表于专栏：
         <router-link
           :to="`/article-columns/${articlePreview.article_column.uuid}`"

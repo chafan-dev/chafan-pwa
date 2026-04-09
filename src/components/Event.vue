@@ -1,5 +1,5 @@
 <template>
-  <span class="event-span body-2" @click="onClick">
+  <span class="event-span text-body-2" @click="onClick">
     <i18n :path="'verb.' + event.content.verb">
       <UserLink
         v-if="event.content.subject && event.content.subject.uuid !== currentUserId"

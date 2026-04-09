@@ -2,7 +2,7 @@
   <div :class="theme.baseCard.classKey" class="pa-3">
     <template v-if="isDesktop">
       <v-row>
-        <v-col class="col-auto pb-4 px-4">
+        <v-col cols="auto" class="pb-4 px-4">
           <div v-if="avatarURL" class="pa-3 text-center">
             <router-link :to="`/users/${userPreview.handle}`">
               <Avatar :avatar-url="avatarURL" size="120" />
@@ -18,10 +18,9 @@
                 有{{ follows.followers_count }}个关注者
                 <v-dialog v-model="showFollowersDialog" max-width="800">
                   <v-card class="pt-6">
-                    <v-card-title
-                      >关注TA的人
+                    <v-card-title>关注TA的人
                       <v-spacer />
-                      <CloseIcon @click="showFollowersDialog = false" />
+                      <AppIcon name="Close" @click="showFollowersDialog = false"  />
                     </v-card-title>
                     <v-card-text>
                       <DynamicItemList
@@ -48,10 +47,9 @@
                 关注了{{ follows.followed_count }}个人
                 <v-dialog v-model="showFollowedDialog" max-width="800">
                   <v-card class="pt-6">
-                    <v-card-title
-                      >TA关注的人
+                    <v-card-title>TA关注的人
                       <v-spacer />
-                      <CloseIcon @click="showFollowedDialog = false" />
+                      <AppIcon name="Close" @click="showFollowedDialog = false"  />
                     </v-card-title>
                     <v-card-text>
                       <DynamicItemList
@@ -76,8 +74,8 @@
                 v-if="follows.followed_by_me"
                 :disabled="cancelFollowIntermediate"
                 class="mt-1 mr-1"
-                depressed
-                small
+                variant="tonal"
+                size="small"
                 @click="cancelFollow"
               >
                 取消关注
@@ -88,8 +86,8 @@
                 :disabled="followIntermediate"
                 class="mt-1 mr-1"
                 color="primary"
-                depressed
-                small
+                variant="flat"
+                size="small"
                 @click="follow"
               >
                 关注
@@ -104,8 +102,8 @@
               <v-btn
                 :disabled="privateMessageIntermediate"
                 class="mt-1 mr-1"
-                depressed
-                small
+                variant="tonal"
+                size="small"
                 @click="privateMessage"
               >
                 私信
@@ -121,7 +119,7 @@
 
           <div class="d-flex">
             <v-spacer />
-            <span class="text-caption grey--text mt-2" v-if="userPublic.profile_view_times">
+            <span class="text-caption text-grey mt-2" v-if="userPublic.profile_view_times">
               这个主页被浏览了{{ userPublic.profile_view_times }}次
             </span>
           </div>
@@ -146,10 +144,9 @@
               有{{ follows.followers_count }}个关注者
               <v-dialog v-model="showFollowersDialog" max-width="800">
                 <v-card class="pt-6">
-                  <v-card-title
-                    >关注TA的人
+                  <v-card-title>关注TA的人
                     <v-spacer />
-                    <CloseIcon @click="showFollowersDialog = false" />
+                    <AppIcon name="Close" @click="showFollowersDialog = false"  />
                   </v-card-title>
                   <v-card-text>
                     <DynamicItemList
@@ -176,10 +173,9 @@
               关注了{{ follows.followed_count }}个人
               <v-dialog v-model="showFollowedDialog" max-width="800">
                 <v-card class="pt-6">
-                  <v-card-title
-                    >TA关注的人
+                  <v-card-title>TA关注的人
                     <v-spacer />
-                    <CloseIcon @click="showFollowedDialog = false" />
+                    <AppIcon name="Close" @click="showFollowedDialog = false"  />
                   </v-card-title>
                   <v-card-text>
                     <DynamicItemList
@@ -204,8 +200,8 @@
               v-if="follows.followed_by_me"
               :disabled="cancelFollowIntermediate"
               class="mt-1 mr-1"
-              depressed
-              small
+              variant="tonal"
+              size="small"
               @click="cancelFollow"
             >
               取消关注
@@ -216,8 +212,8 @@
               :disabled="followIntermediate"
               class="mt-1 mr-1"
               color="primary"
-              depressed
-              small
+              variant="flat"
+              size="small"
               @click="follow"
             >
               关注
@@ -232,8 +228,8 @@
             <v-btn
               :disabled="privateMessageIntermediate"
               class="mt-1 mr-1"
-              depressed
-              small
+              variant="tonal"
+              size="small"
               @click="privateMessage"
             >
               私信
@@ -247,7 +243,7 @@
 
         <div class="d-flex">
           <v-spacer />
-          <span class="text-caption grey--text mt-2" v-if="userPublic.profile_view_times">
+          <span class="text-caption text-grey mt-2" v-if="userPublic.profile_view_times">
             这个主页被浏览了{{ userPublic.profile_view_times }}次
           </span>
         </div>
@@ -258,22 +254,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { useRouter } from 'vue-router';
 import { IUserFollows, IUserPreview, IUserPublic } from '@/interfaces';
 import { api } from '@/api';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { apiMe } from '@/api/me';
-import { commitSetShowLoginPrompt } from '@/store/main/mutations';
 import UserProfileDetails from '@/components/UserProfileDetails.vue';
 import UserNameHeadline from '@/components/UserNameHeadline.vue';
 import UserGrid from '@/components/UserGrid.vue';
 import { apiPeople } from '@/api/people';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import Avatar from '@/components/Avatar.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import UserCard from '@/components/UserCard.vue';
 import { useAuth, useResponsive, useTheme } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = defineProps<{
   userPreview: IUserPreview;
@@ -318,7 +313,7 @@ onMounted(async () => {
   if (props.userPublic?.follows) {
     follows.value = props.userPublic.follows;
   } else {
-    await dispatchCaptureApiError(store, async () => {
+    await store.captureApiError(async () => {
       follows.value = (await apiMe.getUserFollows(token.value, props.userPreview.uuid)).data;
     });
   }
@@ -327,7 +322,7 @@ onMounted(async () => {
 
 async function follow() {
   if (!currentUserId) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   followIntermediate.value = true;
@@ -337,7 +332,7 @@ async function follow() {
 
 async function cancelFollow() {
   cancelFollowIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     follows.value = (await apiMe.cancelFollowUser(token.value, props.userPreview.uuid)).data;
     cancelFollowIntermediate.value = false;
   });
@@ -345,11 +340,11 @@ async function cancelFollow() {
 
 async function privateMessage() {
   if (!currentUserId) {
-    commitSetShowLoginPrompt(store, true);
+    store.showLoginPrompt = true;
     return;
   }
   privateMessageIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const r0 = await api.createChannel(token.value, {
       private_with_user_uuid: props.userPreview.uuid,
     });
@@ -367,12 +362,10 @@ async function showFollowed() {
 }
 
 async function loadFollowed(skip: number, limit: number) {
-  console.log('loadFollowed...');
   return (await apiPeople.getUserFollowed(token.value, props.userPreview.uuid, skip, limit)).data;
 }
 
 async function loadFollowers(skip: number, limit: number) {
-  console.log('loadFollowers...');
   return (await apiPeople.getUserFollowers(token.value, props.userPreview.uuid, skip, limit)).data;
 }
 </script>
