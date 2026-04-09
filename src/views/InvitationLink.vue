@@ -1,8 +1,8 @@
 <template>
   <v-main>
     <v-container fill-height fluid>
-      <v-layout align-center justify-center>
-        <v-flex md6 sm8 xs12>
+      <v-row align="center" justify="center">
+        <v-col md="6" sm="8" cols="12">
           <v-card v-if="invitationLink || errorMsg" class="elevation-12">
             <v-card-title v-if="invitationLink">
               <UserLink :userPreview="invitationLink.inviter" />
@@ -26,7 +26,7 @@
             </v-card-title>
             <v-divider />
             <v-card-text v-if="invitationLink">
-              <div class="title text-center black--text mb-1">
+              <div class="text-h6 text-center text-black mb-1">
                 邀请码：{{ invitationLink.uuid }}
               </div>
               <div class="text-center">
@@ -39,7 +39,7 @@
             </v-card-text>
             <v-card-actions v-if="invitationLink">
               <template v-if="invitationLink.valid">
-                <span v-if="!loggedIn" class="grey--text"
+                <span v-if="!loggedIn" class="text-grey"
                   >已注册？ 请<a class="text-decoration-none" href="/login">登录</a>后刷新本页面
                 </span>
                 <v-spacer />
@@ -50,7 +50,7 @@
                 </template>
                 <v-btn
                   v-else
-                  depressed
+                  variant="flat"
                   :to="`/signup?invitation_link_uuid=${invitationLink.uuid}`"
                   color="primary"
                 >
@@ -69,24 +69,23 @@
             </v-card-actions>
           </v-card>
           <v-skeleton-loader v-else type="card" />
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { useRoute, useRouter } from 'vue-router';
 import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import { api } from '@/api';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { translateErrorMsgCN } from '@/common';
-import { commitAddNotification } from '@/store/main/mutations';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -98,11 +97,11 @@ const errorMsg = ref<string | null>(null);
 const uuid = computed(() => route.params.uuid as string);
 
 onMounted(async () => {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const response = await api.getInvitationLink(token.value, uuid.value);
     invitationLink.value = response.data;
     if (!invitationLink.value?.valid) {
-      commitAddNotification(store, {
+      store.notifications.push({
         content: translateErrorMsgCN('Invalid invitation link'),
         color: 'error',
       });
@@ -111,7 +110,7 @@ onMounted(async () => {
 });
 
 async function joinSite() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     await api.joinSiteWithInvitationLink(token.value, invitationLink.value!.uuid);
     const siteDomain = invitationLink.value!.invited_to_site!.subdomain;
     await router.push(`/sites/${siteDomain}`);

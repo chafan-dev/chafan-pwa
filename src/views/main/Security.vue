@@ -1,42 +1,38 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': $vuetify.breakpoint.mdAndUp }">
-        <ValidationObserver v-slot="{ handleSubmit, reset }">
-          <v-card class="ma-3 pa-3" outlined>
-            <v-card-title primary-title>
-              <div class="headline primary--text">更新密码</div>
+      <v-col :class="{ 'col-8': display.mdAndUp }">
+        <Form v-slot="{ handleSubmit, resetForm }">
+          <v-card class="ma-3 pa-3" variant="outlined">
+            <v-card-title>
+              <div class="text-h5 text-primary">更新密码</div>
             </v-card-title>
             <v-card-text>
-              <template>
                 <v-form>
-                  <ValidationProvider
+                  <Field
                     v-slot="{ errors }"
                     name="password"
                     rules="required|password|password1:@confirm"
                   >
-                    <v-text-field v-model="password" label="密码" type="password" />
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                    <v-text-field v-model="password" label="密码" type="password" :error-messages="errors" />
+                  </Field>
 
-                  <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
-                    <v-text-field v-model="confirmation" label="确认密码" type="password" />
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  <Field v-slot="{ errors }" name="confirm" rules="required" v-model="confirmation">
+                    <v-text-field v-model="confirmation" label="确认密码" type="password" :error-messages="errors" />
+                  </Field>
                 </v-form>
-              </template>
             </v-card-text>
             <v-card-actions>
               <v-spacer />
               <v-btn
                 :disabled="intermediate"
                 color="primary"
-                depressed
-                small
+                variant="flat"
+                size="small"
                 @click="
                   () => {
                     handleSubmit(submit);
-                    reset();
+                    resetForm();
                   }
                 "
               >
@@ -45,34 +41,34 @@
               </v-btn>
             </v-card-actions>
           </v-card>
-        </ValidationObserver>
+        </Form>
 
-        <ValidationObserver v-slot="{ handleSubmit, valid }">
-          <v-card :loading="!userProfile" class="ma-3 pa-3" outlined>
-            <v-card-title primary-title>
-              <div class="headline primary--text">管理登录方式</div>
+        <Form v-slot="{ handleSubmit, meta }">
+          <v-card :loading="!userProfile" class="ma-3 pa-3" variant="outlined">
+            <v-card-title>
+              <div class="text-h5 text-primary">管理登录方式</div>
             </v-card-title>
             <div v-if="userProfile" class="pa-4">
               <div>
                 <div class="mb-2">
                   <div>
-                    <EmailIcon />
+                    <AppIcon name="Email"  />
                     邮箱地址：{{ userProfile.email }}
-                    <v-chip color="primary" small>主要</v-chip>
-                    <EditIcon v-if="!editLoginMode" @click="editLoginMode = 'email'" />
+                    <v-chip color="primary" size="small">主要</v-chip>
+                    <AppIcon name="Edit" v-if="!editLoginMode" @click="editLoginMode = 'email'"  />
                   </div>
                   <div
                     v-for="secondaryEmail in userProfile.secondary_emails"
                     :key="secondaryEmail"
                     class="mt-1"
                   >
-                    <EmailIcon />
+                    <AppIcon name="Email"  />
                     邮箱地址：{{ secondaryEmail }}
-                    <v-chip small>次要</v-chip>
-                    <DeleteIcon
+                    <v-chip size="small">次要</v-chip>
+                    <AppIcon name="Delete"
                       v-if="!editLoginMode || !intermediate"
                       @click="removeSecondaryEmail(secondaryEmail)"
-                    />
+                     />
                     <v-progress-circular v-if="intermediate" indeterminate size="20" />
                   </div>
                 </div>
@@ -87,25 +83,25 @@
                 type="text"
               >
                 <template v-slot:prepend>
-                  <VerifyCodeIcon />
+                  <AppIcon name="VerifyCode"  />
                 </template>
               </v-text-field>
 
               <v-form v-if="editLoginMode === 'email' || editLoginMode === 'add_secondary_email'">
-                <ValidationProvider v-slot="{ errors }" name="email" rules="email">
+                <Field v-slot="{ errors }" name="email" rules="email" v-model="newEmail">
                   <v-text-field
                     v-model="newEmail"
                     :label="
                       editLoginMode === 'email' ? '更改后的主要邮箱地址' : '新添加的次要邮箱地址'
                     "
                     type="text"
+                    :error-messages="errors"
                   >
                     <template v-slot:prepend>
-                      <EmailIcon />
+                      <AppIcon name="Email"  />
                     </template>
                   </v-text-field>
-                  <span class="error--text">{{ errors[0] }}</span>
-                </ValidationProvider>
+                </Field>
 
                 <v-text-field
                   v-show="showCodeInput"
@@ -115,11 +111,11 @@
                   type="text"
                 >
                   <template v-slot:prepend>
-                    <VerifyCodeIcon />
+                    <AppIcon name="VerifyCode"  />
                   </template>
                 </v-text-field>
               </v-form>
-              <div class="text-caption grey--text">
+              <div class="text-caption text-grey">
                 次要邮件地址验证后可以用于满足加入圈子的要求。
               </div>
             </div>
@@ -127,28 +123,28 @@
               <v-spacer />
               <v-btn
                 v-show="!editLoginMode"
-                depressed
-                small
+                variant="tonal"
+                size="small"
                 @click="editLoginMode = 'add_secondary_email'"
               >
                 添加次要邮箱
               </v-btn>
-              <v-btn v-show="editLoginMode" depressed small @click="editLoginMode = null">
+              <v-btn v-show="editLoginMode" variant="tonal" size="small" @click="editLoginMode = null">
                 取消
               </v-btn>
 
               <VerificationCodeBtn
                 v-show="editLoginMode"
-                :disabled-prop="!valid"
+                :disabled-prop="!meta.valid"
                 :send-verification-code-handler="sendVerificationCode"
               />
 
               <v-btn
                 v-show="editLoginMode"
-                :disabled="intermediate || !valid"
+                :disabled="intermediate || !meta.valid"
                 color="primary"
-                depressed
-                small
+                variant="flat"
+                size="small"
                 @click="handleSubmit(verifyCode)"
               >
                 验证并保存
@@ -156,12 +152,12 @@
               </v-btn>
             </v-card-actions>
           </v-card>
-        </ValidationObserver>
+        </Form>
 
-        <v-card :loading="!userProfile" class="ma-3 pa-3" outlined>
+        <v-card :loading="!userProfile" class="ma-3 pa-3" variant="outlined">
           <v-card-title>其他</v-card-title>
           <v-card-actions>
-            <v-btn depressed small @click="showSecurityLogs">查看安全日志</v-btn>
+            <v-btn variant="tonal" size="small" @click="showSecurityLogs">查看安全日志</v-btn>
           </v-card-actions>
         </v-card>
         <v-dialog v-model="showSecurityLogsDialog" max-width="600">
@@ -196,8 +192,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { Form, Field } from 'vee-validate';
+import { useDisplay } from 'vuetify';
+import { useRouter } from 'vue-router';
 import {
   IAuditLog,
   IUserProfileUpdate,
@@ -205,18 +202,15 @@ import {
   IUserUpdateSecondaryEmails,
   IVerificationCodeRequest,
 } from '@/interfaces';
-import { dispatchCaptureApiError, dispatchUpdateUserProfile } from '@/store/main/actions';
-import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { apiMe } from '@/api/me';
 import { api } from '@/api';
-import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
-import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
-import EmailIcon from '@/components/icons/EmailIcon.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import DeleteIcon from '@/components/icons/DeleteIcon.vue';
 import { AxiosError } from 'axios';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import { useAuth, useErrorHandling } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
+const display = useDisplay();
 
 const router = useRouter();
 const { token, userProfile } = useAuth();
@@ -246,7 +240,7 @@ async function sendVerificationCode() {
     (editLoginMode.value === 'email' || editLoginMode.value === 'add_secondary_email') &&
     !newEmail.value
   ) {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '电子邮件地址为空',
       color: 'error',
     });
@@ -255,13 +249,13 @@ async function sendVerificationCode() {
 
   showCodeInput.value = true;
 
-  return await dispatchCaptureApiError(store, async () => {
+  return await store.captureApiError(async () => {
     const payload: IVerificationCodeRequest = {};
     if (editLoginMode.value === 'email' || editLoginMode.value === 'add_secondary_email') {
       payload.email = newEmail.value!;
     }
     await api.sendVerificationCode(payload);
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '验证码已发送到邮箱，请查收',
       color: 'success',
     });
@@ -271,7 +265,7 @@ async function sendVerificationCode() {
 }
 
 async function verifyCode() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     intermediate.value = true;
     let response;
     if (editLoginMode.value === 'email') {
@@ -296,11 +290,11 @@ async function verifyCode() {
       response = await apiMe.updateSecondaryEmail(token.value, payload);
     }
     if (response) {
-      commitAddNotification(store, {
+      store.notifications.push({
         content: '更新成功',
         color: 'success',
       });
-      commitSetUserProfile(store, response.data);
+      store.userProfile = response.data;
       editLoginMode.value = null;
       newEmail.value = null;
       verificationCode.value = '';
@@ -311,18 +305,18 @@ async function verifyCode() {
 }
 
 async function removeSecondaryEmail(email: string) {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     intermediate.value = true;
     const payload: IUserUpdateSecondaryEmails = {
       secondary_email: email,
       action: 'remove',
     };
     const newProfile = (await apiMe.updateSecondaryEmail(token.value, payload)).data;
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '更新成功',
       color: 'success',
     });
-    commitSetUserProfile(store, newProfile);
+    store.userProfile = newProfile;
     intermediate.value = false;
   });
 }
@@ -344,13 +338,13 @@ onMounted(async () => {
 });
 
 async function submit() {
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     intermediate.value = true;
     const updatedProfile: IUserProfileUpdate = {};
     if (password.value) {
       updatedProfile.password = password.value;
     }
-    await dispatchUpdateUserProfile(store, updatedProfile);
+    await store.updateUserProfile(updatedProfile);
     resetAll();
     intermediate.value = false;
   });

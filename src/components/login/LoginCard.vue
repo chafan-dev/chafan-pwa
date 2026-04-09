@@ -24,26 +24,26 @@
               :xl="showTopBar ? 5 : 11"
               cols="12"
             >
-              <ValidationObserver v-slot="{ handleSubmit, valid }">
+              <Form v-slot="{ handleSubmit, meta }">
                 <h3 class="text-h3 font-weight-bold text-center">登录</h3>
 
                 <div class="mt-4">
-                  <ValidationProvider v-slot="{ errors }" name="email" rules="required|email">
+                  <Field v-slot="{ errors }" name="email" rules="required|email" v-model="email">
                     <v-text-field
                       v-model="email"
                       label="邮箱地址"
                       name="login"
                       type="text"
+                      :error-messages="errors"
                       @keyup.enter="submit"
                     >
                       <template v-slot:prepend>
-                        <AccountCircleOutlineIcon />
+                        <AppIcon name="AccountCircleOutline"  />
                       </template>
                     </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  </Field>
 
-                  <ValidationProvider v-slot="{ errors }" name="password" rules="required">
+                  <Field v-slot="{ errors }" name="password" rules="required" v-model="password">
                     <v-text-field
                       id="password"
                       v-model="password"
@@ -51,14 +51,14 @@
                       name="password"
                       required
                       type="password"
+                      :error-messages="errors"
                       @keyup.enter="submit"
                     >
                       <template v-slot:prepend>
-                        <LockOutlineIcon />
+                        <AppIcon name="LockOutline"  />
                       </template>
                     </v-text-field>
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  </Field>
 
                   <v-sheet class="mb-2">
                     <div v-if="loginError">
@@ -70,12 +70,12 @@
 
                   <v-sheet>
                     <v-btn
-                      :disabled="submitIntermediate || (enableCaptcha && !captchaToken) || !valid"
+                      :disabled="submitIntermediate || (enableCaptcha && !captchaToken) || !meta.valid"
                       block
-                      class="white--text"
+                      class="text-white"
                       color="primary"
-                      depressed
-                      large
+                      variant="flat"
+                      size="large"
                       @click.prevent="handleSubmit(submit)"
                     >
                       登录
@@ -86,42 +86,39 @@
                   <v-sheet :class="{ 'd-flex': isDesktop }" class="mt-4">
                     <v-btn
                       class="text-capitalize"
-                      depressed
+                      variant="text"
                       href="/recover-password"
                       link
-                      small
-                      text
+                      size="small"
                     >
-                      <HelpIcon class="mr-1" />
+                      <AppIcon name="Help" class="mr-1"  />
                       忘记密码？
                     </v-btn>
 
                     <v-btn
                       class="text-capitalize"
-                      depressed
+                      variant="text"
                       href="https://about.cha.fan/signup"
                       link
-                      small
-                      text
+                      size="small"
                     >
-                      <HelpCircleOutline class="mr-1" />
+                      <AppIcon name="HelpCircleOutline" class="mr-1"  />
                       如何注册「茶饭」账号?
                     </v-btn>
 
                     <v-btn
                       class="text-capitalize"
-                      depressed
+                      variant="text"
                       href="mailto:contact@cha.fan"
                       link
-                      small
-                      text
+                      size="small"
                     >
-                      <EmailEditOutline class="mr-1" />
+                      <AppIcon name="EmailEditOutline" class="mr-1"  />
                       联系我们
                     </v-btn>
                   </v-sheet>
                 </div>
-              </ValidationObserver>
+              </Form>
             </v-col>
           </v-row>
         </v-container>
@@ -132,27 +129,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import store from '@/store';
-import AccountIcon from '@/components/icons/AccountIcon.vue';
-import PasswordIcon from '@/components/icons/PasswordIcon.vue';
-import JoinChafanIcon from '@/components/icons/JoinChafanIcon.vue';
-import EmailIcon from '@/components/icons/EmailIcon.vue';
-import CellphoneIcon from '@/components/icons/CellphoneIcon.vue';
-import VerifyCodeIcon from '@/components/icons/VerifyCodeIcon.vue';
-
+import { Form, Field } from 'vee-validate';
 import { appName, enableCaptcha as enableCaptchaEnv } from '@/env';
-import { readLoginError } from '@/store/main/getters';
-import { dispatchLogIn } from '@/store/main/actions';
-import { commitAddNotification } from '@/store/main/mutations';
 import { captureException } from '@sentry/vue';
-import AccountCircleOutlineIcon from '@/components/icons/AccountCircleOutlineIcon.vue';
-import LockOutline from '@/components/icons/LockOutlineIcon.vue';
-import LockOutlineIcon from '@/components/icons/LockOutlineIcon.vue';
-import HelpCircleOutline from '@/components/icons/HelpCircleOutline.vue';
-import EmailEditOutline from '@/components/icons/EmailEditOutline.vue';
-import HelpIcon from '@/components/icons/HelpIcon.vue';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import { useResponsive } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 const props = withDefaults(
   defineProps<{
@@ -176,7 +160,7 @@ const enableCaptcha = computed(() => enableCaptchaEnv);
 
 const loginError = computed(() => {
   submitIntermediate.value = false;
-  return readLoginError(store);
+  return store.loginError;
 });
 
 async function submit() {
@@ -186,14 +170,14 @@ async function submit() {
       submitIntermediate.value = false;
       return;
     }
-    await dispatchLogIn(store, {
+    await store.logIn({
       username: email.value,
       password: password.value,
       hcaptcha_token: undefined,
     });
   } catch (err: any) {
     if (err.toString() === 'Error: Incorrect email or password') {
-      commitAddNotification(store, {
+      store.notifications.push({
         content: '邮箱地址或密码不正确',
         color: 'error',
       });

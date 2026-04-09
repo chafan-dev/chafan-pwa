@@ -1,9 +1,9 @@
 <template>
   <v-main>
     <v-container fill-height fluid>
-      <v-layout align-center justify-center>
-        <v-flex md4 sm8 xs12>
-          <ValidationObserver v-slot="{ handleSubmit, reset }">
+      <v-row align="center" justify="center">
+        <v-col md="4" sm="8" cols="12">
+          <Form v-slot="{ handleSubmit }">
             <v-card class="elevation-12">
               <v-toolbar color="primary" dark>
                 <v-toolbar-title>{{ appName }} - 密码重置</v-toolbar-title>
@@ -12,32 +12,26 @@
               <v-card-text>
                 <DebugSpan>tokenIsValid: {{ tokenIsValid }}</DebugSpan>
                 <template v-if="tokenIsValid">
-                  <p class="subheading">在下方输入你的新密码</p>
-                  <v-form
-                    ref="form"
-                    v-model="valid"
-                    lazy-validation
-                    @keyup.enter="handleSubmit(submit)"
-                    @submit.prevent=""
-                  >
-                    <ValidationProvider
-                      v-slot="{ errors }"
-                      name="password"
-                      rules="required|min:3|password|password1:@confirm"
-                    >
-                      <v-text-field v-model="password" label="密码" required type="password" />
-                      <span class="error--text">{{ errors[0] }}</span>
-                    </ValidationProvider>
-
-                    <ValidationProvider v-slot="{ errors }" name="confirm" rules="required">
+                  <p class="text-subtitle-1">在下方输入你的新密码</p>
+                  <v-form @keyup.enter="handleSubmit(submit)" @submit.prevent="">
+                    <Field v-slot="{ errors }" name="password" rules="required|min:3|password|password1:@confirm" v-model="password">
+                      <v-text-field
+                        v-model="password"
+                        label="密码"
+                        required
+                        type="password"
+                        :error-messages="errors"
+                      />
+                    </Field>
+                    <Field v-slot="{ errors }" name="confirm" rules="required" v-model="confirmation">
                       <v-text-field
                         v-model="confirmation"
                         label="确认密码"
                         required
                         type="password"
+                        :error-messages="errors"
                       />
-                      <span class="error--text">{{ errors[0] }}</span>
-                    </ValidationProvider>
+                    </Field>
                   </v-form>
                 </template>
                 <p v-else>
@@ -52,39 +46,33 @@
               </v-card-text>
               <v-card-actions v-if="tokenIsValid">
                 <v-spacer />
-                <v-btn depressed small @click="cancel">取消</v-btn>
-                <v-btn depressed small @click="resetAll(reset)">重置</v-btn>
-                <v-btn
-                  :disabled="!valid"
-                  color="primary"
-                  depressed
-                  small
-                  @click="handleSubmit(submit)"
-                >
+                <v-btn variant="tonal" size="small" @click="cancel">取消</v-btn>
+                <v-btn variant="tonal" size="small" @click="resetAll">重置</v-btn>
+                <v-btn color="primary" variant="flat" size="small" @click="handleSubmit(submit)">
                   保存
                 </v-btn>
               </v-card-actions>
             </v-card>
-          </ValidationObserver>
-        </v-flex>
-      </v-layout>
+          </Form>
+        </v-col>
+      </v-row>
     </v-container>
   </v-main>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import store from '@/store';
-import { useRoute, useRouter } from 'vue-router/composables';
+import { Form, Field } from 'vee-validate';
+import { useRoute, useRouter } from 'vue-router';
 import { appName } from '@/env';
-import { dispatchResetPassword } from '@/store/main/actions';
 import { api } from '@/api';
 import DebugSpan from '@/components/base/DebugSpan.vue';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const route = useRoute();
 const router = useRouter();
 
-const valid = ref(false);
 const tokenIsValid = ref(true);
 const password = ref('');
 const confirmation = ref('');
@@ -120,7 +108,7 @@ async function checkToken() {
 async function submit() {
   const token = await checkToken();
   if (token) {
-    const resetOk = await dispatchResetPassword(store, {
+    const resetOk = await store.resetPassword({
       token,
       password: password.value,
     });

@@ -2,14 +2,14 @@
   <v-container fluid>
     <v-row justify="center">
       <v-col :class="{ 'col-8': isDesktop }">
-        <ValidationObserver v-slot="{ handleSubmit, reset }">
+        <Form v-slot="{ handleSubmit, resetForm }">
           <div v-if="userProfile">
-            <v-card-title primary-title>
-              <div class="headline primary--text">更新个人资料</div>
+            <v-card-title>
+              <div class="text-h5 text-primary">更新个人资料</div>
               <v-spacer></v-spacer>
-              <v-btn :to="`/users/${userProfile.handle}`" depressed small>个人资料</v-btn>
+              <v-btn :to="`/users/${userProfile.handle}`" variant="tonal" size="small">个人资料</v-btn>
             </v-card-title>
-            <v-form ref="form" v-model="valid" lazy-validation>
+            <v-form ref="form">
               <v-row>
                 <v-col class="avatar-col">
                   <v-avatar size="150" rounded>
@@ -36,7 +36,7 @@
                   />
                   <div class="text-center">
                     <span class="text-caption">点击更改默认头像</span>
-                    <v-btn depressed x-small @click="showGifAvatar = !showGifAvatar">
+                    <v-btn variant="tonal" size="x-small" @click="showGifAvatar = !showGifAvatar">
                       添加额外的 GIF 头像
                     </v-btn>
                   </div>
@@ -53,22 +53,22 @@
                 </v-col>
                 <v-col>
                   <v-text-field v-model="userUpdateMe.full_name" label="全名或昵称" clearable />
-                  <ValidationProvider v-slot="{ errors }" name="用户名" rules="required">
+                  <Field v-slot="{ errors }" name="用户名" rules="required" v-model="userUpdateMe.handle">
                     <v-text-field
                       v-model="userUpdateMe.handle"
                       label="用户名（这是你的独有名称，请谨慎更改）"
+                      :error-messages="errors"
                     />
-                    <span class="error--text">{{ errors[0] }}</span>
-                  </ValidationProvider>
+                  </Field>
                 </v-col>
               </v-row>
 
-              <v-card class="pa-4 my-3" outlined>
+              <v-card class="pa-4 my-3" variant="outlined">
                 <div class="d-flex my-1">
                   <v-btn
                     class="slim-btn"
-                    depressed
-                    small
+                    variant="tonal"
+                    size="small"
                     @click="showAboutEditor = !showAboutEditor"
                     >编辑「关于我」
                   </v-btn>
@@ -78,11 +78,11 @@
                       <v-card-title>确认清除「关于我」的内容？</v-card-title>
                       <v-card-actions>
                         <v-spacer />
-                        <v-btn color="warning" depressed small @click="clearAboutMe">确认 </v-btn>
+                        <v-btn color="warning" variant="flat" size="small" @click="clearAboutMe">确认 </v-btn>
                       </v-card-actions>
                     </v-card>
                   </v-dialog>
-                  <CloseIcon v-if="userProfile.about" @click="showClearAboutMe = true" />
+                  <AppIcon name="Close" v-if="userProfile.about" @click="showClearAboutMe = true"  />
                 </div>
                 <v-expand-transition>
                   <div v-show="showAboutEditor" class="mt-2">
@@ -102,14 +102,14 @@
                   clearable
                   label="个人签名"
                 />
-                <ValidateUrl>
+                <ValidateUrl v-model="userUpdateMe.homepage_url">
                   <v-text-field v-model="userUpdateMe.homepage_url" clearable label="个人主页">
                     <template v-slot:prepend>
-                      <WebIcon />
+                      <AppIcon name="Web"  />
                     </template>
                   </v-text-field>
                 </ValidateUrl>
-                <ValidateUrl>
+                <ValidateUrl v-model="userUpdateMe.zhihu_url">
                   <v-text-field v-model="userUpdateMe.zhihu_url" clearable label="知乎个人页">
                     <template v-slot:prepend>
                       <ZhihuIcon />
@@ -123,7 +123,7 @@
                   label="Github 用户名"
                 >
                   <template v-slot:prepend>
-                    <GithubIcon />
+                    <AppIcon name="Github"  />
                   </template>
                 </v-text-field>
                 <v-text-field
@@ -132,18 +132,18 @@
                   label="Twitter 用户名"
                 >
                   <template v-slot:prepend>
-                    <TwitterIcon />
+                    <AppIcon name="Twitter"  />
                   </template>
                 </v-text-field>
 
-                <ValidateUrl>
+                <ValidateUrl v-model="userUpdateMe.linkedin_url">
                   <v-text-field
                     v-model="userUpdateMe.linkedin_url"
                     clearable
                     label="Linkedin 主页地址"
                   >
                     <template v-slot:prepend>
-                      <LinkedinIcon />
+                      <AppIcon name="Linkedin"  />
                     </template>
                   </v-text-field>
                 </ValidateUrl>
@@ -165,134 +165,36 @@
                   small-chips
                 />
               </v-card>
-              <v-card class="pa-4 my-3" outlined>
-                <div class="title mb-4 d-flex">
-                  教育经历
-                  <v-spacer />
-                  <v-btn color="primary" depressed small @click="showAddNewEduExpDialog">
-                    添加
-                  </v-btn>
-                </div>
-                <template v-for="(exp, index) in eduExps">
-                  <v-divider :key="'edu-divider' + index" v-if="index > 0" class="py-1" />
-                  <div :key="'edu-' + index" class="py-1 d-flex justify-space-between">
-                    <EduExp
-                      :school-name="exp.school_topic_name"
-                      :level-name="exp.level_name"
-                      :enroll-year="exp.enroll_year"
-                      :graduate-year="exp.graduate_year"
-                      :major="exp.major"
-                    />
-                    <div>
-                      <EditIcon class="pl-1" @click="showEduExpEditor(index)" />
-                      <UpIcon class="pl-1" @click="moveUpFrom(index, eduExps)" />
-                      <DownIcon class="pl-1" @click="moveDownFrom(index, eduExps)" />
-                      <DeleteIcon class="pl-1" @click="removeFromConfirm(index, eduExps)" />
-                    </div>
-                  </div>
-                </template>
-                <v-dialog v-model="eduExpEditorShown" max-width="600">
-                  <v-card>
-                    <v-card-title>编辑教育经历</v-card-title>
-                    <v-card-text v-if="editedEduExp">
-                      <v-text-field v-model="editedEduExp.school_topic_name" label="学校名" />
-                      <v-combobox
-                        v-model="editedEduExp.level_name"
-                        :items="eduExpLeveNames"
-                        label="教育水平"
-                      />
-                      <v-text-field
-                        v-model="editedEduExp.major"
-                        label="专业/方向（选填）"
-                        clearable
-                      />
-                      <div class="d-flex">
-                        <v-autocomplete
-                          class="mr-2"
-                          :items="years"
-                          v-model="editedEduExp.enroll_year"
-                          label="入学年份（选填）"
-                          clearable
-                        />
-                        <v-autocomplete
-                          :items="['在读'].concat(years)"
-                          v-model="editedEduExp.graduate_year"
-                          label="毕业年份（选填）"
-                          clearable
-                        />
-                      </div>
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer />
-                      <v-btn small depressed @click="eduExpEditorShown = false">取消</v-btn>
-                      <v-btn small depressed color="primary" @click="saveEduExpEditDraft"
-                        >保存草稿</v-btn
-                      >
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-card>
+              <EducationExperienceSection
+                v-model="eduExps"
+                :years="years"
+                @request-remove="(index) => removeFromConfirm(index, eduExps)"
+              />
 
-              <v-card class="pa-4 my-3" outlined>
-                <div class="title mb-4 d-flex">
-                  工作经历
-                  <v-spacer />
-                  <v-btn color="primary" depressed small @click="showAddNewWorkExpDialog">
-                    添加
-                  </v-btn>
-                </div>
-                <template v-for="(exp, index) in workExps">
-                  <v-divider :key="'work-divider' + index" v-if="index > 0" class="py-1" />
-                  <div :key="'work-' + index" class="py-1 d-flex justify-space-between">
-                    <WorkExp
-                      :company-name="exp.company_topic_name"
-                      :position-name="exp.position_topic_name"
-                    />
-                    <div>
-                      <EditIcon class="pl-1" @click="showWorkExpEditor(index)" />
-                      <UpIcon class="pl-1" @click="moveUpFrom(index, workExps)" />
-                      <DownIcon class="pl-1" @click="moveDownFrom(index, workExps)" />
-                      <DeleteIcon class="pl-1" @click="removeFrom(index, workExps)" />
-                    </div>
-                  </div>
-                </template>
-                <v-dialog v-model="workExpEditorShown" max-width="600">
-                  <v-card>
-                    <v-card-title>编辑工作经历</v-card-title>
-                    <v-card-text v-if="editedWorkExp">
-                      <v-text-field v-model="editedWorkExp.company_topic_name" label="公司名" />
-                      <v-text-field v-model="editedWorkExp.position_topic_name" label="职位名" />
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer />
-                      <v-btn small depressed @click="workExpEditorShown = false">取消</v-btn>
-                      <v-btn small depressed color="primary" @click="saveWorkExpEditDraft"
-                        >保存草稿</v-btn
-                      >
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-card>
+              <WorkExperienceSection
+                v-model="workExps"
+                @request-remove="(index) => removeFrom(index, workExps)"
+              />
 
               <v-dialog v-model="showRemoveConfirm" max-width="600">
                 <v-card>
                   <v-card-title>从草稿中删除？</v-card-title>
                   <v-card-actions>
                     <v-spacer />
-                    <v-btn small depressed @click="showRemoveConfirm = false">取消</v-btn>
-                    <v-btn small depressed color="warning" @click="removeCallback">确认</v-btn>
+                    <v-btn size="small" variant="tonal" @click="showRemoveConfirm = false">取消</v-btn>
+                    <v-btn size="small" variant="flat" color="warning" @click="removeCallback">确认</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
             </v-form>
             <v-card-actions class="px-4">
               <v-spacer></v-spacer>
-              <v-btn depressed smal @click="cancel">取消</v-btn>
-              <v-btn depressed smal @click="resetAll(reset)">重置</v-btn>
+              <v-btn variant="tonal" smal @click="cancel">取消</v-btn>
+              <v-btn variant="tonal" smal @click="resetAll(resetForm)">重置</v-btn>
               <v-btn
-                :disabled="!valid || submitIntermediate"
+                :disabled="!meta.valid || submitIntermediate"
                 color="primary"
-                depressed
+                variant="flat"
                 smal
                 @click="handleSubmit(submit)"
               >
@@ -300,7 +202,7 @@
               </v-btn>
             </v-card-actions>
           </div>
-        </ValidationObserver>
+        </Form>
       </v-col>
     </v-row>
   </v-container>
@@ -308,36 +210,27 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import store from '@/store';
-import { useRouter } from 'vue-router/composables';
+import { Form, Field } from 'vee-validate';
+import { useRouter } from 'vue-router';
 import { api2 } from '@/api2';
 import { apiPeople } from '@/api/people';
 import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
-import { readToken, readUserProfile } from '@/store/main/getters';
-import { commitAddNotification, commitSetUserProfile } from '@/store/main/mutations';
 import { resizeImage } from '@/imagelib';
 import piexif from 'piexifjs';
-import { dispatchCaptureApiError } from '@/store/main/actions';
 import { deepCopy, getRecentYears } from '@/utils';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
 import VditorCF from '@/editors/lib-components/VditorCF.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { getVditorUploadConfig } from '@/common';
-import UpIcon from '@/components/icons/UpIcon.vue';
-import DownIcon from '@/components/icons/DownIcon.vue';
-import DeleteIcon from '@/components/icons/DeleteIcon.vue';
-import WebIcon from '@/components/icons/WebIcon.vue';
-import GithubIcon from '@/components/icons/GithubIcon.vue';
-import TwitterIcon from '@/components/icons/TwitterIcon.vue';
-import LinkedinIcon from '@/components/icons/LinkedinIcon.vue';
-import EditIcon from '@/components/icons/EditIcon.vue';
-import EduExp from '@/components/EduExp.vue';
-import WorkExp from '@/components/WorkExp.vue';
 import ValidateUrl from '@/components/base/ValidateUrl.vue';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
+import EducationExperienceSection from '@/components/profile/EducationExperienceSection.vue';
+import WorkExperienceSection from '@/components/profile/WorkExperienceSection.vue';
 import { useAuth, useResponsive, useDayjs } from '@/composables';
+import { useMainStore } from '@/stores/main';
+import AppIcon from '@/components/icons/AppIcon.vue';
+const store = useMainStore();
 
 interface IUserWorkExperienceItem {
   company_topic_name?: string;
@@ -360,7 +253,6 @@ const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
 const { dayjs } = useDayjs();
 
-const valid = ref(true);
 const newResidencyTopicNames = ref<string[]>([]);
 const newProfessionTopicNames = ref<string[]>([]);
 const userUpdateMe = reactive<IUserUpdateMe>({
@@ -370,7 +262,6 @@ const userUpdateMe = reactive<IUserUpdateMe>({
 });
 const newWorkExpCompanyName = ref('');
 const newWorkExpPositionName = ref('');
-const eduExpLeveNames = ['高中及以下', '大专', '本科', '硕士', '博士及以上'];
 const eduExps = ref<IUserEducationExperienceItem[]>([]);
 const workExps = ref<IUserWorkExperienceItem[]>([]);
 const submitIntermediate = ref(false);
@@ -384,21 +275,13 @@ const showAboutEditor = ref(false);
 const showClearAboutMe = ref(false);
 const categoryTopics = ref<ITopic[] | null>(null);
 const years = ref<string[]>([]);
-const vditor = ref<any>(null);
-
-const eduExpEditedIndex = ref<number | null>(null);
-const eduExpEditorShown = ref(false);
-const editedEduExp = ref<IUserEducationExperienceItem | null>(null);
-
-const workExpEditedIndex = ref<number | null>(null);
-const workExpEditorShown = ref(false);
-const editedWorkExp = ref<IUserWorkExperienceItem | null>(null);
+const vditor = ref<InstanceType<typeof VditorCF> | null>(null);
 
 const showRemoveConfirm = ref(false);
 const removeCallback = ref<(() => void) | null>(null);
 
 const vditorUploadConfig = computed(() => {
-  return getVditorUploadConfig(readToken(store));
+  return getVditorUploadConfig(store.token);
 });
 
 onMounted(async () => {
@@ -436,7 +319,7 @@ onMounted(async () => {
   userUpdateMe.twitter_username = profile.twitter_username;
   userUpdateMe.linkedin_url = profile.linkedin_url;
 
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const response = await apiPeople.getUserEducationExperiences(token.value, profile.uuid);
     if (response.data) {
       eduExps.value = response.data.map((e) => {
@@ -461,8 +344,8 @@ onMounted(async () => {
   });
 });
 
-function resetAll(reset: () => void) {
-  const profile = readUserProfile(store);
+function resetAll(resetForm?: () => void) {
+  const profile = store.userProfile;
   if (profile) {
     newResidencyTopicNames.value = profile.residency_topics.map((topic) => topic.name);
     newProfessionTopicNames.value = profile.profession_topics.map((topic) => topic.name);
@@ -470,7 +353,7 @@ function resetAll(reset: () => void) {
       userUpdateMe[key] = profile[key];
     });
   }
-  reset();
+  resetForm?.();
 }
 
 function cancel() {
@@ -479,7 +362,7 @@ function cancel() {
 
 async function submit() {
   submitIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const responses = await Promise.all(
       newResidencyTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
     );
@@ -544,8 +427,8 @@ async function submit() {
 
     const response = await apiMe.updateMe(token.value, userUpdateMe);
     if (response) {
-      commitSetUserProfile(store, response.data);
-      commitAddNotification(store, {
+      store.userProfile = response.data;
+      store.notifications.push({
         content: '更新成功',
         color: 'success',
       });
@@ -561,7 +444,7 @@ async function submit() {
 
 function addNewWorkExp() {
   if (!newWorkExpCompanyName.value || !newWorkExpPositionName.value) {
-    commitAddNotification(store, {
+    store.notifications.push({
       content: '公司名和职位均为必填',
       color: 'error',
     });
@@ -575,49 +458,19 @@ function addNewWorkExp() {
   newWorkExpPositionName.value = '';
 }
 
-function showAddNewEduExpDialog() {
-  editedEduExp.value = {};
-  eduExpEditedIndex.value = eduExps.value.length;
-  eduExpEditorShown.value = true;
-}
-
-function showAddNewWorkExpDialog() {
-  editedWorkExp.value = {};
-  workExpEditedIndex.value = workExps.value.length;
-  workExpEditorShown.value = true;
-}
-
-function removeFrom(index: number, arr: any[]) {
+function removeFrom<T>(index: number, arr: T[]) {
   arr.splice(index, 1);
-}
-
-function moveUpFrom(index: number, arr: any[]) {
-  if (index === 0) {
-    return;
-  }
-  const e = arr[index];
-  arr.splice(index, 1);
-  arr.splice(index - 1, 0, e);
-}
-
-function moveDownFrom(index: number, arr: any[]) {
-  if (index === arr.length - 1) {
-    return;
-  }
-  const e = arr[index];
-  arr.splice(index, 1);
-  arr.splice(index + 1, 0, e);
 }
 
 async function uploadAvatar() {
   uploadAvatarIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
     if (fileInput !== null) {
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         if (file.size <= 128) {
-          commitAddNotification(store, {
+          store.notifications.push({
             content: '头像文件过小',
             color: 'error',
           });
@@ -648,13 +501,13 @@ async function uploadAvatar() {
 
 async function uploadGifAvatar() {
   uploadGifAvatarIntermediate.value = true;
-  await dispatchCaptureApiError(store, async () => {
+  await store.captureApiError(async () => {
     const fileInput = document.getElementById('gifFileInput') as HTMLInputElement;
     if (fileInput !== null) {
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         if (file.size <= 128) {
-          commitAddNotification(store, {
+          store.notifications.push({
             content: '头像文件过小',
             color: 'error',
           });
@@ -688,45 +541,17 @@ function showGifFilePicker() {
 }
 
 function onEditorChange() {
-  const vditorRef = vditor.value as any;
-  userUpdateMe.about = vditorRef.getContent() || undefined;
+  userUpdateMe.about = vditor.value?.getContent() || undefined;
 }
 
 function clearAboutMe() {
-  const vditorRef = vditor.value as any;
-  vditorRef.init(aboutEditor.value, '');
+  vditor.value?.init(aboutEditor.value, '');
   showAboutEditor.value = false;
   showClearAboutMe.value = false;
   userUpdateMe.about = null;
 }
 
-function showEduExpEditor(index: number) {
-  eduExpEditedIndex.value = index;
-  editedEduExp.value = deepCopy(eduExps.value[index]);
-  eduExpEditorShown.value = true;
-}
-
-function saveEduExpEditDraft() {
-  if (eduExpEditedIndex.value !== null && editedEduExp.value) {
-    eduExps.value.splice(eduExpEditedIndex.value, 1, editedEduExp.value);
-    eduExpEditorShown.value = false;
-  }
-}
-
-function showWorkExpEditor(index: number) {
-  workExpEditedIndex.value = index;
-  editedWorkExp.value = deepCopy(workExps.value[index]);
-  workExpEditorShown.value = true;
-}
-
-function saveWorkExpEditDraft() {
-  if (workExpEditedIndex.value !== null && editedWorkExp.value) {
-    workExps.value.splice(workExpEditedIndex.value, 1, editedWorkExp.value);
-    workExpEditorShown.value = false;
-  }
-}
-
-function removeFromConfirm(index: number, arr: any[]) {
+function removeFromConfirm<T>(index: number, arr: T[]) {
   showRemoveConfirm.value = true;
   removeCallback.value = () => {
     removeFrom(index, arr);
