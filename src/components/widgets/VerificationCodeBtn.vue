@@ -1,5 +1,5 @@
 <template>
-  <v-btn :disabled="disabled || disabledProp" color="primary" depressed small @click="onClick">
+  <v-btn :disabled="disabled || disabledProp" color="primary" variant="flat" size="small" @click="onClick">
     发送验证码
     <v-progress-circular v-if="intermediate" indeterminate size="20" />
     <span v-if="seconds !== null"> ({{ 60 - seconds }}s) </span>

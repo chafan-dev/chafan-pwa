@@ -1,8 +1,9 @@
 <template>
   <span>
+    <!-- Diff results are fully recalculated when inputs change, index key is acceptable -->
     <span v-for="(diff, idx) in diffs" :key="idx">
-      <span v-if="diff.added" class="green--text text--darken-2">{{ diff.value }}</span>
-      <span v-if="diff.removed" class="red--text text--darken-2">{{ diff.value }}</span>
+      <span v-if="diff.added" class="text-green">{{ diff.value }}</span>
+      <span v-if="diff.removed" class="text-red">{{ diff.value }}</span>
       ...
     </span>
   </span>

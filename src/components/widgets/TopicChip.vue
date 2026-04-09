@@ -13,7 +13,7 @@ withDefaults(defineProps<{
   <v-chip
     :to="'/topics/' + topic.uuid"
     :classes="{ 'mr-1': moreMargin, 'mb-1': moreMargin }"
-    small
+    size="small"
     label
     color="grey lighten-4"
     >{{ topic.name }}

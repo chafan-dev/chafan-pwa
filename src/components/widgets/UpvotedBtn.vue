@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import UpvotedBtnIcon from '@/components/icons/UpvotedIcon.vue';
+import { useDisplay } from 'vuetify';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 defineProps<{
   count: number;
 }>();
+const display = useDisplay();
 </script>
 
 <template>
-  <v-btn v-bind="$attrs" v-on="$listeners" class="slim-btn" depressed small>
-    <UpvotedBtnIcon />
-    <template v-if="$vuetify.breakpoint.mdAndUp"> 已赞 ({{ count }})</template>
+  <v-btn v-bind="$attrs" class="slim-btn" variant="tonal" size="small">
+    <AppIcon name="Upvoted"  />
+    <template v-if="display.mdAndUp"> 已赞 ({{ count }})</template>
     <template v-else>
       {{ count }}
     </template>

@@ -67,9 +67,11 @@ onMounted(() => {
 .contrib-months {
   grid-area: months;
 }
+
 .contrib-days {
   grid-area: days;
 }
+
 .contrib-squares {
   grid-area: squares;
 }
@@ -80,7 +82,7 @@ onMounted(() => {
     'empty months'
     'days squares';
   grid-template-columns: auto 1fr;
-  grid-gap: 10px;
+  gap: 10px;
 }
 
 .contrib-months {
@@ -103,7 +105,7 @@ onMounted(() => {
 .contrib-days,
 .contrib-squares {
   display: grid;
-  grid-gap: var(--square-gap);
+  gap: var(--square-gap);
   grid-template-rows: repeat(7, var(--square-size));
 }
 

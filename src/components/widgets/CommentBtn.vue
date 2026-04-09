@@ -1,7 +1,7 @@
 <template>
-  <v-btn v-bind="$attrs" v-on="$listeners" class="slim-btn" depressed small>
-    <CommentsIcon class="mr-1" small />
-    <template v-if="$vuetify.breakpoint.mdAndUp">
+  <v-btn v-bind="$attrs" class="slim-btn" variant="tonal" size="small">
+    <AppIcon name="Comments" class="mr-1" size="small"  />
+    <template v-if="display.mdAndUp">
       评论 <span v-if="count">({{ count }})</span>
     </template>
     <template v-else>
@@ -9,11 +9,11 @@
     </template>
   </v-btn>
 </template>
-<script>
-import CommentsIcon from '@/components/icons/CommentsIcon';
 
-export default {
-  components: { CommentsIcon },
-  props: ['count'],
-};
+<script setup lang="ts">
+import { useDisplay } from 'vuetify';
+import AppIcon from '@/components/icons/AppIcon.vue';
+
+defineProps<{ count?: number }>();
+const display = useDisplay();
 </script>

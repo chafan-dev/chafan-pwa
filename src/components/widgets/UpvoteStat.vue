@@ -1,14 +1,14 @@
 <template>
   <span class="d-flex align-center">
-    <UpvotedIcon color="grey lighten-1" />
+    <AppIcon name="Upvoted" color="grey lighten-1"  />
     <span class="text-caption">{{ count }}</span>
   </span>
 </template>
 <script>
-import UpvotedIcon from '@/components/icons/UpvotedIcon';
+import AppIcon from '@/components/icons/AppIcon.vue';
 
 export default {
-  components: { UpvotedIcon },
+  components: { AppIcon },
   props: ['count'],
 };
 </script>

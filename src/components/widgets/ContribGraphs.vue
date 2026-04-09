@@ -10,7 +10,7 @@
       class="max-w-80"
       v-model="year"
       :items="data.map((p) => p.year)"
-      dense
+      density="compact"
       hide-details
     />
   </div>

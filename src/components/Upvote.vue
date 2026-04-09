@@ -2,18 +2,18 @@
   <span>
     <v-dialog v-model="showCancelUpvoteDialog" max-width="400" @keydown.enter="onConfirmCancel">
       <v-card>
-        <v-card-title primary-title>
-          <div class="headline">确定收回点赞？</div>
+        <v-card-title>
+          <div class="text-h5">确定收回点赞？</div>
         </v-card-title>
 
         <v-card-actions>
           <v-spacer />
-          <v-btn depressed small @click="showCancelUpvoteDialog = false">取消</v-btn>
+          <v-btn variant="tonal" size="small" @click="showCancelUpvoteDialog = false">取消</v-btn>
           <v-btn
             :disabled="cancelUpvoteIntermediate"
             color="warning"
-            depressed
-            small
+            variant="flat"
+            size="small"
             @click="onConfirmCancel"
           >
             确认
@@ -74,8 +74,8 @@ async function onConfirmCancel() {
 </script>
 
 <style>
-/*- Must be here to override properly */
-.theme--light.v-btn.v-btn--disabled.v-btn--has-bg {
-  background-color: rgba(0, 0, 0, 0.02);
+/* Must be here to override properly */
+.v-btn.v-btn--disabled.v-btn--variant-elevated {
+  background-color: rgb(0 0 0 / 2%);
 }
 </style>
