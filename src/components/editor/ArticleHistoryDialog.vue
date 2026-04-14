@@ -18,7 +18,7 @@
               @click="$emit('load-archive', archive)"
               >加载该版本
             </v-btn>
-            {{ fromNow(archive.created_at) }}
+            <RelativeTime :datetime="archive.created_at" />
             <v-spacer />
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -43,9 +43,7 @@
 import { ref, watch } from 'vue';
 import { IArticleArchive } from '@/interfaces';
 import Viewer from '@/components/Viewer.vue';
-import { useDayjs } from '@/composables';
-
-const { fromNow } = useDayjs();
+import RelativeTime from '@/components/RelativeTime.vue';
 
 const props = defineProps<{
   visible: boolean;

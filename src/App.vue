@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, getCurrentInstance } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import NotificationsManager from '@/components/NotificationsManager.vue';
 import LoginCard from '@/components/login/LoginCard.vue';
 import { getLocalValue, setAppLocale } from '@/utils';
@@ -66,10 +66,7 @@ onMounted(async () => {
   }
   await store.checkLoggedIn();
   loading.value = false;
-  const instance = getCurrentInstance();
-  if (instance) {
-    setAppLocale(instance.proxy);
-  }
+  setAppLocale();
   store.narrowUI = getDefaultNarrowFeedUI();
   const savedTheme = getLocalValue(themeLocalStorageKey) as ThemeType;
   if (savedTheme) {

@@ -85,7 +85,9 @@
 
             <div class="d-flex">
               <v-spacer />
-              <span class="text-grey caption">上次编辑：{{ fromNow(submission.updated_at) }}</span>
+              <span class="text-grey caption">
+                上次编辑：<RelativeTime :datetime="submission.updated_at" />
+              </span>
             </div>
 
             <!-- Suggestion comment -->
@@ -263,7 +265,8 @@ import RotationList from '@/components/base/RotationList.vue';
 import TopicChip from '@/components/widgets/TopicChip.vue';
 import SubmissionHistoryDialog from '@/components/submission/SubmissionHistoryDialog.vue';
 import SubmissionSuggestions from '@/components/submission/SubmissionSuggestions.vue';
-import { useAuth, useResponsive, useDayjs, useErrorHandling } from '@/composables';
+import RelativeTime from '@/components/RelativeTime.vue';
+import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -273,12 +276,7 @@ const route = useRoute();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
-const { dayjs } = useDayjs();
 const { recursiveCommentsCount } = useErrorHandling();
-
-function fromNow(date: string) {
-  return dayjs(date).fromNow();
-}
 
 const showHelp = ref(false);
 const submission = ref<ISubmission | null>(null);

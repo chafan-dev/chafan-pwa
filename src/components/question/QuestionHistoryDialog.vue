@@ -9,7 +9,7 @@
       <v-expansion-panels>
         <v-expansion-panel v-for="archive in archives" :key="archive.id">
           <v-expansion-panel-header>
-            {{ dayjs.utc(archive.created_at).local().fromNow() }}
+            <RelativeTime :datetime="archive.created_at" />
             <span v-if="archive.editor"> - <UserLink :userPreview="archive.editor" /></span>
             <v-spacer />
           </v-expansion-panel-header>
@@ -34,9 +34,9 @@
 
 <script setup lang="ts">
 import type { IQuestionArchive } from '@/interfaces';
-import { useDayjs } from '@/composables';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 
 defineProps<{
   visible: boolean;
@@ -46,6 +46,4 @@ defineProps<{
 defineEmits<{
   (e: 'update:visible', value: boolean): void;
 }>();
-
-const { dayjs } = useDayjs();
 </script>

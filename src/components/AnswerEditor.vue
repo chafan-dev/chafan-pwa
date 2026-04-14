@@ -146,7 +146,7 @@
                 <v-btn class="mr-4" variant="tonal" max-width="100px" size="small" @click="loadArchive(archive)">
                   加载该版本
                 </v-btn>
-                {{ fromNow(archive.created_at) }}
+                <RelativeTime :datetime="archive.created_at" />
                 <v-spacer />
               </v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -193,7 +193,9 @@ import { AnswerEditHandler } from '@/handlers';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import Viewer from '@/components/Viewer.vue';
-import { useAuth, useResponsive, useDayjs } from '@/composables';
+import RelativeTime from '@/components/RelativeTime.vue';
+import dayjs from '@/dayjs';
+import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -220,7 +222,6 @@ const emit = defineEmits<{
 
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
-const { dayjs, fromNow } = useDayjs();
 
 // Template refs
 const tiptapRef = ref<InstanceType<typeof ChafanTiptap> | null>(null);

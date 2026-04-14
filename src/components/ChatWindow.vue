@@ -42,9 +42,10 @@
           <UserLink v-if="message.author.uuid !== userProfile.uuid" :userPreview="message.author" />
           <span v-else>我</span>:
           <Viewer :content="plainTextContent(message.body)" />
-          <span class="ml-2 float-right text-caption text-grey">
-            {{ fromNow(message.created_at) }}
-          </span>
+          <RelativeTime
+            :datetime="message.created_at"
+            class="ml-2 float-right text-caption text-grey"
+          />
         </v-sheet>
       </div>
     </div>
@@ -98,7 +99,8 @@ import Viewer from '@/components/Viewer.vue';
 import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import Feedback from '@/views/main/dashboard/Feedback.vue';
 import SiteCreation from '@/views/main/dashboard/SiteCreation.vue';
-import { useAuth, useDayjs } from '@/composables';
+import RelativeTime from '@/components/RelativeTime.vue';
+import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -108,11 +110,6 @@ const props = defineProps<{
 }>();
 
 const { token, userProfile } = useAuth();
-const { dayjs } = useDayjs();
-
-function fromNow(date: string) {
-  return dayjs(date).fromNow();
-}
 
 const currentUserId = userProfile.value?.uuid;
 

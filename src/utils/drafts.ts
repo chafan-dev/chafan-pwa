@@ -1,4 +1,5 @@
 import { apiArticle } from '@/api/article';
+import dayjs from '@/dayjs';
 import { editor_T, IRichEditorState } from '@/interfaces';
 import { loadLocalEdit } from './local-storage';
 
@@ -9,7 +10,6 @@ export interface IArticleDraft {
 }
 
 export const getArticleDraft = async (
-  dayjs: typeof import('dayjs'),
   token: string,
   uuid: string
 ): Promise<IArticleDraft | null> => {

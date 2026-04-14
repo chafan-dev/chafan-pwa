@@ -33,7 +33,7 @@
                 <span class="mr-4"> 剩余可使用次数：{{ invitationLink.remaining_quota }} </span>
                 <span>
                   失效日期：
-                  {{ $dayjs.utc(invitationLink.expired_at).local().fromNow() }}
+                  <RelativeTime :datetime="invitationLink.expired_at" />
                 </span>
               </div>
             </v-card-text>
@@ -81,6 +81,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 import { api } from '@/api';
 import { translateErrorMsgCN } from '@/common';
 import { useAuth } from '@/composables';

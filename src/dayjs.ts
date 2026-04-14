@@ -7,5 +7,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
+dayjs.locale('zh-cn');
 
 export default dayjs;

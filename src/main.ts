@@ -15,7 +15,6 @@ import * as Sentry from '@sentry/vue';
 import { sentryDSN } from '@/env';
 import App from './App.vue';
 import router from './router';
-import dayjsPlugin from './dayjsPlugin';
 
 
 const i18n = createI18n({
@@ -84,6 +83,5 @@ app.use(createPinia());
 app.use(router);
 app.use(vuetify);
 app.use(i18n);
-app.use(dayjsPlugin);
 
 app.mount('#app');

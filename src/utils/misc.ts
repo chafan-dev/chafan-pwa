@@ -1,4 +1,5 @@
 import { localize } from '@vee-validate/i18n';
+import dayjs from '@/dayjs';
 import { IComment } from '@/interfaces';
 import { env } from '@/env';
 import { range } from 'lodash';
@@ -21,9 +22,8 @@ export const getBrowserLocale = () => {
   return 'zh';
 };
 
-export const setAppLocale = (vueInstance: any) => {
+export const setAppLocale = () => {
   localize('zh_CN');
-  vueInstance.$dayjs.locale('zh-cn');
 };
 
 export const isDev = env !== 'production' || window.location.hostname === 'dev.cha.fan';
@@ -35,7 +35,7 @@ export const logDebug = (msg: string) => {
   }
 };
 
-export const rankComments = (dayjs: typeof import('dayjs'), comments: IComment[]) => {
+export const rankComments = (comments: IComment[]) => {
   return comments.sort((a, b) => {
     if (a.upvotes_count > b.upvotes_count) {
       return -1;
@@ -47,7 +47,7 @@ export const rankComments = (dayjs: typeof import('dayjs'), comments: IComment[]
   });
 };
 
-export const getRecentYears = (dayjs: typeof import('dayjs')) => {
+export const getRecentYears = () => {
   return range(1950, dayjs().year(), 1)
     .map((y: number) => y.toString())
     .reverse();

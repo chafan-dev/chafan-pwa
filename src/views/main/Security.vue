@@ -166,9 +166,7 @@
             <v-card-text v-if="auditLogs">
               <v-data-table :headers="auditLogHeaders" :items="auditLogs" :items-per-page="10">
                 <template v-slot:item.created_at="{ item }">
-                  <span v-if="item.created_at">{{
-                    $dayjs.utc(item.created_at).local().fromNow()
-                  }}</span>
+                  <RelativeTime v-if="item.created_at" :datetime="item.created_at" />
                 </template>
                 <template v-slot:item.api="{ item }">
                   <span
@@ -206,6 +204,7 @@ import { apiMe } from '@/api/me';
 import { api } from '@/api';
 import { AxiosError } from 'axios';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';

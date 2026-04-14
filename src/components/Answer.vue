@@ -130,9 +130,9 @@
               <!-- Column of variable width -->
               <div v-if="isDesktop & !preview && userProfile" class="align-self-center">
                 <span class="text-caption text-grey mr-1">
-                  <span v-if="!inAnswerQuestionFeedCard"
-                    >编辑于 {{ fromNow(answer.updated_at) }}，</span
-                  >
+                  <template v-if="!inAnswerQuestionFeedCard">
+                    编辑于 <RelativeTime :datetime="answer.updated_at" />，
+                  </template>
                   已被阅读{{ answer.view_times }}次
                 </span>
               </div>
@@ -215,7 +215,9 @@ import Viewer from '@/components/Viewer.vue';
 import AnswerReportDialog from '@/components/answer/AnswerReportDialog.vue';
 import AnswerActions from '@/components/answer/AnswerActions.vue';
 import AnswerSuggestedEdits from '@/components/answer/AnswerSuggestedEdits.vue';
-import { useAuth, useTheme, useResponsive, useDayjs } from '@/composables';
+import RelativeTime from '@/components/RelativeTime.vue';
+import dayjs from '@/dayjs';
+import { useAuth, useTheme, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 const store = useMainStore();
 
@@ -247,7 +249,6 @@ const router = useRouter();
 const { token, userProfile, loggedIn } = useAuth();
 const { theme } = useTheme();
 const { isDesktop } = useResponsive();
-const { dayjs, fromNow } = useDayjs();
 
 // Template ref
 const editorRef = ref<InstanceType<typeof AnswerEditor> | null>(null);

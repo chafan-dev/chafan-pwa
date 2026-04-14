@@ -209,7 +209,7 @@
                 </v-toolbar>
               </template>
               <template v-slot:item.created_at="{ item }">
-                {{ $dayjs.utc(item.created_at).local().fromNow() }}
+                <RelativeTime :datetime="item.created_at" />
               </template>
               <template v-slot:item.type="{ item }">
                 {{
@@ -242,25 +242,17 @@
                 </v-toolbar>
               </template>
               <template v-slot:item.created_at="{ item }">
-                <span v-if="item.created_at">{{
-                  $dayjs.utc(item.created_at).local().fromNow()
-                }}</span>
+                <RelativeTime v-if="item.created_at" :datetime="item.created_at" />
               </template>
               <template v-slot:item.expired_at="{ item }">
-                <span v-if="item.expired_at">{{
-                  $dayjs.utc(item.expired_at).local().fromNow()
-                }}</span>
+                <RelativeTime v-if="item.expired_at" :datetime="item.expired_at" />
               </template>
               <template v-slot:item.claimed_at="{ item }">
-                <span v-if="item.claimed_at">{{
-                  $dayjs.utc(item.claimed_at).local().fromNow()
-                }}</span>
+                <RelativeTime v-if="item.claimed_at" :datetime="item.claimed_at" />
                 <span v-else>-</span>
               </template>
               <template v-slot:item.refunded_at="{ item }">
-                <span v-if="item.refunded_at">{{
-                  $dayjs.utc(item.refunded_at).local().fromNow()
-                }}</span>
+                <RelativeTime v-if="item.refunded_at" :datetime="item.refunded_at" />
                 <span v-else>-</span>
               </template>
 
@@ -288,7 +280,7 @@
                 </span>
               </template>
               <template v-slot:item.action="{ item }">
-                <span v-if="$dayjs.utc(item.expired_at).isBefore($dayjs.utc())"> 已过期 </span>
+                <span v-if="dayjs.utc(item.expired_at).isBefore(dayjs.utc())"> 已过期 </span>
                 <template v-else-if="item.giver.uuid === userProfile.uuid">
                   <span v-if="item.refunded_at"> 已撤回 </span>
                   <span v-if="item.claimed_at"> 已被领取 </span>
@@ -404,6 +396,8 @@ import { apiActivity } from '@/api/activity';
 import { getLocalValue, setLocalValue } from '@/utils';
 import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
+import dayjs from '@/dayjs';
 import { useAuth, useResponsive } from '@/composables';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const display = useDisplay();

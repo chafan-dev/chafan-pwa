@@ -24,7 +24,7 @@
           </span>
           <span v-if="isDesktop" class="text-caption text-grey">
             发表于
-            {{ fromNow(article.updated_at) }}
+            <RelativeTime :datetime="article.updated_at" />
           </span>
         </div>
 
@@ -202,8 +202,9 @@ import UpvoteBtn from '@/components/widgets/UpvoteBtn.vue';
 import CommentBtn from '@/components/widgets/CommentBtn.vue';
 import { getArticleDraft } from '@/utils/drafts';
 import Upvote from '@/components/Upvote.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 import { AxiosError } from 'axios';
-import { useAuth, useResponsive, useDayjs, useErrorHandling } from '@/composables';
+import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -213,7 +214,6 @@ const route = useRoute();
 const router = useRouter();
 const { token, userProfile, loggedIn } = useAuth();
 const { isDesktop } = useResponsive();
-const { dayjs } = useDayjs();
 const { commitErrMsg } = useErrorHandling();
 
 const viewer = ref<any>(null);
@@ -234,10 +234,6 @@ const articlePreviewBody = ref('');
 
 const isNarrowFeedUI = computed(() => store.narrowUI);
 const id = computed(() => route.params.id as string);
-
-function fromNow(date: string) {
-  return dayjs(date).fromNow();
-}
 
 // Watch for route changes (replaces beforeRouteUpdate)
 watch(
@@ -345,7 +341,7 @@ function updateStateWithLoadedArticle(articleData: IArticle) {
   }
   currentUserIsAuthor.value = userProfile.value?.uuid === articleData.author.uuid;
   if (currentUserIsAuthor.value) {
-    getArticleDraft(dayjs, token.value, id.value).then((draft) => {
+    getArticleDraft(token.value, id.value).then((draft) => {
       if (draft && article.value) {
         // Override article title -> this is a server-side behavior
         article.value.title = draft.title || '';

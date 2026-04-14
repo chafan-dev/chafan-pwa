@@ -123,7 +123,7 @@
         私信
       </router-link>
     </i18n>
-    ({{ $dayjs.utc(event.created_at).local().fromNow() }})
+    (<RelativeTime :datetime="event.created_at" />)
   </span>
 </template>
 
@@ -132,8 +132,8 @@ import { computed } from 'vue';
 import { IEvent } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import CommentPreview from '@/components/CommentPreview.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth } from '@/composables';
-import { useDayjs } from '@/composables';
 
 const props = withDefaults(
   defineProps<{
@@ -147,7 +147,6 @@ const props = withDefaults(
 );
 
 const { currentUserId } = useAuth();
-const { dayjs: $dayjs } = useDayjs();
 
 function onClick() {
   if (props.onClickHandler) {

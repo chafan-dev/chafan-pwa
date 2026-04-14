@@ -171,9 +171,10 @@ import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
 import ArticleHistoryDialog from '@/components/editor/ArticleHistoryDialog.vue';
 import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
-import { useAuth, useResponsive, useDayjs } from '@/composables';
+import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import dayjs from '@/dayjs';
 const store = useMainStore();
 
 // Composables
@@ -181,7 +182,6 @@ const route = useRoute();
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
-const { dayjs, fromNow } = useDayjs();
 
 // Template refs
 const tiptapRef = ref<InstanceType<typeof ChafanTiptap> | null>(null);
@@ -548,7 +548,7 @@ onMounted(async () => {
   if (articleId.value) {
     const article: IArticle = (await apiArticle.getArticle(token.value, articleId.value)).data;
     archivesCount.value = article.archives_count;
-    const articleDraft = await getArticleDraft(dayjs, token.value, article.uuid);
+    const articleDraft = await getArticleDraft(token.value, article.uuid);
     if (articleDraft) {
       logDebug('载入最近的草稿');
       store.notifications.push({

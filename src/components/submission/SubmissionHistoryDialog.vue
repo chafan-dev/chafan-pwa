@@ -9,7 +9,7 @@
       <v-expansion-panels>
         <v-expansion-panel v-for="archive in archives" :key="archive.id">
           <v-expansion-panel-header>
-            {{ fromNow(archive.created_at) }}
+            <RelativeTime :datetime="archive.created_at" />
             <v-spacer />
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import type { ISubmissionArchive } from '@/interfaces';
-import { useDayjs } from '@/composables';
 import Viewer from '@/components/Viewer.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 
 defineProps<{
   visible: boolean;
@@ -37,6 +37,4 @@ defineProps<{
 defineEmits<{
   (e: 'update:visible', value: boolean): void;
 }>();
-
-const { fromNow } = useDayjs();
 </script>

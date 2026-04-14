@@ -47,7 +47,7 @@
             </span>
           </div>
           <div>
-            <span class="text-caption text-grey mr-1">{{ fromNow(activity.created_at) }}</span>
+            <RelativeTime :datetime="activity.created_at" class="text-caption text-grey mr-1" />
             <v-menu location="bottom" v-if="activity.origins && activity.origins.length">
               <template v-slot:activator="{ props }">
                 <AppIcon name="Dots" v-bind="props" size="small"  />
@@ -202,7 +202,8 @@ import EmptyPlaceholder from '@/components/EmptyPlaceholder.vue';
 import { apiActivity } from '@/api/activity';
 import SiteName from '@/components/SiteName.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-import { useAuth, useTheme, useDayjs } from '@/composables';
+import RelativeTime from '@/components/RelativeTime.vue';
+import { useAuth, useTheme } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -220,11 +221,6 @@ const props = withDefaults(
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { theme } = useTheme();
-const { dayjs } = useDayjs();
-
-function fromNow(date: string) {
-  return dayjs(date).fromNow();
-}
 
 // Filter converted to function (Vue 3 removes filters)
 function activityVerbCN(value: string): string {

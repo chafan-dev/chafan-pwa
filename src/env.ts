@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 export const env = import.meta.env.VITE_APP_ENV;
 
 // Allowed API host patterns for security validation
@@ -42,10 +40,8 @@ export const buildInfo = {
   commitHashShort: (import.meta.env.VITE_GIT_COMMIT as string).substring(0, 8),
   /** Git branch */
   branch: import.meta.env.VITE_GIT_BRANCH as string,
-  /** Git commit time, undefined if not available */
-  commitTime: import.meta.env.VITE_GIT_COMMIT_TIME
-    ? dayjs(import.meta.env.VITE_GIT_COMMIT_TIME as string)
-    : undefined,
+  /** Git commit time (ISO string), undefined if not available */
+  commitTime: (import.meta.env.VITE_GIT_COMMIT_TIME as string | undefined) || undefined,
   /** Git tags applied to this commit */
   tags: (import.meta.env.VITE_GIT_TAGS as string).split('\n'),
 };

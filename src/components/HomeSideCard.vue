@@ -99,7 +99,9 @@ v{{ buildInfo.commitHashShort }}</pre
         >
         <v-expand-transition>
           <div v-show="expandDebugInfo">
-            Commited at {{ $dayjs(buildInfo.commitTime).fromNow() }}
+            <template v-if="buildInfo.commitTime">
+              Commited at <RelativeTime :datetime="buildInfo.commitTime" />
+            </template>
           </div>
         </v-expand-transition>
       </div>
@@ -113,6 +115,7 @@ import { IQuestionPreview, IUserSiteProfile } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import CreateSiteCard from '@/components/CreateSiteCard.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 import { apiDiscovery } from '@/api/discovery';
 import { apiMe } from '@/api/me';
 import { buildInfo } from '@/env';

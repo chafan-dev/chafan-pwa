@@ -44,7 +44,7 @@ import Comment from '@/components/Comment.vue';
 import SimpleEditor from '@/components/SimpleEditor.vue';
 import { IComment, INewCommentInternal } from '@/interfaces';
 import { rankComments } from '@/utils';
-import { useAuth, useDayjs, useNotification } from '@/composables';
+import { useAuth, useNotification } from '@/composables';
 
 const props = withDefaults(
   defineProps<{
@@ -66,7 +66,6 @@ const emit = defineEmits<{
 }>();
 
 const { loggedIn } = useAuth();
-const { dayjs } = useDayjs();
 const { notifyError } = useNotification();
 
 const mentioned = ref<string[]>([]);
@@ -74,7 +73,7 @@ const rankedComments = ref<IComment[]>([]);
 const simpleEditor = ref<InstanceType<typeof SimpleEditor> | null>(null);
 
 onMounted(() => {
-  rankedComments.value = rankComments(dayjs, props.comments);
+  rankedComments.value = rankComments(props.comments);
 });
 
 function recursiveCommentsCount(comments: IComment[]): number {

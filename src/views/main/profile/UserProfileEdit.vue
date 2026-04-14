@@ -227,7 +227,7 @@ import ValidateUrl from '@/components/base/ValidateUrl.vue';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
 import EducationExperienceSection from '@/components/profile/EducationExperienceSection.vue';
 import WorkExperienceSection from '@/components/profile/WorkExperienceSection.vue';
-import { useAuth, useResponsive, useDayjs } from '@/composables';
+import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -251,7 +251,6 @@ interface IUserEducationExperienceItem {
 const router = useRouter();
 const { token, userProfile } = useAuth();
 const { isDesktop } = useResponsive();
-const { dayjs } = useDayjs();
 
 const newResidencyTopicNames = ref<string[]>([]);
 const newProfessionTopicNames = ref<string[]>([]);
@@ -285,7 +284,7 @@ const vditorUploadConfig = computed(() => {
 });
 
 onMounted(async () => {
-  years.value = getRecentYears(dayjs);
+  years.value = getRecentYears();
   categoryTopics.value = (await api.getCategoryTopics()).data;
   const profile = userProfile.value;
   if (!profile) {

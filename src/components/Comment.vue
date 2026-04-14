@@ -3,7 +3,7 @@
     <div class="d-flex">
       <UserLink :userPreview="comment.author" />
       <v-spacer />
-      <span class="text-caption text-grey">{{ fromNow(comment.updated_at) }}</span>
+      <RelativeTime :datetime="comment.updated_at" class="text-caption text-grey" />
     </div>
 
     <!-- Comment body -->
@@ -201,7 +201,8 @@ import { apiComment } from '@/api/comment';
 import { rankComments } from '@/utils';
 import UpvoteStat from '@/components/widgets/UpvoteStat.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
-import { useAuth, useDayjs, useNotification } from '@/composables';
+import RelativeTime from '@/components/RelativeTime.vue';
+import { useAuth, useNotification } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
@@ -224,7 +225,6 @@ const props = withDefaults(
 
 const route = useRoute();
 const { token, userProfile, loggedIn } = useAuth();
-const { dayjs, fromNow } = useDayjs();
 const { notifyError, notifySuccess, notifyInfo } = useNotification();
 
 const showEditor = ref(false);
@@ -273,7 +273,7 @@ onMounted(() => {
     count: props.comment.upvotes_count,
     upvoted: props.comment.upvoted,
   };
-  childComments.value = rankComments(dayjs, props.comment.child_comments);
+  childComments.value = rankComments(props.comment.child_comments);
   sharedToTimeline.value = props.comment.shared_to_timeline;
 });
 

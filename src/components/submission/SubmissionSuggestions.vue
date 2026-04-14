@@ -10,16 +10,16 @@
         <span>
           <UserLink :show-avatar="true" :user-preview="suggestion.author" /> 的建议编辑：
           <template v-if="suggestion.status === 'pending'">
-            待处理（{{ fromNow(suggestion.created_at) }}）
+            待处理（<RelativeTime :datetime="suggestion.created_at" />）
           </template>
-          <template v-if="suggestion.status === 'accepted'">
-            已接受（{{ fromNow(suggestion.accepted_at) }}）
+          <template v-if="suggestion.status === 'accepted' && suggestion.accepted_at">
+            已接受（<RelativeTime :datetime="suggestion.accepted_at" />）
           </template>
-          <template v-if="suggestion.status === 'rejected'">
-            已拒绝（{{ fromNow(suggestion.rejected_at) }}）
+          <template v-if="suggestion.status === 'rejected' && suggestion.rejected_at">
+            已拒绝（<RelativeTime :datetime="suggestion.rejected_at" />）
           </template>
-          <template v-if="suggestion.status === 'retracted'">
-            已撤回（{{ fromNow(suggestion.retracted_at) }}）
+          <template v-if="suggestion.status === 'retracted' && suggestion.retracted_at">
+            已撤回（<RelativeTime :datetime="suggestion.retracted_at" />）
           </template>
         </span>
       </v-expansion-panel-header>
@@ -146,10 +146,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { ISubmission, ISubmissionSuggestion, ITopic } from '@/interfaces';
-import { useDayjs } from '@/composables';
 import UserLink from '@/components/UserLink.vue';
 import DiffView from '@/components/widgets/DiffView.vue';
 import Viewer from '@/components/Viewer.vue';
+import RelativeTime from '@/components/RelativeTime.vue';
 
 defineProps<{
   suggestions: ISubmissionSuggestion[];
@@ -165,8 +165,6 @@ defineEmits<{
   (e: 'retract', suggestion: ISubmissionSuggestion): void;
   (e: 'revert-retract', suggestion: ISubmissionSuggestion): void;
 }>();
-
-const { fromNow } = useDayjs();
 
 const previewedSuggestion = ref<ISubmissionSuggestion | null>(null);
 const showPreviewDialog = ref(false);

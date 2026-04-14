@@ -4,7 +4,7 @@
       <span><b>编号</b>：#{{ feedback.id }}</span>
     </div>
     <div>
-      <span><b>创建于</b>: {{ $dayjs.utc(feedback.created_at).local().fromNow() }}</span>
+      <b>创建于</b>: <RelativeTime :datetime="feedback.created_at" />
     </div>
     <div><b>描述</b>：#{{ feedback.description }}</div>
     <div><b>状态</b>：{{ statusCN[feedback.status] }}</div>
@@ -31,6 +31,7 @@
 import { ref, onMounted } from 'vue';
 import { IFeedback } from '@/interfaces';
 import { api } from '@/api';
+import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth } from '@/composables';
 
 const props = defineProps<{

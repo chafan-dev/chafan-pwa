@@ -152,7 +152,7 @@
 
       <div class="pt-2">
         <span class="text-subtitle-1 text-secondary">加入茶饭的日子：</span>
-        <span>{{ $dayjs.utc(userPublic.created_at).local().format('YYYY-MM-DD') }}</span>
+        <span>{{ dayjs.utc(userPublic.created_at).local().format('YYYY-MM-DD') }}</span>
       </div>
       <div class="my-2" v-if="userPublic.contributions && userPublic.contributions.length > 0">
         <ContribGraphs :data="userPublic.contributions" />
@@ -197,6 +197,7 @@ import ContribGraphs from '@/components/widgets/ContribGraphs.vue';
 import Viewer from '@/components/Viewer.vue';
 import { useAuth, useResponsive } from '@/composables';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import dayjs from '@/dayjs';
 
 const props = defineProps<{
   userPublic: IUserPublic;
