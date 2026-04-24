@@ -242,7 +242,7 @@ import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { apiComment } from '@/api/comment';
 import { AxiosError } from 'axios';
-import { isEqual, updateHead } from '@/common';
+import { updateHead } from '@/common';
 import { loadLocalEdit, LocalEdit } from '@/utils';
 import TopicChip from '@/components/widgets/TopicChip.vue';
 import { warn, info } from '@/logging';
@@ -307,14 +307,13 @@ const question = computed(() => questionPage.value?.question);
 
 // Watch for route changes (replacing beforeRouteUpdate)
 watch(
-  () => route.params,
-  (newParams, oldParams) => {
-    if (route.name === 'question' && !isEqual(newParams, oldParams)) {
+  () => route.fullPath,
+  (newPath, oldPath) => {
+    if (route.name === 'question' && newPath !== oldPath) {
       showEditor.value = false;
       showQuestionEditor.value = false;
       showComments.value = false;
       answers.value = [];
-      showConfirmHideQuestionDialog.value = false;
       savedNewAnswer.value = null;
       archives.value = [];
       questionPage.value = null;
