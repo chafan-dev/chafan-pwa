@@ -79,6 +79,6 @@ function refreshApp() {
   if (!pwaWaiting.value) {
     return;
   }
-  registration.value?.waiting?.postMessage({ type: 'SKIP_WAITING ' });
+  registration.value?.waiting?.postMessage({ type: 'SKIP_WAITING' });
 }
 </script>
