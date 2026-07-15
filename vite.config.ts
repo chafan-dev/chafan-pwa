@@ -98,16 +98,37 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
+      // Enable for Sentry uploads in CI if desired; keep off by default for public builds.
       sourcemap: false,
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ['vue', 'vue-router', 'pinia', 'vuetify'],
+          manualChunks(id) {
+            if (!id.includes('node_modules')) {
+              return;
+            }
+            if (id.includes('vuetify') || id.includes('@mdi')) {
+              return 'vuetify';
+            }
+            if (id.includes('vditor')) {
+              return 'vditor';
+            }
+            if (id.includes('@tiptap') || id.includes('prosemirror') || id.includes('lowlight')) {
+              return 'tiptap';
+            }
+            if (
+              id.includes('/vue/') ||
+              id.includes('vue-router') ||
+              id.includes('pinia') ||
+              id.includes('@vue/')
+            ) {
+              return 'vue-vendor';
+            }
           },
           experimentalMinChunkSize: 10_000,
         },
       },
-      chunkSizeWarningLimit: 2500,
+      // Surface real size regressions; editor chunks are lazy-loaded separately.
+      chunkSizeWarningLimit: 1000,
     },
     server: {
       allowedHosts: true,
