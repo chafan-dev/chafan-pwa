@@ -51,8 +51,8 @@ https://127.0.0.1:8080
 `chafan-dev/chafan-pwa` 是用于开发和测试的 `public repo`. `chai-inu/chafan-pwa-deploy` 是一个 `private repo` 和管理员的 Cloudflare 账号绑定。
 
 1. 所有的 Pull Request 都会被合并到 `public/master`
-2. Fast-forward 到 `private/preview`, 会自动部署到 `preview.cha.fan`
-3. Fast-forward 到 `private/master`, 会自动部署到 `cha.fan`
-4. `private/dev` 用于后端开发。它会被部署到 `dev.cha.fan`, 使用后端 `api_dev.cha.fan`
+2. Fast-forward 到 `deploy/preview`, 会自动部署到 `preview.cha.fan`
+3. Fast-forward 到 `deploy/master`, 会自动部署到 `cha.fan`
+4. `deploy/dev` 用于后端开发。它会被部署到 `dev.cha.fan`, 使用后端 `api_dev.cha.fan`
 
 
