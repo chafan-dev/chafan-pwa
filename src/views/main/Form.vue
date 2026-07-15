@@ -60,6 +60,7 @@ import { IForm, IFormResponse, IFormResponseCreate, IFormResponseField } from '@
 import FormResponseCard from '@/components/FormResponseCard.vue';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 const display = useDisplay();
 
@@ -120,7 +121,7 @@ async function submitResponse() {
   for (const responseField of responseFields.values()) {
     if (responseField.field_content.field_type_name === 'single_choice_response_field') {
       if (!responseField.field_content.selected_choice) {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '是否有单选没有选择？',
           color: 'error',
         });

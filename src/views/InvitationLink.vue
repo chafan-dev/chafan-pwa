@@ -86,6 +86,7 @@ import { api } from '@/api';
 import { translateErrorMsgCN } from '@/common';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const route = useRoute();
@@ -102,7 +103,7 @@ onMounted(async () => {
     const response = await api.getInvitationLink(token.value, uuid.value);
     invitationLink.value = response.data;
     if (!invitationLink.value?.valid) {
-      store.notifications.push({
+      useNotificationStore().push({
         content: translateErrorMsgCN('Invalid invitation link'),
         color: 'error',
       });

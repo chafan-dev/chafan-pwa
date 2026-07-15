@@ -50,6 +50,7 @@ import DebugSpan from '@/components/base/DebugSpan.vue';
 import { defaultSiteUuid } from '@/env';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = withDefaults(defineProps<{
@@ -89,7 +90,7 @@ async function postNewQuestion() {
     siteUUID = defaultSiteUuid;
   }
   if (newQuestionTitle.value.length < 5) {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '标题太短了',
       color: 'error',
     });

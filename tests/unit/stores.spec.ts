@@ -37,6 +37,7 @@ vi.mock('@sentry/vue', () => ({
 }));
 
 import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 import { api } from '@/api';
 import { apiMe } from '@/api/me';
 import { getLocalToken, saveLocalToken, removeLocalToken } from '@/utils';
@@ -54,7 +55,6 @@ describe('Main Pinia Store', () => {
       expect(store.isLoggedIn).toBeNull();
       expect(store.logInError).toBe(false);
       expect(store.userProfile).toBeNull();
-      expect(store.notifications).toEqual([]);
       expect(store.moderated_sites).toBeNull();
       expect(store.showLoginPrompt).toBe(false);
       expect(store.narrowUI).toBe(true);
@@ -80,16 +80,16 @@ describe('Main Pinia Store', () => {
       expect(store.hasModeratedSites).toBeTruthy();
     });
 
-    it('firstNotification returns false when empty', () => {
-      const store = useMainStore();
-      expect(store.firstNotification).toBe(false);
+    it('notification store firstNotification returns false when empty', () => {
+      const notifications = useNotificationStore();
+      expect(notifications.firstNotification).toBe(false);
     });
 
-    it('firstNotification returns first notification', () => {
-      const store = useMainStore();
+    it('notification store firstNotification returns first notification', () => {
+      const notifications = useNotificationStore();
       const notif = { content: 'test', color: 'success' };
-      store.notifications.push(notif);
-      expect(store.firstNotification).toEqual(notif);
+      notifications.push(notif);
+      expect(notifications.firstNotification).toEqual(notif);
     });
   });
 
@@ -97,9 +97,10 @@ describe('Main Pinia Store', () => {
     describe('logIn', () => {
       it('shows error when username/password missing', async () => {
         const store = useMainStore();
+        const notifications = useNotificationStore();
         await store.logIn({});
-        expect(store.notifications).toHaveLength(1);
-        expect(store.notifications[0].color).toBe('error');
+        expect(notifications.notifications).toHaveLength(1);
+        expect(notifications.notifications[0].color).toBe('error');
       });
 
       it('saves token and logs in on success', async () => {
@@ -151,13 +152,14 @@ describe('Main Pinia Store', () => {
     describe('userLogOut', () => {
       it('logs out and shows notification', async () => {
         const store = useMainStore();
+        const notifications = useNotificationStore();
         store.token = 'some-token';
 
         await store.userLogOut();
 
         expect(store.isLoggedIn).toBe(false);
-        expect(store.notifications).toHaveLength(1);
-        expect(store.notifications[0].content).toBe('已登出');
+        expect(notifications.notifications).toHaveLength(1);
+        expect(notifications.notifications[0].content).toBe('已登出');
       });
     });
 
@@ -241,12 +243,13 @@ describe('Main Pinia Store', () => {
     describe('checkApiError', () => {
       it('shows network error notification', async () => {
         const store = useMainStore();
+        const notifications = useNotificationStore();
         const error = new Error('Network Error') as any;
         error.toString = () => 'Error: Network Error';
 
         await store.checkApiError(error);
 
-        expect(store.notifications).toContainEqual({
+        expect(notifications.notifications).toContainEqual({
           color: 'warning',
           content: '无法连接到服务器',
         });

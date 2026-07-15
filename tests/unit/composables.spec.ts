@@ -8,11 +8,12 @@ vi.mock('@/utils', () => ({
   isProdDev: false,
 }));
 
-// Mock the Pinia store for useErrorHandling
+// Mock the notification store for useErrorHandling
 const mockNotifications: any[] = [];
-vi.mock('@/stores/main', () => ({
-  useMainStore: () => ({
+vi.mock('@/stores/notifications', () => ({
+  useNotificationStore: () => ({
     notifications: mockNotifications,
+    push: (n: any) => mockNotifications.push(n),
   }),
 }));
 

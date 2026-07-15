@@ -138,6 +138,7 @@ import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const route = useRoute();
@@ -162,7 +163,7 @@ async function sendVerificationCode() {
     const response = await api.sendVerificationCode({ email: email.value });
     if (response) {
       const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
-      store.notifications.push({
+      useNotificationStore().push({
         content: msg,
         color: 'success',
       });
@@ -183,7 +184,7 @@ async function openAccount() {
       invitationToken.value
     );
     if (response) {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '账号创建成功，返回登陆界面',
         color: 'success',
       });

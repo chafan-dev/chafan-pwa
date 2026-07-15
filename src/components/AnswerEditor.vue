@@ -198,6 +198,7 @@ import dayjs from '@/dayjs';
 import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = withDefaults(defineProps<{
@@ -287,7 +288,7 @@ async function deleteDraft() {
   await store.captureApiError(async () => {
     if (answerId.value) {
       await apiAnswer.deleteAnswerDraft(token.value, answerId.value);
-      store.notifications.push({
+      useNotificationStore().push({
         content: '草稿已删除',
         color: 'success',
       });
@@ -340,7 +341,7 @@ function getEditorMode(): editor_T {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getMode() || 'wysiwyg';
   }
-  store.notifications.push({
+  useNotificationStore().push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -353,7 +354,7 @@ function getContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getContent() || null;
   }
-  store.notifications.push({
+  useNotificationStore().push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -366,7 +367,7 @@ function getTextContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getText() || null;
   }
-  store.notifications.push({
+  useNotificationStore().push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -491,7 +492,7 @@ async function showHistoryDialog() {
       if (archives.value.length > 0) {
         historyDialog.value = true;
       } else {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '尚无历史发表存档',
           color: 'info',
         });

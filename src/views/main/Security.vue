@@ -208,6 +208,7 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 const display = useDisplay();
 
@@ -239,7 +240,7 @@ async function sendVerificationCode() {
     (editLoginMode.value === 'email' || editLoginMode.value === 'add_secondary_email') &&
     !newEmail.value
   ) {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '电子邮件地址为空',
       color: 'error',
     });
@@ -254,7 +255,7 @@ async function sendVerificationCode() {
       payload.email = newEmail.value!;
     }
     await api.sendVerificationCode(payload);
-    store.notifications.push({
+    useNotificationStore().push({
       content: '验证码已发送到邮箱，请查收',
       color: 'success',
     });
@@ -289,7 +290,7 @@ async function verifyCode() {
       response = await apiMe.updateSecondaryEmail(token.value, payload);
     }
     if (response) {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '更新成功',
         color: 'success',
       });
@@ -311,7 +312,7 @@ async function removeSecondaryEmail(email: string) {
       action: 'remove',
     };
     const newProfile = (await apiMe.updateSecondaryEmail(token.value, payload)).data;
-    store.notifications.push({
+    useNotificationStore().push({
       content: '更新成功',
       color: 'success',
     });

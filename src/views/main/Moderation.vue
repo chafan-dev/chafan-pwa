@@ -323,6 +323,7 @@ import { apiMe } from '@/api/me';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const defaultWebhookCreate: IWebhookCreate = {
@@ -487,7 +488,7 @@ async function approveApplication(application: IApplication) {
   await store.captureApiError(async () => {
     const updatedApplication = (await api.approveApplication(token.value, application.id)).data;
     if (updatedApplication.pending) {
-      store.notifications.push({
+      useNotificationStore().push({
         color: 'error',
         content: 'Failed to approve',
       });
@@ -500,7 +501,7 @@ async function approveApplication(application: IApplication) {
 async function submitNewSubmissionBroadcast() {
   await store.captureApiError(async () => {
     if (!selectedSite.value) {
-      store.notifications.push({
+      useNotificationStore().push({
         color: 'error',
         content: 'Site is not selected',
       });
@@ -516,7 +517,7 @@ async function submitNewSubmissionBroadcast() {
         throw new Error('Invalid sharing link');
       }
     } catch (e: any) {
-      store.notifications.push({ color: 'error', content: e });
+      useNotificationStore().push({ color: 'error', content: e });
       return;
     }
     await api.createTask(token.value, {
@@ -524,7 +525,7 @@ async function submitNewSubmissionBroadcast() {
       submission_uuid: submissionUUID,
       to_members_of_site_uuid: selectedSite.value!.uuid,
     });
-    store.notifications.push({
+    useNotificationStore().push({
       color: 'success',
       content: '通知创建成功，即将发送',
     });

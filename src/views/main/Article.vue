@@ -207,6 +207,7 @@ import { AxiosError } from 'axios';
 import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 const display = useDisplay();
 
@@ -367,7 +368,7 @@ function updateStateWithLoadedArticle(articleData: IArticle) {
 async function deleteArticle() {
   if (article.value) {
     await apiArticle.deleteArticle(token.value, article.value.uuid);
-    store.notifications.push({
+    useNotificationStore().push({
       content: '文章已永久删除',
       color: 'success',
     });

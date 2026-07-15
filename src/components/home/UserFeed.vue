@@ -206,6 +206,7 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth, useTheme } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = withDefaults(
@@ -387,7 +388,7 @@ function showUsersDialogFn(users: IUserPreview[]) {
 
 async function blockOrigin(origin: IOrigin) {
   await apiActivity.updateOrigins(token.value, { action: 'add', origin });
-  store.notifications.push({
+  useNotificationStore().push({
     color: 'info',
     content: '过滤规则更新成功，稍后自动生效',
   });
