@@ -2,7 +2,7 @@ import { localize } from '@vee-validate/i18n';
 import dayjs from '@/dayjs';
 import { IComment } from '@/interfaces';
 import { env } from '@/env';
-import { range } from 'lodash';
+import range from 'lodash/range';
 
 export { v4 as uuidv4 } from 'uuid';
 

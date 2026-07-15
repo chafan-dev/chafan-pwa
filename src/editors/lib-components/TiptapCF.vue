@@ -156,7 +156,7 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import Mention from '@tiptap/extension-mention';
 import { lowlight } from 'lowlight';
 import tippy from 'tippy.js';
-import * as _ from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 import javascript from 'highlight.js/lib/languages/javascript';
 import css from 'highlight.js/lib/languages/css';
@@ -446,7 +446,7 @@ function getText(): string {
 function getJSON(): object | null {
   if (!editor.value) return null;
   const json = editor.value.getJSON();
-  if (_.isEqual(json, EMPTY_DOCUMENT)) return null;
+  if (isEqual(json, EMPTY_DOCUMENT)) return null;
   return json;
 }
 

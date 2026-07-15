@@ -1,5 +1,3 @@
-import 'core-js/stable';
-
 // styles
 import './styles/app.scss';
 

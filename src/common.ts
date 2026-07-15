@@ -4,7 +4,7 @@
 //   @/i18n - constants, error translations
 //   @/dom-utils - DOM manipulation helpers (postProcessViewerDOM, updateHead)
 
-export { isEqual } from 'lodash';
+export { default as isEqual } from 'lodash/isEqual';
 
 // From @/theme
 export {
