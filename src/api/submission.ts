@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { apiUrl } from '@/env';
+import { http } from '@/api/client';
 import { authHeaders } from '@/utils';
 import {
   IGenericResponse,
@@ -15,67 +14,67 @@ import {
 
 export const apiSubmission = {
   async postSubmission(token: string, data: ISubmissionCreate) {
-    return axios.post<ISubmission>(`${apiUrl}/submissions/`, data, authHeaders(token));
+    return http.post<ISubmission>(`/submissions/`, data, authHeaders(token));
   },
   async getForUser(token: string) {
-    return axios.get<ISubmission[]>(`${apiUrl}/submissions/`, authHeaders(token));
+    return http.get<ISubmission[]>(`/submissions/`, authHeaders(token));
   },
   async getSubmission(token: string, uuid: string) {
-    return axios.get<ISubmission>(`${apiUrl}/submissions/${uuid}`, authHeaders(token));
+    return http.get<ISubmission>(`/submissions/${uuid}`, authHeaders(token));
   },
   async bumpViewsCounter(token: string, uuid: string) {
-    return axios.post<IGenericResponse>(
-      `${apiUrl}/submissions/${uuid}/views/`,
+    return http.post<IGenericResponse>(
+      `/submissions/${uuid}/views/`,
       null,
       authHeaders(token)
     );
   },
   async getUpvotes(token: string, uuid: string) {
-    return axios.get<ISubmissionUpvotes>(
-      `${apiUrl}/submissions/${uuid}/upvotes/`,
+    return http.get<ISubmissionUpvotes>(
+      `/submissions/${uuid}/upvotes/`,
       authHeaders(token)
     );
   },
   async updateSubmission(token: string, uuid: string, payload: ISubmissionUpdate) {
-    return axios.put<ISubmission>(`${apiUrl}/submissions/${uuid}`, payload, authHeaders(token));
+    return http.put<ISubmission>(`/submissions/${uuid}`, payload, authHeaders(token));
   },
   async upvoteSubmission(token: string, uuid: string) {
-    return axios.post<ISubmissionUpvotes>(
-      `${apiUrl}/submissions/${uuid}/upvotes/`,
+    return http.post<ISubmissionUpvotes>(
+      `/submissions/${uuid}/upvotes/`,
       null,
       authHeaders(token)
     );
   },
   async cancelUpvoteSubmission(token: string, uuid: string) {
-    return axios.delete<ISubmissionUpvotes>(
-      `${apiUrl}/submissions/${uuid}/upvotes/`,
+    return http.delete<ISubmissionUpvotes>(
+      `/submissions/${uuid}/upvotes/`,
       authHeaders(token)
     );
   },
   async getSubmissionArchives(token: string, uuid: string) {
-    return axios.get<ISubmissionArchive[]>(
-      `${apiUrl}/submissions/${uuid}/archives/`,
+    return http.get<ISubmissionArchive[]>(
+      `/submissions/${uuid}/archives/`,
       authHeaders(token)
     );
   },
   async getSubmissionUpvotes(token: string, uuid: string) {
-    return axios.get<ISubmissionUpvotes>(
-      `${apiUrl}/submissions/${uuid}/upvotes/`,
+    return http.get<ISubmissionUpvotes>(
+      `/submissions/${uuid}/upvotes/`,
       authHeaders(token)
     );
   },
   async getSuggestions(token: string, uuid: string) {
-    return axios.get<ISubmissionSuggestion[]>(
-      `${apiUrl}/submissions/${uuid}/suggestions/`,
+    return http.get<ISubmissionSuggestion[]>(
+      `/submissions/${uuid}/suggestions/`,
       authHeaders(token)
     );
   },
   async hideSubmission(token: string, uuid: string) {
-    return axios.put<ISubmission>(`${apiUrl}/submissions/${uuid}/hide`, null, authHeaders(token));
+    return http.put<ISubmission>(`/submissions/${uuid}/hide`, null, authHeaders(token));
   },
   async createSuggestion(token: string, payload: ISubmissionSuggestionCreate) {
-    return axios.post<ISubmissionSuggestion>(
-      `${apiUrl}/submission-suggestions/`,
+    return http.post<ISubmissionSuggestion>(
+      `/submission-suggestions/`,
       payload,
       authHeaders(token)
     );
@@ -85,22 +84,22 @@ export const apiSubmission = {
     uuid: string,
     payload: ISubmissionSuggestionUpdate
   ) {
-    return axios.put<ISubmissionSuggestion>(
-      `${apiUrl}/submission-suggestions/${uuid}`,
+    return http.put<ISubmissionSuggestion>(
+      `/submission-suggestions/${uuid}`,
       payload,
       authHeaders(token)
     );
   },
   async upvote(token: string, uuid: string) {
-    return axios.post<ISubmissionUpvotes>(
-      `${apiUrl}/submissions/${uuid}/upvotes/`,
+    return http.post<ISubmissionUpvotes>(
+      `/submissions/${uuid}/upvotes/`,
       null,
       authHeaders(token)
     );
   },
   async cancelUpvote(token: string, uuid: string) {
-    return axios.delete<ISubmissionUpvotes>(
-      `${apiUrl}/submissions/${uuid}/upvotes/`,
+    return http.delete<ISubmissionUpvotes>(
+      `/submissions/${uuid}/upvotes/`,
       authHeaders(token)
     );
   },

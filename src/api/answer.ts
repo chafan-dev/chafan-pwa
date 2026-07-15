@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { apiUrl } from '@/env';
+import { http } from '@/api/client';
 import {
   IAnswer,
   IAnswerArchive,
@@ -16,71 +15,71 @@ import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiAnswer = {
   async getAnswer(answerUUID: string) {
-    return axios.get<IAnswer>(`${apiUrl}/answers/${answerUUID}`);
+    return http.get<IAnswer>(`/answers/${answerUUID}`);
   },
   async getAnswerUpvotes(answerUUID: string) {
-    return axios.get<IAnswerUpvotes>(`${apiUrl}/answers/${answerUUID}/upvotes/`);
+    return http.get<IAnswerUpvotes>(`/answers/${answerUUID}/upvotes/`);
   },
   async upvoteAnswer(token: string, answerUUID: string) {
-    return axios.post<IAnswerUpvotes>(
-      `${apiUrl}/answers/${answerUUID}/upvotes/`,
+    return http.post<IAnswerUpvotes>(
+      `/answers/${answerUUID}/upvotes/`,
       null,
       authHeaders(token)
     );
   },
   async cancelUpvoteAnswer(token: string, answerUUID: string) {
-    return axios.delete<IAnswerUpvotes>(
-      `${apiUrl}/answers/${answerUUID}/upvotes/`,
+    return http.delete<IAnswerUpvotes>(
+      `/answers/${answerUUID}/upvotes/`,
       authHeaders(token)
     );
   },
   async postAnswer(token: string, data: IAnswerCreate) {
-    return axios.post<IAnswer>(`${apiUrl}/answers/`, data, authHeaders(token));
+    return http.post<IAnswer>(`/answers/`, data, authHeaders(token));
   },
   async updateAnswer(token: string, answerUUID: string, payload: IAnswerUpdate) {
-    return axios.put<IAnswer>(`${apiUrl}/answers/${answerUUID}`, payload, authHeaders(token));
+    return http.put<IAnswer>(`/answers/${answerUUID}`, payload, authHeaders(token));
   },
   async deleteAnswer(token: string, answerUUID: string) {
-    return axios.delete<IGenericResponse>(`${apiUrl}/answers/${answerUUID}`, authHeaders(token));
+    return http.delete<IGenericResponse>(`/answers/${answerUUID}`, authHeaders(token));
   },
   async bumpViewsCounter(token: string, answerUUID: string) {
-    return axios.post<IGenericResponse>(
-      `${apiUrl}/answers/${answerUUID}/views/`,
+    return http.post<IGenericResponse>(
+      `/answers/${answerUUID}/views/`,
       null,
       authHeaders(token)
     );
   },
   async getAnswerDraft(token: string, answerUUID: string) {
-    return axios.get<IAnswerDraft>(`${apiUrl}/answers/${answerUUID}/draft`, authHeaders(token));
+    return http.get<IAnswerDraft>(`/answers/${answerUUID}/draft`, authHeaders(token));
   },
   async deleteAnswerDraft(token: string, answerUUID: string) {
-    return axios.delete<IAnswerDraft>(`${apiUrl}/answers/${answerUUID}/draft`, authHeaders(token));
+    return http.delete<IAnswerDraft>(`/answers/${answerUUID}/draft`, authHeaders(token));
   },
   async getAnswerArchives(token: string, answerUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<IAnswerArchive[]>(
-      `${apiUrl}/answers/${answerUUID}/archives/`,
+    return http.get<IAnswerArchive[]>(
+      `/answers/${answerUUID}/archives/`,
       authHeadersWithParams(token, params)
     );
   },
   async getSuggestions(token: string, uuid: string) {
-    return axios.get<IAnswerSuggestEdit[]>(
-      `${apiUrl}/answers/${uuid}/suggestions/`,
+    return http.get<IAnswerSuggestEdit[]>(
+      `/answers/${uuid}/suggestions/`,
       authHeaders(token)
     );
   },
   async createSuggestion(token: string, payload: IAnswerSuggestEditCreate) {
-    return axios.post<IAnswerSuggestEdit>(
-      `${apiUrl}/answer-suggest-edits/`,
+    return http.post<IAnswerSuggestEdit>(
+      `/answer-suggest-edits/`,
       payload,
       authHeaders(token)
     );
   },
   async updateSuggestion(token: string, uuid: string, payload: IAnswerSuggestEditUpdate) {
-    return axios.put<IAnswerSuggestEdit>(
-      `${apiUrl}/answer-suggest-edits/${uuid}`,
+    return http.put<IAnswerSuggestEdit>(
+      `/answer-suggest-edits/${uuid}`,
       payload,
       authHeaders(token)
     );

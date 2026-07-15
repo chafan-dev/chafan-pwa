@@ -375,7 +375,7 @@ import {
   ThemeType,
 } from '@/interfaces';
 import { api } from '@/api';
-import { api2 } from '@/api2';
+
 import { useMainStore } from '@/stores/main';
 import { useUiStore } from '@/stores/ui';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
@@ -514,7 +514,7 @@ onMounted(async () => {
         rewardsIntermediate.value = false;
       });
 
-      api2.getCoinPayments(token.value).then((r) => {
+      api.getCoinPayments(token.value).then((r) => {
         coinPayments.value = r.data;
         coinPaymentsIntermediate.value = false;
       });

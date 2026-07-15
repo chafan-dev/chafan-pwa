@@ -29,7 +29,7 @@ import 'highlight.js/styles/github.css';
 
 import TiptapCF from '@/editors/lib-components/TiptapCF.vue';
 import { resizeImage } from '@/imagelib';
-import { api2 } from '@/api2';
+import { apiUpload } from '@/api/upload';
 import { useAuth } from '@/composables';
 
 declare const renderMathInElement: (element: HTMLElement, options: Record<string, unknown>) => void;
@@ -106,7 +106,7 @@ async function upload(file: Blob) {
   } catch {
     formData.append('file', resized.blob);
   }
-  const response = await api2.uploadFile(token.value, formData);
+  const response = await apiUpload.uploadImage(token.value, formData);
   return response.data.url;
 }
 

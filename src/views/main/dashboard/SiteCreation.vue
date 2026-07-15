@@ -28,7 +28,7 @@ import { ref, onMounted } from 'vue';
 import { ISite, ISiteCreate, ITopic } from '@/interfaces';
 import { apiTopic } from '@/api/topic';
 import { apiSite } from '@/api/site';
-import { api2 } from '@/api2';
+import { api } from '@/api';
 import SiteBtn from '@/components/SiteBtn.vue';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
@@ -61,7 +61,7 @@ async function createSite() {
   const r = (await apiSite.createSite(token.value, props.site_creation)).data;
   if (r.created_site) {
     existingSite.value = r.created_site;
-    await api2.inviteUser(token.value, {
+    await api.inviteUser(token.value, {
       site_uuid: r.created_site.uuid,
       user_uuid: props.applicantUuid,
     });
