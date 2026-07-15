@@ -149,11 +149,16 @@ export const api = {
     return http.get<INotification[]>(`/notifications/read/`, authHeaders(token));
   },
   async updateNotification(token: string, notifId: number, payload: INotificationUpdate) {
-    return http.put<IGenericResponse>(
-      `/notifications/${notifId}`,
-      payload,
-      authHeaders(token)
-    );
+    // notifId can arrive via WebSocket payloads; constrain to a non-negative
+    // integer path segment so the request URL cannot be attacker-controlled.
+    if (typeof notifId !== 'number' || !Number.isSafeInteger(notifId) || notifId < 0) {
+      throw new TypeError('Invalid notification id');
+    }
+    const path = `/notifications/${notifId}`;
+    if (!/^\/notifications\/\d+$/.test(path)) {
+      throw new TypeError('Invalid notification path');
+    }
+    return http.put<IGenericResponse>(path, payload, authHeaders(token));
   },
   async getCoinPayments(token: string) {
     return http.get<ICoinPayment[]>(`/coin-payments/`, authHeaders(token));
