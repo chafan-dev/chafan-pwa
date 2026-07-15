@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 on:
@@ -8,11 +6,8 @@ on:
   pull_request:
     branches: [master, preview]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     steps:
@@ -26,18 +21,25 @@ jobs:
       - name: Enable Corepack
         run: corepack enable
 
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: ESLint
+        run: yarn run lint
+
+      - name: CSS lint
+        run: yarn run lint:css
+
+      - name: Unit tests
+        run: yarn run test:unit
+
+      # Soft gate while Vue 3 migration still has type debt (~290 errors).
+      # Remove continue-on-error once `yarn typecheck` is clean.
+      - name: Typecheck
+        continue-on-error: true
+        run: yarn run typecheck
+
       - name: Build
         run: |
           source example.env
           ./cloudflare.build.sh
-      - name: Check linting etc.
-        run: |
-          yarn --version
-          #yarn run check:eslint
-          #yarn run check:prettier
-      - name: Unit tests
-        run: |
-          yarn --version
-          yarn run test:unit
-      - name: CSS Lint
-        run: npm run lint:css || true
