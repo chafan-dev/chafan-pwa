@@ -54,6 +54,7 @@ import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import UserLink from '@/components/UserLink.vue';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 
 const props = defineProps<{
   visible: boolean;
@@ -87,7 +88,7 @@ async function submitReport() {
     reason: reportReason.value,
     reason_comment: reportReasonComment.value || undefined,
   });
-  store.notifications.push({
+  useNotificationStore().push({
     color: 'success',
     content: '举报提交成功',
   });

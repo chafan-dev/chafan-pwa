@@ -400,6 +400,7 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import dayjs from '@/dayjs';
 import { useAuth, useResponsive } from '@/composables';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const display = useDisplay();
 const store = useMainStore();
 
@@ -568,7 +569,7 @@ async function onChangeEmailNotifications() {
     ).data;
     store.userProfile = newProfile;
     changingMySettings.value = false;
-    store.notifications.push({ content: '已保存', color: 'info' });
+    useNotificationStore().push({ content: '已保存', color: 'info' });
   });
 }
 
@@ -582,7 +583,7 @@ async function onChangeEditorMode() {
     ).data;
     store.userProfile = newProfile;
     changingMySettings.value = false;
-    store.notifications.push({ content: '已保存', color: 'info' });
+    useNotificationStore().push({ content: '已保存', color: 'info' });
   });
 }
 
@@ -592,7 +593,7 @@ async function onChangeTheme() {
     store.theme = selectedTheme.value;
     setLocalValue(themeLocalStorageKey, selectedTheme.value);
     changingMySettings.value = false;
-    store.notifications.push({ content: '已保存', color: 'info' });
+    useNotificationStore().push({ content: '已保存', color: 'info' });
   });
 }
 
@@ -627,7 +628,7 @@ async function updateLabs() {
 
 async function unblockOrigin(origin: IOrigin) {
   await apiActivity.updateOrigins(token.value, { action: 'remove', origin });
-  store.notifications.push({
+  useNotificationStore().push({
     color: 'info',
     content: '过滤规则更新成功，稍后自动生效',
   });

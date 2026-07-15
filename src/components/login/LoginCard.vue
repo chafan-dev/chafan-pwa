@@ -136,6 +136,7 @@ import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import { useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = withDefaults(
@@ -177,7 +178,7 @@ async function submit() {
     });
   } catch (err: any) {
     if (err.toString() === 'Error: Incorrect email or password') {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '邮箱地址或密码不正确',
         color: 'error',
       });

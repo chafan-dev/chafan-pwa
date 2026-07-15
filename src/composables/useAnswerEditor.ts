@@ -3,6 +3,7 @@ import { IAnswer, INewEditEvent, IRichEditorState } from '@/interfaces';
 import { useMainStore } from '@/stores/main';
 import { captureException } from '@sentry/vue';
 import { isDev, logDebug } from '@/utils/misc';
+import { useNotificationStore } from '@/stores/notifications';
 
 export const newAnswerHandler = async (
   vueInstance: any,
@@ -12,7 +13,7 @@ export const newAnswerHandler = async (
   questionUUID: string
 ) => {
   if (edit.body && (!edit.rendered_body_text || edit.rendered_body_text.length < 5)) {
-    useMainStore().notifications.push({
+    useNotificationStore().push({
       content: '答案太短了',
       color: 'error',
     });
@@ -93,7 +94,7 @@ export class AnswerEditHandler {
       if (!payload.edit.rendered_body_text || payload.edit.rendered_body_text.length < 5) {
         logDebug('newEditHandler: answer too short');
         if (!payload.isAutosaved) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: '答案内容太短了',
             color: 'error',
           });
@@ -107,7 +108,7 @@ export class AnswerEditHandler {
       if (!payload.edit.body || payload.edit.body.length < 5) {
         logDebug('newEditHandler: answer too short');
         if (!payload.isAutosaved) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: '答案内容太短了',
             color: 'error',
           });
@@ -136,7 +137,7 @@ export class AnswerEditHandler {
             this.newAnswerCallback(answer, payload.isAutosaved);
           }
           if (!payload.isAutosaved) {
-            store.notifications.push({
+            useNotificationStore().push({
               content: payload.edit.is_draft ? '草稿已保存' : '已发表',
               color: 'success',
             });
@@ -158,7 +159,7 @@ export class AnswerEditHandler {
           });
           if (response) {
             if (!payload.isAutosaved) {
-              store.notifications.push({
+              useNotificationStore().push({
                 content: payload.edit.is_draft ? '答案草稿已更新' : '更新已发表',
                 color: 'success',
               });
@@ -179,7 +180,7 @@ export class AnswerEditHandler {
             comment: payload.answerSuggestEditComment,
           });
           if (response) {
-            store.notifications.push({
+            useNotificationStore().push({
               content: '建议提交成功',
               color: 'success',
             });

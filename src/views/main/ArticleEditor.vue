@@ -175,6 +175,7 @@ import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import dayjs from '@/dayjs';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 // Composables
@@ -243,7 +244,7 @@ function getEditorMode(): editor_T {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getMode() ?? 'wysiwyg';
   }
-  store.notifications.push({
+  useNotificationStore().push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -256,7 +257,7 @@ function getContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getContent() ?? null;
   }
-  store.notifications.push({
+  useNotificationStore().push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -269,7 +270,7 @@ function getTextContent(): string | null {
   } else if (topLevelEditor.value === 'vditor') {
     return vditorRef.value?.getText() ?? null;
   }
-  store.notifications.push({
+  useNotificationStore().push({
     content: '编辑器错误',
     color: 'error',
   });
@@ -313,7 +314,7 @@ async function newEditHandler(payload: {
   await store.captureApiError(async () => {
     if (!payload.edit.title || payload.edit.title.length < 5) {
       if (!payload.isAutosaved) {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '文章标题太短了，不得少于5个字。',
           color: 'error',
         });
@@ -329,7 +330,7 @@ async function newEditHandler(payload: {
       !payload.edit.body
     ) {
       if (!payload.isAutosaved) {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '文章内容太短了，不得少于5个字。',
           color: 'error',
         });
@@ -353,7 +354,7 @@ async function newEditHandler(payload: {
         clearLocalEdit('article', article.uuid);
         newArticleId.value = article.uuid;
         if (!payload.isAutosaved) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: payload.edit.is_draft ? '草稿已保存' : '已发表',
             color: 'success',
           });
@@ -380,7 +381,7 @@ async function newEditHandler(payload: {
         payload.saveArticleCallback(response.data);
         clearLocalEdit('article', response.data.uuid);
         if (!payload.isAutosaved) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: payload.edit.is_draft ? '文章草稿已更新' : '更新已发表',
             color: 'success',
           });
@@ -465,7 +466,7 @@ async function showHistoryDialog() {
       if (articleArchives.value.length > 0) {
         historyDialog.value = true;
       } else {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '尚无历史发表存档',
           color: 'info',
         });
@@ -501,13 +502,13 @@ async function deleteDraft() {
   if (articleId.value) {
     await apiArticle.deleteArticleDraft(token.value, articleId.value);
     clearLocalEdit('article', articleId.value);
-    store.notifications.push({
+    useNotificationStore().push({
       content: '草稿已删除',
       color: 'success',
     });
     await router.push(`/articles/${articleId.value}`);
   } else {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '无法删除草稿',
       color: 'success',
     });
@@ -551,7 +552,7 @@ onMounted(async () => {
     const articleDraft = await getArticleDraft(token.value, article.uuid);
     if (articleDraft) {
       logDebug('载入最近的草稿');
-      store.notifications.push({
+      useNotificationStore().push({
         content: '载入最近的草稿',
         color: 'success',
       });

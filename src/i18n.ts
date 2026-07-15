@@ -141,7 +141,7 @@ const errorMsgCN: Record<string, string> = {
   'Delete answer failed': '删除答案失败',
 };
 
-// TODO remove this function.
+/** Map backend English error strings to Chinese UI messages. */
 export const translateErrorMsgCN = (s: string): string => {
   if (s in errorMsgCN) {
     return errorMsgCN[s];

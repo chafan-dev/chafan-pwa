@@ -269,6 +269,7 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 const display = useDisplay();
 
@@ -340,7 +341,7 @@ watch(
 onMounted(async () => {
   try {
     if (localStorage.getItem('new-submission')) {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '点击「更多」编辑细节',
         color: 'info',
       });
@@ -364,7 +365,7 @@ async function load() {
       ).data;
     }
   } catch (err) {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '分享不存在，返回主页',
       color: 'error',
     });
@@ -522,7 +523,7 @@ async function showHistoryDialog() {
     if (archives.value.length > 0) {
       historyDialog.value = true;
     } else {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '尚无历史存档',
         color: 'info',
       });
@@ -533,7 +534,7 @@ async function showHistoryDialog() {
 async function confirmHideSubmission() {
   await store.captureApiError(async () => {
     await apiSubmission.hideSubmission(token.value, submission.value!.uuid);
-    store.notifications.push({
+    useNotificationStore().push({
       content: '已隐藏',
       color: 'info',
     });
