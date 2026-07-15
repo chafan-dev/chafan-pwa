@@ -15,10 +15,8 @@
 import { computed } from 'vue';
 import { NARROW_FEED_UI_KEY } from '@/common';
 import { useResponsive } from '@/composables';
-import { useMainStore } from '@/stores/main';
 import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
-const store = useMainStore();
 const ui = useUiStore();
 const { isDesktop } = useResponsive();
 
