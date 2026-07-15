@@ -6,11 +6,11 @@ import { constants } from '@/common';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import(/* webpackChunkName: "main" */ './views/main/Main.vue'),
+    component: () => import('./views/main/Main.vue'),
     children: [
       {
         path: '',
-        component: () => import(/* webpackChunkName: "main-home" */ './views/main/Home.vue'),
+        component: () => import('./views/main/Home.vue'),
       },
       {
         path: '/simple/create_article',
@@ -24,35 +24,35 @@ const routes: RouteRecordRaw[] = [
         meta: {
           title: constants.explore,
         },
-        component: () => import(/* webpackChunkName: "main-sites" */ './views/main/Explore.vue'),
+        component: () => import('./views/main/Explore.vue'),
       },
       {
         path: 'search/',
         meta: {
           title: constants.search_results,
         },
-        component: () => import(/* webpackChunkName: "main-search" */ './views/main/Search.vue'),
+        component: () => import('./views/main/Search.vue'),
       },
       {
         name: 'site',
         path: 'sites/:subdomain',
-        component: () => import(/* webpackChunkName: "main-site" */ './views/main/Site.vue'),
+        component: () => import('./views/main/Site.vue'),
       },
       {
         name: 'article-column',
         path: 'article-columns/:id',
         component: () =>
-          import(/* webpackChunkName: "main-article-columns" */ './views/main/ArticleColumn.vue'),
+          import('./views/main/ArticleColumn.vue'),
       },
       {
         name: 'article',
         path: 'articles/:id',
-        component: () => import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
+        component: () => import('./views/main/Article.vue'),
         children: [
           {
             path: 'comments/:article_comment_id',
             component: () =>
-              import(/* webpackChunkName: "main-articles" */ './views/main/Article.vue'),
+              import('./views/main/Article.vue'),
           },
         ],
       },
@@ -60,17 +60,17 @@ const routes: RouteRecordRaw[] = [
         name: 'submission',
         path: 'submissions/:id',
         component: () =>
-          import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
+          import('./views/main/Submission.vue'),
         children: [
           {
             path: 'comments/:submission_comment_id',
             component: () =>
-              import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
+              import('./views/main/Submission.vue'),
           },
           {
             path: 'suggestions/:submission_suggestion_id',
             component: () =>
-              import(/* webpackChunkName: "main-submissions" */ './views/main/Submission.vue'),
+              import('./views/main/Submission.vue'),
           },
         ],
       },
@@ -78,55 +78,55 @@ const routes: RouteRecordRaw[] = [
         name: 'question',
         path: 'questions/:id',
         component: () =>
-          import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+          import('./views/main/Question.vue'),
         children: [
           {
             path: 'answers/:aid',
             component: () =>
-              import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+              import('./views/main/Question.vue'),
             children: [
               {
                 path: 'comments/:acid',
                 component: () =>
-                  import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+                  import('./views/main/Question.vue'),
               },
               {
                 path: 'suggestions/:asid',
                 component: () =>
-                  import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+                  import('./views/main/Question.vue'),
               },
             ],
           },
           {
             path: 'comments/:qcid',
             component: () =>
-              import(/* webpackChunkName: "main-questions" */ './views/main/Question.vue'),
+              import('./views/main/Question.vue'),
           },
         ],
       },
       {
         path: 'article-editor',
         component: () =>
-          import(/* webpackChunkName: "main-article-editor" */ './views/main/ArticleEditor.vue'),
+          import('./views/main/ArticleEditor.vue'),
       },
       {
         name: 'topic',
         path: 'topics/:id',
-        component: () => import(/* webpackChunkName: "main-topics" */ './views/main/Topic.vue'),
+        component: () => import('./views/main/Topic.vue'),
       },
       {
         name: 'user',
         path: 'users/:handle',
-        component: () => import(/* webpackChunkName: "main-users" */ './views/main/User.vue'),
+        component: () => import('./views/main/User.vue'),
       },
       {
         path: 'forms/:uuid',
-        component: () => import(/* webpackChunkName: "main-forms" */ './views/main/Form.vue'),
+        component: () => import('./views/main/Form.vue'),
       },
       {
         name: 'channel',
         path: 'channels/:id',
-        component: () => import(/* webpackChunkName: "main-channels" */ './views/main/Chat.vue'),
+        component: () => import('./views/main/Chat.vue'),
       },
       {
         path: 'dashboard',
@@ -134,7 +134,7 @@ const routes: RouteRecordRaw[] = [
           title: constants.dashboard,
         },
         component: () =>
-          import(/* webpackChunkName: "main-dashboard" */ './views/main/Dashboard.vue'),
+          import('./views/main/Dashboard.vue'),
       },
       {
         path: 'profile',
@@ -150,7 +150,7 @@ const routes: RouteRecordRaw[] = [
             },
             component: () =>
               import(
-                /* webpackChunkName: "main-profile-edit" */ './views/main/profile/UserProfileEdit.vue'
+                './views/main/profile/UserProfileEdit.vue'
               ),
           },
         ],
@@ -161,7 +161,7 @@ const routes: RouteRecordRaw[] = [
           title: constants.security_center,
         },
         component: () =>
-          import(/* webpackChunkName: "main-security" */ './views/main/Security.vue'),
+          import('./views/main/Security.vue'),
       },
       {
         path: 'moderation',
@@ -169,7 +169,7 @@ const routes: RouteRecordRaw[] = [
           title: constants.moderate_circles,
         },
         component: () =>
-          import(/* webpackChunkName: "main-moderation" */ './views/main/Moderation.vue'),
+          import('./views/main/Moderation.vue'),
       },
     ] /* children of main */,
   },
@@ -178,14 +178,14 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: constants.login,
     },
-    component: () => import(/* webpackChunkName: "login" */ './views/auth/Login.vue'),
+    component: () => import('./views/auth/Login.vue'),
   },
   {
     path: '/signup',
     meta: {
       title: constants.signup,
     },
-    component: () => import(/* webpackChunkName: "signup" */ './views/Signup.vue'),
+    component: () => import('./views/Signup.vue'),
   },
   {
     path: '/recover-password',
@@ -193,25 +193,25 @@ const routes: RouteRecordRaw[] = [
       title: constants.recover_password,
     },
     component: () =>
-      import(/* webpackChunkName: "recover-password" */ './views/PasswordRecovery.vue'),
+      import('./views/PasswordRecovery.vue'),
   },
   {
     path: '/invitation-links/:uuid',
     meta: {
       title: constants.invitation_to_join,
     },
-    component: () => import(/* webpackChunkName: "invitation-link" */ './views/InvitationLink.vue'),
+    component: () => import('./views/InvitationLink.vue'),
   },
   {
     path: '/reset-password',
     meta: {
       title: constants.reset_password,
     },
-    component: () => import(/* webpackChunkName: "reset-password" */ './views/ResetPassword.vue'),
+    component: () => import('./views/ResetPassword.vue'),
   },
   {
     path: '/showcase',
-    component: () => import(/* webpackChunkName: "Showcase" */ './views/Showcase.vue'),
+    component: () => import('./views/Showcase.vue'),
   },
   {
     path: '/main/:pathMatch(.*)*',
