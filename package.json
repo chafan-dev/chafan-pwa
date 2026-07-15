@@ -30,7 +30,7 @@
     "@tiptap/vue-3": "^2.11.0",
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.14.7",
-    "axios": "^1.13.2",
+    "axios": "^1.16.0",
     "core-js": "^3.47.0",
     "dayjs": "^1.11.19",
     "diff": "^5.2.0",
