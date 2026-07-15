@@ -42,7 +42,9 @@ case "${ans}" in
     *) echo "Aborted."; exit 1 ;;
 esac
 
-git push --ff-only deploy "${PREVIEW_SHA}:refs/heads/master"
+# Ancestry already verified above; a plain push (no --force) also refuses a
+# non-fast-forward. `git push` has no --ff-only flag, so we don't pass it.
+git push deploy "${PREVIEW_SHA}:refs/heads/master"
 
 TAG="prod-$(date +%Y-%m-%d-%H%M)"
 git tag -a "${TAG}" "${PREVIEW_SHA}" -m "Prod promotion ${TAG}"
