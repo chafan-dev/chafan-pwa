@@ -4135,7 +4135,7 @@ __metadata:
     lowlight: "npm:^2.9.0"
     piexifjs: "npm:^1.0.6"
     pinia: "npm:^2.2.6"
-    postcss: "npm:^8.5.6"
+    postcss: "npm:^8.5.10"
     postcss-html: "npm:^1.8.0"
     prettier: "npm:^3.7.4"
     prosemirror-state: "npm:^1.4.3"
