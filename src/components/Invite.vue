@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { api2 } from '@/api2';
+import { api } from '@/api';
 import UserSearch from '@/components/UserSearch.vue';
 import { ISite } from '@/interfaces';
 import { useAuth, useNotification } from '@/composables';
@@ -54,7 +54,7 @@ async function submitInviteFriends() {
       notifyError('用户不能为空');
       return;
     }
-    const response = await api2.inviteUser(token.value, {
+    const response = await api.inviteUser(token.value, {
       site_uuid: props.site.uuid,
       user_uuid: friendId.value,
     });

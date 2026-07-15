@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { apiUrl } from '@/env';
+import { http } from '@/api/client';
 import { IFeedSequence, IGenericResponse, IUpdateOrigins, IUserFeedSettings } from '@/interfaces';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
@@ -25,14 +24,14 @@ export const apiActivity = {
       params.set('random', payload.random.toString());
     }
     params.set('full_answers', 'true');
-    return axios.get<IFeedSequence>(`${apiUrl}/activities/`, authHeadersWithParams(token, params));
+    return http.get<IFeedSequence>(`/activities/`, authHeadersWithParams(token, params));
   },
   async getSettings(token: string) {
-    return axios.get<IUserFeedSettings>(`${apiUrl}/activities/settings/`, authHeaders(token));
+    return http.get<IUserFeedSettings>(`/activities/settings/`, authHeaders(token));
   },
   async updateOrigins(token: string, payload: IUpdateOrigins) {
-    return axios.put<IGenericResponse>(
-      `${apiUrl}/activities/settings/blocked-origins/`,
+    return http.put<IGenericResponse>(
+      `/activities/settings/blocked-origins/`,
       payload,
       authHeaders(token)
     );

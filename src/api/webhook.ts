@@ -1,13 +1,12 @@
-import axios from 'axios';
+import { http } from '@/api/client';
 import { IWebhook, IWebhookCreate, IWebhookUpdate } from '@/interfaces';
-import { apiUrl } from '@/env';
 import { authHeaders } from '@/utils';
 
 export const apiWebhook = {
   async create(token: string, payload: IWebhookCreate) {
-    return axios.post<IWebhook>(`${apiUrl}/webhooks/`, payload, authHeaders(token));
+    return http.post<IWebhook>(`/webhooks/`, payload, authHeaders(token));
   },
   async update(token: string, id: number, payload: IWebhookUpdate) {
-    return axios.put<IWebhook>(`${apiUrl}/webhooks/${id}`, payload, authHeaders(token));
+    return http.put<IWebhook>(`/webhooks/${id}`, payload, authHeaders(token));
   },
 };

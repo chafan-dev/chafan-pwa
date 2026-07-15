@@ -107,7 +107,6 @@ import { useDisplay } from 'vuetify';
 import { INotification, IWsUserMsg } from '@/interfaces';
 import { useMainStore } from '@/stores/main';
 import { api } from '@/api';
-import { api2 } from '@/api2';
 import { wsUrl } from '@/env';
 import Event from '@/components/Event.vue';
 import { logDebug } from '@/utils';
@@ -138,10 +137,10 @@ onMounted(async () => {
         }
       });
     }
-    notifications.value.push(...(await api2.getReadNotifications(token.value)).data);
+    notifications.value.push(...(await api.getReadNotifications(token.value)).data);
     loadNotifsIntermediate.value = false;
 
-    const wsToken = (await api2.getWsToken(token.value)).data.token;
+    const wsToken = (await api.getWsToken(token.value)).data.token;
     wsConnection.value = new WebSocket(wsUrl + '/ws?token=' + wsToken);
     wsConnection.value.onmessage = (message) => {
       const wsMsg = JSON.parse(message.data) as IWsUserMsg;

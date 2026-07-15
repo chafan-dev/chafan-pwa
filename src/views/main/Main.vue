@@ -231,6 +231,7 @@ import { useDisplay } from 'vuetify';
 import { useRoute, useRouter } from 'vue-router';
 
 import { appName } from '@/env';
+import { api } from '@/api';
 import { isDev } from '@/utils';
 import { useMainStore } from '@/stores/main';
 
@@ -238,7 +239,7 @@ import Avatar from '@/components/Avatar.vue';
 import Event from '@/components/Event.vue';
 import SearchBox from '@/components/SearchBox.vue';
 import { IUserProfile } from '@/interfaces';
-import { api2 } from '@/api2';
+
 import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
 import html2canvas from 'html2canvas';
@@ -344,7 +345,7 @@ async function submitFeedbackForm() {
     formData.append('email', feedbackEmail.value);
   }
   formData.append('location_url', route.fullPath);
-  await api2.uploadFeedback(token.value, formData);
+  await api.uploadFeedback(token.value, formData);
   store.notifications.push({
     color: 'success',
     content: '反馈已成功提交',

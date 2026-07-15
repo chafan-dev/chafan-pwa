@@ -1,21 +1,20 @@
-import axios from 'axios';
-import { apiUrl } from '@/env';
+import { http } from '@/api/client';
 import { authHeaders } from '@/utils';
 import { IQuestionPreview, ITopic, ITopicCreate, ITopicUpdate } from '@/interfaces';
 
 export const apiTopic = {
   async createTopic(token: string, payload: ITopicCreate) {
-    return axios.post<ITopic>(`${apiUrl}/topics/`, payload, authHeaders(token));
+    return http.post<ITopic>(`/topics/`, payload, authHeaders(token));
   },
   async getTopic(topicUUID: string) {
-    return axios.get<ITopic>(`${apiUrl}/topics/${topicUUID}`);
+    return http.get<ITopic>(`/topics/${topicUUID}`);
   },
   async updateTopic(token: string, topicUUID: string, payload: ITopicUpdate) {
-    return axios.put<ITopic>(`${apiUrl}/topics/${topicUUID}`, payload, authHeaders(token));
+    return http.put<ITopic>(`/topics/${topicUUID}`, payload, authHeaders(token));
   },
   async getQuestionsOfTopic(token: string, topicUUID: string) {
-    return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/topics/${topicUUID}/questions/`,
+    return http.get<IQuestionPreview[]>(
+      `/topics/${topicUUID}/questions/`,
       authHeaders(token)
     );
   },
