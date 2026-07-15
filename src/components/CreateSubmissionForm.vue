@@ -45,8 +45,10 @@ import { defaultSiteUuid } from '@/env';
 import { AxiosError } from 'axios';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 
 const props = withDefaults(defineProps<{
   site?: ISite;
@@ -65,7 +67,7 @@ const selectedSite = ref<ISite | null>(null);
 
 async function postNewSubmission() {
   if (!token.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   let siteUUID;

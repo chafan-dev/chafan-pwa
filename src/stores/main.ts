@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
 import { api } from '@/api';
-import { IUserUpdateMe, IRichEditorState, ISite, ITopBanner, IUserProfile, ThemeType } from '@/interfaces';
+import { IUserUpdateMe, ISite, IUserProfile } from '@/interfaces';
 import { getLocalToken, isDev, removeLocalToken, saveLocalToken } from '@/utils';
 import { AxiosError } from 'axios';
 import { apiMe } from '@/api/me';
 import { captureException, captureMessage } from '@sentry/vue';
 import { useNotificationStore, type AppNotification } from '@/stores/notifications';
+import { useUiStore } from '@/stores/ui';
 
 // Re-export for backward-compatible imports from @/stores/main
 export type { AppNotification } from '@/stores/notifications';
@@ -40,14 +41,7 @@ export const useMainStore = defineStore('main', {
     isLoggedIn: null as boolean | null,
     logInError: false as boolean,
     userProfile: null as IUserProfile | null,
-    dashboardMiniDrawer: false as boolean,
-    dashboardShowDrawer: false as boolean,
     moderated_sites: null as ISite[] | null,
-    workingDraft: null as IRichEditorState | null,
-    topBanner: null as ITopBanner | null,
-    showLoginPrompt: false as boolean,
-    narrowUI: true as boolean,
-    theme: 'default' as ThemeType,
   }),
 
   getters: {
@@ -225,7 +219,7 @@ export const useMainStore = defineStore('main', {
         if (router.currentRoute.value.path === '/login') {
           router.push('/');
         } else {
-          this.showLoginPrompt = false;
+          useUiStore().closeLoginPrompt();
           router.go(0);
         }
       });

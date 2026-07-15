@@ -206,9 +206,11 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import { AxiosError } from 'axios';
 import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 const display = useDisplay();
 
 const route = useRoute();
@@ -233,7 +235,7 @@ const showHasDraftBadge = ref(false);
 const commentSubmitIntermediate = ref(false);
 const articlePreviewBody = ref('');
 
-const isNarrowFeedUI = computed(() => store.narrowUI);
+const isNarrowFeedUI = computed(() => ui.narrowUI);
 const id = computed(() => route.params.id as string);
 
 // Watch for route changes (replaces beforeRouteUpdate)
@@ -277,7 +279,7 @@ onMounted(async () => {
 
 async function upvote() {
   if (!userProfile.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   await store.captureApiError(async () => {

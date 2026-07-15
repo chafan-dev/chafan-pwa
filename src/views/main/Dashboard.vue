@@ -377,6 +377,7 @@ import {
 import { api } from '@/api';
 import { api2 } from '@/api2';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import ArticlePreview from '@/components/ArticlePreview.vue';
 import ChatWindow from '@/components/ChatWindow.vue';
@@ -403,6 +404,7 @@ import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const display = useDisplay();
 const store = useMainStore();
+const ui = useUiStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -590,7 +592,7 @@ async function onChangeEditorMode() {
 async function onChangeTheme() {
   await store.captureApiError(async () => {
     changingMySettings.value = true;
-    store.theme = selectedTheme.value;
+    ui.theme = selectedTheme.value;
     setLocalValue(themeLocalStorageKey, selectedTheme.value);
     changingMySettings.value = false;
     useNotificationStore().push({ content: '已保存', color: 'info' });

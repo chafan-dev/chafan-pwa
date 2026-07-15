@@ -50,8 +50,10 @@ import DebugSpan from '@/components/base/DebugSpan.vue';
 import { defaultSiteUuid } from '@/env';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 
 const props = withDefaults(defineProps<{
   site?: ISite;
@@ -78,7 +80,7 @@ function onSearchComplete() {
 
 async function postNewQuestion() {
   if (!token.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   let siteUUID;

@@ -24,8 +24,10 @@ import { getDefaultNarrowFeedUI, themeLocalStorageKey } from '@/common';
 import { ThemeType } from '@/interfaces';
 import { useTheme } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 const { theme } = useTheme();
 const store = useMainStore();
+const ui = useUiStore();
 
 const registration = ref<ServiceWorkerRegistration | null>(null);
 const updateExists = ref(false);
@@ -34,10 +36,10 @@ const loading = ref(true);
 
 const showLoginPrompt = computed({
   get() {
-    return store.showLoginPrompt;
+    return ui.showLoginPrompt;
   },
   set(value: boolean) {
-    store.showLoginPrompt = value;
+    ui.showLoginPrompt = value;
   },
 });
 
@@ -67,10 +69,10 @@ onMounted(async () => {
   await store.checkLoggedIn();
   loading.value = false;
   setAppLocale();
-  store.narrowUI = getDefaultNarrowFeedUI();
+  ui.narrowUI = getDefaultNarrowFeedUI();
   const savedTheme = getLocalValue(themeLocalStorageKey) as ThemeType;
   if (savedTheme) {
-    store.theme = savedTheme;
+    ui.theme = savedTheme;
   }
 });
 

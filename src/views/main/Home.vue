@@ -74,6 +74,7 @@ import { useRoute, useRouter } from 'vue-router';
 import NewContentActionBar from '@/components/NewContentActionBar.vue';
 import HomeSideCard from '@/components/HomeSideCard.vue';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import UIStyleControllers from '@/components/UIStyleControllers.vue';
 import UserAgreement from '@/components/home/UserAgreement.vue';
 import UserLogoutWelcome from '@/components/home/UserLogoutWelcome.vue';
@@ -105,7 +106,8 @@ const currentTabItem = computed({
 });
 
 const store = useMainStore();
-const isNarrowFeedUI = computed(() => store.narrowUI);
+const ui = useUiStore();
+const isNarrowFeedUI = computed(() => ui.narrowUI);
 
 function refreshFeed() {
   // UserFeed uses script setup with defineExpose

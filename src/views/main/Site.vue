@@ -121,8 +121,10 @@ import CreateQuestionForm from '@/components/CreateQuestionForm.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
 import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
+const ui = useUiStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -155,7 +157,7 @@ const tabItems = [
   },
 ];
 
-const isNarrowFeedUI = computed(() => store.narrowUI);
+const isNarrowFeedUI = computed(() => ui.narrowUI);
 
 const readable = computed(() => {
   return site.value && (siteProfile.value !== null || site.value.public_readable);
