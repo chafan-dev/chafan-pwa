@@ -76,6 +76,7 @@ import CreateArticleColumn from '@/views/main/CreateArticleColumn.vue';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const router = useRouter();
@@ -102,7 +103,7 @@ async function postNewArticle() {
   if (newArticleColumnUUID.value) {
     await router.push(`/article-editor?articleColumnId=${newArticleColumnUUID.value}`);
   } else {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '请选择一个专栏发布文章，在「用户中心」中可以创建专栏',
       color: 'info',
     });

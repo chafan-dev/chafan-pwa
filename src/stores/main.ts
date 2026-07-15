@@ -5,13 +5,10 @@ import { getLocalToken, isDev, removeLocalToken, saveLocalToken } from '@/utils'
 import { AxiosError } from 'axios';
 import { apiMe } from '@/api/me';
 import { captureException, captureMessage } from '@sentry/vue';
-import { translateErrorMsgCN } from '@/common';
+import { useNotificationStore, type AppNotification } from '@/stores/notifications';
 
-export interface AppNotification {
-  content: string;
-  color?: string;
-  showProgress?: boolean;
-}
+// Re-export for backward-compatible imports from @/stores/main
+export type { AppNotification } from '@/stores/notifications';
 
 export interface ILoginPayload {
   username?: string;
@@ -29,6 +26,14 @@ function axiosErrorString(errorId: string, axiosError: AxiosError) {
   return s;
 }
 
+function notify(notification: AppNotification) {
+  useNotificationStore().push(notification);
+}
+
+function removeNotify(notification: AppNotification) {
+  useNotificationStore().remove(notification);
+}
+
 export const useMainStore = defineStore('main', {
   state: () => ({
     token: '' as string,
@@ -37,7 +42,6 @@ export const useMainStore = defineStore('main', {
     userProfile: null as IUserProfile | null,
     dashboardMiniDrawer: false as boolean,
     dashboardShowDrawer: false as boolean,
-    notifications: [] as AppNotification[],
     moderated_sites: null as ISite[] | null,
     workingDraft: null as IRichEditorState | null,
     topBanner: null as ITopBanner | null,
@@ -50,15 +54,13 @@ export const useMainStore = defineStore('main', {
     hasModeratedSites: (state) => state.moderated_sites && state.moderated_sites.length > 0,
     loginError: (state) => state.logInError,
     localePreference: (state) => state.userProfile?.locale_preference,
-    firstNotification: (state) =>
-      state.notifications.length > 0 ? state.notifications[0] : false,
   },
 
   actions: {
     async logIn(payload: ILoginPayload) {
       try {
         if (!payload.username || !payload.password) {
-          this.notifications.push({
+          notify({
             content: '错误：没有指定邮箱或密码，无法登录',
             color: 'error',
           });
@@ -78,7 +80,7 @@ export const useMainStore = defineStore('main', {
           await this.getModeratedSites();
           await this.getUserProfile();
           await this.routeLoggedIn();
-          this.notifications.push({ content: '登录成功', color: 'success' });
+          notify({ content: '登录成功', color: 'success' });
         } else {
           await this.logOut();
         }
@@ -110,7 +112,7 @@ export const useMainStore = defineStore('main', {
     async updateUserProfile(payload: IUserUpdateMe) {
       try {
         const loadingNotification = { content: '保存中', showProgress: true };
-        this.notifications.push(loadingNotification);
+        notify(loadingNotification);
         const response = (
           await Promise.all([
             apiMe.updateMe(this.token, payload),
@@ -118,8 +120,8 @@ export const useMainStore = defineStore('main', {
           ])
         )[0];
         this.userProfile = response.data;
-        this.notifications = this.notifications.filter((n) => n !== loadingNotification);
-        this.notifications.push({ content: '设置成功更新', color: 'success' });
+        removeNotify(loadingNotification);
+        notify({ content: '设置成功更新', color: 'success' });
       } catch (error: unknown) {
         await this.checkApiError(error as AxiosError);
       }
@@ -190,15 +192,15 @@ export const useMainStore = defineStore('main', {
 
     async userLogOut() {
       this.logOut();
-      this.notifications.push({ content: '已登出', color: 'success' });
+      notify({ content: '已登出', color: 'success' });
     },
 
     async checkApiError(axiosError: AxiosError) {
       if (axiosError.toString() === 'Error: Network Error') {
-        this.notifications.push({ color: 'warning', content: '无法连接到服务器' });
+        notify({ color: 'warning', content: '无法连接到服务器' });
       } else {
         const message = axiosError.message;
-        this.notifications.push({ content: message, color: 'error' });
+        notify({ content: message, color: 'error' });
         if (
           axiosError.response &&
           (axiosError.response.status === 401 || axiosError.response.status === 403)
@@ -229,47 +231,38 @@ export const useMainStore = defineStore('main', {
       });
     },
 
-    async removeNotificationAfter(notification: AppNotification, timeout: number) {
-      return new Promise<boolean>((resolve) => {
-        setTimeout(() => {
-          this.notifications = this.notifications.filter((n) => n !== notification);
-          resolve(true);
-        }, timeout);
-      });
-    },
-
     async passwordRecovery(payload: { email: string }) {
       const loadingNotification = { content: '密码找回邮件正在发送', showProgress: true };
       try {
-        this.notifications.push(loadingNotification);
+        notify(loadingNotification);
         await Promise.all([
           api.passwordRecovery(payload.email),
           new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ]);
-        this.notifications = this.notifications.filter((n) => n !== loadingNotification);
-        this.notifications.push({ content: '密码找回邮件已发送', color: 'success' });
+        removeNotify(loadingNotification);
+        notify({ content: '密码找回邮件已发送', color: 'success' });
         this.logOut();
       } catch {
-        this.notifications = this.notifications.filter((n) => n !== loadingNotification);
-        this.notifications.push({ color: 'error', content: '邮箱地址有误' });
+        removeNotify(loadingNotification);
+        notify({ color: 'error', content: '邮箱地址有误' });
       }
     },
 
     async resetPassword(payload: { password: string; token: string }) {
       const loadingNotification = { content: '重置密码中', showProgress: true };
       try {
-        this.notifications.push(loadingNotification);
+        notify(loadingNotification);
         await Promise.all([
           api.resetPassword(payload.password, payload.token),
           new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ]);
-        this.notifications = this.notifications.filter((n) => n !== loadingNotification);
-        this.notifications.push({ content: '密码重置成功', color: 'success' });
+        removeNotify(loadingNotification);
+        notify({ content: '密码重置成功', color: 'success' });
         this.logOut();
         return true;
       } catch {
-        this.notifications = this.notifications.filter((n) => n !== loadingNotification);
-        this.notifications.push({ color: 'error', content: '密码重置失败' });
+        removeNotify(loadingNotification);
+        notify({ color: 'error', content: '密码重置失败' });
       }
       return false;
     },

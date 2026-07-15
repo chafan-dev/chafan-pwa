@@ -219,6 +219,7 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import dayjs from '@/dayjs';
 import { useAuth, useTheme, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = withDefaults(defineProps<{
@@ -486,13 +487,13 @@ async function loadEditor() {
     if (currentUserIsAuthor.value && draftPromise.value) {
       const draft = await draftPromise.value;
       if (bodyDraftFromLocalSavedEdit.value) {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '载入最近的草稿',
           color: 'success',
         });
         store.workingDraft = bodyDraftFromLocalSavedEdit.value.edit as IRichEditorState;
       } else if (draft && draft.content_draft) {
-        store.notifications.push({
+        useNotificationStore().push({
           content: '载入最近的草稿',
           color: 'success',
         });
@@ -535,7 +536,7 @@ async function deleteAnswer() {
     }
     clearLocalEdit('answer', props.answerPreview.uuid);
     await apiAnswer.deleteAnswerDraft(token.value, props.answerPreview.uuid);
-    store.notifications.push({
+    useNotificationStore().push({
       content: '草稿已删除',
       color: 'success',
     });
@@ -543,7 +544,7 @@ async function deleteAnswer() {
   } else {
     await store.captureApiError(async () => {
       await apiAnswer.deleteAnswer(token.value, props.answerPreview.uuid);
-      store.notifications.push({
+      useNotificationStore().push({
         content: '答案已永久删除',
         color: 'success',
       });

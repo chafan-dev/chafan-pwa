@@ -36,6 +36,7 @@ import { apiArticle } from '@/api/article';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = defineProps<{
@@ -51,7 +52,7 @@ const commitNewArticleColumnIntermediate = ref(false);
 
 async function commitNewArticleColumn() {
   if (newArticleColumn.name.length === 0) {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '专栏名不能为空',
       color: 'error',
     });

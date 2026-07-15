@@ -9,10 +9,9 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useMainStore, type AppNotification } from '@/stores/main';
+import { useNotificationStore, type AppNotification } from '@/stores/notifications';
 
-const store = useMainStore();
-
+const store = useNotificationStore();
 
 const show = ref(false);
 const showProgress = ref(false);
@@ -40,7 +39,7 @@ async function close() {
 
 async function removeCurrentNotification() {
   if (currentNotification.value) {
-    store.notifications = store.notifications.filter((n) => n !== currentNotification.value);
+    store.remove(currentNotification.value);
   }
 }
 
@@ -61,7 +60,7 @@ watch(firstNotification, async (newNotification) => {
   if (newNotification !== currentNotification.value) {
     await setNotification(newNotification);
     if (newNotification) {
-      store.removeNotificationAfter(newNotification, 6500);
+      store.removeAfter(newNotification, 6500);
     }
   }
 });

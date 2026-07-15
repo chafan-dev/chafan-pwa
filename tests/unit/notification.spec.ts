@@ -28,7 +28,7 @@ vi.mock('@sentry/vue', () => ({
 }));
 
 import { useNotification } from '@/composables/useNotification';
-import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 
 describe('useNotification', () => {
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe('useNotification', () => {
     const { notifySuccess } = useNotification();
     notifySuccess('Operation completed');
 
-    const store = useMainStore();
+    const store = useNotificationStore();
     expect(store.notifications).toContainEqual({
       content: 'Operation completed',
       color: 'success',
@@ -50,7 +50,7 @@ describe('useNotification', () => {
     const { notifyError } = useNotification();
     notifyError('Something failed');
 
-    const store = useMainStore();
+    const store = useNotificationStore();
     expect(store.notifications).toContainEqual({
       content: 'Something failed',
       color: 'error',
@@ -61,7 +61,7 @@ describe('useNotification', () => {
     const { notifyWarning } = useNotification();
     notifyWarning('Be careful');
 
-    const store = useMainStore();
+    const store = useNotificationStore();
     expect(store.notifications).toContainEqual({
       content: 'Be careful',
       color: 'warning',
@@ -72,7 +72,7 @@ describe('useNotification', () => {
     const { notifyInfo } = useNotification();
     notifyInfo('FYI');
 
-    const store = useMainStore();
+    const store = useNotificationStore();
     expect(store.notifications).toContainEqual({
       content: 'FYI',
       color: 'info',
@@ -84,7 +84,7 @@ describe('useNotification', () => {
       const { expectOkAndCommitMsg } = useNotification();
       expectOkAndCommitMsg({ success: true }, 'Done!');
 
-      const store = useMainStore();
+      const store = useNotificationStore();
       expect(store.notifications).toContainEqual({
         content: 'Done!',
         color: 'success',
@@ -95,7 +95,7 @@ describe('useNotification', () => {
       const { expectOkAndCommitMsg } = useNotification();
       expectOkAndCommitMsg({ success: false }, 'Done!');
 
-      const store = useMainStore();
+      const store = useNotificationStore();
       expect(store.notifications).toContainEqual({
         content: '服务器错误',
         color: 'error',
@@ -114,7 +114,7 @@ describe('useNotification', () => {
       const result = commitErrMsg(error);
       expect(result).toBe('Bad Request');
 
-      const store = useMainStore();
+      const store = useNotificationStore();
       expect(store.notifications).toContainEqual({
         content: 'Bad Request',
         color: 'warning',

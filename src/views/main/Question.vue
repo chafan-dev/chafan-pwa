@@ -249,6 +249,7 @@ import { warn, info } from '@/logging';
 import { useAuth, useTheme, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 const display = useDisplay();
 
@@ -361,7 +362,7 @@ async function loadQuestion() {
       if (answerUUID.value !== null) {
         // TODO: Fix when there is continuation
         if (!answersData.find((preview) => preview.uuid === answerUUID.value)) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: '答案不存在',
             color: 'error',
           });
@@ -399,7 +400,7 @@ async function loadQuestion() {
 onMounted(async () => {
   try {
     if (localStorage.getItem('new-question')) {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '点击「编辑」加入更多细节',
         color: 'info',
       });
@@ -524,7 +525,7 @@ async function showHistoryDialog() {
     if (archives.value.length > 0) {
       historyDialog.value = true;
     } else {
-      store.notifications.push({
+      useNotificationStore().push({
         content: '尚无历史存档',
         color: 'info',
       });
@@ -556,7 +557,7 @@ function deleteHandler(answerUUID: string) {
 async function confirmHideQuestion() {
   await store.captureApiError(async () => {
     await apiQuestion.hideQuestion(token.value, question.value!.uuid);
-    store.notifications.push({
+    useNotificationStore().push({
       content: '已隐藏',
       color: 'info',
     });

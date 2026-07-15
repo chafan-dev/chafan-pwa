@@ -230,6 +230,7 @@ import WorkExperienceSection from '@/components/profile/WorkExperienceSection.vu
 import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 interface IUserWorkExperienceItem {
@@ -427,7 +428,7 @@ async function submit() {
     const response = await apiMe.updateMe(token.value, userUpdateMe);
     if (response) {
       store.userProfile = response.data;
-      store.notifications.push({
+      useNotificationStore().push({
         content: '更新成功',
         color: 'success',
       });
@@ -443,7 +444,7 @@ async function submit() {
 
 function addNewWorkExp() {
   if (!newWorkExpCompanyName.value || !newWorkExpPositionName.value) {
-    store.notifications.push({
+    useNotificationStore().push({
       content: '公司名和职位均为必填',
       color: 'error',
     });
@@ -469,7 +470,7 @@ async function uploadAvatar() {
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         if (file.size <= 128) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: '头像文件过小',
             color: 'error',
           });
@@ -506,7 +507,7 @@ async function uploadGifAvatar() {
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         if (file.size <= 128) {
-          store.notifications.push({
+          useNotificationStore().push({
             content: '头像文件过小',
             color: 'error',
           });

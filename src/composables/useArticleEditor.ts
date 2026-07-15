@@ -3,6 +3,7 @@ import { IRichEditorState } from '@/interfaces';
 import { useMainStore } from '@/stores/main';
 import { captureException } from '@sentry/vue';
 import { isDev } from '@/utils/misc';
+import { useNotificationStore } from '@/stores/notifications';
 
 export const newArticleHandler = async (
   context: { token: string; router?: any },
@@ -12,7 +13,7 @@ export const newArticleHandler = async (
   articleColumnId: string
 ) => {
   if (!edit.title || !edit.body) {
-    useMainStore().notifications.push({
+    useNotificationStore().push({
       content: '文章必须有标题',
       color: 'error',
     });

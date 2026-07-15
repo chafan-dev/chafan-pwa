@@ -245,6 +245,7 @@ import html2canvas from 'html2canvas';
 import Notifications from '@/components/Notifications.vue';
 import { useAuth } from '@/composables';
 import AppIcon from '@/components/icons/AppIcon.vue';
+import { useNotificationStore } from '@/stores/notifications';
 const display = useDisplay();
 const store = useMainStore();
 
@@ -345,7 +346,7 @@ async function submitFeedbackForm() {
   }
   formData.append('location_url', route.fullPath);
   await api2.uploadFeedback(token.value, formData);
-  store.notifications.push({
+  useNotificationStore().push({
     color: 'success',
     content: '反馈已成功提交',
   });

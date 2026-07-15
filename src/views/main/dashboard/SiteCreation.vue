@@ -32,6 +32,7 @@ import { api2 } from '@/api2';
 import SiteBtn from '@/components/SiteBtn.vue';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
 
 const props = defineProps<{
@@ -67,7 +68,7 @@ async function createSite() {
     await apiSite.updateSiteConfig(token.value, r.created_site.uuid, {
       moderator_uuid: props.applicantUuid,
     });
-    store.notifications.push({
+    useNotificationStore().push({
       color: 'success',
       content: '创建站点并设置管理员成功',
     });

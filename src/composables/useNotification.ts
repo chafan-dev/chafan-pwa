@@ -1,4 +1,4 @@
-import { useMainStore } from '@/stores/main';
+import { useNotificationStore } from '@/stores/notifications';
 import { IGenericResponse } from '@/interfaces';
 import { AxiosError } from 'axios';
 
@@ -7,19 +7,19 @@ import { AxiosError } from 'axios';
  */
 export function useNotification() {
   function notifySuccess(content: string) {
-    useMainStore().notifications.push({ content, color: 'success' });
+    useNotificationStore().push({ content, color: 'success' });
   }
 
   function notifyError(content: string) {
-    useMainStore().notifications.push({ content, color: 'error' });
+    useNotificationStore().push({ content, color: 'error' });
   }
 
   function notifyWarning(content: string) {
-    useMainStore().notifications.push({ content, color: 'warning' });
+    useNotificationStore().push({ content, color: 'warning' });
   }
 
   function notifyInfo(content: string) {
-    useMainStore().notifications.push({ content, color: 'info' });
+    useNotificationStore().push({ content, color: 'info' });
   }
 
   function expectOkAndCommitMsg(response: IGenericResponse, successMsg: string) {
