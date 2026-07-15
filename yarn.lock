@@ -4109,7 +4109,7 @@ __metadata:
     css-what: "npm:^6.1.0"
     dayjs: "npm:^1.11.19"
     diff: "npm:^5.2.0"
-    dompurify: "npm:^3.3.1"
+    dompurify: "npm:^3.4.11"
     eslint: "npm:^10.1.0"
     eslint-plugin-vue: "npm:^10.8.0"
     express: "npm:^4.22.1"
@@ -4716,15 +4716,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "dompurify@npm:3.3.1"
+"dompurify@npm:^3.4.11":
+  version: 3.4.11
+  resolution: "dompurify@npm:3.4.11"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10c0/fa0a8c55a436ba0d54389195e3d2337e311f56de709a2fc9efc98dbbc7746fa53bb4b74b6ac043b77a279a8f2ebd8685f0ebaa6e58c9e32e92051d529bc0baf8
+  checksum: 10c0/31439481c7e8fc3805d40c376936fd66936620fb1b1a31a2ec097f6165412c37f2d868e082c9ceba62bb37661c1ea132a5db4d5213434317e30df68d4aca9cc9
   languageName: node
   linkType: hard
 
