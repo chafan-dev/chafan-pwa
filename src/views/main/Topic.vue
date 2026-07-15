@@ -62,8 +62,10 @@ import QuestionPreview from '@/components/question/QuestionPreview.vue';
 import DynamicItemList from '@/components/DynamicItemList.vue';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
+const ui = useUiStore();
 const display = useDisplay();
 
 const route = useRoute();
@@ -75,7 +77,7 @@ const loading = ref(true);
 const loadingProgress = ref(0);
 
 const id = computed(() => route.params.id as string);
-const isNarrowFeedUI = computed(() => store.narrowUI);
+const isNarrowFeedUI = computed(() => ui.narrowUI);
 
 async function load() {
   await store.captureApiError(async () => {

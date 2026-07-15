@@ -137,9 +137,11 @@ import { appName } from '@/env';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -152,7 +154,7 @@ const invitationToken = ref('');
 const intermediate = ref(false);
 
 onMounted(() => {
-  store.showLoginPrompt = false;
+  ui.showLoginPrompt = false;
   if (route.query.invitation_link_uuid) {
     invitationToken.value = route.query.invitation_link_uuid.toString();
   }

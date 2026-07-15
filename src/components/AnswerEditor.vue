@@ -197,9 +197,11 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import dayjs from '@/dayjs';
 import { useAuth, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 
 const props = withDefaults(defineProps<{
   focusMode?: boolean;
@@ -307,7 +309,7 @@ onMounted(() => {
     invalidAnswerCallback
   );
 
-  const workingDraft = store.workingDraft;
+  const workingDraft = ui.workingDraft;
   if (workingDraft && workingDraft.body) {
     visibility.value = workingDraft.visibility;
     initEditor(workingDraft.body, workingDraft.editor);

@@ -107,8 +107,10 @@ import SiteBtn from '@/components/SiteBtn.vue';
 import RotationCard from '@/components/base/RotationCard.vue';
 import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
+const ui = useUiStore();
 
 const props = withDefaults(
   defineProps<{
@@ -169,7 +171,7 @@ onMounted(async () => {
 
 async function applyToJoin() {
   if (!token.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   await store.captureApiErrorWithErrorHandler({

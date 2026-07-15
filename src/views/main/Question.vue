@@ -248,9 +248,11 @@ import TopicChip from '@/components/widgets/TopicChip.vue';
 import { warn, info } from '@/logging';
 import { useAuth, useTheme, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 const display = useDisplay();
 
 const route = useRoute();
@@ -280,7 +282,7 @@ const answers = ref<IAnswer[]>([]);
 const answeredBefore = ref(false);
 const descEditor = ref<any>(null);
 
-const isNarrowFeedUI = computed(() => store.narrowUI);
+const isNarrowFeedUI = computed(() => ui.narrowUI);
 
 const id = computed(() => route.params.id);
 
@@ -492,7 +494,7 @@ async function cancelSubscription() {
 
 async function subscribe() {
   if (!userProfile.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   await store.captureApiError(async () => {
@@ -567,14 +569,14 @@ async function confirmHideQuestion() {
 
 function toggleShowComments() {
   if (!userProfile.value && question.value!.comments.length === 0) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   showComments.value = !showComments.value;
 }
 
 function loadSavedLocalEdit() {
-  store.workingDraft = savedLocalEdit.value!.edit as IRichEditorState;
+  ui.workingDraft = savedLocalEdit.value!.edit as IRichEditorState;
   showEditor.value = true;
 }
 

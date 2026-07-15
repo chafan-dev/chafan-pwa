@@ -268,9 +268,11 @@ import SubmissionSuggestions from '@/components/submission/SubmissionSuggestions
 import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth, useResponsive, useErrorHandling } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 const display = useDisplay();
 
 const route = useRoute();
@@ -315,7 +317,7 @@ const id = computed(() => route.params.id);
 
 const submissionSuggestionUUID = computed(() => route.params.submission_suggestion_id);
 
-const isNarrowFeedUI = computed(() => store.narrowUI);
+const isNarrowFeedUI = computed(() => ui.narrowUI);
 
 // Watch for route changes (replacing beforeRouteUpdate)
 watch(
@@ -559,7 +561,7 @@ async function cancelSubscription() {
 
 async function subscribe() {
   if (!userProfile.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   await store.captureApiError(async () => {

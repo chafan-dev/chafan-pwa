@@ -38,6 +38,7 @@ vi.mock('@sentry/vue', () => ({
 
 import { useMainStore } from '@/stores/main';
 import { useNotificationStore } from '@/stores/notifications';
+import { useUiStore } from '@/stores/ui';
 import { api } from '@/api';
 import { apiMe } from '@/api/me';
 import { getLocalToken, saveLocalToken, removeLocalToken } from '@/utils';
@@ -56,9 +57,10 @@ describe('Main Pinia Store', () => {
       expect(store.logInError).toBe(false);
       expect(store.userProfile).toBeNull();
       expect(store.moderated_sites).toBeNull();
-      expect(store.showLoginPrompt).toBe(false);
-      expect(store.narrowUI).toBe(true);
-      expect(store.theme).toBe('default');
+      const ui = useUiStore();
+      expect(ui.showLoginPrompt).toBe(false);
+      expect(ui.narrowUI).toBe(true);
+      expect(ui.theme).toBe('default');
     });
   });
 

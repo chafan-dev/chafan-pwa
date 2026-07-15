@@ -124,8 +124,10 @@ import { api } from '@/api';
 import Avatar from '@/components/Avatar.vue';
 import { useAuth, useTheme } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
 const store = useMainStore();
+const ui = useUiStore();
 
 const props = withDefaults(
   defineProps<{
@@ -190,7 +192,7 @@ onMounted(async () => {
 
 async function follow() {
   if (!currentUserId) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   followIntermediate.value = true;
@@ -212,7 +214,7 @@ async function cancelFollow() {
 
 async function privateMessage() {
   if (!currentUserId) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   privateMessageIntermediate.value = true;

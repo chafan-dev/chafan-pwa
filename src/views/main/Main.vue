@@ -233,6 +233,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { appName } from '@/env';
 import { isDev } from '@/utils';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 
 import Avatar from '@/components/Avatar.vue';
 import Event from '@/components/Event.vue';
@@ -248,6 +249,7 @@ import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
 const display = useDisplay();
 const store = useMainStore();
+const ui = useUiStore();
 
 const route = useRoute();
 const router = useRouter();
@@ -277,14 +279,14 @@ const feedbackEmail = ref('');
 const sendingFeedback = ref(false);
 const prepareFeedbackFormIntermediate = ref(false);
 
-const miniDrawer = computed(() => store.dashboardMiniDrawer);
+const miniDrawer = computed(() => ui.dashboardMiniDrawer);
 
 const showDrawer = computed({
   get() {
-    return store.dashboardShowDrawer;
+    return ui.dashboardShowDrawer;
   },
   set(value: boolean) {
-    store.dashboardShowDrawer = value;
+    ui.dashboardShowDrawer = value;
   },
 });
 
@@ -304,15 +306,15 @@ watch(
 );
 
 function showLoginPrompt() {
-  store.showLoginPrompt = true;
+  ui.showLoginPrompt = true;
 }
 
 function switchShowDrawer() {
-  store.dashboardShowDrawer = !store.dashboardShowDrawer;
+  ui.dashboardShowDrawer = !ui.dashboardShowDrawer;
 }
 
 function switchMiniDrawer() {
-  store.dashboardMiniDrawer = !store.dashboardMiniDrawer;
+  ui.dashboardMiniDrawer = !ui.dashboardMiniDrawer;
 }
 
 async function logout() {

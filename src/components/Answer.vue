@@ -219,8 +219,10 @@ import RelativeTime from '@/components/RelativeTime.vue';
 import dayjs from '@/dayjs';
 import { useAuth, useTheme, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
+import { useUiStore } from '@/stores/ui';
 import { useNotificationStore } from '@/stores/notifications';
 const store = useMainStore();
+const ui = useUiStore();
 
 const props = withDefaults(defineProps<{
   answerPreview: IAnswerPreview;
@@ -321,7 +323,7 @@ onMounted(async () => {
 
 async function upvote() {
   if (!userProfile.value) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   await store.captureApiError(async () => {
@@ -491,13 +493,13 @@ async function loadEditor() {
           content: '载入最近的草稿',
           color: 'success',
         });
-        store.workingDraft = bodyDraftFromLocalSavedEdit.value.edit as IRichEditorState;
+        ui.workingDraft = bodyDraftFromLocalSavedEdit.value.edit as IRichEditorState;
       } else if (draft && draft.content_draft) {
         useNotificationStore().push({
           content: '载入最近的草稿',
           color: 'success',
         });
-        store.workingDraft = {
+        ui.workingDraft = {
           body: draft.content_draft?.source || '',
           rendered_body_text: null,
           is_draft: true,
@@ -505,7 +507,7 @@ async function loadEditor() {
           visibility: answer.value.visibility,
         };
       } else {
-        store.workingDraft = {
+        ui.workingDraft = {
           body: answer.value.content.source,
           rendered_body_text: null,
           visibility: answer.value.visibility,
@@ -517,7 +519,7 @@ async function loadEditor() {
     }
     // Load editor for non-author user for suggest
     if (!currentUserIsAuthor.value && answer.value.suggest_editable) {
-      store.workingDraft = {
+      ui.workingDraft = {
         body: answer.value.content.source,
         rendered_body_text: null,
         visibility: answer.value.visibility,
@@ -556,7 +558,7 @@ async function deleteAnswer() {
 
 function toggleShowComments() {
   if (!userProfile.value && answer.value!.comments.length === 0) {
-    store.showLoginPrompt = true;
+    ui.showLoginPrompt = true;
     return;
   }
   showComments.value = !showComments.value;
