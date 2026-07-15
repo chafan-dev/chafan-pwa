@@ -13,7 +13,9 @@
     "lint:fix": "eslint src/ --fix",
     "lint:css": "stylelint \"src/**/*.{css,scss,vue}\"",
     "lint:css:fix": "stylelint \"src/**/*.{css,scss,vue}\" --fix",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "quality": "yarn lint && yarn lint:css && yarn test:unit",
+    "precommit": "lint-staged"
   },
   "dependencies": {
     "@sentry/tracing": "^7.119.2",
@@ -107,5 +109,16 @@
     "last 2 versions",
     "not dead"
   ],
-  "packageManager": "yarn@4.9.1"
+  "packageManager": "yarn@4.9.1",
+  "lint-staged": {
+    "src/**/*.{ts,vue}": [
+      "eslint --fix"
+    ],
+    "src/**/*.{css,scss,vue}": [
+      "stylelint --fix"
+    ],
+    "src/**/*.{ts,vue,css,scss,json,md}": [
+      "prettier --write"
+    ]
+  }
 }
