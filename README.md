@@ -48,11 +48,13 @@ Open the URL Vite prints (default `http://localhost:5173`).
 **4. Quality checks**
 
 ```bash
+yarn quality     # lint + CSS lint + unit tests
 yarn lint
 yarn lint:css
 yarn test:unit
-yarn typecheck   # soft gate while migration type debt remains
+yarn typecheck   # soft gate (available once vue-tsc is installed)
 yarn build
+yarn precommit   # lint-staged on staged files (optional git hook)
 ```
 
 ## Production-like local serve (optional)
