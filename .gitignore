@@ -12,7 +12,13 @@ pwa.env
 .local_env
 .env.local
 .env.*.local
+env.e2e
 .start_local_*
+
+# e2e (preview) — local secrets, saved auth state, and run artifacts
+e2e/.auth/
+playwright-report/
+test-results/
 
 # Log files
 npm-debug.log*
