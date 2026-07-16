@@ -119,6 +119,8 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: 'jsdom',
       globals: true,
+      // Vitest owns tests/; e2e/ is Playwright's and must not be collected here.
+      include: ['tests/**/*.spec.ts'],
       server: {
         deps: {
           inline: ['vuetify'],

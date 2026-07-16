@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@mdi/js": "^7.4.47",
+    "@playwright/test": "^1.61.1",
     "@types/diff": "^5.2.3",
     "@types/lodash": "^4.17.21",
     "@types/node": "^22.15.0",
@@ -67,6 +68,7 @@
     "@vue/eslint-config-typescript": "^14.7.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.23",
+    "dotenv": "^17.4.2",
     "eslint": "^10.1.0",
     "eslint-plugin-vue": "^10.8.0",
     "jsdom": "^25.0.1",
