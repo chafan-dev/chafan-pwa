@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { http } from '@/api/client';
 import {
   ICreateSiteResponse,
   IGenericResponse,
@@ -10,59 +10,58 @@ import {
   ISubmission,
   IWebhook,
 } from '@/interfaces';
-import { apiUrl } from '@/env';
 import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiSite = {
   async getSite(subdomain: string) {
-    return axios.get<ISite>(`${apiUrl}/sites/${subdomain}`);
+    return http.get<ISite>(`/sites/${subdomain}`);
   },
   async getSiteQuestions(siteUUID: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<IQuestionPreview[]>(
-      `${apiUrl}/sites/${siteUUID}/questions/`,
+    return http.get<IQuestionPreview[]>(
+      `/sites/${siteUUID}/questions/`,
       { params }
     );
   },
   async updateSiteConfig(token: string, siteUUID: string, payload: ISiteUpdate) {
-    return axios.put<ISite>(`${apiUrl}/sites/${siteUUID}/config`, payload, authHeaders(token));
+    return http.put<ISite>(`/sites/${siteUUID}/config`, payload, authHeaders(token));
   },
   async getSiteSubmissions(token: string, uuid: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<ISubmission[]>(
-      `${apiUrl}/sites/${uuid}/submissions/`,
+    return http.get<ISubmission[]>(
+      `/sites/${uuid}/submissions/`,
       authHeadersWithParams(token, params)
     );
   },
   async getWebhooks(token: string, uuid: string) {
-    return axios.get<IWebhook[]>(`${apiUrl}/sites/${uuid}/webhooks/`, authHeaders(token));
+    return http.get<IWebhook[]>(`/sites/${uuid}/webhooks/`, authHeaders(token));
   },
   async getRelatedSites(uuid: string) {
-    return axios.get<ISite[]>(`${apiUrl}/sites/${uuid}/related/`);
+    return http.get<ISite[]>(`/sites/${uuid}/related/`);
   },
   async createSite(token: string, payload: ISiteCreate) {
-    return axios.post<ICreateSiteResponse>(`${apiUrl}/sites/`, payload, authHeaders(token));
+    return http.post<ICreateSiteResponse>(`/sites/`, payload, authHeaders(token));
   },
   async getSiteApply(token: string, siteUUID: string) {
-    return axios.get<ISiteApplicationResponse>(
-      `${apiUrl}/sites/${siteUUID}/apply`,
+    return http.get<ISiteApplicationResponse>(
+      `/sites/${siteUUID}/apply`,
       authHeaders(token)
     );
   },
   async applySite(token: string, siteUUID: string) {
-    return axios.post<ISiteApplicationResponse>(
-      `${apiUrl}/sites/${siteUUID}/apply`,
+    return http.post<ISiteApplicationResponse>(
+      `/sites/${siteUUID}/apply`,
       null,
       authHeaders(token)
     );
   },
   async leaveSite(token: string, siteUUID: string) {
-    return axios.delete<IGenericResponse>(
-      `${apiUrl}/sites/${siteUUID}/membership`,
+    return http.delete<IGenericResponse>(
+      `/sites/${siteUUID}/membership`,
       authHeaders(token)
     );
   },

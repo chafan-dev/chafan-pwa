@@ -212,7 +212,7 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
 import { useRouter } from 'vue-router';
-import { api2 } from '@/api2';
+import { apiUpload } from '@/api/upload';
 import { apiPeople } from '@/api/people';
 import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
 import { resizeImage } from '@/imagelib';
@@ -491,7 +491,7 @@ async function uploadAvatar() {
           formData.append('file', resized.blob);
         }
         avatarURL.value = resized.dataUrl;
-        const response = await api2.uploadFile(token.value, formData);
+        const response = await apiUpload.uploadImage(token.value, formData);
         userUpdateMe.avatar_url = response.data.url;
       }
     }
@@ -523,7 +523,7 @@ async function uploadGifAvatar() {
         fileReader.onload = () => {
           gifAvatarURL.value = fileReader.result as string;
         };
-        const response = await api2.uploadFile(token.value, formData);
+        const response = await apiUpload.uploadImage(token.value, formData);
         userUpdateMe.gif_avatar_url = response.data.url;
       }
     }

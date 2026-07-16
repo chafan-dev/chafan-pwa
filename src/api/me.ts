@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { apiUrl } from '@/env';
+import { http } from '@/api/client';
 import { authHeaders, authHeadersWithParams } from '../utils';
 import {
   IAnswerPreview,
@@ -33,7 +32,7 @@ function addSchemeToUrl(url: string | undefined) {
 
 export const apiMe = {
   async getMe(token: string) {
-    return axios.get<IUserProfile>(`${apiUrl}/me`, authHeaders(token));
+    return http.get<IUserProfile>(`/me`, authHeaders(token));
   },
   async updateMe(token: string, data: IUserUpdateMe) {
     data.zhihu_url = addSchemeToUrl(data.zhihu_url);
@@ -46,95 +45,95 @@ export const apiMe = {
         delete dataRecord[key];
       }
     }
-    return axios.put<IUserProfile>(`${apiUrl}/me`, data, authHeaders(token));
+    return http.put<IUserProfile>(`/me`, data, authHeaders(token));
   },
   async updatePrimaryEmail(token: string, data: IUserUpdatePrimaryEmail) {
-    return axios.put<IUserProfile>(`${apiUrl}/me/login`, data, authHeaders(token));
+    return http.put<IUserProfile>(`/me/login`, data, authHeaders(token));
   },
   async updateSecondaryEmail(token: string, data: IUserUpdateSecondaryEmails) {
-    return axios.put<IUserProfile>(`${apiUrl}/me/secondary-emails`, data, authHeaders(token));
+    return http.put<IUserProfile>(`/me/secondary-emails`, data, authHeaders(token));
   },
   async getUserFollows(token: string, userUUID: string) {
-    return axios.get<IUserFollows>(`${apiUrl}/me/follows/${userUUID}`, authHeaders(token));
+    return http.get<IUserFollows>(`/me/follows/${userUUID}`, authHeaders(token));
   },
   async getUserSiteProfiles(token: string) {
-    return axios.get<IUserSiteProfile[]>(`${apiUrl}/me/site-profiles/`, authHeaders(token));
+    return http.get<IUserSiteProfile[]>(`/me/site-profiles/`, authHeaders(token));
   },
   async followUser(token: string, userUUID: string) {
-    return axios.post<IUserFollows>(`${apiUrl}/me/follows/${userUUID}`, null, authHeaders(token));
+    return http.post<IUserFollows>(`/me/follows/${userUUID}`, null, authHeaders(token));
   },
   async cancelFollowUser(token: string, userUUID: string) {
-    return axios.delete<IUserFollows>(`${apiUrl}/me/follows/${userUUID}`, authHeaders(token));
+    return http.delete<IUserFollows>(`/me/follows/${userUUID}`, authHeaders(token));
   },
   async getQuestionSubscription(token: string, questionUUID: string) {
-    return axios.get<IUserQuestionSubscription>(
-      `${apiUrl}/me/question-subscriptions/${questionUUID}`,
+    return http.get<IUserQuestionSubscription>(
+      `/me/question-subscriptions/${questionUUID}`,
       authHeaders(token)
     );
   },
   async unsubscribeQuestion(token: string, questionUUID: string) {
-    return axios.delete<IUserQuestionSubscription>(
-      `${apiUrl}/me/question-subscriptions/${questionUUID}`,
+    return http.delete<IUserQuestionSubscription>(
+      `/me/question-subscriptions/${questionUUID}`,
       authHeaders(token)
     );
   },
   async subscribeQuestion(token: string, questionUUID: string) {
-    return axios.post<IUserQuestionSubscription>(
-      `${apiUrl}/me/question-subscriptions/${questionUUID}`,
+    return http.post<IUserQuestionSubscription>(
+      `/me/question-subscriptions/${questionUUID}`,
       null,
       authHeaders(token)
     );
   },
   async getSubmissionSubscription(token: string, submissionUUID: string) {
-    return axios.get<IUserSubmissionSubscription>(
-      `${apiUrl}/me/submission-subscriptions/${submissionUUID}`,
+    return http.get<IUserSubmissionSubscription>(
+      `/me/submission-subscriptions/${submissionUUID}`,
       authHeaders(token)
     );
   },
   async unsubscribeSubmission(token: string, submissionUUID: string) {
-    return axios.delete<IUserSubmissionSubscription>(
-      `${apiUrl}/me/submission-subscriptions/${submissionUUID}`,
+    return http.delete<IUserSubmissionSubscription>(
+      `/me/submission-subscriptions/${submissionUUID}`,
       authHeaders(token)
     );
   },
   async subscribeSubmission(token: string, submissionUUID: string) {
-    return axios.post<IUserSubmissionSubscription>(
-      `${apiUrl}/me/submission-subscriptions/${submissionUUID}`,
+    return http.post<IUserSubmissionSubscription>(
+      `/me/submission-subscriptions/${submissionUUID}`,
       null,
       authHeaders(token)
     );
   },
   async getTopicSubscription(token: string, topicUUID: string) {
-    return axios.get<IUserTopicSubscription>(
-      `${apiUrl}/me/topic-subscriptions/${topicUUID}`,
+    return http.get<IUserTopicSubscription>(
+      `/me/topic-subscriptions/${topicUUID}`,
       authHeaders(token)
     );
   },
   async unsubscribeTopic(token: string, topicUUID: string) {
-    return axios.delete<IUserTopicSubscription>(
-      `${apiUrl}/me/topic-subscriptions/${topicUUID}`,
+    return http.delete<IUserTopicSubscription>(
+      `/me/topic-subscriptions/${topicUUID}`,
       authHeaders(token)
     );
   },
   async subscribeTopic(token: string, topicUUID: string) {
-    return axios.post<IUserTopicSubscription>(
-      `${apiUrl}/me/topic-subscriptions/${topicUUID}`,
+    return http.post<IUserTopicSubscription>(
+      `/me/topic-subscriptions/${topicUUID}`,
       null,
       authHeaders(token)
     );
   },
   async getMyChannels(token: string) {
-    return axios.get<IChannel[]>(`${apiUrl}/me/channels/`, authHeaders(token));
+    return http.get<IChannel[]>(`/me/channels/`, authHeaders(token));
   },
   async getModeratedSites(token: string) {
-    return axios.get<ISite[]>(`${apiUrl}/me/moderated-sites/`, authHeaders(token));
+    return http.get<ISite[]>(`/me/moderated-sites/`, authHeaders(token));
   },
   async getSubscribedQuestions(token: string, skip: number, limit: number) {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<(IQuestionPreview | null)[]>(
-      `${apiUrl}/me/question-subscriptions/`,
+    return http.get<(IQuestionPreview | null)[]>(
+      `/me/question-subscriptions/`,
       authHeadersWithParams(token, params)
     );
   },
@@ -142,8 +141,8 @@ export const apiMe = {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<(ISubmission | null)[]>(
-      `${apiUrl}/me/submission-subscriptions/`,
+    return http.get<(ISubmission | null)[]>(
+      `/me/submission-subscriptions/`,
       authHeadersWithParams(token, params)
     );
   },
@@ -151,26 +150,26 @@ export const apiMe = {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<(IAnswerPreview | null)[]>(
-      `${apiUrl}/me/answer-bookmarks/`,
+    return http.get<(IAnswerPreview | null)[]>(
+      `/me/answer-bookmarks/`,
       authHeadersWithParams(token, params)
     );
   },
   async getAnswerBookmark(token: string, answerUUID: string) {
-    return axios.get<IUserAnswerBookmark>(
-      `${apiUrl}/me/answer-bookmarks/${answerUUID}`,
+    return http.get<IUserAnswerBookmark>(
+      `/me/answer-bookmarks/${answerUUID}`,
       authHeaders(token)
     );
   },
   async unbookmarkAnswer(token: string, answerUUID: string) {
-    return axios.delete<IUserAnswerBookmark>(
-      `${apiUrl}/me/answer-bookmarks/${answerUUID}`,
+    return http.delete<IUserAnswerBookmark>(
+      `/me/answer-bookmarks/${answerUUID}`,
       authHeaders(token)
     );
   },
   async bookmarkAnswer(token: string, answerUUID: string) {
-    return axios.post<IUserAnswerBookmark>(
-      `${apiUrl}/me/answer-bookmarks/${answerUUID}`,
+    return http.post<IUserAnswerBookmark>(
+      `/me/answer-bookmarks/${answerUUID}`,
       null,
       authHeaders(token)
     );
@@ -179,26 +178,26 @@ export const apiMe = {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<IArticlePreview[]>(
-      `${apiUrl}/me/article-bookmarks/`,
+    return http.get<IArticlePreview[]>(
+      `/me/article-bookmarks/`,
       authHeadersWithParams(token, params)
     );
   },
   async getArticleBookmark(token: string, articleUUID: string) {
-    return axios.get<IUserArticleBookmark>(
-      `${apiUrl}/me/article-bookmarks/${articleUUID}`,
+    return http.get<IUserArticleBookmark>(
+      `/me/article-bookmarks/${articleUUID}`,
       authHeaders(token)
     );
   },
   async unbookmarkArticle(token: string, articleUUID: string) {
-    return axios.delete<IUserArticleBookmark>(
-      `${apiUrl}/me/article-bookmarks/${articleUUID}`,
+    return http.delete<IUserArticleBookmark>(
+      `/me/article-bookmarks/${articleUUID}`,
       authHeaders(token)
     );
   },
   async bookmarkArticle(token: string, articleUUID: string) {
-    return axios.post<IUserArticleBookmark>(
-      `${apiUrl}/me/article-bookmarks/${articleUUID}`,
+    return http.post<IUserArticleBookmark>(
+      `/me/article-bookmarks/${articleUUID}`,
       null,
       authHeaders(token)
     );

@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { apiUrl } from '@/env';
+import { http } from '@/api/client';
 import {
   IArticle,
   IArticleArchive,
@@ -18,39 +17,39 @@ import { authHeaders, authHeadersWithParams } from '@/utils';
 
 export const apiArticle = {
   async upvoteArticle(token: string, articleUUID: string) {
-    return axios.post<IArticleUpvotes>(
-      `${apiUrl}/articles/${articleUUID}/upvotes/`,
+    return http.post<IArticleUpvotes>(
+      `/articles/${articleUUID}/upvotes/`,
       null,
       authHeaders(token)
     );
   },
   async cancelUpvoteArticle(token: string, articleUUID: string) {
-    return axios.delete<IArticleUpvotes>(
-      `${apiUrl}/articles/${articleUUID}/upvotes/`,
+    return http.delete<IArticleUpvotes>(
+      `/articles/${articleUUID}/upvotes/`,
       authHeaders(token)
     );
   },
   async postArticle(token: string, data: IArticleCreate) {
-    return axios.post<IArticle>(`${apiUrl}/articles/`, data, authHeaders(token));
+    return http.post<IArticle>(`/articles/`, data, authHeaders(token));
   },
   async updateArticle(token: string, articleUUID: string, payload: IArticleUpdate) {
-    return axios.put<IArticle>(`${apiUrl}/articles/${articleUUID}`, payload, authHeaders(token));
+    return http.put<IArticle>(`/articles/${articleUUID}`, payload, authHeaders(token));
   },
   async deleteArticle(token: string, articleUUID: string) {
-    return axios.delete<IGenericResponse>(`${apiUrl}/articles/${articleUUID}`, authHeaders(token));
+    return http.delete<IGenericResponse>(`/articles/${articleUUID}`, authHeaders(token));
   },
   async getArticle(token: string, articleUUID: string) {
-    return axios.get<IArticle>(`${apiUrl}/articles/${articleUUID}`, authHeaders(token));
+    return http.get<IArticle>(`/articles/${articleUUID}`, authHeaders(token));
   },
   async getArticleColumn(token: string, articleColumnUUID: string) {
-    return axios.get<IArticleColumn>(
-      `${apiUrl}/article-columns/${articleColumnUUID}`,
+    return http.get<IArticleColumn>(
+      `/article-columns/${articleColumnUUID}`,
       authHeaders(token)
     );
   },
   async bumpViewsCounter(token: string, articleUUID: string) {
-    return axios.post<IGenericResponse>(
-      `${apiUrl}/articles/${articleUUID}/views/`,
+    return http.post<IGenericResponse>(
+      `/articles/${articleUUID}/views/`,
       null,
       authHeaders(token)
     );
@@ -59,51 +58,51 @@ export const apiArticle = {
     const params = new URLSearchParams();
     params.append('skip', skip.toString());
     params.append('limit', limit.toString());
-    return axios.get<IArticleArchive[]>(
-      `${apiUrl}/articles/${articleUUID}/archives/`,
+    return http.get<IArticleArchive[]>(
+      `/articles/${articleUUID}/archives/`,
       authHeadersWithParams(token, params)
     );
   },
   async getArticlesOfColumn(token: string, articleColumnUUID: string) {
-    return axios.get<IArticlePreview[]>(
-      `${apiUrl}/article-columns/${articleColumnUUID}/articles/`,
+    return http.get<IArticlePreview[]>(
+      `/article-columns/${articleColumnUUID}/articles/`,
       authHeaders(token)
     );
   },
   async createArticleColumn(token: string, data: IArticleColumnCreate) {
-    return axios.post<IArticleColumn>(`${apiUrl}/article-columns/`, data, authHeaders(token));
+    return http.post<IArticleColumn>(`/article-columns/`, data, authHeaders(token));
   },
   async updateArticleColumn(token: string, articleColumnUUID: string, data: IArticleColumnUpdate) {
-    return axios.put<IArticleColumn>(
-      `${apiUrl}/article-columns/${articleColumnUUID}`,
+    return http.put<IArticleColumn>(
+      `/article-columns/${articleColumnUUID}`,
       data,
       authHeaders(token)
     );
   },
   async getArticleDraft(token: string, articleUUID: string) {
-    return axios.get<IArticleDraft>(`${apiUrl}/articles/${articleUUID}/draft`, authHeaders(token));
+    return http.get<IArticleDraft>(`/articles/${articleUUID}/draft`, authHeaders(token));
   },
   async deleteArticleDraft(token: string, articleUUID: string) {
-    return axios.delete<IArticleDraft>(
-      `${apiUrl}/articles/${articleUUID}/draft`,
+    return http.delete<IArticleDraft>(
+      `/articles/${articleUUID}/draft`,
       authHeaders(token)
     );
   },
   async getArticleColumnSubscription(token: string, articleColumnUUID: string) {
-    return axios.get<IUserArticleColumnSubscription>(
-      `${apiUrl}/me/article-column-subscriptions/${articleColumnUUID}`,
+    return http.get<IUserArticleColumnSubscription>(
+      `/me/article-column-subscriptions/${articleColumnUUID}`,
       authHeaders(token)
     );
   },
   async unsubscribeArticleColumn(token: string, articleColumnUUID: string) {
-    return axios.delete<IUserArticleColumnSubscription>(
-      `${apiUrl}/me/article-column-subscriptions/${articleColumnUUID}`,
+    return http.delete<IUserArticleColumnSubscription>(
+      `/me/article-column-subscriptions/${articleColumnUUID}`,
       authHeaders(token)
     );
   },
   async subscribeArticleColumn(token: string, articleColumnUUID: string) {
-    return axios.post<IUserArticleColumnSubscription>(
-      `${apiUrl}/me/article-column-subscriptions/${articleColumnUUID}`,
+    return http.post<IUserArticleColumnSubscription>(
+      `/me/article-column-subscriptions/${articleColumnUUID}`,
       null,
       authHeaders(token)
     );
