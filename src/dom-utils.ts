@@ -29,23 +29,37 @@ export const postProcessViewerDOM = async (token: string, viewer: HTMLElement | 
   }
 };
 
+const setMetaContent = (selector: string, content: string) => {
+  document.querySelector(selector)?.setAttribute('content', content);
+};
+
+/**
+ * Update document title and Open Graph / Twitter meta for the current SPA route.
+ * Note: external chat crawlers do not run this — see functions/_middleware.ts.
+ */
 export const updateHead = (routePath: string, title: string, descriptionText?: string) => {
+  const absoluteUrl = `${window.location.origin}${routePath}`;
+  const ogImage = `${window.location.origin}/img/icons/android-chrome-512x512.png`;
+
   document.title = title;
-  document.querySelector('meta[property="og.title"]')?.setAttribute('content', title);
+
+  setMetaContent('meta[property="og:title"]', title);
+  setMetaContent('meta[name="twitter:title"]', title);
+
   if (appName) {
-    document.querySelector('meta[property="og.site_name"]')?.setAttribute('content', appName);
+    setMetaContent('meta[property="og:site_name"]', appName);
   }
+
   if (descriptionText) {
-    document.querySelector('meta[name="description"]')?.setAttribute('content', descriptionText);
-    document
-      .querySelector('meta[property="description"]')
-      ?.setAttribute('content', descriptionText);
-    document
-      .querySelector('meta[property="og.description"]')
-      ?.setAttribute('content', descriptionText);
+    setMetaContent('meta[name="description"]', descriptionText);
+    setMetaContent('meta[property="description"]', descriptionText);
+    setMetaContent('meta[property="og:description"]', descriptionText);
+    setMetaContent('meta[name="twitter:description"]', descriptionText);
   }
-  document.querySelector('meta[property="og.type"]')?.setAttribute('content', 'article');
-  document
-    .querySelector('meta[property="og.url"]')
-    ?.setAttribute('content', 'https://cha.fan' + routePath);
+
+  setMetaContent('meta[property="og:type"]', 'article');
+  setMetaContent('meta[property="og:url"]', absoluteUrl);
+  setMetaContent('meta[property="og:image"]', ogImage);
+  setMetaContent('meta[name="twitter:card"]', 'summary');
+  setMetaContent('meta[name="twitter:image"]', ogImage);
 };
