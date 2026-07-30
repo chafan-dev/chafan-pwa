@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-col :class="{ 'col-8': isDesktop }">
+      <v-col :class="{ 'v-col-8': isDesktop }">
         <Form v-slot="{ handleSubmit, resetForm }">
           <div v-if="userProfile">
             <v-card-title>

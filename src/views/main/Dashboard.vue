@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row justify="center">
-      <v-col :class="{ 'col-10': display.mdAndUp }">
+      <v-col :class="{ 'v-col-10': display.mdAndUp }">
         <div class="ma-3 d-flex">
           <span class="text-h5 text-primary">用户中心</span>
           <v-spacer />

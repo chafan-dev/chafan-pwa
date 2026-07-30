@@ -4,7 +4,7 @@
     <v-row class="pt-3 pb-10" justify="center" v-else>
       <v-col
         :class="{
-          'col-8': isDesktop && !isNarrowFeedUI,
+          'v-col-8': isDesktop && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !isDesktop,
         }"
@@ -85,7 +85,7 @@
         </v-window>
       </v-col>
 
-      <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'">
+      <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'v-col-4'">
         <SiteCard :compactMode="false" :isMember="siteProfile !== null" :site="site" />
       </v-col>
       <v-bottom-sheet v-else>

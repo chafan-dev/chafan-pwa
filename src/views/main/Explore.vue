@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row fluid justify="center">
-      <v-col :class="{ 'col-8': display.mdAndUp }">
+      <v-col :class="{ 'v-col-8': display.mdAndUp }">
         <div class="mb-1">
           <div class="text-h5 text-primary mb-3">探索</div>
           <v-tabs v-model="currentTabItem">

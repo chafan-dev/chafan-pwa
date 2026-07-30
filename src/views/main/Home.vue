@@ -4,7 +4,7 @@
 
     <v-row class="pt-3 pb-10" justify="center">
       <!-- Feed column -->
-      <v-col>
+      <v-col :class="{ 'fixed-narrow-col': isNarrowFeedUI }">
         <template v-if="userProfile">
           <div class="d-flex justify-space-between mb-3 mx-4">
             <NewContentActionBar />
@@ -48,7 +48,7 @@
       <!-- Side column -->
       <v-col
         v-if="display.mdAndUp"
-        class="col-4"
+        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'v-col-4'"
       >
         <HomeSideCard />
       </v-col>

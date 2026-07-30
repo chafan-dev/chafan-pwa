@@ -2,7 +2,7 @@
   <v-main>
     <v-container fill-height fluid>
       <v-row justify="center">
-        <v-col :class="{ 'col-8': display.mdAndUp }">
+        <v-col :class="{ 'v-col-8': display.mdAndUp }">
           <v-card>
             <v-card-text>
               <ContribGraphs />

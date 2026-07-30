@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row class="mb-12" justify="center">
-      <v-col :class="{ 'col-8': display.mdAndUp }">
+      <v-col :class="{ 'v-col-8': display.mdAndUp }">
         <Form v-slot="{ handleSubmit, resetForm }">
           <v-card class="ma-3 pa-3" variant="outlined">
             <v-card-title>

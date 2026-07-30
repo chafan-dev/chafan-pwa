@@ -14,6 +14,12 @@ pwa.env
 .env.*.local
 .start_local_*
 
+# local e2e credentials and run output
+env.e2e
+e2e/.auth
+playwright-report
+test-results
+
 # Log files
 npm-debug.log*
 yarn-debug.log*
