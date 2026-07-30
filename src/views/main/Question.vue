@@ -4,7 +4,7 @@
     <v-row v-else class="px-2" justify="center">
       <v-col
         :class="{
-          'col-8': isDesktop && !isNarrowFeedUI,
+          'v-col-8': isDesktop && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !isDesktop,
         }"
@@ -189,7 +189,7 @@
         </div>
       </v-col>
 
-      <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'">
+      <v-col v-if="isDesktop" :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'v-col-4'">
         <QuestionInfo
           :question="question"
           :questionSubscription="questionPage.question_subscription"

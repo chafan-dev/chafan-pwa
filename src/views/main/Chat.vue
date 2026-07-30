@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-progress-linear v-if="loading" indeterminate />
     <v-row v-else class="mb-12" justify="center">
-      <v-col :class="{ 'col-6': display.mdAndUp }">
+      <v-col :class="{ 'v-col-6': display.mdAndUp }">
         <ChatWindow :channel="channel" />
       </v-col>
     </v-row>

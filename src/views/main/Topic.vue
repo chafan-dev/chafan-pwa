@@ -8,7 +8,7 @@
     <v-row v-else class="mb-12" justify="center">
       <v-col
         :class="{
-          'col-8': display.mdAndUp && !isNarrowFeedUI,
+          'v-col-8': display.mdAndUp && !isNarrowFeedUI,
           'fixed-narrow-col': isNarrowFeedUI,
           'less-left-right-padding': !display.mdAndUp,
         }"
@@ -32,7 +32,7 @@
 
       <v-col
         v-if="display.mdAndUp"
-        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'col-4'"
+        :class="isNarrowFeedUI ? 'fixed-narrow-sidecol' : 'v-col-4'"
       >
         <TopicCard :topic="topic" />
       </v-col>

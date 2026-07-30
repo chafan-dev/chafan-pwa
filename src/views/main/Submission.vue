@@ -6,7 +6,7 @@
       :indeterminate="loadingProgress === 0"
     />
     <v-row v-else justify="center">
-      <v-col :class="{ 'col-8': isDesktop && !isNarrowFeedUI, 'fixed-narrow-col': isNarrowFeedUI }">
+      <v-col :class="{ 'v-col-8': isDesktop && !isNarrowFeedUI, 'fixed-narrow-col': isNarrowFeedUI }">
         <Form v-slot="{ handleSubmit }">
           <div class="d-flex justify-space-between">
             <UserLink :show-avatar="true" :userPreview="submission.author" />
