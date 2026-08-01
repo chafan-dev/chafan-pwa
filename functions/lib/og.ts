@@ -6,6 +6,101 @@
 export const DEFAULT_DESCRIPTION = 'Chafan 茶饭 - 有深度的社交问答网站';
 export const DEFAULT_TITLE = 'Chafan 茶饭';
 
+function stripHtml(text: string): string {
+  return text
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#3?9;/gi, "'")
+    .replace(/&amp;/gi, '&');
+}
+
+/** Drop the markup that would otherwise show up verbatim in an unfurl card. */
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^[ \t]{0,3}#{1,6}[ \t]+/gm, '')
+    .replace(/^[ \t]{0,3}>[ \t]?/gm, '')
+    .replace(/^[ \t]{0,3}([-*+]|\d+\.)[ \t]+/gm, '')
+    .replace(/[*_~`]/g, '');
+}
+
+/** Text nodes of a ProseMirror/tiptap document, in document order. */
+function prosemirrorToPlain(node: unknown, out: string[] = []): string {
+  if (Array.isArray(node)) {
+    for (const child of node) prosemirrorToPlain(child, out);
+  } else if (node && typeof node === 'object') {
+    const n = node as Record<string, unknown>;
+    if (typeof n.text === 'string') out.push(n.text);
+    if (n.content) prosemirrorToPlain(n.content, out);
+  }
+  return out.join(' ');
+}
+
+/**
+ * Best-effort plain text for a Chafan rich text blob (`{ source, rendered_text, editor }`).
+ *
+ * `rendered_text` is null on most stored content, so `source` — markdown for the
+ * vditor editors, a ProseMirror JSON doc for tiptap — is the real fallback.
+ */
+export function richTextToPlain(rich: unknown): string | undefined {
+  if (!rich || typeof rich !== 'object') {
+    return undefined;
+  }
+  const { source, rendered_text: rendered } = rich as {
+    source?: string | null;
+    rendered_text?: string | null;
+  };
+
+  if (typeof rendered === 'string' && rendered.trim()) {
+    return stripHtml(rendered);
+  }
+  if (typeof source !== 'string' || !source.trim()) {
+    return undefined;
+  }
+
+  if (source.trimStart().startsWith('{')) {
+    let doc: unknown;
+    try {
+      doc = JSON.parse(source);
+    } catch {
+      doc = null;
+    }
+    if (doc) {
+      // A doc with no text nodes (e.g. image-only) has no description to give;
+      // never fall through, or the raw JSON would end up in the card.
+      const text = prosemirrorToPlain(doc);
+      return text.trim() ? text : undefined;
+    }
+  }
+
+  const markdown = stripMarkdown(source);
+  return markdown.trim() ? markdown : undefined;
+}
+
+/** Questions rarely carry a description, so the top answer is the real content. */
+function firstAnswerText(page: Record<string, unknown>): string | undefined {
+  const answers = Array.isArray(page.full_answers) ? page.full_answers : [];
+  for (const answer of answers) {
+    const a = answer as Record<string, unknown>;
+    if (a.is_hidden_by_moderator) continue;
+    const text = richTextToPlain(a.content);
+    if (text) return text;
+  }
+  const previews = Array.isArray(page.answer_previews) ? page.answer_previews : [];
+  for (const preview of previews) {
+    const p = preview as Record<string, unknown>;
+    if (p.is_hidden_by_moderator) continue;
+    if (typeof p.body === 'string' && p.body.trim()) return stripHtml(p.body);
+  }
+  return undefined;
+}
+
 /** Content routes that should receive dynamic OG tags. */
 export const CONTENT_ROUTE_PATTERNS: ReadonlyArray<{
   re: RegExp;
@@ -16,14 +111,15 @@ export const CONTENT_ROUTE_PATTERNS: ReadonlyArray<{
 }> = [
   {
     re: /^\/questions\/([A-Za-z0-9]+)$/,
-    apiPath: (id) => `/questions/${id}`,
+    // /page carries the answers too, so one request covers both fallbacks.
+    apiPath: (id) => `/questions/${id}/page`,
     pick: (body) => {
-      const title = typeof body.title === 'string' ? body.title : null;
+      const question = (body.question ?? {}) as Record<string, unknown>;
+      const title = typeof question.title === 'string' ? question.title : null;
       if (!title) return null;
-      const desc = body.desc as { rendered_text?: string } | null | undefined;
       return {
         title,
-        description: desc?.rendered_text || undefined,
+        description: richTextToPlain(question.desc) || firstAnswerText(body),
       };
     },
   },
@@ -33,10 +129,10 @@ export const CONTENT_ROUTE_PATTERNS: ReadonlyArray<{
     pick: (body) => {
       const title = typeof body.title === 'string' ? body.title : null;
       if (!title) return null;
-      const bodyField = body.body as { rendered_text?: string } | null | undefined;
       return {
         title,
-        description: bodyField?.rendered_text || undefined,
+        // The API field is `content`; `body` never existed and always read undefined.
+        description: richTextToPlain(body.content),
       };
     },
   },
@@ -46,10 +142,9 @@ export const CONTENT_ROUTE_PATTERNS: ReadonlyArray<{
     pick: (body) => {
       const title = typeof body.title === 'string' ? body.title : null;
       if (!title) return null;
-      const desc = body.desc as { rendered_text?: string } | null | undefined;
       return {
         title,
-        description: desc?.rendered_text || undefined,
+        description: richTextToPlain(body.desc),
       };
     },
   },

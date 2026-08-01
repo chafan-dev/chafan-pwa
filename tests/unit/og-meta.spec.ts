@@ -10,6 +10,7 @@ import {
   normalizeDescription,
   resolveApiBase,
   resolveSiteName,
+  richTextToPlain,
 } from '../../functions/lib/og';
 
 describe('functions/lib/og', () => {
@@ -45,7 +46,7 @@ describe('functions/lib/og', () => {
   describe('matchContentRoute', () => {
     it('matches questions / articles / submissions', () => {
       expect(matchContentRoute('/questions/7e7QP9AoCJdUDBPa62VF')?.apiPath).toBe(
-        '/questions/7e7QP9AoCJdUDBPa62VF'
+        '/questions/7e7QP9AoCJdUDBPa62VF/page'
       );
       expect(matchContentRoute('/articles/abc123')?.apiPath).toBe('/articles/abc123');
       expect(matchContentRoute('/submissions/xyz')?.apiPath).toBe('/submissions/xyz');
@@ -62,11 +63,82 @@ describe('functions/lib/og', () => {
     it('picks title and description from question payload', () => {
       const route = matchContentRoute('/questions/abc')!;
       const picked = route.pick({
-        title: '测试问题',
-        desc: { rendered_text: '问题描述' },
+        question: { title: '测试问题', desc: { rendered_text: '问题描述' } },
       });
       expect(picked).toEqual({ title: '测试问题', description: '问题描述' });
       expect(route.pick({})).toBeNull();
+    });
+
+    it('falls back to the top answer when a question has no description', () => {
+      const route = matchContentRoute('/questions/abc')!;
+      expect(
+        route.pick({
+          question: { title: '测试问题', desc: null },
+          full_answers: [
+            { is_hidden_by_moderator: true, content: { rendered_text: '被隐藏' } },
+            { is_hidden_by_moderator: false, content: { source: '第一个回答', editor: 'wysiwyg' } },
+          ],
+        })
+      ).toEqual({ title: '测试问题', description: '第一个回答' });
+
+      // No full answers exposed → the truncated preview body still works.
+      expect(
+        route.pick({
+          question: { title: '测试问题' },
+          answer_previews: [{ body: '预览正文' }],
+        })
+      ).toEqual({ title: '测试问题', description: '预览正文' });
+    });
+
+    it('reads the article rich text from `content`', () => {
+      const route = matchContentRoute('/articles/abc')!;
+      expect(
+        route.pick({
+          title: '文章标题',
+          content: { source: '正文内容', rendered_text: null, editor: 'wysiwyg' },
+        })
+      ).toEqual({ title: '文章标题', description: '正文内容' });
+    });
+  });
+
+  describe('richTextToPlain', () => {
+    it('prefers rendered_text and strips markup', () => {
+      expect(richTextToPlain({ rendered_text: '<p>hello <b>world</b></p>', source: 'x' })).toContain(
+        'hello'
+      );
+      expect(richTextToPlain({ rendered_text: '<p>a &amp; b</p>' })).toContain('a & b');
+    });
+
+    it('falls back to markdown source when rendered_text is null', () => {
+      expect(
+        richTextToPlain({
+          rendered_text: null,
+          source: '## 标题\n\n- 一项\n- 二项\n\n[链接](https://cha.fan)',
+          editor: 'wysiwyg',
+        })
+      ).toBe('标题\n\n一项\n二项\n\n链接');
+    });
+
+    it('extracts text from a tiptap document', () => {
+      const doc = JSON.stringify({
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: '一段正文' }] }],
+      });
+      expect(richTextToPlain({ rendered_text: null, source: doc, editor: 'tiptap' })).toBe('一段正文');
+    });
+
+    it('never leaks raw JSON for a doc with no text', () => {
+      const imageOnly = JSON.stringify({
+        type: 'doc',
+        content: [{ type: 'image', attrs: { src: 'https://assets.cha.fan/x' } }],
+      });
+      expect(richTextToPlain({ rendered_text: null, source: imageOnly })).toBeUndefined();
+    });
+
+    it('returns undefined for empty or missing rich text', () => {
+      expect(richTextToPlain(null)).toBeUndefined();
+      expect(richTextToPlain({ rendered_text: null, source: '\n' })).toBeUndefined();
+      expect(richTextToPlain({})).toBeUndefined();
     });
   });
 
