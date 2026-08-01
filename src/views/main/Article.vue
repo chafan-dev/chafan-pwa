@@ -338,7 +338,7 @@ async function submitNewArticleCommentBody({ body, body_text, editor, mentioned 
 }
 
 function updateStateWithLoadedArticle(articleData: IArticle) {
-  updateHead(route.path, articleData.title);
+  updateHead(route.path, articleData.title, articleData.content.rendered_text);
   if (token.value) {
     apiArticle.bumpViewsCounter(token.value, articleData.uuid);
   }
