@@ -128,7 +128,8 @@ export default defineConfig(({ mode }) => {
           experimentalMinChunkSize: 10_000,
         },
       },
-      chunkSizeWarningLimit: 2500,
+      // Largest chunk is ~780 kB; 1000 leaves headroom while surfacing regressions.
+      chunkSizeWarningLimit: 1000,
     },
     server: {
       allowedHosts: true,
