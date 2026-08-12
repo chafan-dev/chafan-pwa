@@ -1,37 +1,25 @@
 # Cloudflare Pages cache policy.
 #
-# Pages' default is a single blanket `public, max-age=300, must-revalidate` for
-# every file, which is wrong in both directions for a Vite build: immutable
-# hashed assets get re-validated every 5 minutes, while the app shell and the
-# service worker can be served up to 5 minutes stale — long enough for a
-# visitor to keep running the previous build after a deploy.
+# Only long-lived paths are listed here. Everything else is deliberately left
+# to the Pages default, which is already `public, max-age=0, must-revalidate` —
+# i.e. always revalidate. That is exactly what the app shell, sw.js and
+# registerSW.js need, so restating it would be redundant.
 #
-# Rules are evaluated top to bottom and later matches override earlier ones for
-# the same header, so the catch-all comes first and the specific paths refine it.
+# Rules must not overlap. Pages APPENDS the headers of every matching rule
+# rather than letting the most specific one win, so a `/*` catch-all next to a
+# `/assets/*` rule produces a single combined value:
+#
+#     Cache-Control: no-cache, public, max-age=31536000, immutable
+#
+# where `no-cache` wins and the immutable hint is silently defeated. Keep these
+# patterns disjoint.
 
-# Default: always revalidate. Cheap, because responses carry an ETag, so this
-# is a 304 in the common case rather than a re-download. This also covers the
-# app shell served at arbitrary SPA routes (/questions/..., /articles/...),
-# which is why it has to be the catch-all rather than a rule on /index.html.
-/*
-  Cache-Control: no-cache
-
-# Content-addressed build output: the hash changes whenever the bytes change,
-# so these can never go stale and never need revalidating.
+# Content-addressed build output: the filename hash changes whenever the bytes
+# change, so these can be cached indefinitely and never revalidated.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Static icons and images are not hashed, so they cannot be immutable, but they
+# Icons and static images are not hashed, so they cannot be immutable, but they
 # change rarely enough that a day of browser caching is safe.
 /img/*
   Cache-Control: public, max-age=86400
-
-# The service worker and its registration decide when clients pick up a new
-# build. Serving these stale delays every deploy for the length of the TTL, so
-# they must always revalidate.
-/sw.js
-  Cache-Control: no-cache
-/registerSW.js
-  Cache-Control: no-cache
-/manifest.webmanifest
-  Cache-Control: no-cache
