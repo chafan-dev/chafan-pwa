@@ -1,0 +1,37 @@
+# Cloudflare Pages cache policy.
+#
+# Pages' default is a single blanket `public, max-age=300, must-revalidate` for
+# every file, which is wrong in both directions for a Vite build: immutable
+# hashed assets get re-validated every 5 minutes, while the app shell and the
+# service worker can be served up to 5 minutes stale — long enough for a
+# visitor to keep running the previous build after a deploy.
+#
+# Rules are evaluated top to bottom and later matches override earlier ones for
+# the same header, so the catch-all comes first and the specific paths refine it.
+
+# Default: always revalidate. Cheap, because responses carry an ETag, so this
+# is a 304 in the common case rather than a re-download. This also covers the
+# app shell served at arbitrary SPA routes (/questions/..., /articles/...),
+# which is why it has to be the catch-all rather than a rule on /index.html.
+/*
+  Cache-Control: no-cache
+
+# Content-addressed build output: the hash changes whenever the bytes change,
+# so these can never go stale and never need revalidating.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static icons and images are not hashed, so they cannot be immutable, but they
+# change rarely enough that a day of browser caching is safe.
+/img/*
+  Cache-Control: public, max-age=86400
+
+# The service worker and its registration decide when clients pick up a new
+# build. Serving these stale delays every deploy for the length of the TTL, so
+# they must always revalidate.
+/sw.js
+  Cache-Control: no-cache
+/registerSW.js
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache

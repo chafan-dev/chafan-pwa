@@ -40,11 +40,32 @@ export default defineConfig(({ mode }) => {
         strategies: 'generateSW',
         workbox: {
           globDirectory: resolve('dist'),
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          // Hashed build output only. index.html is deliberately NOT precached:
+          // precaching it made navigations cache-first, so a returning visitor
+          // got the previous build's HTML (and therefore its asset hashes) for
+          // a whole page view after every deploy.
+          globPatterns: ['**/*.{js,css,ico,png,svg,woff2}'],
           globIgnores: ['**/*.map'],
           skipWaiting: true,
-          navigateFallback: '/index.html',
-          runtimeCaching: [],
+          clientsClaim: true,
+          // Must be an explicit null: vite-plugin-pwa defaults this to
+          // 'index.html', and the generated NavigationRoute would then call
+          // createHandlerBoundToURL on a URL we no longer precache, which
+          // throws non-precached-url at runtime. Cloudflare Pages already
+          // serves the app shell for every SPA route (see public/_redirects),
+          // so navigations go to the network and fall back to cache on failure.
+          navigateFallback: null,
+          runtimeCaching: [
+            {
+              urlPattern: ({ request }) => request.mode === 'navigate',
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'html-shell',
+                networkTimeoutSeconds: 3,
+                expiration: { maxEntries: 32 },
+              },
+            },
+          ],
         },
         manifest: {
           name: '茶饭',
