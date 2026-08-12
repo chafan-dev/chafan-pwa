@@ -185,7 +185,7 @@
                 link
               >
                 <template v-slot:prepend>
-                  <component v-bind:is="item.icon" />
+                  <AppIcon :name="item.icon" />
                 </template>
                 <v-list-item-title>
                   {{ item.text }}
@@ -258,12 +258,12 @@ const { token, userProfile } = useAuth();
 
 const accountItems = [
   {
-    icon: 'DashboardIcon',
+    icon: 'Dashboard',
     text: '个人中心',
     to: '/dashboard',
   },
   {
-    icon: 'ProfileIcon',
+    icon: 'Profile',
     text: '我的主页',
     toRequiresUserProfile: true,
     to: (up: IUserProfile) => `/users/${up.handle}`,
