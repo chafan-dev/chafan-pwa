@@ -17,7 +17,6 @@ import { api } from '@/api';
 import { ISite, ISiteMap } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
-import 'core-js/features/array/flat-map';
 import { useMainStore } from '@/stores/main';
 const store = useMainStore();
 
