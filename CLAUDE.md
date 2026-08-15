@@ -17,6 +17,13 @@ Frontend-only SPA for a Chinese-language social Q&A site. The API is a separate 
 
 `public` remote = canonical GitHub repo, where PRs land. `deploy` remote = the fork Cloudflare Pages builds. Promotion is a manual fast-forward: `public/master` → `deploy/preview` → `deploy/master`, via `scripts/deploy-preview.sh` / `scripts/deploy-prod.sh`.
 
+```bash
+scripts/deploy-preview.sh    # fetches public, pushes public/master -> deploy/preview
+                             # then wait a few minutes for Cloudflare to build preview.cha.fan
+scripts/deploy-prod.sh       # deploy/preview -> deploy/master, with confirmation + rollback tag
+```
+
+- The scripts push the **source ref's SHA straight to the deploy remote**. Deploying does not go through any local branch — don't merge into a local `preview`/`master` first. The local `preview` branch is a vestige of the migration; it is not part of the deploy path.
 - `git push` has **no** `--ff-only` flag — a plain push already refuses non-fast-forwards. Never add it.
 - Production still serves the **pre-migration Vue 2 build**, so cha.fan is the visual reference: this tree must match its layout and behavior. That parity is the standing goal.
 
