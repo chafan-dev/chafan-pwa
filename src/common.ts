@@ -45,19 +45,5 @@ export const getDefaultNarrowFeedUI = () => {
   }
 };
 
-import { apiUrl } from '@/env';
-
-export const getVditorUploadConfig = (token: string) => {
-  return {
-    max: 1024 * 1024,
-    accept: 'image/png, image/jpeg, image/bmp, image/gif',
-    fieldName: 'files',
-    url: `${apiUrl}/upload/vditor/`,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
-
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const doNothing = () => {};

@@ -20,7 +20,7 @@
         :initial-content="topLevelEditor === 'vditor' ? initialContent : undefined"
         :isMobile="!isDesktop"
         :onEditorChange="onEditorChange"
-        :vditorUploadConfig="vditorUploadConfig"
+        :upload="uploadFigure"
         class="mb-2"
         placeholder="谢谢你的贡献！发言前别忘了社区行为守则"
       />
@@ -187,7 +187,7 @@ import {
 } from '@/interfaces';
 import { apiAnswer } from '@/api/answer';
 import VditorCF from '@/editors/lib-components/VditorCF.vue';
-import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { AnswerEditHandler } from '@/handlers';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
@@ -195,7 +195,7 @@ import DebugSpan from '@/components/base/DebugSpan.vue';
 import Viewer from '@/components/Viewer.vue';
 import RelativeTime from '@/components/RelativeTime.vue';
 import dayjs from '@/dayjs';
-import { useAuth, useResponsive } from '@/composables';
+import { useAuth, useImageUpload, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import { useUiStore } from '@/stores/ui';
 import AppIcon from '@/components/icons/AppIcon.vue';
@@ -272,7 +272,8 @@ const contentId = computed(() => {
   return null;
 });
 
-const vditorUploadConfig = computed(() => getVditorUploadConfig(token.value));
+const { uploadImage } = useImageUpload();
+const uploadFigure = (file: File) => uploadImage(file, 'figure');
 
 function invalidAnswerCallback() {
   logDebug('invalid answer');

@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { vditorCDN } from '../common';
+import { vditorCDN, vditorUploadOptions, VditorUploadFn } from '../common';
 
 const props = withDefaults(
   defineProps<{
     initialValue?: string;
     placeholder?: string;
     showMenu?: boolean;
-    vditorUploadConfig?: any;
+    upload?: VditorUploadFn;
   }>(),
   {
     showMenu: false,
@@ -26,7 +26,9 @@ async function initVditor() {
   if (vditor !== null) {
     vditor.destroy();
   }
-  vditor = new Vditor(rootEl.value!, {
+  // Typed loosely, like VditorCF: Vditor's own IUpload cannot describe a
+  // handler that resolves to either a message or null.
+  const options: any = {
     cdn: vditorCDN,
     placeholder: props.placeholder ? props.placeholder : '',
     value: props.initialValue,
@@ -48,11 +50,14 @@ async function initVditor() {
     cache: {
       enable: false,
     },
-    upload: props.vditorUploadConfig,
+    upload: props.upload
+      ? vditorUploadOptions(props.upload, (markdown) => vditor?.insertValue(markdown))
+      : undefined,
     counter: {
       enable: false,
     },
-  });
+  };
+  vditor = new Vditor(rootEl.value!, options);
 }
 
 function getText() {

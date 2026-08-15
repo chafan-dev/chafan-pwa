@@ -50,6 +50,11 @@ const errorMsgCN: Record<string, string> = {
   'Invalid submission UUID': '分享 UUID 无效',
   'Request failed': '请求失败',
   'Upload requires login': '上传需要登录',
+  // POST /upload/images/ — see @/upload for the status-keyed messages the
+  // upload path itself shows; these cover any other caller of the same API.
+  'Unsupported or invalid image': '不支持的图片格式，请上传 JPEG、PNG、GIF 或 WebP 图片',
+  'File too large': '图片太大，最大 5 MB',
+  'Image uploads are not configured on this server': '本站暂时无法上传图片，请稍后再试',
   "The site doesn't exists in the system": '圈子不存在',
   'Invalid form response id': '无效的表格回答 ID',
   'The site with this subdomain already exists in the system': '该域名的圈子不存在',

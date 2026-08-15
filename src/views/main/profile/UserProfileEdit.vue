@@ -92,7 +92,7 @@
                       :initial-content="userProfile.about"
                       :isMobile="!isDesktop"
                       :onEditorChange="onEditorChange"
-                      :vditorUploadConfig="vditorUploadConfig"
+                      :upload="uploadFigure"
                     />
                   </div>
                 </v-expand-transition>
@@ -212,22 +212,19 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
 import { useRouter } from 'vue-router';
-import { apiUpload } from '@/api/upload';
 import { apiPeople } from '@/api/people';
 import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
-import { resizeImage } from '@/imagelib';
-import piexif from 'piexifjs';
 import { deepCopy, getRecentYears } from '@/utils';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
 import { api } from '@/api';
 import VditorCF from '@/editors/lib-components/VditorCF.vue';
-import { getVditorUploadConfig } from '@/common';
+
 import ValidateUrl from '@/components/base/ValidateUrl.vue';
 import ZhihuIcon from '@/components/icons/ZhihuIcon.vue';
 import EducationExperienceSection from '@/components/profile/EducationExperienceSection.vue';
 import WorkExperienceSection from '@/components/profile/WorkExperienceSection.vue';
-import { useAuth, useResponsive } from '@/composables';
+import { useAuth, useImageUpload, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
@@ -280,9 +277,8 @@ const vditor = ref<InstanceType<typeof VditorCF> | null>(null);
 const showRemoveConfirm = ref(false);
 const removeCallback = ref<(() => void) | null>(null);
 
-const vditorUploadConfig = computed(() => {
-  return getVditorUploadConfig(store.token);
-});
+const { uploadImage, uploadImageOrNotify } = useImageUpload();
+const uploadFigure = (file: File) => uploadImage(file, 'figure');
 
 onMounted(async () => {
   years.value = getRecentYears();
@@ -462,73 +458,58 @@ function removeFrom<T>(index: number, arr: T[]) {
   arr.splice(index, 1);
 }
 
+// Avatars are uploaded with purpose="avatar", which is exempt from the karma
+// gate on figures -- an account with no karma still gets a profile picture.
+// The upload reports its own failures: an unhandled 403 would reach
+// store.checkApiError and log the user out.
 async function uploadAvatar() {
+  const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
+  const file = fileInput?.files?.[0];
+  if (!file) {
+    return;
+  }
+  if (file.size <= 128) {
+    useNotificationStore().push({ content: '头像文件过小', color: 'error' });
+    return;
+  }
   uploadAvatarIntermediate.value = true;
-  await store.captureApiError(async () => {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
-    if (fileInput !== null) {
-      if (fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-        if (file.size <= 128) {
-          useNotificationStore().push({
-            content: '头像文件过小',
-            color: 'error',
-          });
-          uploadAvatarIntermediate.value = false;
-          return;
-        }
-        const formData = new FormData();
-        const resized = await resizeImage({
-          maxSize: 500, // px
-          file,
-        });
-
-        // Upload candidate image and update URL
-        try {
-          formData.append('file', piexif.remove(resized.blob));
-          // Remove EXIF if it is jpeg
-        } catch {
-          formData.append('file', resized.blob);
-        }
-        avatarURL.value = resized.dataUrl;
-        const response = await apiUpload.uploadImage(token.value, formData);
-        userUpdateMe.avatar_url = response.data.url;
-      }
+  try {
+    const url = await uploadImageOrNotify(file, 'avatar', { filename: file.name });
+    if (url) {
+      avatarURL.value = url;
+      userUpdateMe.avatar_url = url;
     }
+  } finally {
     uploadAvatarIntermediate.value = false;
-  });
+  }
 }
 
 async function uploadGifAvatar() {
+  const fileInput = document.getElementById('gifFileInput') as HTMLInputElement | null;
+  const file = fileInput?.files?.[0];
+  if (!file) {
+    return;
+  }
+  if (file.size <= 128) {
+    useNotificationStore().push({ content: '头像文件过小', color: 'error' });
+    return;
+  }
   uploadGifAvatarIntermediate.value = true;
-  await store.captureApiError(async () => {
-    const fileInput = document.getElementById('gifFileInput') as HTMLInputElement;
-    if (fileInput !== null) {
-      if (fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-        if (file.size <= 128) {
-          useNotificationStore().push({
-            content: '头像文件过小',
-            color: 'error',
-          });
-          uploadGifAvatarIntermediate.value = false;
-          return;
-        }
-        const formData = new FormData();
-
-        formData.append('file', file);
-
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        fileReader.onload = () => {
-          gifAvatarURL.value = fileReader.result as string;
-        };
-        const response = await apiUpload.uploadImage(token.value, formData);
-        userUpdateMe.gif_avatar_url = response.data.url;
-      }
+  try {
+    // Never resized: the canvas pass would return one flattened JPEG frame,
+    // which is the whole point of this field. The size cap is the only gate,
+    // and it is checked client-side so an oversize GIF says so.
+    const url = await uploadImageOrNotify(file, 'avatar', {
+      resize: false,
+      filename: file.name,
+    });
+    if (url) {
+      gifAvatarURL.value = url;
+      userUpdateMe.gif_avatar_url = url;
     }
+  } finally {
     uploadGifAvatarIntermediate.value = false;
-  });
+  }
 }
 
 function showFilePicker() {

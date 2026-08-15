@@ -14,7 +14,7 @@
       :initial-value="initialValue"
       :placeholder="placeholder"
       :showMenu="showMenu"
-      :vditorUploadConfig="vditorUploadConfig"
+      :upload="uploadFigure"
     />
   </div>
 </template>
@@ -24,8 +24,7 @@ import { ref, computed } from 'vue';
 import LiteVditorCF from '@/editors/lib-components/LiteVditorCF.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import { editor_T } from '@/interfaces';
-import { getVditorUploadConfig } from '@/common';
-import { useAuth } from '@/composables';
+import { useImageUpload } from '@/composables';
 
 const props = withDefaults(
   defineProps<{
@@ -40,7 +39,7 @@ const props = withDefaults(
   }
 );
 
-const { token } = useAuth();
+const { uploadImage } = useImageUpload();
 
 const tiptap = ref<InstanceType<typeof ChafanTiptap> | null>(null);
 const simpleVditor = ref<any>(null);
@@ -52,9 +51,7 @@ const editor = computed(() => {
   return 'tiptap';
 });
 
-const vditorUploadConfig = computed(() => {
-  return getVditorUploadConfig(token.value);
-});
+const uploadFigure = (file: File) => uploadImage(file, 'figure');
 
 function getContent(): string | null {
   if (editor.value === 'tiptap') {
