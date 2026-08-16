@@ -116,9 +116,16 @@ export const Image = Node.create<ImageOptions>({
                 const reader = new FileReader();
 
                 if (upload) {
-                  const node = schema.nodes.image.create({
-                    src: await upload(image),
-                  });
+                  // A refused upload (no karma, no coins, bad bytes) reports
+                  // itself; here it must only leave the document untouched,
+                  // never insert a node and never reject unhandled.
+                  let src: string;
+                  try {
+                    src = await upload(image);
+                  } catch {
+                    return;
+                  }
+                  const node = schema.nodes.image.create({ src });
                   const transaction = view.state.tr.insert(coordinates.pos, node);
                   view.dispatch(transaction);
                 } else {
@@ -148,13 +155,16 @@ export const Image = Node.create<ImageOptions>({
                 const image = item.getAsFile()!;
 
                 if (upload) {
-                  upload(image).then((src) => {
-                    const node = schema.nodes.image.create({
-                      src: src,
-                    });
-                    const transaction = view.state.tr.replaceSelectionWith(node);
-                    view.dispatch(transaction);
-                  });
+                  upload(image)
+                    .then((src) => {
+                      const node = schema.nodes.image.create({
+                        src: src,
+                      });
+                      const transaction = view.state.tr.replaceSelectionWith(node);
+                      view.dispatch(transaction);
+                    })
+                    // Reported by the uploader; nothing to insert.
+                    .catch(() => undefined);
                 } else {
                   const reader = new FileReader();
                   reader.onload = (readerEvent) => {

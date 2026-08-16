@@ -3840,7 +3840,6 @@ __metadata:
     lint-staged: "npm:^15.2.10"
     lodash: "npm:^4.17.21"
     lowlight: "npm:^2.9.0"
-    piexifjs: "npm:^1.0.6"
     pinia: "npm:^2.2.6"
     postcss: "npm:^8.5.6"
     postcss-html: "npm:^1.8.0"
@@ -7055,13 +7054,6 @@ __metadata:
   bin:
     pidtree: bin/pidtree.js
   checksum: 10c0/6abf7ab04941e6ac44cc55e9aca800aba4769407e8faf1d28a8adce44bfca1a0060c1e7c662c2641241c67367a80fc768d71a35391d7e5ffd15f0ee7d5ea74e0
-  languageName: node
-  linkType: hard
-
-"piexifjs@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "piexifjs@npm:1.0.6"
-  checksum: 10c0/69a10fe09c08f1e67e653844ac79e720324a7fa34689b020359d60d98b3a601c070e1759df8f2d97d022298bd2f5b79eed4c92de86c5f215300c8a63adf947b1
   languageName: node
   linkType: hard
 

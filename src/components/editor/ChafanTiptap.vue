@@ -28,9 +28,8 @@ import 'tippy.js/dist/tippy.css';
 import 'highlight.js/styles/github.css';
 
 import TiptapCF from '@/editors/lib-components/TiptapCF.vue';
-import { resizeImage } from '@/imagelib';
-import { apiUpload } from '@/api/upload';
-import { useAuth } from '@/composables';
+import { useAuth, useImageUpload, useNotification } from '@/composables';
+import { uploadErrorMessage } from '@/upload';
 
 declare const renderMathInElement: (element: HTMLElement, options: Record<string, unknown>) => void;
 
@@ -52,6 +51,8 @@ const props = withDefaults(
 
 const instance = getCurrentInstance();
 const { token } = useAuth();
+const { uploadImage } = useImageUpload();
+const { notifyError } = useNotification();
 
 const base = ref<InstanceType<typeof TiptapCF> | null>(null);
 
@@ -91,23 +92,15 @@ function reset() {
   base.value?.reset();
 }
 
+// Rejecting matters as much as resolving: the editor inserts the resolved URL
+// as an image node, so a failed upload must not resolve with anything.
 async function upload(file: Blob) {
-  const resized = await resizeImage({
-    maxSize: 500, // px
-    file,
-  });
-
-  const formData = new FormData();
-  // Upload candidate image and update URL
   try {
-    const { default: piexif } = await import('piexifjs');
-    formData.append('file', piexif.remove(resized.blob));
-    // Remove EXIF if it is jpeg
-  } catch {
-    formData.append('file', resized.blob);
+    return await uploadImage(file, 'figure');
+  } catch (error: unknown) {
+    notifyError(uploadErrorMessage(error));
+    throw error;
   }
-  const response = await apiUpload.uploadImage(token.value, formData);
-  return response.data.url;
 }
 
 onMounted(() => {

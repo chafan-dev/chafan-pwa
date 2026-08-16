@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 
-import { vditorCDN, editor_T, getOS } from '../common';
+import { vditorCDN, editor_T, getOS, vditorUploadOptions, VditorUploadFn } from '../common';
 
 // Emits:
 // - shortcutSubmit: ctrl-Enter or cmd-Enter
@@ -13,7 +13,7 @@ import { vditorCDN, editor_T, getOS } from '../common';
 const props = withDefaults(
   defineProps<{
     onEditorChange?: (value: string) => void;
-    vditorUploadConfig?: any;
+    upload?: VditorUploadFn;
     isMobile?: boolean;
     initialContent?: string;
     editorMode?: editor_T;
@@ -152,8 +152,8 @@ async function init(editorMode: editor_T, markdownBody?: string, htmlBody?: stri
       }
     },
   };
-  if (props.vditorUploadConfig) {
-    options.upload = props.vditorUploadConfig;
+  if (props.upload) {
+    options.upload = vditorUploadOptions(props.upload, (markdown) => vditor?.insertValue(markdown));
   }
   vditor = new Vditor(rootEl.value!, options);
   window.addEventListener('keydown', shortCutKeyHandler);

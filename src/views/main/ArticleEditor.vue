@@ -41,7 +41,7 @@
             :initial-content="body"
             :isMobile="!isDesktop"
             :onEditorChange="onEditorChange"
-            :vditorUploadConfig="vditorUploadConfig"
+            :upload="uploadFigure"
             placeholder="开始写作"
             class="mb-2 mt-2"
           />
@@ -170,8 +170,8 @@ import VditorCF from '@/editors/lib-components/VditorCF.vue';
 import ChafanTiptap from '@/components/editor/ChafanTiptap.vue';
 import EditorHelp from '@/components/editor/EditorHelp.vue';
 import ArticleHistoryDialog from '@/components/editor/ArticleHistoryDialog.vue';
-import { getVditorUploadConfig, LABS_TIPTAP_EDITOR_OPTION } from '@/common';
-import { useAuth, useResponsive } from '@/composables';
+import { LABS_TIPTAP_EDITOR_OPTION } from '@/common';
+import { useAuth, useImageUpload, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import dayjs from '@/dayjs';
@@ -233,9 +233,8 @@ const articleId = computed(() => {
   return null;
 });
 
-const vditorUploadConfig = computed(() => {
-  return getVditorUploadConfig(token.value);
-});
+const { uploadImage } = useImageUpload();
+const uploadFigure = (file: File) => uploadImage(file, 'figure');
 
 // Methods
 function getEditorMode(): editor_T {
