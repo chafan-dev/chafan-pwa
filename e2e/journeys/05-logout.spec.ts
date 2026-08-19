@@ -31,7 +31,7 @@ test.describe('Logout', () => {
 
 /** Open the avatar menu and click 登出. Returns true if the token cleared. */
 async function logoutViaMenu(page: import('@playwright/test').Page): Promise<boolean> {
-  await clickVuetifyButton(page.getByRole('button', { name: 'Avatar' }));
+  await clickVuetifyButton(page.locator('#main-menu-avatar-btn'));
 
   const logout = page
     .locator('.v-overlay--active .v-list-item, .v-menu .v-list-item')

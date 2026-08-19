@@ -10,10 +10,10 @@ export async function waitForApp(page: Page) {
   await expect(appRoot(page)).toBeVisible({ timeout: 30_000 });
 }
 
-/** Ensure Pinia finished checkLoggedIn (avatar appears when profile is loaded). */
+/** Ensure Pinia finished checkLoggedIn (the account button appears with the profile). */
 export async function waitForLoggedInShell(page: Page) {
   await waitForApp(page);
-  await expect(page.getByRole('button', { name: 'Avatar' })).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('#main-menu-avatar-btn')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByRole('link', { name: '用户中心' })).toBeVisible({ timeout: 15_000 });
 }
 
