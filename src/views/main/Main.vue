@@ -169,7 +169,7 @@
                 icon
               >
                 <Avatar
-                  v-if="userProfile && (userProfile.avatar_url || isDev)"
+                  v-if="userProfile && userProfile.avatar_url"
                   :userPreview="userProfile"
                   color="primary"
                 />
@@ -232,7 +232,6 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { appName } from '@/env';
 import { api } from '@/api';
-import { isDev } from '@/utils';
 import { useMainStore } from '@/stores/main';
 import { useUiStore } from '@/stores/ui';
 
