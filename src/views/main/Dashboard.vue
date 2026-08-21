@@ -374,7 +374,8 @@ import {
   ISubmission,
   ThemeType,
 } from '@/interfaces';
-import { api } from '@/api';
+import { apiDrafts } from '@/api/drafts';
+import { apiRewards } from '@/api/rewards';
 
 import { useMainStore } from '@/stores/main';
 import { useUiStore } from '@/stores/ui';
@@ -499,7 +500,7 @@ onMounted(async () => {
       selectedEditorMode.value = userProfile.value.default_editor_mode;
       enableEmailNotifications.value = userProfile.value.enable_deliver_unread_notifications;
 
-      api.getMyArticleColumns(token.value).then((r) => {
+      apiMe.getMyArticleColumns(token.value).then((r) => {
         myArticleColumns.value = r.data;
         articleColumnsIntermediate.value = false;
       });
@@ -509,20 +510,20 @@ onMounted(async () => {
         channelsIntermediate.value = false;
       });
 
-      api.getRewards(token.value).then((r) => {
+      apiRewards.getRewards(token.value).then((r) => {
         myRewards.value = r.data;
         rewardsIntermediate.value = false;
       });
 
-      api.getCoinPayments(token.value).then((r) => {
+      apiRewards.getCoinPayments(token.value).then((r) => {
         coinPayments.value = r.data;
         coinPaymentsIntermediate.value = false;
       });
 
-      api.getAnswerDrafts(token.value).then((r) => {
+      apiDrafts.getAnswerDrafts(token.value).then((r) => {
         myAnswerDrafts.value = r.data;
       });
-      api.getArticleDrafts(token.value).then((r) => {
+      apiDrafts.getArticleDrafts(token.value).then((r) => {
         myArticleDrafts.value = r.data;
       });
     }
@@ -603,7 +604,7 @@ async function claimReward(reward: IReward) {
   await store.captureApiError(async () => {
     const idx = myRewards.value.indexOf(reward);
     myRewards.value.splice(idx, 1);
-    const newReward = (await api.claimReward(token.value, reward.id)).data;
+    const newReward = (await apiRewards.claimReward(token.value, reward.id)).data;
     myRewards.value.splice(idx, 0, newReward);
   });
 }

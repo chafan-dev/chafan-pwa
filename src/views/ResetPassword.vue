@@ -65,7 +65,7 @@ import { ref, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
 import { useRoute, useRouter } from 'vue-router';
 import { appName } from '@/env';
-import { api } from '@/api';
+import { apiAuth } from '@/api/auth';
 import DebugSpan from '@/components/base/DebugSpan.vue';
 import { useMainStore } from '@/stores/main';
 const store = useMainStore();
@@ -94,7 +94,7 @@ async function checkToken() {
   const token = route.query.token as string;
   let isValid = false;
   if (token) {
-    const r = await api.checkTokenValidity(token);
+    const r = await apiAuth.checkTokenValidity(token);
     isValid = r.data.success;
   }
   if (!token || !isValid) {

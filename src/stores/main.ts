@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { api } from '@/api';
+import { apiAuth } from '@/api/auth';
 import { IUserUpdateMe, ISite, IUserProfile } from '@/interfaces';
 import { getLocalToken, isDev, removeLocalToken, saveLocalToken } from '@/utils';
 import { AxiosError } from 'axios';
@@ -60,7 +60,7 @@ export const useMainStore = defineStore('main', {
           });
           return;
         }
-        const response = await api.logInGetToken(
+        const response = await apiAuth.logInGetToken(
           payload.username,
           payload.password,
           payload.hcaptcha_token
@@ -230,7 +230,7 @@ export const useMainStore = defineStore('main', {
       try {
         notify(loadingNotification);
         await Promise.all([
-          api.passwordRecovery(payload.email),
+          apiAuth.passwordRecovery(payload.email),
           new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ]);
         removeNotify(loadingNotification);
@@ -247,7 +247,7 @@ export const useMainStore = defineStore('main', {
       try {
         notify(loadingNotification);
         await Promise.all([
-          api.resetPassword(payload.password, payload.token),
+          apiAuth.resetPassword(payload.password, payload.token),
           new Promise<void>((resolve) => setTimeout(() => resolve(), 500)),
         ]);
         removeNotify(loadingNotification);

@@ -2,6 +2,7 @@ import { http } from '@/api/client';
 import { authHeaders, authHeadersWithParams } from '../utils';
 import {
   IAnswerPreview,
+  IArticleColumn,
   IArticlePreview,
   IChannel,
   IQuestionPreview,
@@ -33,6 +34,9 @@ function addSchemeToUrl(url: string | undefined) {
 export const apiMe = {
   async getMe(token: string) {
     return http.get<IUserProfile>(`/me`, authHeaders(token));
+  },
+  async getMyArticleColumns(token: string) {
+    return http.get<IArticleColumn[]>(`/me/article-columns/`, authHeaders(token));
   },
   async updateMe(token: string, data: IUserUpdateMe) {
     data.zhihu_url = addSchemeToUrl(data.zhihu_url);

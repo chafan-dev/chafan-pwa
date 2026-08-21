@@ -8,8 +8,8 @@ vi.mock('@/env', () => ({
   env: 'test',
 }));
 
-vi.mock('@/api', () => ({
-  api: {
+vi.mock('@/api/auth', () => ({
+  apiAuth: {
     logInGetToken: vi.fn(),
     passwordRecovery: vi.fn(),
     resetPassword: vi.fn(),
@@ -39,7 +39,7 @@ vi.mock('@sentry/vue', () => ({
 import { useMainStore } from '@/stores/main';
 import { useNotificationStore } from '@/stores/notifications';
 import { useUiStore } from '@/stores/ui';
-import { api } from '@/api';
+import { apiAuth } from '@/api/auth';
 import { apiMe } from '@/api/me';
 import { getLocalToken, saveLocalToken, removeLocalToken } from '@/utils';
 
@@ -107,7 +107,7 @@ describe('Main Pinia Store', () => {
 
       it('saves token and logs in on success', async () => {
         const store = useMainStore();
-        vi.mocked(api.logInGetToken).mockResolvedValue({
+        vi.mocked(apiAuth.logInGetToken).mockResolvedValue({
           data: { access_token: 'test-token' },
         } as any);
         vi.mocked(apiMe.getMe).mockResolvedValue({ data: { uuid: '1' } } as any);
@@ -126,7 +126,7 @@ describe('Main Pinia Store', () => {
 
       it('logs out when no token returned', async () => {
         const store = useMainStore();
-        vi.mocked(api.logInGetToken).mockResolvedValue({
+        vi.mocked(apiAuth.logInGetToken).mockResolvedValue({
           data: { access_token: '' },
         } as any);
 

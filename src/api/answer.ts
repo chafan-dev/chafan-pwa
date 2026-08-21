@@ -2,6 +2,7 @@ import { http } from '@/api/client';
 import {
   IAnswer,
   IAnswerArchive,
+  IAnswerModUpdate,
   IAnswerCreate,
   IAnswerDraft,
   IAnswerUpdate,
@@ -38,6 +39,9 @@ export const apiAnswer = {
   },
   async updateAnswer(token: string, answerUUID: string, payload: IAnswerUpdate) {
     return http.put<IAnswer>(`/answers/${answerUUID}`, payload, authHeaders(token));
+  },
+  async updateAnswerByMod(token: string, answerUUID: string, payload: IAnswerModUpdate) {
+    return http.put<IAnswer>(`/answers/${answerUUID}/mod`, payload, authHeaders(token));
   },
   async deleteAnswer(token: string, answerUUID: string) {
     return http.delete<IGenericResponse>(`/answers/${answerUUID}`, authHeaders(token));

@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { api } from '@/api';
+import { apiMe } from '@/api/me';
 import { apiDiscovery } from '@/api/discovery';
 import { IArticleColumn, IQuestionPreview } from '@/interfaces';
 import QuestionLink from '@/components/question/QuestionLink.vue';
@@ -93,7 +93,7 @@ const newArticleColumnUUID = ref<string | null>(null);
 onMounted(async () => {
   await store.captureApiError(async () => {
     if (token.value) {
-      myArticleColumns.value = (await api.getMyArticleColumns(token.value)).data;
+      myArticleColumns.value = (await apiMe.getMyArticleColumns(token.value)).data;
       questionsToAnswer.value = (await apiDiscovery.getPendingQuestions(token.value)).data;
     }
   });

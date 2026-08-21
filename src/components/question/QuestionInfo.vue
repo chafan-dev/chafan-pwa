@@ -64,7 +64,8 @@ import { ref, onMounted } from 'vue';
 import { IQuestion, IQuestionPreview, IUserQuestionSubscription } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import UserSearch from '@/components/UserSearch.vue';
-import { api } from '@/api';
+import { apiQuestion } from '@/api/question';
+import { apiRewards } from '@/api/rewards';
 import { apiSearch } from '@/api/search';
 import QuestionLink from '@/components/question/QuestionLink.vue';
 import RotationList from '@/components/base/RotationList.vue';
@@ -98,9 +99,9 @@ onMounted(async () => {
 async function inviteAnswer() {
   await store.captureApiError(async () => {
     if (invitedUserId.value !== null) {
-      const response = await api.inviteAnswer(token.value, props.question.uuid, invitedUserId.value);
+      const response = await apiQuestion.inviteAnswer(token.value, props.question.uuid, invitedUserId.value);
       if (inviteToAnswerRewardCoinAmount.value > 0) {
-        await api.createReward(token.value, {
+        await apiRewards.createReward(token.value, {
           expired_after_days: 7,
           receiver_uuid: invitedUserId.value,
           coin_amount: inviteToAnswerRewardCoinAmount.value,

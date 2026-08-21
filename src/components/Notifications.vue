@@ -106,7 +106,8 @@ import { useDisplay } from 'vuetify';
 
 import { INotification, IWsUserMsg } from '@/interfaces';
 import { useMainStore } from '@/stores/main';
-import { api } from '@/api';
+import { apiAuth } from '@/api/auth';
+import { apiNotifications } from '@/api/notifications';
 import { wsUrl } from '@/env';
 import Event from '@/components/Event.vue';
 import { logDebug } from '@/utils';
@@ -129,7 +130,7 @@ const unreadNotificationsCount = computed(() => {
 
 onMounted(async () => {
   await store.captureApiError(async () => {
-    const notifs = (await api.getUnreadNotifications(token.value)).data;
+    const notifs = (await apiNotifications.getUnreadNotifications(token.value)).data;
     if (notifs) {
       notifs.forEach((notif) => {
         if (notif !== null) {
@@ -137,10 +138,10 @@ onMounted(async () => {
         }
       });
     }
-    notifications.value.push(...(await api.getReadNotifications(token.value)).data);
+    notifications.value.push(...(await apiNotifications.getReadNotifications(token.value)).data);
     loadNotifsIntermediate.value = false;
 
-    const wsToken = (await api.getWsToken(token.value)).data.token;
+    const wsToken = (await apiAuth.getWsToken(token.value)).data.token;
     wsConnection.value = new WebSocket(wsUrl + '/ws?token=' + wsToken);
     wsConnection.value.onmessage = (message) => {
       const wsMsg = JSON.parse(message.data) as IWsUserMsg;
@@ -168,7 +169,7 @@ function handleWsMsg(msg: IWsUserMsg) {
 
 function readNotif(notif: INotification) {
   notif.is_read = true;
-  api.updateNotification(token.value, notif.id, {
+  apiNotifications.updateNotification(token.value, notif.id, {
     is_read: true,
   });
 }

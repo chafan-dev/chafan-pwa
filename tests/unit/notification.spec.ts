@@ -14,8 +14,8 @@ vi.mock('@/utils', () => ({
   isDev: false,
 }));
 
-vi.mock('@/api', () => ({
-  api: {},
+vi.mock('@/api/auth', () => ({
+  apiAuth: {},
 }));
 
 vi.mock('@/api/me', () => ({

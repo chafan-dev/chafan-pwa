@@ -1,5 +1,6 @@
 import { http } from '@/api/client';
 import {
+  IAnswerPreview,
   IGenericResponse,
   IQuestion,
   IQuestionArchive,
@@ -56,6 +57,19 @@ export const apiQuestion = {
   async bumpViewsCounter(token: string, questionUUID: string) {
     return http.post<IGenericResponse>(
       `/questions/${questionUUID}/views/`,
+      null,
+      authHeaders(token)
+    );
+  },
+  async getQuestionAnswers(token: string, questionUUID: string) {
+    return http.get<IAnswerPreview[]>(
+      `/questions/${questionUUID}/answers/`,
+      authHeaders(token)
+    );
+  },
+  async inviteAnswer(token: string, questionUUID: string, userUUID: string) {
+    return http.post<IGenericResponse>(
+      `/questions/${questionUUID}/invite-answer/${userUUID}`,
       null,
       authHeaders(token)
     );

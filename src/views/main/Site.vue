@@ -106,7 +106,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { api } from '@/api';
+import { apiUsers } from '@/api/users';
 import { IQuestionPreview, ISite, ISubmission, IUserSiteProfile } from '@/interfaces';
 
 import SiteCard from '@/components/SiteCard.vue';
@@ -203,13 +203,13 @@ async function load() {
 
     if (userProfile.value) {
       siteProfile.value = (
-        await api.getUserSiteProfile(token.value, site.value.uuid, userProfile.value.uuid)
+        await apiUsers.getUserSiteProfile(token.value, site.value.uuid, userProfile.value.uuid)
       ).data;
     }
 
     if (siteProfile.value !== null || site.value.public_readable) {
       if (siteProfile.value) {
-        siteProfiles.value = (await api.getSiteProfiles(token.value, site.value.uuid)).data.sort(
+        siteProfiles.value = (await apiUsers.getSiteProfiles(token.value, site.value.uuid)).data.sort(
           (a, b) => {
             if (a.karma > b.karma) {
               return -1;

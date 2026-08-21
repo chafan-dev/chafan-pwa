@@ -60,7 +60,7 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
 import { useRouter } from 'vue-router';
 import { ISiteCreate, ITopic } from '@/interfaces';
-import { api } from '@/api';
+import { apiMisc } from '@/api/misc';
 import { AxiosError } from 'axios';
 import { apiSite } from '@/api/site';
 import { useAuth, useErrorHandling } from '@/composables';
@@ -86,7 +86,7 @@ const intermediate = ref(false);
 const categoryTopics = ref<ITopic[] | null>(null);
 
 onMounted(async () => {
-  categoryTopics.value = (await api.getCategoryTopics()).data;
+  categoryTopics.value = (await apiMisc.getCategoryTopics()).data;
 });
 
 function resetAll(resetForm?: () => void) {

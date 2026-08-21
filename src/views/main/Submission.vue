@@ -242,7 +242,7 @@ import UserLink from '@/components/UserLink.vue';
 import SubmissionActionBar from '@/components/submission/SubmissionActionBar.vue';
 
 import SimpleEditor from '@/components/SimpleEditor.vue';
-import { api } from '@/api';
+import { apiUsers } from '@/api/users';
 import {
   IComment,
   INewCommentInternal,
@@ -398,7 +398,7 @@ async function load() {
 
           if (userProfile.value) {
             const userSiteProfile = (
-              await api.getUserSiteProfile(token.value, submissionSite.uuid, userProfile.value.uuid)
+              await apiUsers.getUserSiteProfile(token.value, submissionSite.uuid, userProfile.value.uuid)
             ).data;
             if (userSiteProfile !== null || submissionSite.public_writable_comment) {
               commentWritable.value = true;

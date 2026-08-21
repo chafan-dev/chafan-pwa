@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { api } from '@/api';
+import { apiMisc } from '@/api/misc';
 import { ISite, ISiteMap } from '@/interfaces';
 import SiteBtn from '@/components/SiteBtn.vue';
 import BaseCard from '@/components/base/BaseCard.vue';
@@ -46,7 +46,7 @@ function sitesFromSiteMap(siteMap: ISiteMap): ISite[] {
 onMounted(async () => {
   // TODO I need to simplify this file 2025-06-09
   await store.captureApiError(async () => {
-    const siteMaps = (await api.getSiteMaps()).data;
+    const siteMaps = (await apiMisc.getSiteMaps()).data;
 
     for (const rootSiteMap of siteMaps.site_maps) {
       if (blocks2Weight.value >= blocks1Weight.value) {

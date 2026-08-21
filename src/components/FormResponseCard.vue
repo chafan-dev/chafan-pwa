@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { api } from '@/api';
+import { apiRewards } from '@/api/rewards';
 import { IClaimWelcomeTestScoreMsg, IFormResponse } from '@/interfaces';
 import { useAuth, useEnv } from '@/composables';
 
@@ -103,7 +103,7 @@ onMounted(() => {
 
 async function checkWelcomeTestScoreAndClaimRewards() {
   claimWelcomeTestScoreMsg.value = (
-    await api.checkWelcomeTestScoreAndClaimRewards(token.value, props.formResponse.id)
+    await apiRewards.checkWelcomeTestScoreAndClaimRewards(token.value, props.formResponse.id)
   ).data;
   showWelcomeTestResultDialog.value = true;
 }

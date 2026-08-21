@@ -120,7 +120,7 @@ import { useRouter } from 'vue-router';
 import { IUserFollows, IUserPreview } from '@/interfaces';
 import { apiMe } from '@/api/me';
 import { apiPeople } from '@/api/people';
-import { api } from '@/api';
+import { apiChannels } from '@/api/channels';
 import Avatar from '@/components/Avatar.vue';
 import { useAuth, useTheme } from '@/composables';
 import { useMainStore } from '@/stores/main';
@@ -219,7 +219,7 @@ async function privateMessage() {
   }
   privateMessageIntermediate.value = true;
   await store.captureApiError(async () => {
-    const r0 = await api.createChannel(token.value, {
+    const r0 = await apiChannels.createChannel(token.value, {
       private_with_user_uuid: props.userPreview.uuid,
     });
     const channelId = r0.data.id;

@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { api } from '@/api';
+import { apiChannels } from '@/api/channels';
 import { IChannel, IMessage, IMessageCreate, IRichText } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import Viewer from '@/components/Viewer.vue';
@@ -133,7 +133,7 @@ function plainTextContent(text: string): IRichText {
 onMounted(async () => {
   messageCreate.channel_id = props.channel.id;
   await store.captureApiError(async () => {
-    messages.value = (await api.getChannelMessages(token.value, props.channel.id)).data;
+    messages.value = (await apiChannels.getChannelMessages(token.value, props.channel.id)).data;
     loading.value = false;
   });
 });
@@ -142,7 +142,7 @@ async function commitNewMessage() {
   await store.captureApiErrorWithErrorHandler({
     action: async () => {
       sendMsgIntermediate.value = true;
-      const response = await api.createMessage(token.value, messageCreate);
+      const response = await apiChannels.createMessage(token.value, messageCreate);
       messages.value.push(response.data);
       messageCreate.body = '';
       sendMsgIntermediate.value = false;

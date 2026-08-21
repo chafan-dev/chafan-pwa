@@ -82,7 +82,7 @@ import { appName } from '@/env';
 import { IInvitationLink } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import RelativeTime from '@/components/RelativeTime.vue';
-import { api } from '@/api';
+import { apiInvitations } from '@/api/invitations';
 import { translateErrorMsgCN } from '@/common';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
@@ -100,7 +100,7 @@ const uuid = computed(() => route.params.uuid as string);
 
 onMounted(async () => {
   await store.captureApiError(async () => {
-    const response = await api.getInvitationLink(token.value, uuid.value);
+    const response = await apiInvitations.getInvitationLink(token.value, uuid.value);
     invitationLink.value = response.data;
     if (!invitationLink.value?.valid) {
       useNotificationStore().push({
@@ -113,7 +113,7 @@ onMounted(async () => {
 
 async function joinSite() {
   await store.captureApiError(async () => {
-    await api.joinSiteWithInvitationLink(token.value, invitationLink.value!.uuid);
+    await apiInvitations.joinSiteWithInvitationLink(token.value, invitationLink.value!.uuid);
     const siteDomain = invitationLink.value!.invited_to_site!.subdomain;
     await router.push(`/sites/${siteDomain}`);
   });
