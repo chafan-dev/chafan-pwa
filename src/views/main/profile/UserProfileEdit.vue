@@ -22,7 +22,7 @@
                   </v-avatar>
                   <input
                     id="fileInput"
-                    accept="image/png, image/jpeg, image/bmp"
+                    :accept="ACCEPTED_STILL_IMAGE_TYPES_ATTR"
                     hidden
                     type="file"
                     @change="uploadAvatar"
@@ -228,6 +228,7 @@ import { useAuth, useImageUpload, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
+import { ACCEPTED_STILL_IMAGE_TYPES_ATTR } from '@/upload';
 const store = useMainStore();
 
 interface IUserWorkExperienceItem {
@@ -463,6 +464,13 @@ function removeFrom<T>(index: number, arr: T[]) {
 // The upload reports its own failures: an unhandled 403 would reach
 // store.checkApiError and log the user out.
 async function uploadAvatar() {
+  // A re-entrancy guard, not just a spinner: two change events -- a double
+  // pick, a retried pick -- otherwise start two concurrent uploads of the same
+  // new bytes, and the server charges UPLOAD_IMAGE_COST for each, because its
+  // dedup is an unlocked check-then-act (chafan-dev/chafan-core#206).
+  if (uploadAvatarIntermediate.value) {
+    return;
+  }
   const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
   const file = fileInput?.files?.[0];
   if (!file) {
@@ -485,6 +493,9 @@ async function uploadAvatar() {
 }
 
 async function uploadGifAvatar() {
+  if (uploadGifAvatarIntermediate.value) {
+    return;
+  }
   const fileInput = document.getElementById('gifFileInput') as HTMLInputElement | null;
   const file = fileInput?.files?.[0];
   if (!file) {
