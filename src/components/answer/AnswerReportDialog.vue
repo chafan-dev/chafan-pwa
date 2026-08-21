@@ -11,7 +11,7 @@
           <v-select
             :items="reportReasonItems"
             v-model="reportReason"
-            item-text="text"
+            item-title="text"
             item-value="value"
             label="举报原因"
           />

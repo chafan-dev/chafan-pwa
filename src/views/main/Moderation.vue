@@ -8,7 +8,7 @@
         class="mt-2"
         clearable
         density="compact"
-        item-text="name"
+        item-title="name"
         item-value="uuid"
         label="圈子"
         variant="outlined"
@@ -92,7 +92,7 @@
                     v-if="showSiteConfigEditor"
                     v-model="siteConfigUpdate.category_topic_uuid"
                     :items="categoryTopics"
-                    item-text="name"
+                    item-title="name"
                     item-value="uuid"
                     label="类别"
                   />

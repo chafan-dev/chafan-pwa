@@ -23,7 +23,7 @@
             v-model="newArticleColumnUUID"
             :items="myArticleColumns"
             label="选择专栏"
-            item-text="name"
+            item-title="name"
             item-value="uuid"
             hide-details
           />
