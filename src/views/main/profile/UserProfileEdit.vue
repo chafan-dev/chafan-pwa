@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row justify="center">
       <v-col :class="{ 'v-col-8': isDesktop }">
-        <Form v-slot="{ handleSubmit, resetForm }">
+        <Form v-slot="{ handleSubmit, resetForm, meta }">
           <div v-if="userProfile">
             <v-card-title>
               <div class="text-h5 text-primary">更新个人资料</div>
