@@ -1,5 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { vi, describe, expect, it } from 'vitest';
 import { validate } from 'vee-validate';
+
+// The plugin pulls the regexes from the `@/common` barrel, which transitively
+// reaches `@/env` -- and that module validates VITE_APP_API at import time and
+// throws when it is unset, as it is in CI. Same stub the other suites use.
+vi.mock('@/env', () => ({
+  apiUrl: 'https://api.test.cha.fan/api/v1',
+  wsUrl: 'wss://api.test.cha.fan/api/v1',
+  env: 'test',
+}));
 
 // Importing the plugin registers the rules globally via defineRule.
 import '@/plugins/vee-validate';
