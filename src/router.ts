@@ -174,6 +174,13 @@ const routes: RouteRecordRaw[] = [
     ] /* children of main */,
   },
   {
+    path: '/link',
+    meta: {
+      title: constants.link_bot,
+    },
+    component: () => import('./views/BotLink.vue'),
+  },
+  {
     path: '/login',
     meta: {
       title: constants.login,

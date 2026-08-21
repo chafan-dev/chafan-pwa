@@ -2,6 +2,7 @@ import { http } from '@/api/client';
 import { authHeaders, authHeadersWithParams } from '../utils';
 import {
   IAnswerPreview,
+  IBotLinkCode,
   IArticlePreview,
   IChannel,
   IQuestionPreview,
@@ -33,6 +34,13 @@ function addSchemeToUrl(url: string | undefined) {
 export const apiMe = {
   async getMe(token: string) {
     return http.get<IUserProfile>(`/me`, authHeaders(token));
+  },
+  // Issues a short-lived code to hand to a bot. The code travels site -> bot
+  // and never the other way: it appears on the screen of whoever is logged in
+  // here, so the account that gets bound is always the one that asked for it.
+  // No token exists until the bot redeems the code.
+  async createBotLinkCode(token: string) {
+    return http.post<IBotLinkCode>(`/me/bot-link-codes/`, {}, authHeaders(token));
   },
   async updateMe(token: string, data: IUserUpdateMe) {
     data.zhihu_url = addSchemeToUrl(data.zhihu_url);
