@@ -6,8 +6,14 @@
       :key="pair.year"
       v-show="year === pair.year"
     />
+    <!--
+      max-w-80 (80px) came from Vuetify 2, whose select was narrower. Under
+      Vuetify 3 the compact select's own padding plus the dropdown arrow leave
+      too little room for a four-digit year, and "2026" renders ellipsised as
+      "2··". 100px fits it.
+    -->
     <v-select
-      class="max-w-80"
+      class="max-w-100"
       v-model="year"
       :items="data.map((p) => p.year)"
       density="compact"
