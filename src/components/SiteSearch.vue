@@ -3,7 +3,7 @@
     <debug-span>{{ selectedSite }}</debug-span>
     <v-autocomplete
       v-model="selectedSiteSubdomain"
-      :item-text="getItemText"
+      :item-title="getItemText"
       :items="sites"
       :label="label"
       :loading="loading"

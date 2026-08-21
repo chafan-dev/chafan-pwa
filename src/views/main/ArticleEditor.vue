@@ -114,7 +114,7 @@
                       v-model="topLevelEditor"
                       :items="topLevelEditorItems"
                       density="compact"
-                      item-text="text"
+                      item-title="text"
                       item-value="value"
                       @change="onChangeTopLevelEditor"
                     />

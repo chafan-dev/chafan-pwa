@@ -15,7 +15,7 @@
             <v-select
               v-model="siteCreate.permission_type"
               :items="permissionTypeItems"
-              item-text="text"
+              item-title="text"
               item-value="value"
               label="圈子类型*"
             />

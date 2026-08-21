@@ -98,7 +98,7 @@
                 v-model="visibility"
                 :items="visibilityItems"
                 density="compact"
-                item-text="text"
+                item-title="text"
                 item-value="value"
               />
             </div>
@@ -112,7 +112,7 @@
                 v-model="topLevelEditor"
                 :items="topLevelEditorItems"
                 density="compact"
-                item-text="text"
+                item-title="text"
                 item-value="value"
                 @change="onChangeTopLevelEditor"
               />

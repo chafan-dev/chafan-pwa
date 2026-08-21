@@ -1,7 +1,7 @@
 <template>
   <v-autocomplete
     v-model="selectedTopicId"
-    :item-text="getItemText"
+    :item-title="getItemText"
     :items="topics"
     label="话题名"
     :loading="loading"

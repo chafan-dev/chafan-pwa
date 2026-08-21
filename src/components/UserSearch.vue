@@ -3,7 +3,7 @@
     <v-autocomplete
       v-if="enableAutoComplete"
       v-model="selectedUserUUID"
-      :item-text="getItemText"
+      :item-title="getItemText"
       :items="userPreviews"
       label="用户名"
       :loading="loading"
@@ -28,7 +28,7 @@
       <v-select
         v-if="showInputSelections"
         hide-details
-        :item-text="getItemText"
+        :item-title="getItemText"
         :items="userPreviews"
         :placeholder="'返回' + userPreviews.length + '条，选择一个搜索结果'"
         cache-items
