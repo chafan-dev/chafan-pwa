@@ -11,6 +11,7 @@ export const constants = {
   reset_password: '重置密码',
   invitation_to_join: '邀请加入',
   search_results: '搜索结果',
+  link_bot: '绑定机器人',
 };
 
 export const INSUFFICIENT_KARMA_TO_JOIN_SITE = '加入圈子所需的 Karma 不足';
