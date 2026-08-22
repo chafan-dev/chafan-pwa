@@ -4,6 +4,7 @@ import {
   IAnswerPreview,
   IArticleColumn,
   IArticlePreview,
+  IBotLinkCode,
   IChannel,
   IQuestionPreview,
   ISite,
@@ -37,6 +38,13 @@ export const apiMe = {
   },
   async getMyArticleColumns(token: string) {
     return http.get<IArticleColumn[]>(`/me/article-columns/`, authHeaders(token));
+  },
+  // Issues a short-lived code to hand to a bot. The code travels site -> bot
+  // and never the other way: it appears on the screen of whoever is logged in
+  // here, so the account that gets bound is always the one that asked for it.
+  // No token exists until the bot redeems the code.
+  async createBotLinkCode(token: string) {
+    return http.post<IBotLinkCode>(`/me/bot-link-codes/`, {}, authHeaders(token));
   },
   async updateMe(token: string, data: IUserUpdateMe) {
     data.zhihu_url = addSchemeToUrl(data.zhihu_url);

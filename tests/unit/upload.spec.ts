@@ -37,6 +37,8 @@ vi.mock('@sentry/vue', () => ({
 }));
 
 import {
+  ACCEPTED_IMAGE_TYPES_ATTR,
+  ACCEPTED_STILL_IMAGE_TYPES_ATTR,
   MAX_IMAGE_BYTES,
   MIN_KARMA_UPLOAD_IMAGE,
   UPLOAD_IMAGE_COST,
@@ -269,5 +271,22 @@ describe('vditorUploadOptions', () => {
 
     await expect(options.handler([png()])).resolves.toBe('硬币不足');
     expect(inserted).toEqual([]);
+  });
+});
+
+describe('ACCEPTED_STILL_IMAGE_TYPES_ATTR', () => {
+  it('offers every still format the server accepts', () => {
+    // bmp used to be offered here and is a 415 on the server; webp is
+    // supported and used to be missing. Deriving from ACCEPTED_IMAGE_TYPES
+    // keeps the picker and the contract from drifting apart again.
+    expect(ACCEPTED_STILL_IMAGE_TYPES_ATTR).toContain('image/jpeg');
+    expect(ACCEPTED_STILL_IMAGE_TYPES_ATTR).toContain('image/png');
+    expect(ACCEPTED_STILL_IMAGE_TYPES_ATTR).toContain('image/webp');
+    expect(ACCEPTED_STILL_IMAGE_TYPES_ATTR).not.toContain('image/bmp');
+  });
+
+  it('leaves GIF to the dedicated GIF avatar field', () => {
+    expect(ACCEPTED_STILL_IMAGE_TYPES_ATTR).not.toContain('image/gif');
+    expect(ACCEPTED_IMAGE_TYPES_ATTR).toContain('image/gif');
   });
 });

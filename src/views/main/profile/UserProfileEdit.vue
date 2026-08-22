@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row justify="center">
       <v-col :class="{ 'v-col-8': isDesktop }">
-        <Form v-slot="{ handleSubmit, resetForm }">
+        <Form v-slot="{ handleSubmit, resetForm, meta }">
           <div v-if="userProfile">
             <v-card-title>
               <div class="text-h5 text-primary">更新个人资料</div>
@@ -22,7 +22,7 @@
                   </v-avatar>
                   <input
                     id="fileInput"
-                    accept="image/png, image/jpeg, image/bmp"
+                    :accept="ACCEPTED_STILL_IMAGE_TYPES_ATTR"
                     hidden
                     type="file"
                     @change="uploadAvatar"
@@ -228,6 +228,7 @@ import { useAuth, useImageUpload, useResponsive } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import AppIcon from '@/components/icons/AppIcon.vue';
 import { useNotificationStore } from '@/stores/notifications';
+import { ACCEPTED_STILL_IMAGE_TYPES_ATTR } from '@/upload';
 const store = useMainStore();
 
 interface IUserWorkExperienceItem {
@@ -358,84 +359,91 @@ function cancel() {
 
 async function submit() {
   submitIntermediate.value = true;
-  await store.captureApiError(async () => {
-    const responses = await Promise.all(
-      newResidencyTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
-    );
-    userUpdateMe.residency_topic_uuids = responses.map((r) => r.data.uuid);
+  // The reset must be in a `finally`: `captureApiError` swallows the error, so
+  // a failed save returns here normally but skips the rest of the callback. A
+  // reset at the end of the callback therefore never runs, and 保存 stays
+  // disabled until the page is reloaded -- one transient failure kills the form.
+  try {
+    await store.captureApiError(async () => {
+      const responses = await Promise.all(
+        newResidencyTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
+      );
+      userUpdateMe.residency_topic_uuids = responses.map((r) => r.data.uuid);
 
-    const responses2 = await Promise.all(
-      newProfessionTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
-    );
-    userUpdateMe.profession_topic_uuids = responses2.map((r) => r.data.uuid);
+      const responses2 = await Promise.all(
+        newProfessionTopicNames.value.map((name) => apiTopic.createTopic(token.value, { name }))
+      );
+      userUpdateMe.profession_topic_uuids = responses2.map((r) => r.data.uuid);
 
-    const workExpsData = await Promise.all(
-      workExps.value.map(async (e) => {
-        if (e.company_topic_name && e.position_topic_name) {
-          const r1 = await apiTopic.createTopic(token.value, {
-            name: e.company_topic_name,
-          });
-          const r2 = await apiTopic.createTopic(token.value, {
-            name: e.position_topic_name,
-          });
-          return {
-            company_topic_uuid: r1.data.uuid,
-            position_topic_uuid: r2.data.uuid,
-          };
-        } else {
-          return null;
+      const workExpsData = await Promise.all(
+        workExps.value.map(async (e) => {
+          if (e.company_topic_name && e.position_topic_name) {
+            const r1 = await apiTopic.createTopic(token.value, {
+              name: e.company_topic_name,
+            });
+            const r2 = await apiTopic.createTopic(token.value, {
+              name: e.position_topic_name,
+            });
+            return {
+              company_topic_uuid: r1.data.uuid,
+              position_topic_uuid: r2.data.uuid,
+            };
+          } else {
+            return null;
+          }
+        })
+      );
+
+      userUpdateMe.work_experiences = [];
+      for (const e of workExpsData) {
+        if (e !== null) {
+          userUpdateMe.work_experiences.push(e);
         }
-      })
-    );
-
-    userUpdateMe.work_experiences = [];
-    for (const e of workExpsData) {
-      if (e !== null) {
-        userUpdateMe.work_experiences.push(e);
       }
-    }
 
-    const eduExpsData = await Promise.all(
-      eduExps.value.map(async (e) => {
-        if (e.school_topic_name && e.level_name) {
-          const r1 = await apiTopic.createTopic(token.value, {
-            name: e.school_topic_name,
-          });
-          return {
-            school_topic_uuid: r1.data.uuid,
-            level_name: e.level_name,
-            major: e.major,
-            enroll_year: e.enroll_year,
-            graduate_year: e.graduate_year,
-          };
-        } else {
-          return null;
+      const eduExpsData = await Promise.all(
+        eduExps.value.map(async (e) => {
+          if (e.school_topic_name && e.level_name) {
+            const r1 = await apiTopic.createTopic(token.value, {
+              name: e.school_topic_name,
+            });
+            return {
+              school_topic_uuid: r1.data.uuid,
+              level_name: e.level_name,
+              major: e.major,
+              enroll_year: e.enroll_year,
+              graduate_year: e.graduate_year,
+            };
+          } else {
+            return null;
+          }
+        })
+      );
+
+      userUpdateMe.education_experiences = [];
+      for (const e of eduExpsData) {
+        if (e !== null) {
+          userUpdateMe.education_experiences.push(e);
         }
-      })
-    );
-
-    userUpdateMe.education_experiences = [];
-    for (const e of eduExpsData) {
-      if (e !== null) {
-        userUpdateMe.education_experiences.push(e);
       }
-    }
 
-    const response = await apiMe.updateMe(token.value, userUpdateMe);
-    if (response) {
-      store.userProfile = response.data;
-      useNotificationStore().push({
-        content: '更新成功',
-        color: 'success',
-      });
-      await router.push({
-        name: 'user',
-        params: { handle: response.data.handle },
-        query: { details: 'true' },
-      });
-    }
+      const response = await apiMe.updateMe(token.value, userUpdateMe);
+      if (response) {
+        store.userProfile = response.data;
+        useNotificationStore().push({
+          content: '更新成功',
+          color: 'success',
+        });
+        await router.push({
+          name: 'user',
+          params: { handle: response.data.handle },
+          query: { details: 'true' },
+        });
+      }
+    });
+  } finally {
     submitIntermediate.value = false;
-  });
+  }
 }
 
 function addNewWorkExp() {
@@ -463,6 +471,13 @@ function removeFrom<T>(index: number, arr: T[]) {
 // The upload reports its own failures: an unhandled 403 would reach
 // store.checkApiError and log the user out.
 async function uploadAvatar() {
+  // A re-entrancy guard, not just a spinner: two change events -- a double
+  // pick, a retried pick -- otherwise start two concurrent uploads of the same
+  // new bytes, and the server charges UPLOAD_IMAGE_COST for each, because its
+  // dedup is an unlocked check-then-act (chafan-dev/chafan-core#206).
+  if (uploadAvatarIntermediate.value) {
+    return;
+  }
   const fileInput = document.getElementById('fileInput') as HTMLInputElement | null;
   const file = fileInput?.files?.[0];
   if (!file) {
@@ -485,6 +500,9 @@ async function uploadAvatar() {
 }
 
 async function uploadGifAvatar() {
+  if (uploadGifAvatarIntermediate.value) {
+    return;
+  }
   const fileInput = document.getElementById('gifFileInput') as HTMLInputElement | null;
   const file = fileInput?.files?.[0];
   if (!file) {

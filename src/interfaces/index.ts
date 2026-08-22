@@ -672,6 +672,11 @@ export interface IGenericResponse {
   success: boolean;
 }
 
+export interface IBotLinkCode {
+  code: string;
+  expires_in_seconds: number;
+}
+
 export interface IUploadedImage {
   url: string;
 }

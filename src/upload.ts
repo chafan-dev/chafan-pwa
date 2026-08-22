@@ -34,6 +34,16 @@ export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'im
 /** For the `accept` attribute of a file input / the Vditor picker. */
 export const ACCEPTED_IMAGE_TYPES_ATTR = ACCEPTED_IMAGE_TYPES.join(', ');
 
+/**
+ * The same list without GIF, for the still-avatar picker. A GIF chosen there
+ * would bypass the canvas resize (`prepare` skips animated GIFs so they do not
+ * flatten to one frame) and land as an animated avatar, which is what the
+ * separate GIF avatar field already exists to do.
+ */
+export const ACCEPTED_STILL_IMAGE_TYPES_ATTR = ACCEPTED_IMAGE_TYPES.filter(
+  (type) => type !== 'image/gif'
+).join(', ');
+
 /** chafan-core `rules.MIN_KARMA_UPLOAD_IMAGE`. */
 export const MIN_KARMA_UPLOAD_IMAGE = 100;
 /** chafan-core `rules.UPLOAD_IMAGE_COST`, burned per *new* image. */
