@@ -217,7 +217,7 @@ import { editor_T, ITopic, IUserUpdateMe } from '@/interfaces';
 import { deepCopy, getRecentYears } from '@/utils';
 import { apiMe } from '@/api/me';
 import { apiTopic } from '@/api/topic';
-import { api } from '@/api';
+import { apiMisc } from '@/api/misc';
 import VditorCF from '@/editors/lib-components/VditorCF.vue';
 
 import ValidateUrl from '@/components/base/ValidateUrl.vue';
@@ -283,7 +283,7 @@ const uploadFigure = (file: File) => uploadImage(file, 'figure');
 
 onMounted(async () => {
   years.value = getRecentYears();
-  categoryTopics.value = (await api.getCategoryTopics()).data;
+  categoryTopics.value = (await apiMisc.getCategoryTopics()).data;
   const profile = userProfile.value;
   if (!profile) {
     return;

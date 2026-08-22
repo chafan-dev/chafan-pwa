@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { IFeedback } from '@/interfaces';
-import { api } from '@/api';
+import { apiFeedback } from '@/api/feedback';
 import RelativeTime from '@/components/RelativeTime.vue';
 import { useAuth } from '@/composables';
 
@@ -54,7 +54,7 @@ onMounted(async () => {
   if (props.feedback.has_screenshot) {
     screenshotUrl.value =
       'data:image/gif;base64,' +
-      (await api.getFeedbackScreenshotBase64(token.value, props.feedback.id));
+      (await apiFeedback.getFeedbackScreenshotBase64(token.value, props.feedback.id));
   }
 });
 </script>

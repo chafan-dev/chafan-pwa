@@ -131,7 +131,7 @@ import { ref, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
 import { email as isEmail } from '@vee-validate/rules';
 import { useRoute, useRouter } from 'vue-router';
-import { api } from '@/api';
+import { apiAuth } from '@/api/auth';
 import { appName } from '@/env';
 
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
@@ -162,7 +162,7 @@ onMounted(() => {
 
 async function sendVerificationCode() {
   return store.captureApiError(async () => {
-    const response = await api.sendVerificationCode({ email: email.value });
+    const response = await apiAuth.sendVerificationCode({ email: email.value });
     if (response) {
       const msg = response.data.success ? '验证码已发送到邮箱' : '发送失败';
       useNotificationStore().push({
@@ -178,7 +178,7 @@ async function sendVerificationCode() {
 async function openAccount() {
   await store.captureApiError(async () => {
     intermediate.value = true;
-    const response = await api.openAccount(
+    const response = await apiAuth.openAccount(
       email.value,
       handle.value,
       verificationCode.value,

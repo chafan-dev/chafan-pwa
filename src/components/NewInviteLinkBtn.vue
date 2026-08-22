@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { api } from '@/api';
+import { apiInvitations } from '@/api/invitations';
 import { IInvitationLinkCreate, ISite } from '@/interfaces';
 import SiteSearch from '@/components/SiteSearch.vue';
 import { useAuth } from '@/composables';
@@ -63,7 +63,7 @@ async function createInvitationLink() {
   } else if (invitedSite.value) {
     payload.invited_to_site_uuid = invitedSite.value.uuid;
   }
-  const invitationLink = (await api.createInvitationLink(token.value, payload)).data;
+  const invitationLink = (await apiInvitations.createInvitationLink(token.value, payload)).data;
   invitationLinkHref.value = `/invitation-links/${invitationLink.uuid}`;
 }
 </script>

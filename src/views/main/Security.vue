@@ -201,7 +201,8 @@ import {
   IVerificationCodeRequest,
 } from '@/interfaces';
 import { apiMe } from '@/api/me';
-import { api } from '@/api';
+import { apiAudit } from '@/api/audit';
+import { apiAuth } from '@/api/auth';
 import { AxiosError } from 'axios';
 import VerificationCodeBtn from '@/components/widgets/VerificationCodeBtn.vue';
 import RelativeTime from '@/components/RelativeTime.vue';
@@ -254,7 +255,7 @@ async function sendVerificationCode() {
     if (editLoginMode.value === 'email' || editLoginMode.value === 'add_secondary_email') {
       payload.email = newEmail.value!;
     }
-    await api.sendVerificationCode(payload);
+    await apiAuth.sendVerificationCode(payload);
     useNotificationStore().push({
       content: '验证码已发送到邮箱，请查收',
       color: 'success',
@@ -352,6 +353,6 @@ async function submit() {
 
 async function showSecurityLogs() {
   showSecurityLogsDialog.value = true;
-  auditLogs.value = (await api.getAuditLogs(token.value)).data;
+  auditLogs.value = (await apiAudit.getAuditLogs(token.value)).data;
 }
 </script>

@@ -13,7 +13,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useRoute } from 'vue-router';
-import { api } from '@/api';
+import { apiChannels } from '@/api/channels';
 import { IChannel } from '@/interfaces';
 import ChatWindow from '@/components/ChatWindow.vue';
 import { useAuth } from '@/composables';
@@ -31,7 +31,7 @@ const id = computed(() => parseInt(route.params.id as string, 10));
 
 async function load() {
   await store.captureApiError(async () => {
-    channel.value = (await api.getChannel(token.value, id.value)).data;
+    channel.value = (await apiChannels.getChannel(token.value, id.value)).data;
     loading.value = false;
   });
 }

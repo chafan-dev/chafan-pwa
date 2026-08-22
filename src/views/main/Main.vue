@@ -231,7 +231,7 @@ import { useDisplay } from 'vuetify';
 import { useRoute, useRouter } from 'vue-router';
 
 import { appName } from '@/env';
-import { api } from '@/api';
+import { apiFeedback } from '@/api/feedback';
 import { useMainStore } from '@/stores/main';
 import { useUiStore } from '@/stores/ui';
 
@@ -347,7 +347,7 @@ async function submitFeedbackForm() {
     formData.append('email', feedbackEmail.value);
   }
   formData.append('location_url', route.fullPath);
-  await api.uploadFeedback(token.value, formData);
+  await apiFeedback.uploadFeedback(token.value, formData);
   useNotificationStore().push({
     color: 'success',
     content: '反馈已成功提交',

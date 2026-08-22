@@ -202,7 +202,6 @@ import {
   IRichText,
   IUserAnswerBookmark,
 } from '@/interfaces';
-import { api } from '@/api';
 import { apiAnswer } from '@/api/answer';
 import UserLink from '@/components/UserLink.vue';
 import QuestionLink from '@/components/question/QuestionLink.vue';
@@ -398,7 +397,7 @@ async function toggleHideAnswer() {
   await store.captureApiError(async () => {
     if (props.answerPreview) {
       toggleHideAnswerIntermediate.value = true;
-      await api.updateAnswerByMod(token.value, props.answerPreview.uuid, {
+      await apiAnswer.updateAnswerByMod(token.value, props.answerPreview.uuid, {
         is_hidden_by_moderator: !isHiddenByMod.value,
       });
       toggleHideAnswerIntermediate.value = false;

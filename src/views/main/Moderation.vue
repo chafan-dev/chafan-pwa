@@ -311,7 +311,9 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { IApplication, ISite, ISiteUpdate, ITopic, IWebhook, IWebhookCreate } from '@/interfaces';
-import { api } from '@/api';
+import { apiApplications } from '@/api/applications';
+import { apiMisc } from '@/api/misc';
+import { apiTasks } from '@/api/tasks';
 import UserLink from '@/components/UserLink.vue';
 import SiteBtn from '@/components/SiteBtn.vue';
 import UserSearch from '@/components/UserSearch.vue';
@@ -388,7 +390,7 @@ const webhookCreateEventSpecJson = ref('');
 onMounted(async () => {
   moderatedSites.value = (await apiMe.getModeratedSites(token.value)).data;
   if (moderatedSites.value) {
-    const allApps = (await api.getPendingApplications(token.value)).data;
+    const allApps = (await apiApplications.getPendingApplications(token.value)).data;
     for (const application of allApps) {
       const siteId = application.applied_site.uuid;
       if (!allApplications.has(siteId)) {
@@ -401,7 +403,7 @@ onMounted(async () => {
     selectedSiteUUID.value = route.query.siteUUID.toString();
   }
   await onSiteSelected();
-  categoryTopics.value = (await api.getCategoryTopics()).data;
+  categoryTopics.value = (await apiMisc.getCategoryTopics()).data;
   loading.value = false;
 });
 
@@ -486,7 +488,7 @@ async function commitSiteConfig() {
 
 async function approveApplication(application: IApplication) {
   await store.captureApiError(async () => {
-    const updatedApplication = (await api.approveApplication(token.value, application.id)).data;
+    const updatedApplication = (await apiApplications.approveApplication(token.value, application.id)).data;
     if (updatedApplication.pending) {
       useNotificationStore().push({
         color: 'error',
@@ -520,7 +522,7 @@ async function submitNewSubmissionBroadcast() {
       useNotificationStore().push({ color: 'error', content: e });
       return;
     }
-    await api.createTask(token.value, {
+    await apiTasks.createTask(token.value, {
       task_type: 'site_broadcast',
       submission_uuid: submissionUUID,
       to_members_of_site_uuid: selectedSite.value!.uuid,

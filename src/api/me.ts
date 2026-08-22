@@ -2,8 +2,9 @@ import { http } from '@/api/client';
 import { authHeaders, authHeadersWithParams } from '../utils';
 import {
   IAnswerPreview,
-  IBotLinkCode,
+  IArticleColumn,
   IArticlePreview,
+  IBotLinkCode,
   IChannel,
   IQuestionPreview,
   ISite,
@@ -34,6 +35,9 @@ function addSchemeToUrl(url: string | undefined) {
 export const apiMe = {
   async getMe(token: string) {
     return http.get<IUserProfile>(`/me`, authHeaders(token));
+  },
+  async getMyArticleColumns(token: string) {
+    return http.get<IArticleColumn[]>(`/me/article-columns/`, authHeaders(token));
   },
   // Issues a short-lived code to hand to a bot. The code travels site -> bot
   // and never the other way: it appears on the screen of whoever is logged in

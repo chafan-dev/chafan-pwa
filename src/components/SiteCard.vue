@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { api } from '@/api';
+import { apiUsers } from '@/api/users';
 import { ISite } from '@/interfaces';
 import UserLink from '@/components/UserLink.vue';
 import CreateSubmissionForm from '@/components/CreateSubmissionForm.vue';
@@ -143,7 +143,7 @@ onMounted(async () => {
         const userProfile = store.userProfile;
         if (userProfile) {
           const siteProfile = (
-            await api.getUserSiteProfile(token.value, props.site.uuid, userProfile.uuid)
+            await apiUsers.getUserSiteProfile(token.value, props.site.uuid, userProfile.uuid)
           ).data;
           if (siteProfile) {
             notMember.value = false;

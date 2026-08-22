@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { IUserPreview, ISevereReportReason } from '@/interfaces';
-import { api } from '@/api';
+import { apiReports } from '@/api/reports';
 import { useAuth } from '@/composables';
 import { useMainStore } from '@/stores/main';
 import UserLink from '@/components/UserLink.vue';
@@ -83,7 +83,7 @@ const submitReportIntermediate = ref(false);
 
 async function submitReport() {
   submitReportIntermediate.value = true;
-  await api.createReport(token.value, {
+  await apiReports.createReport(token.value, {
     answer_uuid: props.answerUuid,
     reason: reportReason.value,
     reason_comment: reportReasonComment.value || undefined,
