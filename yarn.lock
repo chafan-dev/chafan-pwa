@@ -2393,12 +2393,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/core@npm:^2.11.0, @tiptap/core@npm:^2.27.2":
+"@tiptap/core@npm:^2.27.2":
   version: 2.27.2
   resolution: "@tiptap/core@npm:2.27.2"
   peerDependencies:
     "@tiptap/pm": ^2.7.0
   checksum: 10c0/a49c127cfd9db2981c2f8021e1911915b30f436cc22faef548e0b8ecfbab2797b7ef515a1b930ab6d78e59d0d4ae6bf33ac38000b0acd185594881226c3f302c
+  languageName: node
+  linkType: hard
+
+"@tiptap/core@npm:^3.30.4":
+  version: 3.30.4
+  resolution: "@tiptap/core@npm:3.30.4"
+  peerDependencies:
+    "@tiptap/pm": 3.30.4
+  checksum: 10c0/51cc37a296eee4b1ec0b969bf1c5a95a29793533d976a0085db15b033b4ac6d5e2765a94225a19266fb1c4eec403ec712ea4aa84cb67269d51cd41ce431b28b7
   languageName: node
   linkType: hard
 
@@ -3804,7 +3813,7 @@ __metadata:
     "@mdi/js": "npm:^7.4.47"
     "@playwright/test": "npm:^1.61.1"
     "@sentry/vue": "npm:^8.55.0"
-    "@tiptap/core": "npm:^2.11.0"
+    "@tiptap/core": "npm:^3.30.4"
     "@tiptap/extension-code-block": "npm:^2.11.0"
     "@tiptap/extension-code-block-lowlight": "npm:^2.11.0"
     "@tiptap/extension-link": "npm:^2.11.0"
