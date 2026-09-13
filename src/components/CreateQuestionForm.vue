@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="outlined">
+  <v-card>
     <v-card-title v-if="showTitle" class="text-primary text-h5"> 提问 </v-card-title>
     <v-card-text>
       <debug-span>SiteSearch loading: {{ siteSearchLoading }}</debug-span>
