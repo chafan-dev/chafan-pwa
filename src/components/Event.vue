@@ -1,128 +1,131 @@
 <template>
   <span class="event-span text-body-2" @click="onClick">
-    <i18n :path="'verb.' + event.content.verb">
-      <UserLink
-        v-if="event.content.subject && event.content.subject.uuid !== currentUserId"
-        :enable-popup="false"
-        :userPreview="event.content.subject"
-        place="who"
-      />
-      <span v-if="event.content.subject && event.content.subject.uuid === currentUserId" place="who"
-        >我</span
-      >
+    <Interpolate :template="verbTemplate">
+      <template #who>
+        <span v-if="event.content.subject && event.content.subject.uuid === currentUserId">我</span>
+        <UserLink
+          v-else-if="event.content.subject"
+          :enable-popup="false"
+          :userPreview="event.content.subject"
+        />
+      </template>
 
-      <UserLink
-        v-if="event.content.user && event.content.user.uuid !== currentUserId"
-        :enable-popup="false"
-        :userPreview="event.content.user"
-        place="user"
-      />
-      <span v-else-if="event.content.user && event.content.user.uuid === currentUserId" place="user"
-        >我</span
-      >
+      <template #user>
+        <span v-if="event.content.user && event.content.user.uuid === currentUserId">我</span>
+        <UserLink
+          v-else-if="event.content.user"
+          :enable-popup="false"
+          :userPreview="event.content.user"
+        />
+      </template>
 
-      <span v-if="event.content.invited_email" place="invited_email">{{
-        event.content.invited_email
-      }}</span>
+      <template #invited_email>
+        <span v-if="event.content.invited_email">{{ event.content.invited_email }}</span>
+      </template>
 
-      <a v-if="event.content.reward" href="/dashboard?tab=coins" place="reward_coin_amount">{{
-        event.content.reward.coin_amount
-      }}</a>
+      <template #reward_coin_amount>
+        <a v-if="event.content.reward" href="/dashboard?tab=coins">{{
+          event.content.reward.coin_amount
+        }}</a>
+      </template>
 
-      <span v-if="event.content.comment" place="comment">
-        <CommentPreview :comment="event.content.comment" />
-      </span>
+      <template #comment>
+        <CommentPreview v-if="event.content.comment" :comment="event.content.comment" />
+      </template>
 
-      <router-link
-        v-if="event.content.article"
-        :to="`/articles/${event.content.article.uuid}`"
-        place="article"
-        >{{ event.content.article.title }}</router-link
-      >
+      <template #article>
+        <router-link v-if="event.content.article" :to="`/articles/${event.content.article.uuid}`">{{
+          event.content.article.title
+        }}</router-link>
+      </template>
 
-      <router-link
-        v-if="event.content.article_column"
-        :to="`/article-columns/${event.content.article_column.uuid}`"
-        place="article_column"
-        >{{ event.content.article_column.name }}</router-link
-      >
+      <template #article_column>
+        <router-link
+          v-if="event.content.article_column"
+          :to="`/article-columns/${event.content.article_column.uuid}`"
+          >{{ event.content.article_column.name }}</router-link
+        >
+      </template>
 
-      <span v-if="event.content.message" place="message">
-        {{ event.content.message }}
-      </span>
+      <template #message>
+        <span v-if="event.content.message">{{ event.content.message }}</span>
+      </template>
 
-      <span v-if="event.content.reply" place="reply">
-        <CommentPreview :comment="event.content.reply" />
-      </span>
+      <template #reply>
+        <CommentPreview v-if="event.content.reply" :comment="event.content.reply" />
+      </template>
 
-      <span
-        v-if="event.content.payment_amount && event.content.verb === 'invited_user_activated'"
-        place="remark"
-      >
-        ，你已经收到 {{ event.content.payment_amount }} 硬币奖励
-      </span>
+      <template #remark>
+        <span v-if="event.content.payment_amount && event.content.verb === 'invited_user_activated'">
+          ，你已经收到 {{ event.content.payment_amount }} 硬币奖励
+        </span>
+      </template>
 
-      <span v-if="event.content.parent_comment" place="parent_comment">
-        <CommentPreview :comment="event.content.parent_comment" />
-      </span>
+      <template #parent_comment>
+        <CommentPreview
+          v-if="event.content.parent_comment"
+          :comment="event.content.parent_comment"
+        />
+      </template>
 
-      <router-link
-        v-if="event.content.question"
-        :to="`/questions/${event.content.question.uuid}`"
-        place="question"
-        >{{ event.content.question.title }}</router-link
-      >
+      <!-- `question` is either the event's own question or the one its answer belongs to. -->
+      <template #question>
+        <router-link
+          v-if="event.content.question"
+          :to="`/questions/${event.content.question.uuid}`"
+          >{{ event.content.question.title }}</router-link
+        >
+        <router-link
+          v-else-if="event.content.answer"
+          :to="`/questions/${event.content.answer.question.uuid}`"
+          >{{ event.content.answer.question.title }}</router-link
+        >
+      </template>
 
-      <router-link
-        v-if="event.content.submission"
-        :to="`/submissions/${event.content.submission.uuid}`"
-        place="submission"
-        >{{ event.content.submission.title }}</router-link
-      >
+      <template #submission>
+        <router-link
+          v-if="event.content.submission"
+          :to="`/submissions/${event.content.submission.uuid}`"
+          >{{ event.content.submission.title }}</router-link
+        >
+      </template>
 
-      <router-link
-        v-if="event.content.submission_suggestion"
-        :to="`/submissions/${event.content.submission_suggestion.submission.uuid}/suggestions/${event.content.submission_suggestion.uuid}`"
-        place="submission_suggestion"
-        >{{ event.content.submission_suggestion.title }}</router-link
-      >
+      <template #submission_suggestion>
+        <router-link
+          v-if="event.content.submission_suggestion"
+          :to="`/submissions/${event.content.submission_suggestion.submission.uuid}/suggestions/${event.content.submission_suggestion.uuid}`"
+          >{{ event.content.submission_suggestion.title }}</router-link
+        >
+      </template>
 
-      <router-link
-        v-if="event.content.answer_suggest_edit"
-        :to="`/questions/${event.content.answer_suggest_edit.answer.question.uuid}/answers/${event.content.answer_suggest_edit.answer.uuid}/suggestions/${event.content.answer_suggest_edit.uuid}`"
-        place="answer_suggest_edit"
-        >{{ event.content.answer_suggest_edit.answer.question.title }}</router-link
-      >
+      <template #answer_suggest_edit>
+        <router-link
+          v-if="event.content.answer_suggest_edit"
+          :to="`/questions/${event.content.answer_suggest_edit.answer.question.uuid}/answers/${event.content.answer_suggest_edit.answer.uuid}/suggestions/${event.content.answer_suggest_edit.uuid}`"
+          >{{ event.content.answer_suggest_edit.answer.question.title }}</router-link
+        >
+      </template>
 
-      <router-link
-        v-if="event.content.site"
-        :to="`/sites/${event.content.site.subdomain}`"
-        place="site"
-        >{{ event.content.site.name }}</router-link
-      >
+      <template #site>
+        <router-link v-if="event.content.site" :to="`/sites/${event.content.site.subdomain}`">{{
+          event.content.site.name
+        }}</router-link>
+      </template>
 
-      <router-link
-        v-if="event.content.answer"
-        :to="`/questions/${event.content.answer.question.uuid}`"
-        place="question"
-        >{{ event.content.answer.question.title }}</router-link
-      >
+      <template #answer>
+        <router-link
+          v-if="event.content.answer"
+          :to="`/questions/${event.content.answer.question.uuid}/answers/${event.content.answer.uuid}`"
+          >{{ event.content.answer.body }}</router-link
+        >
+      </template>
 
-      <router-link
-        v-if="event.content.answer"
-        :to="`/questions/${event.content.answer.question.uuid}/answers/${event.content.answer.uuid}`"
-        place="answer"
-        >{{ event.content.answer.body }}</router-link
-      >
-
-      <router-link
-        v-if="event.content.channel"
-        :to="`/channels/${event.content.channel.id}`"
-        place="channel_message"
-      >
-        私信
-      </router-link>
-    </i18n>
+      <template #channel_message>
+        <router-link v-if="event.content.channel" :to="`/channels/${event.content.channel.id}`">
+          私信
+        </router-link>
+      </template>
+    </Interpolate>
     (<RelativeTime :datetime="event.created_at" />)
   </span>
 </template>
@@ -130,6 +133,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { IEvent } from '@/interfaces';
+import { eventVerbCN } from '@/i18n';
+import Interpolate from '@/components/Interpolate.vue';
 import UserLink from '@/components/UserLink.vue';
 import CommentPreview from '@/components/CommentPreview.vue';
 import RelativeTime from '@/components/RelativeTime.vue';
@@ -147,6 +152,11 @@ const props = withDefaults(
 );
 
 const { currentUserId } = useAuth();
+
+// Fall back to the raw verb so an unknown event still shows something.
+const verbTemplate = computed(
+  () => eventVerbCN[props.event.content.verb] ?? props.event.content.verb
+);
 
 function onClick() {
   if (props.onClickHandler) {
