@@ -14,6 +14,46 @@ export const constants = {
   link_bot: '绑定机器人',
 };
 
+/** Sentence templates for notification events, keyed by `IEvent.content.verb`.
+ *  `{name}` placeholders are filled by the matching slot in Event.vue. */
+export const eventVerbCN: Record<string, string> = {
+  answer_update: '{who}更新了回答「{question}」：「{answer}」',
+  create_article: '{who}创建了文章「{article}」',
+  create_question: '{who}创建了问题「{question}」',
+  follow_article_column: '{who}关注了专栏「{article_column}」',
+  upvote_answer: '{who}赞了回答「{answer}」(所属问题：「{question}」)',
+  upvote_article: '{who}赞了文章「{article}」',
+  upvote_question: '{who}赞了问题「{question}」',
+  invite_new_user: '{who}邀请了新用户加入',
+  invite_join_site: '{who}邀请了{user}加入「{site}」',
+  answer_question: '{who}添加了新回答「{answer}」（所属问题：「{question}」）',
+  comment_question: '{who}添加了新评论「{comment}」（所属问题：「{question}」）',
+  edit_question: '{who}编辑了问题「{question}」',
+  reply_comment: '{who}添加了新回复「{reply}」（所属评论：「{parent_comment}」）',
+  mentioned_in_comment: '{who}在评论中提到了你：「{comment}」。',
+  invite_answer: '{who}邀请{user}回答问题「{question}」',
+  system_send_invitation: '系统已发送邀请邮件给 {invited_email}',
+  apply_join_site: '{who}申请加入圈子「{site}」',
+  comment_answer: '{who}添加了新评论「{comment}」（所属回答：「{answer}」）',
+  comment_article: '{who}添加了新评论「{comment}」（所属文章：「{article}」）',
+  follow_user: '{who}关注了{user}',
+  system_broadcast: '📢 系统广播：{message}',
+  site_broadcast: '📢 圈子「{site}」广播：{submission}',
+  create_message: '{who} 有新的{channel_message}',
+  invited_user_activated: '你邀请的用户 {invited_email} 已激活账户{remark}.',
+  create_answer_question_reward: '{who}为邀请你回答「{question}」而创建了{reward_coin_amount}个硬币的奖励',
+  claim_answer_question_reward: '{who} 兑换了回答问题「{question}」的{reward_coin_amount}个硬币的奖励',
+  create_submission: '{who}创建了分享「{submission}」',
+  create_submission_suggestion: '{who}添加了对分享的建议编辑「{submission_suggestion}」',
+  accept_submission_suggestion: '{who}采纳了对分享的建议编辑「{submission_suggestion}」',
+  create_answer_suggest_edit: '{who}添加了对问题回答的建议编辑「{answer_suggest_edit}」',
+  accept_answer_suggest_edit: '{who}采纳了对问题回答的建议编辑「{answer_suggest_edit}」',
+  create_site: '{who}创建了圈子「{site}」',
+  upvote_submission: '{who}赞了分享「{submission}」',
+  comment_submission: '{who}评论了你的分享「{submission}」：「{comment}」',
+  create_site_need_approval: '{who}申请创建圈子（{channel_message}）',
+};
+
 export const INSUFFICIENT_KARMA_TO_JOIN_SITE = '加入圈子所需的 Karma 不足';
 export const MISSING_REQUIRED_SECONDARY_EMAIL = '没有符合要求的次要邮箱绑定';
 
