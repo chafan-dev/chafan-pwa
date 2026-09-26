@@ -1,36 +1,29 @@
 <template>
   <div>
-    <v-btn color="primary" variant="flat" size="small" @click="showDialog = true"> 生成邀请链接 </v-btn>
+    <v-btn
+      :loading="intermediate"
+      color="primary"
+      variant="flat"
+      size="small"
+      @click="openInvitationLink"
+    >
+      生成邀请链接
+    </v-btn>
     <v-dialog v-model="showDialog" max-width="500px">
-      <v-card>
+      <v-card v-if="invitationLinkUrl">
         <v-card-title>
-          <span class="text-h5"
-            >生成<span v-if="site">{{ site.name }}圈子的</span>邀请链接</span
-          >
+          <span class="text-h5"><span v-if="site">{{ site.name }}圈子的</span>邀请链接</span>
         </v-card-title>
-        <v-card-text v-if="!invitationLinkHref">
-          <div v-if="site === undefined" class="mt-3">
-            <SiteSearch v-model="invitedSite" label="圈子（可选）" />
-          </div>
-        </v-card-text>
-        <div v-if="invitationLinkHref" class="text-body-1 mx-6">
+        <v-card-text class="text-body-1">
           <p class="text-black">✅ 未注册用户可直接通过以下链接进入注册界面：</p>
-          <a :href="invitationLinkHref" class="text-decoration-none ml-1" target="_blank">
-            https://cha.fan{{ invitationLinkHref }}
+          <a :href="invitationLinkUrl" class="text-decoration-none text-break" target="_blank">
+            {{ invitationLinkUrl }}
           </a>
-        </div>
+        </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn
-            v-if="!invitationLinkHref"
-            :disabled="intermediate"
-            color="primary"
-            variant="flat"
-            size="small"
-            @click="createInvitationLink"
-          >
-            生成邀请链接
-            <v-progress-circular v-if="intermediate" indeterminate size="20" />
+          <v-btn color="primary" variant="flat" size="small" @click="copyInvitationLink">
+            {{ copied ? '已复制' : '复制链接' }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -42,8 +35,9 @@
 import { ref } from 'vue';
 import { apiInvitations } from '@/api/invitations';
 import { IInvitationLinkCreate, ISite } from '@/interfaces';
-import SiteSearch from '@/components/SiteSearch.vue';
 import { useAuth } from '@/composables';
+import { useMainStore } from '@/stores/main';
+const store = useMainStore();
 
 const props = defineProps<{
   site?: ISite;
@@ -51,19 +45,39 @@ const props = defineProps<{
 
 const { token } = useAuth();
 
-const invitedSite = ref<ISite | null>(null);
 const showDialog = ref(false);
 const intermediate = ref(false);
-const invitationLinkHref = ref<string | null>(null);
+const invitationLinkUrl = ref<string | null>(null);
+const copied = ref(false);
 
-async function createInvitationLink() {
-  const payload: IInvitationLinkCreate = {};
-  if (props.site !== undefined) {
-    payload.invited_to_site_uuid = props.site.uuid;
-  } else if (invitedSite.value) {
-    payload.invited_to_site_uuid = invitedSite.value.uuid;
+async function openInvitationLink() {
+  // Reopening shows the link already generated instead of minting another one.
+  if (!invitationLinkUrl.value) {
+    intermediate.value = true;
+    await store.captureApiError(async () => {
+      const payload: IInvitationLinkCreate = {};
+      if (props.site !== undefined) {
+        payload.invited_to_site_uuid = props.site.uuid;
+      }
+      const invitationLink = (await apiInvitations.createInvitationLink(token.value, payload))
+        .data;
+      invitationLinkUrl.value = `${window.location.origin}/invitation-links/${invitationLink.uuid}`;
+    });
+    intermediate.value = false;
   }
-  const invitationLink = (await apiInvitations.createInvitationLink(token.value, payload)).data;
-  invitationLinkHref.value = `/invitation-links/${invitationLink.uuid}`;
+  if (invitationLinkUrl.value) {
+    showDialog.value = true;
+  }
+}
+
+async function copyInvitationLink() {
+  try {
+    await navigator.clipboard.writeText(invitationLinkUrl.value!);
+    copied.value = true;
+  } catch {
+    // Clipboard access is denied over plain http and in some embedded
+    // browsers. The link is on screen, so the user can still copy it by hand.
+    copied.value = false;
+  }
 }
 </script>
