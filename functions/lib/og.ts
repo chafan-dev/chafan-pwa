@@ -9,6 +9,8 @@ export const DEFAULT_TITLE = 'Chafan 茶饭';
 function stripHtml(text: string): string {
   return text
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    // Keep paragraph boundaries so firstParagraph() can find them.
+    .replace(/<\/(p|div|h[1-6]|li|blockquote|pre)>/gi, '\n\n')
     .replace(/<[^>]*>/g, ' ')
     .replace(/&nbsp;/gi, ' ')
     .replace(/&lt;/gi, '<')
@@ -30,16 +32,23 @@ function stripMarkdown(text: string): string {
     .replace(/[*_~`]/g, '');
 }
 
-/** Text nodes of a ProseMirror/tiptap document, in document order. */
-function prosemirrorToPlain(node: unknown, out: string[] = []): string {
+/**
+ * Text of a ProseMirror/tiptap document, in document order, with blocks separated
+ * by a blank line. Text nodes inside a block are joined as-is: marks split a
+ * sentence into several nodes, and a space between them would break up Chinese.
+ */
+function prosemirrorToPlain(node: unknown): string {
   if (Array.isArray(node)) {
-    for (const child of node) prosemirrorToPlain(child, out);
-  } else if (node && typeof node === 'object') {
-    const n = node as Record<string, unknown>;
-    if (typeof n.text === 'string') out.push(n.text);
-    if (n.content) prosemirrorToPlain(n.content, out);
+    return node.map((child) => prosemirrorToPlain(child)).join('');
   }
-  return out.join(' ');
+  if (!node || typeof node !== 'object') {
+    return '';
+  }
+  const n = node as Record<string, unknown>;
+  if (typeof n.text === 'string') return n.text;
+  if (n.type === 'hardBreak') return '\n';
+  // Inline content is always a text node, so anything else with children is a block.
+  return n.content ? `${prosemirrorToPlain(n.content)}\n\n` : '';
 }
 
 /**
@@ -74,13 +83,18 @@ export function richTextToPlain(rich: unknown): string | undefined {
     if (doc) {
       // A doc with no text nodes (e.g. image-only) has no description to give;
       // never fall through, or the raw JSON would end up in the card.
-      const text = prosemirrorToPlain(doc);
-      return text.trim() ? text : undefined;
+      const text = prosemirrorToPlain(doc).trim();
+      return text || undefined;
     }
   }
 
   const markdown = stripMarkdown(source);
   return markdown.trim() ? markdown : undefined;
+}
+
+/** First non-blank paragraph of `richTextToPlain` output (paragraphs are split by a blank line). */
+export function firstParagraph(text: string | undefined): string | undefined {
+  return text?.split(/\n[ \t]*\n/).find((paragraph) => paragraph.trim());
 }
 
 /** Questions rarely carry a description, so the top answer is the real content. */
@@ -120,6 +134,22 @@ export const CONTENT_ROUTE_PATTERNS: ReadonlyArray<{
       return {
         title,
         description: richTextToPlain(question.desc) || firstAnswerText(body),
+      };
+    },
+  },
+  {
+    // An answer permalink unfurls as that answer, not as its question.
+    re: /^\/questions\/[A-Za-z0-9]+\/answers\/([A-Za-z0-9]+)$/,
+    apiPath: (id) => `/answers/${id}`,
+    pick: (body) => {
+      const question = (body.question ?? {}) as Record<string, unknown>;
+      const title = typeof question.title === 'string' ? question.title : null;
+      if (!title) return null;
+      return {
+        title,
+        description: body.is_hidden_by_moderator
+          ? undefined
+          : firstParagraph(richTextToPlain(body.content)),
       };
     },
   },

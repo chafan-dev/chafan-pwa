@@ -4,6 +4,7 @@ import {
   DEFAULT_TITLE,
   defaultOgImage,
   escapeHtmlAttr,
+  firstParagraph,
   injectOgTags,
   isCrawlerRequest,
   matchContentRoute,
@@ -52,6 +53,14 @@ describe('functions/lib/og', () => {
       expect(matchContentRoute('/submissions/xyz')?.apiPath).toBe('/submissions/xyz');
     });
 
+    it('matches answer permalinks to the answer API', () => {
+      expect(
+        matchContentRoute('/questions/Rfqm3RADhiBC2WwtmH3j/answers/jEYvsxqj6Rgrf2LsyMuC')?.apiPath
+      ).toBe('/answers/jEYvsxqj6Rgrf2LsyMuC');
+      expect(matchContentRoute('/questions/abc/answers/')).toBeNull();
+      expect(matchContentRoute('/questions/abc/answers/xyz/comments/c1')).toBeNull();
+    });
+
     it('rejects non-content paths', () => {
       expect(matchContentRoute('/')).toBeNull();
       expect(matchContentRoute('/explore')).toBeNull();
@@ -88,6 +97,31 @@ describe('functions/lib/og', () => {
           answer_previews: [{ body: '预览正文' }],
         })
       ).toEqual({ title: '测试问题', description: '预览正文' });
+    });
+
+    it('describes an answer by its first paragraph under the question title', () => {
+      const route = matchContentRoute('/questions/abc/answers/xyz')!;
+      // Shape of a real markdown answer: rendered_text is plain text, blank-line separated.
+      expect(
+        route.pick({
+          question: { title: '如何评价 Final Fantasy VII Rebirth' },
+          is_hidden_by_moderator: false,
+          content: {
+            source: '> 第一段引用\n\n第二段正文',
+            rendered_text: '第一段引用\n\n第二段正文',
+            editor: 'markdown_splitview',
+          },
+        })
+      ).toEqual({ title: '如何评价 Final Fantasy VII Rebirth', description: '第一段引用' });
+
+      expect(
+        route.pick({
+          question: { title: '问题' },
+          is_hidden_by_moderator: true,
+          content: { rendered_text: '不该出现' },
+        })
+      ).toEqual({ title: '问题', description: undefined });
+      expect(route.pick({ content: { rendered_text: '正文' } })).toBeNull();
     });
 
     it('reads the article rich text from `content`', () => {
@@ -127,6 +161,25 @@ describe('functions/lib/og', () => {
       expect(richTextToPlain({ rendered_text: null, source: doc, editor: 'tiptap' })).toBe('一段正文');
     });
 
+    it('joins marked text without spaces and separates tiptap blocks', () => {
+      const doc = JSON.stringify({
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              { type: 'text', text: '上一个问题：' },
+              { type: 'text', marks: [{ type: 'link' }], text: 'https://cha.fan/q' },
+            ],
+          },
+          { type: 'blockquote', content: [{ type: 'paragraph', content: [{ type: 'text', text: '引用' }] }] },
+        ],
+      });
+      expect(richTextToPlain({ rendered_text: null, source: doc })).toMatch(
+        /^上一个问题：https:\/\/cha\.fan\/q\n\n\s*引用$/
+      );
+    });
+
     it('never leaks raw JSON for a doc with no text', () => {
       const imageOnly = JSON.stringify({
         type: 'doc',
@@ -139,6 +192,16 @@ describe('functions/lib/og', () => {
       expect(richTextToPlain(null)).toBeUndefined();
       expect(richTextToPlain({ rendered_text: null, source: '\n' })).toBeUndefined();
       expect(richTextToPlain({})).toBeUndefined();
+    });
+  });
+
+  describe('firstParagraph', () => {
+    it('returns the first non-blank paragraph', () => {
+      expect(firstParagraph('\n\n第一段\n续行\n \n第二段')).toBe('第一段\n续行');
+      expect(firstParagraph(richTextToPlain({ rendered_text: '<p></p><p>甲</p><p>乙</p>' }))?.trim()).toBe(
+        '甲'
+      );
+      expect(firstParagraph(undefined)).toBeUndefined();
     });
   });
 
